@@ -1,20 +1,15 @@
-import { MapContainer, TileLayer, Marker , Popup} from "react-leaflet";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import HomeScreens from "./screens/HomeScreen";
+import LoginScreen from "./screens/LoginScreen";
 
 function App() {
   return (
-    <>
-      <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Marker position={[51.505, -0.09]}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
-        </Marker>
-      </MapContainer>
-    </>
+    <Router>
+      <Switch>
+        <Route path="/" component={HomeScreens} exact />
+        <Route path="/login" component={LoginScreen} exact />
+      </Switch>
+    </Router>
   );
 }
 
