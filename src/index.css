@@ -8,6 +8,24 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Sansation';
+  src:url('./assets/fonts/Sansation-Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+body{
+  font-family: 'Inter', sans-serif;
+}
+.sansation-font{
+  font-family: 'Sansation', sans-serif;
+}
+.btn-browse{
+  background: linear-gradient(180deg, rgba(186, 194, 237, 0.69) 0%, #B3BDF2 100%);
+  border-radius: 10px;
+}
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
 .spinner {
   padding: 0.6rem 0;
 }
