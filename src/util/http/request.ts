@@ -19,6 +19,12 @@ export function* request({
   if (sagaName) {
     yield put({type: sagaName, payload: response.data, _name: actionName});
   } else {
+    if (actionName === 'login') {
+      localStorage.setItem(
+        'login',
+        JSON.stringify({data: response.data, httpRequestStatus: 'success'}),
+      );
+    }
     yield put(
       httpResponseAction(actionName as RequestKeyExclude, {
         httpResponseStatus: 'success',

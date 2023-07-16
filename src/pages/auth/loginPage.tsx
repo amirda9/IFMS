@@ -10,7 +10,7 @@ const loginSchema = Yup.object().shape({
   password: Yup.string().required('Please Enter password'),
   remember: Yup.boolean(),
 });
-const Login = () => {
+const LoginPage = () => {
   const {state, request} = useHttpRequest({
     selector: state => state.http.login,
   });
@@ -71,4 +71,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

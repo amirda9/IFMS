@@ -7,7 +7,14 @@ import {
 } from '../actions/httpResponse.action';
 import {HttpSliceType} from '~/types/HttpSliceType';
 
-const initialState: HttpSliceType = {};
+const initialState = (): HttpSliceType => {
+  const login = localStorage.getItem('login');
+  const refresh = localStorage.getItem('refresh');
+  return {
+    login: login ? JSON.parse(login) : undefined,
+    refresh: refresh ? JSON.parse(refresh) : undefined,
+  };
+};
 
 export const httpsSlice = createSlice({
   name: 'http',

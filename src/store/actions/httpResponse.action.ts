@@ -1,14 +1,10 @@
-import {
-  RequestKeyExclude,
-  RequestListTypes,
-  ResponseListType,
-} from '~/util/RequestList';
+import {RequestKeyExclude, ResponseListType} from '~/util/RequestList';
 import {AxiosError} from 'axios';
 
 export const HttpResponseAction = 'Http Response [http]';
 
 export type HttpResponseActionType<
-  K extends RequestKeyExclude = RequestKeyExclude,
+  K extends RequestKeyExclude = RequestKeyExclude
 > = {
   type: typeof HttpResponseAction;
   _name: K;

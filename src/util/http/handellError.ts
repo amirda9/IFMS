@@ -39,6 +39,7 @@ export function* handelError({
       refreshAction = yield take(HttpResponseAction);
     }
     if (refreshAction.payload.httpResponseStatus !== 'error') {
+      localStorage.setItem('refresh', JSON.stringify(refreshAction.payload));
       yield put(httpRequestAction(actionName, requestData));
       return;
     }
