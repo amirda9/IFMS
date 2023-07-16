@@ -6,10 +6,6 @@ import {
   HttpResponseActionType,
 } from '../actions/httpResponse.action';
 import {HttpSliceType} from '~/types/HttpSliceType';
-import {
-  SET_STORAGE,
-  SetStorageActionType,
-} from '~/store/actions/setStorage.action';
 
 const initialState: HttpSliceType = {};
 
@@ -57,19 +53,6 @@ export const httpsSlice = createSlice({
         };
       },
     );
-
-    builder.addCase(SET_STORAGE, (state, action: SetStorageActionType) => {
-      if (action.payload.status === 'success') {
-        const {token, refresh} = action.payload.data!;
-        return {
-          ...state,
-          token: token?.httpRequestStatus === 'success' ? token : undefined,
-          refresh:
-            refresh?.httpRequestStatus === 'success' ? refresh : undefined,
-        };
-      }
-      return state;
-    });
   },
 });
 export const {httpClear} = httpsSlice.actions;

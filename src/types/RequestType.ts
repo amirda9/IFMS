@@ -1,5 +1,5 @@
-import type {AxiosHeaders, Method} from 'axios';
-import {RawAxiosRequestHeaders} from 'axios/index';
+// eslint-disable-next-line prettier/prettier
+import type {AxiosHeaders, Method,RawAxiosRequestHeaders} from 'axios';
 import {FormDataValueType} from '~/util';
 
 export type RequestType<N extends string, D> = {
