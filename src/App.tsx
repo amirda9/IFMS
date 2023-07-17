@@ -13,15 +13,17 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path={'/'} Component={selectElement(auth, pages.UsersPage)} />
+        <Route path={'/'} Component={selectElement(auth, pages.NetworksPage)} />
         <Route
           path={'/login'}
           Component={selectElement(!auth, pages.LoginPage, RedirectAfterLogin)}
         />
         <Route
           path={'/users'}
-          Component={selectElement(auth, pages.UsersPage)}
-        />
+          Component={selectElement(auth, pages.NetworksPage)}
+        >
+          <Route path={'sss'} element={"ssss"}/>
+        </Route>
       </Routes>
     </Router>
   );
