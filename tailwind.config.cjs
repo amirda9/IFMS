@@ -10,6 +10,9 @@ module.exports= {
         p:"#006BBC",
         b:'#E7EFF7',
         g:'#D9D9D9',
+      },
+      fontFamily:{
+        s:["Sansation"]
       }
     },
   },

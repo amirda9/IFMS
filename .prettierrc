@@ -3,5 +3,7 @@
   "bracketSameLine": true,
   "bracketSpacing": false,
   "singleQuote": true,
-  "trailingComma": "all"
+  "jsxBracketSameLine": false,
+  "trailingComma": "all",
+  "plugins": ["prettier-plugin-tailwindcss"]
 }

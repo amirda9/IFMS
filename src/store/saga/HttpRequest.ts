@@ -36,7 +36,7 @@ function* HttpRequest(action: HttpActionType) {
         data: formData || data?.data,
         params: data?.queryString,
       },
-      addToList: data.addToList,
+      addToList: data?.addToList,
       sagaName,
       actionName: action._name,
     });

@@ -3,7 +3,7 @@ import * as pages from '~/pages';
 import {useAppSelector} from '~/hooks';
 import {RedirectAfterLogin} from '~/components';
 import {selectElement} from '~/util';
-import "~/styles/index.scss";
+import '~/styles/index.scss';
 function App() {
   const auth = useAppSelector(
     state =>
@@ -13,16 +13,17 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path={'/'} Component={selectElement(auth, pages.NetworksPage)} />
+        <Route path="/" Component={selectElement(auth, RedirectAfterLogin)} />
         <Route
-          path={'/login'}
+          path="/login"
           Component={selectElement(!auth, pages.LoginPage, RedirectAfterLogin)}
         />
         <Route
-          path={'/users'}
-          Component={selectElement(auth, pages.NetworksPage)}
-        >
-          <Route path={'sss'} element={"ssss"}/>
+          path="/networks"
+          Component={selectElement(auth, pages.NetworksPage)}>
+          <Route path=":networkId" Component={pages.NetworkEmpty}>
+            <Route path="detail" Component={pages.NetworkDetail} />
+          </Route>
         </Route>
       </Routes>
     </Router>
