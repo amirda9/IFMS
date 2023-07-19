@@ -1,10 +1,10 @@
 import React from 'react';
 import {useField} from 'formik';
-import {TextInput} from '~/components';
+import {Textarea} from '~/components';
 
 type InputType = React.DetailedHTMLProps<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  HTMLInputElement
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  HTMLTextAreaElement
 >;
 type PropsType = Omit<InputType, 'value'> & {name: string};
 const InputFormik = ({name, className, ...props}: PropsType) => {
@@ -14,14 +14,13 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
       className={`flex flex-grow flex-col ${
         meta.touched && meta.error ? 'pb-1' : 'pb-5'
       }`}>
-      <TextInput
+      <Textarea
         name={name}
         className={`border-2 border-solid ${
           meta.error && meta.touched ? 'border-red-500' : ''
         } ${className}`}
-        value={fields.value}
-        onChange={fields.onChange}
         onBlur={fields.onBlur}
+        onChange={fields.onChange}
         {...props}
       />
       {meta.touched && meta.error ? (

@@ -1,17 +1,28 @@
 import React, {FC} from 'react';
 import {NetworkItem, TextInput} from '~/components';
-import {Outlet} from 'react-router-dom';
+import {NavLink, Outlet} from 'react-router-dom';
 import {IoAddOutline} from 'react-icons/io5';
 import {useHttpRequest} from '~/hooks';
 
 const NetworksPage: FC = () => {
-
   const {
-    state: {list},
+    request,
+    state: {list, deleteRequest},
   } = useHttpRequest({
-    selector: state => ({list: state.http.networkList}),
+    selector: state => ({
+      list: state.http.networkList,
+      deleteRequest: state.http.networkDelete,
+    }),
     initialRequests: request => {
       if (list?.httpRequestStatus !== 'success') {
+        request('networkList', undefined);
+      }
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.deleteRequest?.httpRequestStatus === 'loading' &&
+        state.deleteRequest!.httpRequestStatus === 'success'
+      ) {
         request('networkList', undefined);
       }
     },
@@ -36,13 +47,30 @@ const NetworksPage: FC = () => {
             <TextInput id="search" className="mr-10 flex-grow" />
           </div>
 
-          <button className="mt-14 flex flex-row items-center">
+          <NavLink
+            className={({isActive}) =>
+              `ml-[-10px] mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2 ${
+                isActive ? 'bg-sky-200' : ''
+              }`
+            }
+            to="create">
             <span className="text-md active:opacity-50">Networks</span>
             <IoAddOutline className="ml-10 text-2xl text-green-500 active:text-green-300" />
-          </button>
+          </NavLink>
           <div className="mt-2">
             {list?.data?.map(value => (
-              <NetworkItem name={value.name} to={value.id} key={value.id} />
+              <NetworkItem
+                name={value.name}
+                to={value.id}
+                key={value.id}
+                onDelete={() =>
+                  request('networkDelete', {params: {networkId: value.id}})
+                }
+                disabled={
+                  deleteRequest?.httpRequestStatus === 'loading' &&
+                  deleteRequest.request?.params.networkId === value.id
+                }
+              />
             ))}
           </div>
         </div>

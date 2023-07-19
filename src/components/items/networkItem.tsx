@@ -6,8 +6,9 @@ type PropsType = {
   name: string;
   to: string;
   onDelete?: () => void;
+  disabled?: boolean;
 };
-const NetworkItem: FC<PropsType> = ({to, name}) => {
+const NetworkItem: FC<PropsType> = ({to, name, onDelete, disabled}) => {
   return (
     <div className="my-1 flex flex-row">
       <NavLink
@@ -19,10 +20,12 @@ const NetworkItem: FC<PropsType> = ({to, name}) => {
         }>
         {name}
       </NavLink>
-      <button className="ml-4">
+      <button className="ml-4" onClick={onDelete}>
         <IoTrashOutline
           size={24}
-          className="text-red-500 active:text-red-300"
+          className={` ${
+            disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500'
+          }  active:text-red-300`}
         />
       </button>
     </div>

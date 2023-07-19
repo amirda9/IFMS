@@ -7,10 +7,10 @@ type PropsType = {
 };
 const Description: FC<PropsType> = ({label, children, items = 'center'}) => {
   return (
-    <div className={`items-${items} flex flex-row`}>
+    <div className={`items-${items} flex flex-grow flex-row`}>
       <label className="w-40 text-sm">{label}</label>
       {typeof children === 'string' ? (
-        <span children={children} className="text-sm" />
+        <span className="text-sm">{children}</span>
       ) : (
         children
       )}

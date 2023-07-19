@@ -4,7 +4,7 @@ import {Outlet} from 'react-router-dom';
 
 const NetworkEmpty = () => {
   return (
-    <div className="h-full w-full">
+    <div className="flex h-full w-full flex-col">
       <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
         <TabItem to="detail" name="Detail" />
         <TabItem to="access" name="Access" />

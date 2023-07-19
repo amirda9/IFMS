@@ -1,3 +1,4 @@
 export {default as NetworksPage} from './networksPage';
-export {default as NetworkEmpty} from './networkEmpty';
-export {default as NetworkDetail} from './networkDetail';
+export {default as NetworkEmptyPage} from './networkEmptyPsge';
+export {default as NetworkDetailPage} from './networkDetailPage';
+export {default as NetworkCreatePage} from './networkCreatePage';

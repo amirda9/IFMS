@@ -1,10 +1,16 @@
-import React, { FC } from 'react'
+import React, {FC} from 'react';
 
-type PropsType = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
-const TextInput: FC<PropsType> = ({className,...props}) => {
+type PropsType = React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>;
+const TextInput: FC<PropsType> = ({className, ...props}) => {
   return (
-    <input className={className+" h-8 rounded-md border border-black "} {...props}/>
-  )
-}
+    <input
+      className={'h-8 rounded-md border border-black px-2 '+className}
+      {...props}
+    />
+  );
+};
 
-export default TextInput
+export default TextInput;

@@ -21,8 +21,9 @@ function App() {
         <Route
           path="/networks"
           Component={selectElement(auth, pages.NetworksPage)}>
-          <Route path=":networkId" Component={pages.NetworkEmpty}>
-            <Route path="detail" Component={pages.NetworkDetail} />
+          <Route path="create" Component={pages.NetworkCreatePage} />
+          <Route path=":networkId" Component={pages.NetworkEmptyPage}>
+            <Route path="detail" Component={pages.NetworkDetailPage} />
           </Route>
         </Route>
       </Routes>
