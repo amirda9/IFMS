@@ -44,7 +44,8 @@ const NetworksPage: FC = () => {
             <label htmlFor="search" className="mr-2">
               Search
             </label>
-            <TextInput id="search" className="mr-10 flex-grow" />
+
+            <TextInput id="search" className="mr-10 w-full" />
           </div>
 
           <NavLink

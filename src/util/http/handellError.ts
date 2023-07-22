@@ -7,6 +7,7 @@ import {
   HttpResponseActionType,
 } from '~/store/actions/httpResponse.action';
 import {RequestKeyExclude, RequestListTypes} from '~/util';
+import {httpClear} from '~/store/slices';
 
 type ParamsType = {
   error: AxiosError<any>;
@@ -27,8 +28,8 @@ export function* handelError({
   if (
     auth &&
     e.isAxiosError &&
-    e.response?.status === 403 &&
-    e.response?.data?.code === 'token_not_valid'
+    e.response?.status === 401 &&
+    e.response?.data?.detail === 'Could not validate credentials'
   ) {
     const refresh: string = yield select(
       (state: RootState) => state.http.login?.data?.refresh_token,
@@ -43,6 +44,9 @@ export function* handelError({
       yield put(httpRequestAction(actionName, requestData));
       return;
     }
+    localStorage.removeItem('login');
+    localStorage.removeItem('refresh');
+    yield put(httpClear(['login', 'refresh']));
   }
   yield put(
     httpResponseAction(actionName as RequestKeyExclude, {

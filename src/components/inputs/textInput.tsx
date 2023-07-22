@@ -7,7 +7,7 @@ type PropsType = React.DetailedHTMLProps<
 const TextInput: FC<PropsType> = ({className, ...props}) => {
   return (
     <input
-      className={'h-8 rounded-md border border-black px-2 '+className}
+      className={'h-8 rounded-md border border-black px-2 ' + className}
       {...props}
     />
   );

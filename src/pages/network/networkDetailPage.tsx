@@ -1,7 +1,7 @@
 import React from 'react';
-import {Description, SimpleBtn, TextInput} from '~/components';
+import {Description, SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import {useParams} from 'react-router-dom';
+import {Outlet, useParams} from 'react-router-dom';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
@@ -20,7 +20,7 @@ const NetworkDetailPage = () => {
       request('networkDetail', {params: {networkId: params.networkId!}});
     },
   });
-  if (detail?.httpRequestStatus !== 'success') return 'loading';
+  if (detail?.httpRequestStatus !== 'success') return <>loading<Outlet/></>;
   return (
     <div className="flex flex-grow flex-col gap-4">
       <Formik
@@ -45,6 +45,7 @@ const NetworkDetailPage = () => {
             {/*<Description label="Last Modified">*/}
             {/*  <TextInput />*/}
             {/*</Description>*/}
+            <Outlet />
           </div>
           <div className="flex flex-row gap-x-2 self-end">
             <SimpleBtn>Explore</SimpleBtn>

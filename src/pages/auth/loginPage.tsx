@@ -28,26 +28,28 @@ const LoginPage = () => {
           <h1 className="ml-4 text-4xl font-bold text-white">Ariotech</h1>
         </div>
 
-        <div className="w-2/3 self-end">
+        <div className="self-end md:w-2/3">
           <h2 className="mb-4 ml-4 text-3xl text-white">
             Intelligent Fiber Monitoring System
           </h2>
           <div className="mb-32 bg-[#D9D9D933]">
-            <Form className="flex w-3/5 flex-col pb-2.5 pl-7 pt-16">
-              <div className="flex flex-row justify-between">
-                <span className="text-xl font-normal text-white">
+            <Form className="flex w-fit max-w-full flex-col pb-2.5 pl-7 pt-16">
+              <div className="flex flex-row flex-wrap justify-between xl:flex-nowrap">
+                <span className="mt-1.5 w-48 text-xl font-normal text-white">
                   Username or email
                 </span>
                 <InputFormik
                   name="username"
-                  className="h-10 w-80   rounded-lg bg-[#D9D9D9] px-4 text-sm"
+                  className="!h-12 w-96 rounded-lg bg-[#D9D9D9] px-4 text-sm"
                 />
               </div>
-              <div className="flex flex-row items-center justify-between">
-                <span className="text-xl font-normal text-white">Password</span>
+              <div className="flex flex-row flex-wrap items-start justify-between xl:flex-nowrap">
+                <span className="mt-1.5 w-48 text-xl font-normal text-white">
+                  Password
+                </span>
                 <InputFormik
                   name="password"
-                  className="h-10 w-80  rounded-lg bg-[#D9D9D9] px-4"
+                  className="!h-12 w-96  rounded-lg bg-[#D9D9D9] px-4"
                   type="password"
                 />
               </div>
