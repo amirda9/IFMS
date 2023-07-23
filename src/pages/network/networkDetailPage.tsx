@@ -20,7 +20,13 @@ const NetworkDetailPage = () => {
       request('networkDetail', {params: {networkId: params.networkId!}});
     },
   });
-  if (detail?.httpRequestStatus !== 'success') return <>loading<Outlet/></>;
+  if (detail?.httpRequestStatus !== 'success')
+    return (
+      <>
+        loading
+        <Outlet />
+      </>
+    );
   return (
     <div className="flex flex-grow flex-col gap-4">
       <Formik

@@ -16,7 +16,7 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
       }`}>
       <TextInput
         name={name}
-        className={`border-2 border-solid ${
+        className={`border border-solid ${
           meta.error && meta.touched ? 'border-red-500' : ''
         } ${className}`}
         value={fields.value}

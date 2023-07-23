@@ -16,7 +16,7 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
       }`}>
       <Textarea
         name={name}
-        className={`border-2 border-solid ${
+        className={`border border-solid ${
           meta.error && meta.touched ? 'border-red-500' : ''
         } ${className}`}
         onBlur={fields.onBlur}

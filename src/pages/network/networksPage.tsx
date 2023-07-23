@@ -48,16 +48,18 @@ const NetworksPage: FC = () => {
             <TextInput id="search" className="mr-10 w-full" />
           </div>
 
-          <NavLink
-            className={({isActive}) =>
-              `ml-[-10px] mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2 ${
-                isActive ? 'bg-sky-200' : ''
-              }`
-            }
-            to="create">
-            <span className="text-md active:opacity-50">Networks</span>
-            <IoAddOutline className="ml-10 text-2xl text-green-500 active:text-green-300" />
-          </NavLink>
+          <div className="ml-[-10px] mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2">
+            <span className="text-md font-semibold active:opacity-50">
+              Networks
+            </span>
+            <NavLink
+              to="create"
+              className={({isActive}) =>
+                `ml-10 rounded-md ${isActive ? 'bg-sky-200' : ''}`
+              }>
+              <IoAddOutline className="text-2xl text-green-500 active:text-green-300" />
+            </NavLink>
+          </div>
           <div className="mt-2">
             {list?.data?.map(value => (
               <NetworkItem
