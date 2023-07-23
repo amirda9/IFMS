@@ -25,7 +25,7 @@ const NetworkHistoryPage = () => {
           <table
             className="w-full border-collapse border border-black text-sm [&_td]:border  [&_td]:border-black [&_td]:text-center"
             border={1}>
-            <thead className="[&_td]:bg-background [&_td]:py-1">
+            <thead className="[&_td]:bg-blueLight [&_td]:py-1">
               <tr>
                 <td className="w-1/12">Index</td>
                 <td className="w-2/5">Date</td>

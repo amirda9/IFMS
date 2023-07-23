@@ -26,6 +26,7 @@ function App() {
             <Route path="" Component={pages.NetworkDetailPage}>
               <Route path="history" Component={pages.NetworkHistoryPage} />
             </Route>
+            <Route path="Access" Component={pages.NetworkAccessPage} />
           </Route>
         </Route>
       </Routes>
