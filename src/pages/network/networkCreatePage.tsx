@@ -42,13 +42,20 @@ const NetworkCreatePage = () => {
               <TextareaFormik name="description" className="w-2/3" />
             </Description>
           </div>
-
-          <SimpleBtn
-            className="self-end"
-            type="submit"
-            disabled={state?.httpRequestStatus === 'loading'}>
-            Save
-          </SimpleBtn>
+          <div className="self-end">
+            <SimpleBtn
+              className="mr-4"
+              type="submit"
+              disabled={state?.httpRequestStatus === 'loading'}>
+              Save
+            </SimpleBtn>
+            <SimpleBtn
+              onClick={() => navigate('../')}
+              type="button"
+              disabled={state?.httpRequestStatus === 'loading'}>
+              Cancel
+            </SimpleBtn>
+          </div>
         </Form>
       </Formik>
     </div>

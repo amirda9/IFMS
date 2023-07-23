@@ -1,11 +1,13 @@
 import React, {FC} from 'react';
-import {NetworkItem, TextInput} from '~/components';
-import {NavLink, Outlet} from 'react-router-dom';
-import {IoAddOutline} from 'react-icons/io5';
+import {NavItem, NetworkItem, TextInput} from '~/components';
+import {Link, Outlet} from 'react-router-dom';
+import {IoAddOutline, IoPersonOutline} from 'react-icons/io5';
 import {useHttpRequest} from '~/hooks';
+import {httpClear} from '~/store/slices';
 
 const NetworksPage: FC = () => {
   const {
+    dispatch,
     request,
     state: {list, deleteRequest},
   } = useHttpRequest({
@@ -31,12 +33,28 @@ const NetworksPage: FC = () => {
     <div className="flex h-screen flex-col">
       <div className="flex h-20 flex-row items-center bg-p px-4 ">
         <h2 className="mr-16 font-s text-2xl text-white">ARIO-IFMS</h2>
-        <span className="mr-10 text-white">Network</span>
-        <span className="mr-10 text-white">Configuration</span>
-        <span className="mr-10 text-white">Monitoring</span>
-        <span className="mr-10 text-white">Reporting</span>
-        <span className="mr-10 text-white">User Management</span>
-        <span className="mr-10 text-white">Help</span>
+        <NavItem to="/networks" name="Network" />
+        <NavItem to="/configuration" name="Configuration" />
+        <NavItem to="/monitoring" name="Monitoring" />
+        <NavItem to="/reporting" name="Reporting" />
+        <NavItem to="/user-management" name="User Management" />
+        <NavItem to="/help" name="Help" />
+
+        <NavItem
+          to="#"
+          name="Anonymous User"
+          className="ml-auto"
+          icon={IoPersonOutline}
+          items={[
+            {label: 'Profile', to: '/profile'},
+            {label: 'Logout', handelSelf: true},
+          ]}
+          onClick={() => {
+            localStorage.removeItem('refresh');
+            localStorage.removeItem('login');
+            dispatch(httpClear(['login', 'refresh']));
+          }}
+        />
       </div>
       <div className="flex h-full flex-row bg-b">
         <div className="flex w-1/5 flex-col border-r-2 border-g p-4">
@@ -49,16 +67,10 @@ const NetworksPage: FC = () => {
           </div>
 
           <div className="ml-[-10px] mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2">
-            <span className="text-md font-semibold active:opacity-50">
-              Networks
-            </span>
-            <NavLink
-              to="create"
-              className={({isActive}) =>
-                `ml-10 rounded-md ${isActive ? 'bg-sky-200' : ''}`
-              }>
+            <span className="text-md font-semibold">Networks</span>
+            <Link to="create" className="ml-3 rounded-md">
               <IoAddOutline className="text-2xl text-green-500 active:text-green-300" />
-            </NavLink>
+            </Link>
           </div>
           <div className="mt-2">
             {list?.data?.map(value => (
