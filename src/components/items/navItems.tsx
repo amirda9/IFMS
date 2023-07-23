@@ -41,15 +41,16 @@ const NavItems: FC<PropsType> = ({
     </div>
   );
   return (
-    <Link
-      to={to}
+    <div
       className={
-        'relative mr-10 flex h-full flex-row items-center text-white [&_ul]:hover:flex ' +
+        'relative mr-10 flex h-full items-center text-center [&_ul]:hover:flex ' +
         className
       }>
-      {Icon ? <Icon className="mr-2 text-xl" /> : null}
-      <span>{name}</span>
-      <IoChevronDown className="ml-2" />
+      <Link to={to} className="flex flex-row items-center text-white">
+        {Icon ? <Icon className="mr-2 text-xl" /> : null}
+        <span>{name}</span>
+        <IoChevronDown className="ml-2" />
+      </Link>
       <ul className="absolute right-0 top-full hidden w-fit -translate-y-4 rounded-md bg-white">
         {!items || !items.length ? (
           <span className="break-keep p-4 text-black">Not set any item</span>
@@ -57,7 +58,7 @@ const NavItems: FC<PropsType> = ({
           menu
         )}
       </ul>
-    </Link>
+    </div>
   );
 };
 

@@ -6,7 +6,7 @@ import {httpRequestAction} from '~/store/actions';
 import {httpClear} from '~/store/slices';
 import {shallowEqual} from 'react-redux';
 
-interface Request {
+export interface Request {
   <K extends RequestKeyExclude>(
     requestName: K,
     requestData: RequestListTypes[K],

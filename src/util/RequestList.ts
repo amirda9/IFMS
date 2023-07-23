@@ -15,7 +15,8 @@ type RequestKeys =
   | 'networkList'
   | 'networkDetail'
   | 'networkCreate'
-  | 'networkDelete';
+  | 'networkDelete'
+  | 'networkUpdate';
 export const RequestList: Record<RequestKeys, ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
@@ -33,18 +34,23 @@ export const RequestList: Record<RequestKeys, ActionRequestType> = {
     auth: true,
   },
   networkList: {
-    url: api.baseUrl + api.networkList,
+    url: api.baseUrl + api.networkListUrl,
     method: 'get',
     auth: true,
   },
   networkDetail: {
-    url: api.baseUrl + api.networkDetail,
+    url: api.baseUrl + api.networkDetailUrl,
     method: 'get',
     auth: true,
   },
   networkDelete: {
-    url: api.baseUrl + api.networkDetail,
+    url: api.baseUrl + api.networkDetailUrl,
     method: 'delete',
+    auth: true,
+  },
+  networkUpdate: {
+    url: api.baseUrl + api.networkDetailUrl,
+    method: 'put',
     auth: true,
   },
 };
@@ -68,6 +74,7 @@ export type RequestListTypes = {
   networkList: undefined;
   networkDetail: {params: {networkId: string}};
   networkDelete: {params: {networkId: string}};
+  networkUpdate: {params: {networkId: string}; data: {description: string}};
 };
 
 export type ResponseListType = {
@@ -77,4 +84,5 @@ export type ResponseListType = {
   networkList: NetworkType[];
   networkDetail: NetworkDetailType;
   networkDelete: {count: number};
+  networkUpdate: NetworkType;
 };

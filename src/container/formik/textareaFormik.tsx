@@ -21,6 +21,7 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
         } ${className}`}
         onBlur={fields.onBlur}
         onChange={fields.onChange}
+        value={fields.value}
         {...props}
       />
       {meta.touched && meta.error ? (
