@@ -8,8 +8,7 @@ const NetworkEmpty = () => {
       <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
         <TabItem to="" name="Detail" />
         <TabItem to="access" name="Access" />
-        <TabItem to="stations" name="Stations" />
-        <TabItem to="links" name="Links" />
+        <TabItem to="stations" name="GIS" />
       </div>
       <Outlet />
     </div>

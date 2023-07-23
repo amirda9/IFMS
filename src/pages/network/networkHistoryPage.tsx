@@ -2,16 +2,22 @@ import React from 'react';
 import {IoClose, IoReturnUpBack} from 'react-icons/io5';
 import {useNavigate} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
+import {useHttpRequest} from '~/hooks';
+import dayjs from 'dayjs';
 
 const NetworkHistoryPage = () => {
   const navigate = useNavigate();
+  const goBack = () => navigate('../', {replace: true});
+  const {
+    state: {detail},
+  } = useHttpRequest({selector: state => ({detail: state.http.networkDetail})});
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-[#D9D9D97d]">
+    <div
+      className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-[#D9D9D97d]"
+      onClick={goBack}>
       <div className="h-fit w-1/4">
         <div className="flex flex-grow justify-end rounded-t-md bg-p px-2 py-1">
-          <button
-            className="active:opacity-50"
-            onClick={() => navigate('../', {replace: true})}>
+          <button className="active:opacity-50" onClick={goBack}>
             <IoClose size={24} className="text-white " />
           </button>
         </div>
@@ -28,42 +34,20 @@ const NetworkHistoryPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2023-10-6 22:59:56</td>
-                <td>Ahmad Kazemi</td>
-                <td>
-                  <div className="flex items-center py-0.5">
+              {detail!.data!.versions.map((version, index) => (
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>
+                    {dayjs(version.time_created).format('YYYY-MM-DD HH:mm:ss')}
+                  </td>
+                  <td>Anonymous User</td>
+                  <td>
                     <SimpleBtn className="!my-0 !px-5 !py-0">
                       <IoReturnUpBack size={24} />
                     </SimpleBtn>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>1</td>
-                <td>2023-10-6 22:59:56</td>
-                <td>Ahmad Kazemi</td>
-                <td>
-                  <div className="flex items-center py-0.5">
-                    <SimpleBtn className="!my-0 !px-5 !py-0">
-                      <IoReturnUpBack size={24} />
-                    </SimpleBtn>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>1</td>
-                <td>2023-10-6 22:59:56</td>
-                <td>Ahmad Kazemi</td>
-                <td>
-                  <div className="flex items-center py-0.5">
-                    <SimpleBtn className="!my-0 !px-5 !py-0">
-                      <IoReturnUpBack size={24} />
-                    </SimpleBtn>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

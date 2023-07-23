@@ -37,12 +37,7 @@ const NetworkDetailPage = () => {
     },
   });
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
-    return (
-      <>
-        loading
-        <Outlet />
-      </>
-    );
+    return <>loading</>;
 
   return (
     <div className="flex flex-grow flex-col gap-4">
@@ -63,7 +58,7 @@ const NetworkDetailPage = () => {
         validationSchema={networkSchema}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
-            <Description label="Name" labelClassName="mt-2">
+            <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
                 className="w-2/3 disabled:bg-white"
@@ -82,8 +77,6 @@ const NetworkDetailPage = () => {
             <Description label="Last Modified">
               {dayjs(detail.data!.time_updated).format('YYYY-MM-DD HH:mm:ss')}
             </Description>
-
-            <Outlet />
           </div>
           <div className="flex flex-row gap-x-2 self-end">
             <SimpleBtn>Explore</SimpleBtn>
@@ -97,6 +90,7 @@ const NetworkDetailPage = () => {
           </div>
         </Form>
       </Formik>
+      <Outlet />
     </div>
   );
 };
