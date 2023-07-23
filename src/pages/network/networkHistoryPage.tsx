@@ -17,45 +17,51 @@ const NetworkHistoryPage = () => {
         </div>
         <div className="flex-grow bg-white">
           <table
-            className="w-full border-collapse border border-black text-sm [&_td]:border  [&_td]:border-black"
+            className="w-full border-collapse border border-black text-sm [&_td]:border  [&_td]:border-black [&_td]:text-center"
             border={1}>
-            <thead>
+            <thead className="[&_td]:bg-background [&_td]:py-1">
               <tr>
                 <td className="w-1/12">Index</td>
                 <td className="w-2/5">Date</td>
                 <td className="w-2/5">User</td>
-                <td className="w-2/12">Restore</td>
+                <td className="w-1/12">Restore</td>
               </tr>
             </thead>
             <tbody>
-              <tr className="[&_*]:text-center">
+              <tr>
                 <td>1</td>
                 <td>2023-10-6 22:59:56</td>
                 <td>Ahmad Kazemi</td>
                 <td>
-                  <SimpleBtn className="my-0 py-0">
-                    <IoReturnUpBack size={24} />
-                  </SimpleBtn>
+                  <div className="flex items-center py-0.5">
+                    <SimpleBtn className="!my-0 !px-5 !py-0">
+                      <IoReturnUpBack size={24} />
+                    </SimpleBtn>
+                  </div>
                 </td>
               </tr>
-              <tr className="[&_*]:text-center">
+              <tr>
                 <td>1</td>
                 <td>2023-10-6 22:59:56</td>
                 <td>Ahmad Kazemi</td>
                 <td>
-                  <SimpleBtn className="my-0 py-0">
-                    <IoReturnUpBack size={24} />
-                  </SimpleBtn>
+                  <div className="flex items-center py-0.5">
+                    <SimpleBtn className="!my-0 !px-5 !py-0">
+                      <IoReturnUpBack size={24} />
+                    </SimpleBtn>
+                  </div>
                 </td>
               </tr>
-              <tr className="[&_*]:text-center">
+              <tr>
                 <td>1</td>
                 <td>2023-10-6 22:59:56</td>
                 <td>Ahmad Kazemi</td>
                 <td>
-                  <SimpleBtn className="my-0 py-0">
-                    <IoReturnUpBack size={24} />
-                  </SimpleBtn>
+                  <div className="flex items-center py-0.5">
+                    <SimpleBtn className="!my-0 !px-5 !py-0">
+                      <IoReturnUpBack size={24} />
+                    </SimpleBtn>
+                  </div>
                 </td>
               </tr>
             </tbody>
