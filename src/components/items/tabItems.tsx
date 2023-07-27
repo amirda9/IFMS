@@ -14,7 +14,7 @@ const TabItems: FC<PropsType> = ({to, name}) => {
         }`
       }
       to={to}
-      end={false}>
+      end>
       {name}
     </NavLink>
   );

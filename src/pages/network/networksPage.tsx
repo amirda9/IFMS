@@ -4,6 +4,7 @@ import {Link, Outlet} from 'react-router-dom';
 import {IoAddOutline, IoPersonOutline} from 'react-icons/io5';
 import {useHttpRequest} from '~/hooks';
 import {httpClear} from '~/store/slices';
+import {navbarItems} from '~/constant';
 
 const NetworksPage: FC = () => {
   const {
@@ -33,12 +34,14 @@ const NetworksPage: FC = () => {
     <div className="flex h-screen flex-col">
       <div className="flex h-20 flex-row items-center bg-p px-4 ">
         <h2 className="mr-16 font-s text-2xl text-white">ARIO-IFMS</h2>
-        <NavItem to="/networks" name="Network" />
-        <NavItem to="/configuration" name="Configuration" />
-        <NavItem to="/monitoring" name="Monitoring" />
-        <NavItem to="/reporting" name="Reporting" />
-        <NavItem to="/user-management" name="User Management" />
-        <NavItem to="/help" name="Help" />
+        {navbarItems.map(item => (
+          <NavItem
+            key={item.name}
+            name={item.name}
+            to={item.to}
+            items={item.items}
+          />
+        ))}
 
         <NavItem
           to="#"
