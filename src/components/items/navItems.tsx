@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import {NavLink, Link} from 'react-router-dom';
-import {IoChevronDown} from 'react-icons/io5';
+import {IoChevronDown, IoChevronUp} from 'react-icons/io5';
 import {IconType} from 'react-icons';
 
 type PropsType = {
@@ -46,14 +46,12 @@ const NavItems: FC<PropsType> = ({
   );
   return (
     <div
-      className={
-        'relative mr-10 flex h-full items-center justify-center text-center [&_ul]:hover:flex ' +
-        className
-      }>
+      className={`relative mr-10 flex h-full items-center justify-center text-center [&_.close]:hover:hidden [&_.open]:hover:block [&_ul]:hover:flex  ${className}`}>
       <Link to={to} className="flex flex-row items-center text-white">
         {Icon ? <Icon className="mr-2 text-xl" /> : null}
         <span>{name}</span>
-        <IoChevronDown className="ml-2" />
+        <IoChevronDown className="close ml-2" />
+        <IoChevronUp className="open ml-2 hidden" />
       </Link>
       <ul className="absolute  top-full hidden w-fit -translate-y-4 rounded-md bg-white">
         {!items || !items.length ? (
