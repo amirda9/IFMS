@@ -4,6 +4,7 @@ import {useAppSelector} from '~/hooks';
 import {RedirectAfterLogin} from '~/components';
 import {selectElement} from '~/util';
 import '~/styles/index.scss';
+import {MainLayout} from '~/layout';
 function App() {
   const auth = useAppSelector(
     state =>
@@ -13,20 +14,54 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" Component={selectElement(auth, RedirectAfterLogin)} />
         <Route
           path="/login"
           Component={selectElement(!auth, pages.LoginPage, RedirectAfterLogin)}
         />
-        <Route
-          path="/networks"
-          Component={selectElement(auth, pages.NetworksPage)}>
-          <Route path="create" Component={pages.NetworkCreatePage} />
-          <Route path=":networkId" Component={pages.NetworkEmptyPage}>
-            <Route path="" Component={pages.NetworkDetailPage}>
-              <Route path="history" Component={pages.NetworkHistoryPage} />
+        <Route path="/" Component={selectElement(auth, MainLayout)}>
+          <Route
+            path="/networks/:networkId/edit-access"
+            Component={pages.NetworkAccessEditPage}
+          />
+          <Route
+            path="/networks"
+            Component={selectElement(auth, pages.NetworksPage)}>
+            <Route path="create" Component={pages.NetworkCreatePage} />
+            <Route path=":networkId" Component={pages.NetworkEmptyPage}>
+              <Route path="" Component={pages.NetworkDetailPage}>
+                <Route path="history" Component={pages.NetworkHistoryPage} />
+              </Route>
+              <Route path="Access" Component={pages.NetworkAccessPage} />
+              <Route path="gis" Component={pages.NetworkGISPage} />
             </Route>
-            <Route path="Access" Component={pages.NetworkAccessPage} />
+          </Route>
+
+          <Route path="/regions" Component={pages.RegionsPage}>
+            <Route path=":regionId" Component={pages.RegionEmptyPage}>
+              <Route path="" Component={pages.RegionDetailPage} />
+              <Route path="access" Component={pages.RegionAccessPage} />
+              <Route path="stations" Component={pages.RegionStationsPage} />
+              <Route path="links" Component={pages.RegionLinksPage} />
+            </Route>
+          </Route>
+
+          <Route path="/stations" Component={pages.StationsPage}>
+            <Route path=":stationId" Component={pages.StationEmptyPage}>
+              <Route path="" Component={pages.StationDetailPage} />
+              <Route path="access" Component={pages.StationAccessPage} />
+            </Route>
+          </Route>
+
+          <Route path="/links" Component={pages.LinksPage}>
+            <Route path=":linkId" Component={pages.LinkEmptyPage}>
+              <Route path="" Component={pages.LinkDetailPage} />
+              <Route path="access" Component={pages.LinkAccessPage} />
+              <Route
+                path="cables-segments"
+                Component={pages.LinkCablesSegmentsPage}
+              />
+              <Route path="points" Component={pages.LinkPointsPage} />
+            </Route>
           </Route>
         </Route>
       </Routes>

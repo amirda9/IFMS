@@ -1,22 +1,24 @@
-/** @type {import('tailwindcss').Config} */
-module.exports= {
+/** @type {import("tailwindcss").Config} */
+module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {
-      colors:{
-        p:"#006BBC",
-        b:'#E7EFF7',
-        g:'#D9D9D9',
-        blueLight:"#9BC7F4",
-        goodGray:"#D9D9D9",
+      colors: {
+        p: "#006BBC",
+        b: "#E7EFF7",
+        g: "#D9D9D9",
+        buttonColor: "#B3BDF2",
+        blueLight: "#9BC7F4",
+        goodGray: "#D9D9D9",
+        gis:"#C0E7F2",
       },
-      fontFamily:{
-        s:["Sansation"]
+      fontFamily: {
+        s: ["Sansation"]
       }
-    },
+    }
   },
-  plugins: [],
-}
+  plugins: []
+};

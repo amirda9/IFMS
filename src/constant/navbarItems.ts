@@ -3,14 +3,14 @@ export const navbarItems = [
     name: 'Network',
     to: '/networks',
     items: [
-      {label: 'Network', to: '/networks'},
-      {label: 'Link', to: '/link'},
+      {label: 'Networks', to: '/networks'},
       {
-        label: 'Region',
+        label: 'Regions',
         to: '/regions',
       },
-      {label: 'Station', to: '/station'},
-      {label: 'Map', to: '/map'},
+      {label: 'Stations', to: '/stations'},
+      {label: 'Links', to: '/links'},
+      {label: 'Map View', to: '/map'},
     ],
   },
   {

@@ -1,17 +1,42 @@
-import React, {FC} from 'react';
+import React, {FC, ReactNode} from 'react';
+import {Link} from 'react-router-dom';
 
-type PropsType = React.DetailedHTMLProps<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  HTMLButtonElement
->;
-const SimpleBtn: FC<PropsType> = ({className, ...props}) => {
+type PropsType = {
+  onClick?: () => void;
+  className?: string;
+  disabled?: boolean;
+  link?: boolean;
+  to?: string;
+  children?: ReactNode;
+  type?: 'button' | 'submit' | 'reset';
+};
+
+const classNames =
+  'w-fit rounded-md bg-gradient-to-b from-[#BAC2EDB0] to-[#B3BDF2] px-7 py-1 text-sm active:opacity-50 disabled:pointer-events-none';
+const SimpleBtn: FC<PropsType> = ({
+  className,
+  link,
+  to = '#',
+  disabled,
+  ...props
+}) => {
+  if (link) {
+    return (
+      <Link
+        to={to}
+        className={`${classNames} ${className} ${
+          disabled ? 'pointer-events-none bg-gray-700' : ''
+        }`}
+        {...props}
+      />
+    );
+  }
   return (
     <button
       type="button"
-      className={
-        'w-fit rounded-md bg-gradient-to-b from-[#BAC2EDB0] to-[#B3BDF2] px-7 py-1 text-sm active:opacity-50 disabled:pointer-events-none disabled:bg-gray-700 ' +
-        className
-      }
+      className={`${classNames} ${className} ${
+        disabled ? 'pointer-events-none bg-gray-700' : ''
+      }`}
       {...props}
     />
   );

@@ -15,28 +15,21 @@ const dummy = [
   {index: 5, user: 'USER5', region: 'Region', station: 'Station'},
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
-const NetworkAccessPage = () => {
+const LinkAccessPage = () => {
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
-        <Description label="Network Admin" className="mb-4">
+        <Description label="Link Admin" className="mb-4">
           <Select className="w-80">
             <option>ahmad kazemi</option>
           </Select>
         </Description>
-        <Description
-          label="Network Viewers(s)"
-          items="start"
-          className="h-full">
+        <Description label="Link Viewers(s)" items="start" className="h-full">
           <Table cols={columns} items={dummy} width="w-3/5" />
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-2 self-end">
-        <SimpleBtn link to="../edit-access">
-          Edit Network Viewer(s)
-        </SimpleBtn>
-        <SimpleBtn>Explore</SimpleBtn>
-        <SimpleBtn>History</SimpleBtn>
+        <SimpleBtn>Edit Station Viewer(s)</SimpleBtn>
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
@@ -44,4 +37,4 @@ const NetworkAccessPage = () => {
   );
 };
 
-export default NetworkAccessPage;
+export default LinkAccessPage;

@@ -8,7 +8,7 @@ type PropsType = {
   onDelete?: () => void;
   disabled?: boolean;
 };
-const NetworkItem: FC<PropsType> = ({to, name, onDelete, disabled}) => {
+const SidebarItem: FC<PropsType> = ({to, name, onDelete, disabled}) => {
   return (
     <div className="my-1 flex flex-row">
       <NavLink
@@ -32,4 +32,4 @@ const NetworkItem: FC<PropsType> = ({to, name, onDelete, disabled}) => {
   );
 };
 
-export default NetworkItem;
+export default SidebarItem;
