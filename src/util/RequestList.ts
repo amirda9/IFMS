@@ -1,8 +1,11 @@
 import {
+  AccessCreateType,
+  AccessListType,
   ActionRequestType,
   LoginResponseType,
   NetworkDetailType,
   NetworkType,
+  UserListType,
 } from '~/types';
 import * as api from '~/constant/api';
 
@@ -16,7 +19,10 @@ type RequestKeys =
   | 'networkDetail'
   | 'networkCreate'
   | 'networkDelete'
-  | 'networkUpdate';
+  | 'networkUpdate'
+  | 'networkAccessList'
+  | 'userList'
+  | 'networkAccessUpdate';
 export const RequestList: Record<RequestKeys, ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
@@ -27,6 +33,11 @@ export const RequestList: Record<RequestKeys, ActionRequestType> = {
     url: api.baseUrl + api.refreshTokenUrl,
     method: 'post',
     headers: {'content-type': 'application/x-www-form-urlencoded'},
+  },
+  userList: {
+    url: api.baseUrl + api.userListUrl,
+    method: 'get',
+    auth: true,
   },
   networkCreate: {
     url: api.baseUrl + api.networkCreateUrl,
@@ -53,6 +64,16 @@ export const RequestList: Record<RequestKeys, ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  networkAccessList: {
+    url: api.baseUrl + api.networkAccessListUrl,
+    method: 'get',
+    auth: true,
+  },
+  networkAccessUpdate: {
+    url: api.baseUrl + api.networkAccessListUpdate,
+    method: 'post',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -65,6 +86,7 @@ export type RequestListTypes = {
   refresh: {
     data: {refresh_token: string};
   };
+  userList: undefined;
   networkCreate: {
     data: {
       name: string;
@@ -75,14 +97,22 @@ export type RequestListTypes = {
   networkDetail: {params: {networkId: string}};
   networkDelete: {params: {networkId: string}};
   networkUpdate: {params: {networkId: string}; data: {description: string}};
+  networkAccessList: {params: {network_id: string}};
+  networkAccessUpdate: {
+    params: {network_id: string};
+    data: {users: AccessCreateType[]};
+  };
 };
 
 export type ResponseListType = {
   login: LoginResponseType;
   refresh: LoginResponseType;
+  userList: UserListType[];
   networkCreate: NetworkType;
   networkList: NetworkType[];
   networkDetail: NetworkDetailType;
   networkDelete: {count: number};
   networkUpdate: NetworkType;
+  networkAccessList: {users: AccessListType[]};
+  networkAccessUpdate: {count: number};
 };

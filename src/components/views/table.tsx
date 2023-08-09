@@ -23,6 +23,7 @@ type PropsType<
   cols: Record<C, ColType>;
   items: Array<Item>;
   width?: string;
+  loading?: boolean;
 };
 const Table = <
   C extends string,
@@ -34,6 +35,7 @@ const Table = <
   dynamicColumns = [],
   renderDynamicColumn,
   width = 'w-full',
+  loading,
 }: PropsType<C, DC, Item>) => {
   const headerItems = Object.entries(cols) as Array<[key: C, value: ColType]>;
 
@@ -49,7 +51,7 @@ const Table = <
     return (
       <tr
         className="[&_td]:bg-white [&_td]:py-1 last:[&_td]:last:rounded-br-md first:[&_td]:last:rounded-bl-md"
-        key={Math.random()}>
+        key={Object.values(row).join('')}>
         {headerItems.map(([key]) => {
           return (
             <td key={key}>
@@ -65,16 +67,20 @@ const Table = <
 
   return (
     <div className={`h-full ${width} rounded-md border border-black bg-white`}>
-      <table className="max-h-full w-full [&_td]:text-center">
-        <thead>
-          <tr
-            className="[&_td]:border-r [&_td]:!border-goodGray
+      {loading ? (
+        'loading'
+      ) : (
+        <table className="max-h-full w-full [&_td]:text-center">
+          <thead>
+            <tr
+              className="[&_td]:border-r [&_td]:!border-goodGray
            [&_td]:border-b [&_td]:bg-blueLight [&_td]:py-1 first:[&_td]:rounded-tl-md last:[&_td]:rounded-tr-md">
-            {headerItems.map(renderHeader)}
-          </tr>
-        </thead>
-        <tbody>{items.map(renderRow)}</tbody>
-      </table>
+              {headerItems.map(renderHeader)}
+            </tr>
+          </thead>
+          <tbody>{items.map(renderRow)}</tbody>
+        </table>
+      )}
     </div>
   );
 };
