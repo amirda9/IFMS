@@ -1,8 +1,9 @@
 import React from 'react';
 import {TabItem} from '~/components';
-import {Outlet} from 'react-router-dom';
+import {Outlet, useParams} from 'react-router-dom';
 
 const NetworkEmpty = () => {
+  const params = useParams<{networkId: string}>();
   return (
     <div className="flex h-full w-full flex-col">
       <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
@@ -10,7 +11,7 @@ const NetworkEmpty = () => {
         <TabItem to="access" name="Access" />
         <TabItem to="gis" name="GIS" />
       </div>
-      <Outlet />
+      <Outlet key={params.networkId} />
     </div>
   );
 };

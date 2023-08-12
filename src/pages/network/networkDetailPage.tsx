@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from "react";
 import {Description, SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
@@ -36,6 +36,7 @@ const NetworkDetailPage = () => {
       }
     },
   });
+
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
     return <>loading</>;
 

@@ -8,3 +8,4 @@ export const networkListUrl = 'otdr/network/';
 export const networkDetailUrl = 'otdr/network/{networkId}/';
 export const networkAccessListUrl = 'otdr/network/{network_id}/access/';
 export const networkAccessListUpdate = 'otdr/network/{network_id}/access/';
+export const groupListUrl = 'auth/groups/';

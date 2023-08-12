@@ -8,8 +8,10 @@ type StateType = {
 type PropsType = {
   label: string;
   items: Array<{label: string; value: string | number}>;
+  onSelect?: (item: string | number) => void;
+  selected: Array<string | number>;
 };
-const GroupItem: FC<PropsType> = ({items, label}) => {
+const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
   const [state, setState] = useState<StateType>({
     open: false,
     selected: {},
@@ -28,6 +30,7 @@ const GroupItem: FC<PropsType> = ({items, label}) => {
     }
   };
   const selectItem = (value: string | number) => () => {
+    onSelect?.(value);
     if (value in state.selected) {
       const selected = {...state.selected};
       delete selected[value];
@@ -45,7 +48,7 @@ const GroupItem: FC<PropsType> = ({items, label}) => {
       <div className="flex h-6 flex-row items-center">
         <input
           type="checkbox"
-          checked={keys.length === items.length}
+          checked={items.every(value => value.value in state.selected)}
           onChange={selectAll}
         />
         <span
@@ -62,7 +65,7 @@ const GroupItem: FC<PropsType> = ({items, label}) => {
           {items.map(item => (
             <div className="my-2 flex flex-row items-center" key={item.label}>
               <input
-                checked={item.value in state.selected}
+                checked={selected.includes(item.value)}
                 type="checkbox"
                 className="mr-4 cursor-pointer"
                 onChange={selectItem(item.value)}

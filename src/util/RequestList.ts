@@ -8,6 +8,7 @@ import {
   UserListType,
 } from '~/types';
 import * as api from '~/constant/api';
+import {GroupType} from '~/types/GroupType';
 
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
@@ -22,7 +23,8 @@ type RequestKeys =
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
-  | 'networkAccessUpdate';
+  | 'networkAccessUpdate'
+  | 'groupList';
 export const RequestList: Record<RequestKeys, ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
@@ -74,6 +76,11 @@ export const RequestList: Record<RequestKeys, ActionRequestType> = {
     method: 'post',
     auth: true,
   },
+  groupList: {
+    url: api.baseUrl + api.groupListUrl,
+    method: 'get',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -102,17 +109,19 @@ export type RequestListTypes = {
     params: {network_id: string};
     data: {users: AccessCreateType[]};
   };
+  groupList: undefined;
 };
 
 export type ResponseListType = {
   login: LoginResponseType;
   refresh: LoginResponseType;
   userList: UserListType[];
-  networkCreate: NetworkType;
+  networkCreate: NetworkType & {network_id: string};
   networkList: NetworkType[];
   networkDetail: NetworkDetailType;
   networkDelete: {count: number};
   networkUpdate: NetworkType;
   networkAccessList: {users: AccessListType[]};
   networkAccessUpdate: {count: number};
+  groupList: GroupType[];
 };

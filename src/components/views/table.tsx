@@ -24,6 +24,7 @@ type PropsType<
   items: Array<Item>;
   width?: string;
   loading?: boolean;
+  keyExtractor?: (value: Item) => string;
 };
 const Table = <
   C extends string,
@@ -36,6 +37,7 @@ const Table = <
   renderDynamicColumn,
   width = 'w-full',
   loading,
+  keyExtractor,
 }: PropsType<C, DC, Item>) => {
   const headerItems = Object.entries(cols) as Array<[key: C, value: ColType]>;
 
@@ -51,7 +53,7 @@ const Table = <
     return (
       <tr
         className="[&_td]:bg-white [&_td]:py-1 last:[&_td]:last:rounded-br-md first:[&_td]:last:rounded-bl-md"
-        key={Object.values(row).join('')}>
+        key={keyExtractor ? keyExtractor(row) : Object.values(row).join('')}>
         {headerItems.map(([key]) => {
           return (
             <td key={key}>

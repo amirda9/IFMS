@@ -20,7 +20,7 @@ const NetworkCreatePage = () => {
         state?.httpRequestStatus === 'success'
       ) {
         request('networkList', undefined);
-        navigate('/networks/' + state.data!.id, {replace: true});
+        navigate('/networks/' + state.data!.network_id, {replace: true});
       }
     },
   });
