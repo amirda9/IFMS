@@ -1,5 +1,5 @@
 import React, {FC, ReactNode} from 'react';
-import {TabItem, TextInput} from '~/components';
+import {TextInput} from '~/components';
 import {Link, Outlet} from 'react-router-dom';
 import {IoAddOutline} from 'react-icons/io5';
 
@@ -7,11 +7,13 @@ type PropsType = {
   children: ReactNode;
   createTitle?: string;
   searchOnChange?: (text: string) => void;
+  canAdd?: boolean;
 };
 const SidebarLayout: FC<PropsType> = ({
   children,
   createTitle,
   searchOnChange,
+  canAdd,
 }) => {
   return (
     <>
@@ -35,9 +37,11 @@ const SidebarLayout: FC<PropsType> = ({
         {createTitle ? (
           <div className="ml-[-10px] mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2">
             <span className="text-md font-semibold">{createTitle}</span>
-            <Link to="create" className="ml-3 rounded-md">
-              <IoAddOutline className="text-2xl text-green-500 active:text-green-300" />
-            </Link>
+            {canAdd ? (
+              <Link to="create" className="ml-3 rounded-md">
+                <IoAddOutline className="text-2xl text-green-500 active:text-green-300" />
+              </Link>
+            ) : null}
           </div>
         ) : null}
 

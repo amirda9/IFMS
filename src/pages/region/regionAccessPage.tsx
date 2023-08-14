@@ -1,5 +1,9 @@
-import React from 'react';
+import React, {useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
+import {useParams} from 'react-router-dom';
+import {useHttpRequest} from '~/hooks';
+import {AccessEnum} from '~/types';
+import {FormLayout} from '~/layout';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -7,36 +11,108 @@ const columns = {
   region: {label: 'Region', size: 'w-[30%]'},
   station: {label: 'Station', size: 'w-[30%]'},
 };
-const dummy = [
-  {index: 1, user: 'USER1', region: 'Region', station: 'Station'},
-  {index: 2, user: 'USER2', region: 'Region', station: 'Station'},
-  {index: 3, user: 'USER3', region: 'Region', station: 'Station'},
-  {index: 4, user: 'USER4', region: 'Region', station: 'Station'},
-  {index: 5, user: 'USER5', region: 'Region', station: 'Station'},
-  {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
-];
+
 const RegionAccessPage = () => {
-  return (
-    <div className="flex h-full flex-col justify-between">
-      <div className="h-5/6">
+  const params = useParams<{regionId: string}>();
+  const [userAdmin, setUserAdmin] = useState<string | undefined>();
+  const {
+    request,
+    state: {viewers, users, update},
+  } = useHttpRequest({
+    selector: state => ({
+      viewers: state.http.regionAccessList,
+      users: state.http.userList,
+      update: state.http.regionAccessUpdate,
+    }),
+    initialRequests: request => {
+      request('regionAccessList', {params: {region_id: params.regionId!}});
+      request('userList', undefined);
+    },
+  });
+  const saveAdmin = () => {
+    const viewerWithoutAdmin =
+      viewers?.data?.users
+        .filter(viewer => viewer.access !== AccessEnum.admin)
+        .map(viewer => ({
+          user_id: viewer.user.id,
+          access_types: AccessEnum.viewer,
+        })) || [];
+    const admin = viewers?.data?.users.find(
+      viewer => viewer.access === AccessEnum.admin,
+    );
+    viewerWithoutAdmin.push({
+      user_id: userAdmin || admin!.user.id,
+      access_types: AccessEnum.admin,
+    });
+    request('regionAccessUpdate', {
+      params: {region_id: params.regionId!},
+      data: {users: viewerWithoutAdmin},
+    });
+  };
+
+  const body = useMemo(() => {
+    const items = (viewers?.data?.users || [])
+      .filter(value => value.access !== AccessEnum.admin)
+      .map((value, index) => ({
+        index: (index + 1).toString(),
+        user: value.user.username,
+        station: value.user.station?.name || '-',
+        region: value.user.region?.name || '-',
+      }));
+    const admin = viewers?.data?.users.find(
+      viewer => viewer.access === AccessEnum.admin,
+    );
+    const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
+    const userList =
+      users?.httpRequestStatus === 'success' ? [...users.data!] : [];
+    if (!ifUserExist && admin) {
+      userList.push({...admin.user});
+    }
+    return (
+      <>
         <Description label="Region Admin" className="mb-4">
-          <Select className="w-80">
-            <option>ahmad kazemi</option>
+          <Select
+            className="w-80"
+            value={userAdmin || admin?.user.id}
+            onChange={event => {
+              setUserAdmin(event.target.value);
+            }}>
+            <option selected value="" className="hidden" />
+            <option selected value={undefined} className="hidden" />
+            {userList.map(user => (
+              <option value={user.id} key={user.id}>
+                {user.username}
+              </option>
+            ))}
           </Select>
         </Description>
         <Description label="Region Viewers(s)" items="start" className="h-full">
-          <Table cols={columns} items={dummy} width="w-3/5" />
+          <Table
+            loading={viewers?.httpRequestStatus === 'loading'}
+            cols={columns}
+            items={items}
+            width="w-3/5"
+          />
         </Description>
-      </div>
-      <div className="mr-4 flex flex-row gap-x-2 self-end">
-        <SimpleBtn >
-          Edit Region Viewer(s)
-        </SimpleBtn>
-        <SimpleBtn>Save</SimpleBtn>
-        <SimpleBtn>Cancel</SimpleBtn>
-      </div>
-    </div>
+      </>
+    );
+  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
+  const buttons = (
+    <>
+      <SimpleBtn link to="../edit-access">
+        Edit Region Viewer(s)
+      </SimpleBtn>
+      <SimpleBtn
+        onClick={saveAdmin}
+        disabled={update?.httpRequestStatus === 'loading'}>
+        Save
+      </SimpleBtn>
+      <SimpleBtn link to="../">
+        Cancel
+      </SimpleBtn>
+    </>
   );
+  return <FormLayout buttons={buttons}>{body}</FormLayout>;
 };
 
 export default RegionAccessPage;

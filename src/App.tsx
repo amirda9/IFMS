@@ -28,7 +28,7 @@ function App() {
             Component={selectElement(auth, pages.NetworksPage)}>
             <Route path="create" Component={pages.NetworkCreatePage} />
             <Route path=":networkId" Component={pages.NetworkEmptyPage}>
-              <Route path="" Component={pages.NetworkDetailPage} >
+              <Route path="" Component={pages.NetworkDetailPage}>
                 <Route path="history" Component={pages.NetworkHistoryPage} />
               </Route>
               <Route path="Access" Component={pages.NetworkAccessPage} />
@@ -36,7 +36,10 @@ function App() {
             </Route>
           </Route>
 
-          <Route path="/regions" Component={pages.RegionsPage}>
+          <Route
+            path="/regions"
+            Component={selectElement(auth, pages.RegionsPage)}>
+            <Route path="create" Component={pages.RegionCreatePage} />
             <Route path=":regionId" Component={pages.RegionEmptyPage}>
               <Route path="" Component={pages.RegionDetailPage} />
               <Route path="access" Component={pages.RegionAccessPage} />

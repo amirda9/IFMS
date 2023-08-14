@@ -1,12 +1,4 @@
-import {
-  AccessCreateType,
-  AccessListType,
-  ActionRequestType,
-  LoginResponseType,
-  NetworkDetailType,
-  NetworkType,
-  UserListType,
-} from '~/types';
+import * as T from '~/types';
 import * as api from '~/constant/api';
 import {GroupType} from '~/types/GroupType';
 
@@ -24,8 +16,14 @@ type RequestKeys =
   | 'networkAccessList'
   | 'userList'
   | 'networkAccessUpdate'
-  | 'groupList';
-export const RequestList: Record<RequestKeys, ActionRequestType> = {
+  | 'groupList'
+  | 'regionList'
+  | 'regionCreate'
+  | 'regionDetail'
+  | 'regionUpdate'
+  | 'regionAccessList'
+  | 'regionAccessUpdate';
+export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
     method: 'post',
@@ -81,6 +79,32 @@ export const RequestList: Record<RequestKeys, ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  regionList: {url: api.baseUrl + api.regionListUrl, method: 'get', auth: true},
+  regionCreate: {
+    url: api.baseUrl + api.regionCreateUrl,
+    method: 'post',
+    auth: true,
+  },
+  regionDetail: {
+    url: api.baseUrl + api.regionDetailUrl,
+    method: 'get',
+    auth: true,
+  },
+  regionUpdate: {
+    url: api.baseUrl + api.regionDetailUrl,
+    method: 'put',
+    auth: true,
+  },
+  regionAccessList: {
+    url: api.baseUrl + api.regionAccessUrl,
+    method: 'get',
+    auth: true,
+  },
+  regionAccessUpdate: {
+    url: api.baseUrl + api.regionAccessUrl,
+    method: 'post',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -107,21 +131,39 @@ export type RequestListTypes = {
   networkAccessList: {params: {network_id: string}};
   networkAccessUpdate: {
     params: {network_id: string};
-    data: {users: AccessCreateType[]};
+    data: {users: T.AccessCreateType[]};
   };
   groupList: undefined;
+  regionList: {params: {network_id: string}};
+  regionCreate: {
+    params: {network_id: string};
+    data: {name: string; description: string};
+  };
+  regionDetail: {params: {region_id: string}};
+  regionUpdate: {params: {region_id: string}; data: {description: string}};
+  regionAccessList: {params: {region_id: string}};
+  regionAccessUpdate: {
+    params: {region_id: string};
+    data: {users: T.AccessCreateType[]};
+  };
 };
 
 export type ResponseListType = {
-  login: LoginResponseType;
-  refresh: LoginResponseType;
-  userList: UserListType[];
-  networkCreate: NetworkType & {network_id: string};
-  networkList: NetworkType[];
-  networkDetail: NetworkDetailType;
+  login: T.LoginResponseType;
+  refresh: T.LoginResponseType;
+  userList: T.UserListType[];
+  networkCreate: T.NetworkType & {network_id: string};
+  networkList: T.NetworkType[];
+  networkDetail: T.NetworkDetailType;
   networkDelete: {count: number};
-  networkUpdate: NetworkType;
-  networkAccessList: {users: AccessListType[]};
+  networkUpdate: T.NetworkType;
+  networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
   groupList: GroupType[];
+  regionList: T.RegionListType[];
+  regionCreate: T.RegionListType & {region_id: string};
+  regionDetail: T.RegionType;
+  regionUpdate: T.RegionType;
+  regionAccessList: {users: T.AccessListType[]};
+  regionAccessUpdate: {count: number};
 };

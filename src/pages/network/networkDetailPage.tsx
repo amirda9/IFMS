@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React from 'react';
 import {Description, SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
@@ -7,6 +7,8 @@ import {InputFormik, TextareaFormik} from '~/container';
 import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import {Request} from '~/hooks/useHttpRequest';
+import Cookies from 'js-cookie';
+import {networkExplored} from '~/constant';
 
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
@@ -80,14 +82,21 @@ const NetworkDetailPage = () => {
             </Description>
           </div>
           <div className="flex flex-row gap-x-2 self-end">
-            <SimpleBtn>Explore</SimpleBtn>
+            <SimpleBtn
+              onClick={() => {
+                Cookies.set(networkExplored, params.networkId!);
+              }}>
+              Explore
+            </SimpleBtn>
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
             <SimpleBtn
               type="submit"
               disabled={update?.httpRequestStatus === 'loading'}>
               Save
             </SimpleBtn>
-            <SimpleBtn>Cancel</SimpleBtn>
+            <SimpleBtn link to="../">
+              Cancel
+            </SimpleBtn>
           </div>
         </Form>
       </Formik>

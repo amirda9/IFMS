@@ -27,7 +27,7 @@ const NetworksPage: FC = () => {
     },
   });
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Networks">
+    <SidebarLayout searchOnChange={() => {}} createTitle="Networks" canAdd>
       {list?.data?.map(value => (
         <SidebarItem
           name={value.name}

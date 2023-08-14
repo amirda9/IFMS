@@ -4,6 +4,8 @@ import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {useParams} from 'react-router-dom';
 import {FormLayout} from '~/layout';
+import Cookies from 'js-cookie';
+import {networkExplored} from '~/constant';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -105,14 +107,23 @@ const NetworkAccessPage = () => {
       <SimpleBtn link to="../edit-access">
         Edit Network Viewer(s)
       </SimpleBtn>
-      <SimpleBtn>Explore</SimpleBtn>
-      <SimpleBtn>History</SimpleBtn>
+      <SimpleBtn
+        onClick={() => {
+          Cookies.set(networkExplored, params.networkId!);
+        }}>
+        Explore
+      </SimpleBtn>
+      <SimpleBtn link to="../history">
+        History
+      </SimpleBtn>
       <SimpleBtn
         onClick={saveAdmin}
         disabled={update?.httpRequestStatus === 'loading'}>
         Save
       </SimpleBtn>
-      <SimpleBtn>Cancel</SimpleBtn>
+      <SimpleBtn link to="../">
+        Cancel
+      </SimpleBtn>
     </>
   );
   return <FormLayout buttons={buttons}>{body}</FormLayout>;
