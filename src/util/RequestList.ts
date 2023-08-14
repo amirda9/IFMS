@@ -1,6 +1,7 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
 import {GroupType} from '~/types/GroupType';
+import {regionStationListUrl} from '~/constant/api';
 
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
@@ -22,7 +23,8 @@ type RequestKeys =
   | 'regionDetail'
   | 'regionUpdate'
   | 'regionAccessList'
-  | 'regionAccessUpdate';
+  | 'regionAccessUpdate'
+  | 'regionStationList';
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
@@ -105,6 +107,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     auth: true,
   },
+  regionStationList: {
+    url: api.baseUrl + regionStationListUrl,
+    method: 'get',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -146,6 +153,7 @@ export type RequestListTypes = {
     params: {region_id: string};
     data: {users: T.AccessCreateType[]};
   };
+  regionStationList: {params: {region_id: string}};
 };
 
 export type ResponseListType = {
@@ -166,4 +174,5 @@ export type ResponseListType = {
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};
+  regionStationList: T.StationListType[];
 };

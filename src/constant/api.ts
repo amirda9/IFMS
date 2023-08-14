@@ -13,3 +13,4 @@ export const regionListUrl = 'otdr/region/network/{network_id}/';
 export const regionCreateUrl = 'otdr/region/{network_id}/';
 export const regionDetailUrl = 'otdr/region/{region_id}/';
 export const regionAccessUrl = 'otdr/region/{region_id}/access';
+export const regionStationListUrl = 'otdr/station/region/{region_id}';

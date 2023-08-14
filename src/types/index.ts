@@ -6,3 +6,4 @@ export * from './NetworkType';
 export * from './UserType';
 export * from './AccessType';
 export * from './RegionType';
+export * from './StationType';
