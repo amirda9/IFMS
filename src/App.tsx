@@ -37,6 +37,10 @@ function App() {
           </Route>
 
           <Route
+            path="/regions/:regionId/edit-access"
+            Component={pages.RegionAccessEditPage}
+          />
+          <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
             <Route path="create" Component={pages.RegionCreatePage} />
