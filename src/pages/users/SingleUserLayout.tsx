@@ -10,7 +10,9 @@ const SingleUserLayout: FC = () => {
       <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
         <TabItem to="." name="Detail" />
         <TabItem to="access" name="Access" />
-        <TabItem to="gis" name="GIS" />
+        <TabItem to="groups" name="Groups" />
+        <TabItem to="sessions" name="Sessions" />
+        <TabItem to="authentication" name="Authentication" />
       </div>
       <Outlet key={params.username} />
     </div>
