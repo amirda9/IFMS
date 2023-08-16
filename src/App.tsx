@@ -78,12 +78,12 @@ function App() {
           <Route path="/users" Component={pages.UsersLayout}>
             <Route path=":username" Component={pages.SingleUserLayout}>
               <Route index Component={pages.UserDetailPage}></Route>
+              <Route path="access" Component={pages.UserAccessPage}></Route>
             </Route>
           </Route>
 
           <Route path="*" Component={ErrorPage404} />
         </Route>
-
       </Routes>
     </Router>
   );

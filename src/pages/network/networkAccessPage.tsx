@@ -102,6 +102,7 @@ const NetworkAccessPage = () => {
       </>
     );
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
+
   const buttons = (
     <>
       <SimpleBtn link to="../edit-access">
