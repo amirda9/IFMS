@@ -80,6 +80,7 @@ function App() {
               <Route index Component={pages.UserDetailPage} />
               <Route path="access" Component={pages.UserAccessPage} />
               <Route path="groups" Component={pages.UserGroupsPage} />
+              <Route path="sessions" Component={pages.UserSessionsPage} />
             </Route>
           </Route>
 
