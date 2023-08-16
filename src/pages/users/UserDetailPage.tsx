@@ -1,10 +1,123 @@
-import {FC} from 'react';
+import {Form, Formik} from 'formik';
+import * as Yup from 'yup';
+import {FC, useMemo} from 'react';
 import {useParams} from 'react-router-dom';
+import {Description, SimpleBtn} from '~/components';
+import {InputFormik, TextareaFormik} from '~/container';
+import dayjs from 'dayjs';
 
 const UsersDetailPage: FC = () => {
   const {username} = useParams();
 
-  return <div>USER: {username}</div>;
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().min(3, 'Username must be longer than 3 characters.'),
+    name: Yup.string().required('Name is required'),
+    telephone: Yup.string(),
+    mobile: Yup.string(),
+    email: Yup.string().email('Please provide a valid email.'),
+    address: Yup.string(),
+    comment: Yup.string(),
+    region: Yup.string(),
+    station: Yup.string(),
+  });
+
+  const initialValues = useMemo(
+    () => ({
+      id: 'as456fhl-jkgs6876-fhjgfk809',
+      username: username,
+      name: 'Gholam',
+      telephone: '02177171717',
+      mobile: '02177171717',
+      email: 'test@test.com',
+      address: 'Lorem ipsum Lorem ipsum',
+      comment: 'Lorem ipsum Lorem ipsum',
+      region: 'Region 1',
+      station: 'Station 1',
+    }),
+    [],
+  );
+
+  return (
+    <div className="flex flex-grow flex-col gap-4">
+      <Formik
+        initialValues={initialValues}
+        onSubmit={values => {
+          console.log(values);
+        }}
+        validationSchema={validationSchema}>
+        <Form className="flex h-full flex-col justify-between">
+          <div className="flex flex-col">
+            <Description label="ID" labelClassName="mt-2" items="start">
+              <InputFormik
+                name="id"
+                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+                disabled
+              />
+            </Description>
+
+            <Description label="Username" labelClassName="mt-2" items="start">
+              <InputFormik
+                name="username"
+                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+              />
+            </Description>
+
+            <Description label="Name" labelClassName="mt-2" items="start">
+              <InputFormik
+                name="name"
+                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+              />
+            </Description>
+
+            <Description label="Telephone" labelClassName="mt-2" items="start">
+              <InputFormik
+                name="telephone"
+                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+              />
+            </Description>
+
+            <Description label="Mobile" labelClassName="mt-2" items="start">
+              <InputFormik
+                name="mobile"
+                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+              />
+            </Description>
+
+            <Description label="Email" labelClassName="mt-2" items="start">
+              <InputFormik
+                name="email"
+                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+              />
+            </Description>
+
+            <Description label="Address" items="start">
+              <TextareaFormik name="address" className="w-2/3" />
+            </Description>
+
+            <Description label="Comment" items="start">
+              <TextareaFormik name="comment" className="w-2/3" />
+            </Description>
+
+            <div className="flex">
+              <Description label="Created" className="mb-4">
+                {/* {dayjs(detail.data!.time_created).format('YYYY-MM-DD HH:mm:ss')} */}
+              </Description>
+
+              <Description label="Last Modified">
+                {/* {dayjs(detail.data!.time_updated).format('YYYY-MM-DD HH:mm:ss')} */}
+              </Description>
+            </div>
+          </div>
+          <div className="flex flex-row gap-x-2 self-end">
+            <SimpleBtn type="submit">Save</SimpleBtn>
+            <SimpleBtn link to="../">
+              Cancel
+            </SimpleBtn>
+          </div>
+        </Form>
+      </Formik>
+    </div>
+  );
 };
 
 export default UsersDetailPage;
