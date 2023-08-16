@@ -5,6 +5,7 @@ import {RedirectAfterLogin} from '~/components';
 import {selectElement} from '~/util';
 import '~/styles/index.scss';
 import {MainLayout} from '~/layout';
+import ErrorPage404 from './pages/errors/404';
 function App() {
   const auth = useAppSelector(
     state =>
@@ -79,7 +80,10 @@ function App() {
               <Route index Component={pages.UserDetailPage}></Route>
             </Route>
           </Route>
+
+          <Route path="*" Component={ErrorPage404} />
         </Route>
+
       </Routes>
     </Router>
   );
