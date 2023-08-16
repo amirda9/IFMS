@@ -18,11 +18,13 @@ function App() {
           path="/login"
           Component={selectElement(!auth, pages.LoginPage, RedirectAfterLogin)}
         />
+
         <Route path="/" Component={selectElement(auth, MainLayout)}>
           <Route
             path="/networks/:networkId/edit-access"
             Component={pages.NetworkAccessEditPage}
           />
+
           <Route
             path="/networks"
             Component={selectElement(auth, pages.NetworksPage)}>
@@ -40,6 +42,7 @@ function App() {
             path="/regions/:regionId/edit-access"
             Component={pages.RegionAccessEditPage}
           />
+
           <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
@@ -68,6 +71,12 @@ function App() {
                 Component={pages.LinkCablesSegmentsPage}
               />
               <Route path="points" Component={pages.LinkPointsPage} />
+            </Route>
+          </Route>
+
+          <Route path="/users" Component={pages.UsersLayout}>
+            <Route path=":username" Component={pages.SingleUserLayout}>
+              <Route index Component={pages.UserDetailPage}></Route>
             </Route>
           </Route>
         </Route>
