@@ -19,6 +19,7 @@ type RequestKeys =
   | 'userData'
   | 'networkAccessUpdate'
   | 'groupList'
+  | 'groupDetail'
   | 'regionList'
   | 'regionCreate'
   | 'regionDetail'
@@ -43,7 +44,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     auth: true,
   },
   userData: {
-    url: api.baseUrl + api.userDataUrl,
+    url: api.baseUrl + api.userDetailUrl,
     method: 'get',
     auth: true,
   },
@@ -84,6 +85,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   groupList: {
     url: api.baseUrl + api.groupListUrl,
+    method: 'get',
+    auth: true,
+  },
+  groupDetail: {
+    url: api.baseUrl + api.groupDetailUrl,
     method: 'get',
     auth: true,
   },
@@ -152,6 +158,7 @@ export type RequestListTypes = {
     data: {users: T.AccessCreateType[]};
   };
   groupList: undefined;
+  groupDetail: {params: {group_id: string}};
   regionList: {params: {network_id: string}};
   regionCreate: {
     params: {network_id: string};
@@ -180,6 +187,7 @@ export type ResponseListType = {
   networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
   groupList: GroupType[];
+  groupDetail: GroupType;
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};
   regionDetail: T.RegionType;
