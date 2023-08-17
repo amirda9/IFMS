@@ -7,8 +7,13 @@ type InputType = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 >;
-type PropsType = Omit<InputType, 'value'> & {name: string};
-const InputFormik = ({name, className, ...props}: PropsType) => {
+type PropsType = Omit<InputType, 'value'> & {name: string; hideEye?: boolean};
+const InputFormik = ({
+  name,
+  hideEye = false,
+  className,
+  ...props
+}: PropsType) => {
   const [fields, meta] = useField(name);
 
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -37,7 +42,8 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
           onBlur={fields.onBlur}
           type={inputType}
         />
-        {props.type === 'password' &&
+        {!hideEye &&
+          props.type === 'password' &&
           (passwordVisible ? (
             <IoEyeOutline
               className="absolute right-2 top-2"
