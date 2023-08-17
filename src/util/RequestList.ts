@@ -16,6 +16,7 @@ type RequestKeys =
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
+  | 'userData'
   | 'networkAccessUpdate'
   | 'groupList'
   | 'regionList'
@@ -38,6 +39,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   userList: {
     url: api.baseUrl + api.userListUrl,
+    method: 'get',
+    auth: true,
+  },
+  userData: {
+    url: api.baseUrl + api.userDataUrl,
     method: 'get',
     auth: true,
   },
@@ -125,6 +131,11 @@ export type RequestListTypes = {
     data: {refresh_token: string};
   };
   userList: undefined;
+  userData: {
+    params: {
+      user_id: string;
+    };
+  };
   networkCreate: {
     data: {
       name: string;
@@ -160,6 +171,7 @@ export type ResponseListType = {
   login: T.LoginResponseType;
   refresh: T.LoginResponseType;
   userList: T.UserListType[];
+  userData: T.UserDetailType;
   networkCreate: T.NetworkType & {network_id: string};
   networkList: T.NetworkType[];
   networkDetail: T.NetworkDetailType;

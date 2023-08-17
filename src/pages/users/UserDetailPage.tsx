@@ -1,49 +1,77 @@
-import {Form, Formik} from 'formik';
+import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
-import {FC, useMemo} from 'react';
+import {FC} from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
+import {useHttpRequest} from '~/hooks';
 
 const UsersDetailPage: FC = () => {
-  const {username} = useParams();
+  const {userId} = useParams();
 
   const validationSchema = Yup.object().shape({
     username: Yup.string().min(3, 'Username must be longer than 3 characters.'),
     name: Yup.string().required('Name is required'),
+    email: Yup.string().email('Please provide a valid email.'),
     telephone: Yup.string(),
     mobile: Yup.string(),
-    email: Yup.string().email('Please provide a valid email.'),
     address: Yup.string(),
     comment: Yup.string(),
     region: Yup.string(),
     station: Yup.string(),
   });
 
-  const initialValues = useMemo(
-    () => ({
-      id: 'as456fhl-jkgs6876-fhjgfk809',
-      username: username,
-      name: 'Gholam',
-      telephone: '02177171717',
-      mobile: '02177171717',
-      email: 'test@test.com',
-      address: 'Lorem ipsum Lorem ipsum',
-      comment: 'Lorem ipsum Lorem ipsum',
-      region: 'Region 1',
-      station: 'Station 1',
-    }),
-    [],
-  );
+  const initialValues = {
+    id: userId,
+    username: '',
+    name: '',
+    telephone: '',
+    mobile: '',
+    email: '',
+    address: '',
+    comment: '',
+    region: '',
+    station: '',
+  };
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: values => {
+      console.log('SUBMITTED VALUES:', values);
+    },
+  });
+
+  const userDataQuery = useHttpRequest({
+    selector: state => state.http.userData,
+    initialRequests: request => {
+      request('userData', {params: {user_id: userId!}});
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState?.httpRequestStatus === 'loading' &&
+        state?.httpRequestStatus === 'success' &&
+        state.data
+      ) {
+        formik.setFieldValue('id', state.data.id);
+        formik.setFieldValue('username', state.data.username);
+        formik.setFieldValue('email', state.data.email);
+        formik.setFieldValue('station', state.data.station?.name || '');
+        formik.setFieldValue('region', state.data.region?.name || '');
+        formik.setFieldValue('telephone', state.data.telephone || '');
+        formik.setFieldValue('mobile', state.data.mobile || '');
+        formik.setFieldValue('address', state.data.address || '');
+        formik.setFieldValue('comment', state.data.comment || '');
+        console.log('yoyoyoy', state);
+      }
+    },
+  });
+
+  console.log('userDataQuery :>> ', userDataQuery);
 
   return (
     <div className="flex flex-grow flex-col gap-4">
-      <Formik
-        initialValues={initialValues}
-        onSubmit={values => {
-          console.log(values);
-        }}
-        validationSchema={validationSchema}>
+      <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
             <Description label="ID" labelClassName="mt-2" items="start">
@@ -114,7 +142,7 @@ const UsersDetailPage: FC = () => {
             </SimpleBtn>
           </div>
         </Form>
-      </Formik>
+      </FormikProvider>
     </div>
   );
 };

@@ -76,7 +76,7 @@ function App() {
           </Route>
 
           <Route path="/users" Component={pages.UsersLayout}>
-            <Route path=":username" Component={pages.SingleUserLayout}>
+            <Route path=":userId" Component={pages.SingleUserLayout}>
               <Route index Component={pages.UserDetailPage} />
               <Route path="access" Component={pages.UserAccessPage} />
               <Route path="groups" Component={pages.UserGroupsPage} />

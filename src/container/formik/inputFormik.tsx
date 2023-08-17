@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {useField} from 'formik';
+import {FormikProps, useField} from 'formik';
 import {TextInput} from '~/components';
 import {IoEyeOffOutline, IoEyeOutline} from 'react-icons/io5';
 
@@ -7,7 +7,10 @@ type InputType = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 >;
-type PropsType = Omit<InputType, 'value'> & {name: string; hideEye?: boolean};
+type PropsType = Omit<InputType, 'value'> & {
+  name: string;
+  hideEye?: boolean;
+};
 const InputFormik = ({
   name,
   hideEye = false,

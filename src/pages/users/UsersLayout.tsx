@@ -19,11 +19,7 @@ const UsersPage: FC = () => {
       {userListQuery.state &&
       userListQuery.state.httpRequestStatus === 'success' ? (
         userListQuery.state.data!.map(user => (
-          <SidebarItem
-            name={user.username}
-            to={user.username}
-            key={user.username}
-          />
+          <SidebarItem name={user.username} to={user.id} key={user.id} />
         ))
       ) : (
         <GeneralLoadingSpinner />
