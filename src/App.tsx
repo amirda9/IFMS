@@ -81,13 +81,17 @@ function App() {
               <Route path="access" Component={pages.UserAccessPage} />
               <Route path="groups" Component={pages.UserGroupsPage} />
               <Route path="sessions" Component={pages.UserSessionsPage} />
-              <Route path="authentication" Component={pages.UserAuthenticationPage} />
+              <Route
+                path="authentication"
+                Component={pages.UserAuthenticationPage}
+              />
             </Route>
           </Route>
 
           <Route path="/user-groups" Component={pages.UserGroupsLayout}>
             <Route path=":groupId" Component={pages.SingleGroupLayout}>
-
+              <Route index Component={pages.GroupDetailPage} />
+              <Route index Component={pages.GroupMembersPage} />
             </Route>
           </Route>
 
