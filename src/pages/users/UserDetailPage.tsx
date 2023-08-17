@@ -4,7 +4,6 @@ import {FC, useMemo} from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
-import dayjs from 'dayjs';
 
 const UsersDetailPage: FC = () => {
   const {username} = useParams();

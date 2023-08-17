@@ -24,9 +24,8 @@ const UserAccessPage: FC = () => {
           <option value="User 4">User 4</option>
         </Select>
       </Description>
-      <Description label="Network Viewers(s)" items="start" className="h-full">
+      <Description label="" items="start" className="h-full">
         <Table
-          // loading={viewers?.httpRequestStatus === 'loading'}
           cols={columns}
           items={items}
           width="w-3/5"
