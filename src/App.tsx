@@ -86,7 +86,9 @@ function App() {
           </Route>
 
           <Route path="/user-groups" Component={pages.UserGroupsLayout}>
+            <Route path=":groupId" Component={pages.SingleGroupLayout}>
 
+            </Route>
           </Route>
 
           <Route path="*" Component={ErrorPage404} />
