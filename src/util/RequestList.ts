@@ -1,6 +1,5 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
-import {GroupType} from '~/types/GroupType';
 import {regionStationListUrl} from '~/constant/api';
 
 export const excludeList = ['categoryList'];
@@ -186,8 +185,8 @@ export type ResponseListType = {
   networkUpdate: T.NetworkType;
   networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
-  groupList: GroupType[];
-  groupDetail: GroupType;
+  groupList: T.GroupType[];
+  groupDetail: T.GroupDetailType;
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};
   regionDetail: T.RegionType;
