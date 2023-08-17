@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useField} from 'formik';
 import {TextInput} from '~/components';
-import {IoEyeOutline} from 'react-icons/io5';
+import {IoEyeOffOutline, IoEyeOutline} from 'react-icons/io5';
 
 type InputType = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -16,8 +16,8 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
   const inputType =
     props.type === 'password'
       ? passwordVisible
-        ? 'password'
-        : 'text'
+        ? 'text'
+        : 'password'
       : props.type;
 
   return (
@@ -27,6 +27,7 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
       }`}>
       <div className={`relative ${className}`}>
         <TextInput
+          {...props}
           name={name}
           className={`border border-solid ${
             meta.error && meta.touched ? 'border-red-500' : ''
@@ -35,9 +36,19 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
           onChange={fields.onChange}
           onBlur={fields.onBlur}
           type={inputType}
-          {...props}
         />
-        <IoEyeOutline className="absolute top-2 right-2" />
+        {props.type === 'password' &&
+          (passwordVisible ? (
+            <IoEyeOutline
+              className="absolute right-2 top-2"
+              onClick={() => setPasswordVisible(false)}
+            />
+          ) : (
+            <IoEyeOffOutline
+              className="absolute right-2 top-2"
+              onClick={() => setPasswordVisible(true)}
+            />
+          ))}
       </div>
 
       {meta.touched && meta.error ? (
