@@ -14,15 +14,13 @@ const GroupDetailPage: FC = () => {
     },
   });
 
-  console.log(groupDetailQuery);
-
   return (
     <div className="flex flex-col gap-4">
       {groupDetailQuery.state?.data ? (
         <>
           <Description label="Name">
             <TextInput
-            className='disabled:bg-slate-200 disabled:cursor-not-allowed'
+              className="disabled:cursor-not-allowed disabled:bg-slate-200"
               name="groupName"
               disabled
               value={groupDetailQuery.state.data.name}
