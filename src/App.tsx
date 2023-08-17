@@ -85,6 +85,10 @@ function App() {
             </Route>
           </Route>
 
+          <Route path="/user-groups" Component={pages.UserGroupsLayout}>
+
+          </Route>
+
           <Route path="*" Component={ErrorPage404} />
         </Route>
       </Routes>

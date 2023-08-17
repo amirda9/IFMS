@@ -4,3 +4,4 @@ export * from './region';
 export * from './station';
 export * from './link';
 export * from './users';
+export * from './user-groups';
