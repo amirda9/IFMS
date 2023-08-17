@@ -5,6 +5,7 @@ import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
+import dayjs from 'dayjs';
 
 const UsersDetailPage: FC = () => {
   const {userId} = useParams();
@@ -62,7 +63,6 @@ const UsersDetailPage: FC = () => {
         formik.setFieldValue('mobile', state.data.mobile || '');
         formik.setFieldValue('address', state.data.address || '');
         formik.setFieldValue('comment', state.data.comment || '');
-        console.log('yoyoyoy', state);
       }
     },
   });
@@ -128,13 +128,21 @@ const UsersDetailPage: FC = () => {
             </Description>
 
             <div className="flex">
-              <Description label="Created" className="mb-4">
-                {/* {dayjs(detail.data!.time_created).format('YYYY-MM-DD HH:mm:ss')} */}
-              </Description>
+              {userDataQuery.state?.data?.time_created && (
+                <Description label="Created" className="mb-4">
+                  {dayjs(userDataQuery.state.data.time_created).format(
+                    'YYYY-MM-DD HH:mm:ss',
+                  )}
+                </Description>
+              )}
 
-              <Description label="Last Modified">
-                {/* {dayjs(detail.data!.time_updated).format('YYYY-MM-DD HH:mm:ss')} */}
-              </Description>
+              {userDataQuery.state?.data?.time_updated && (
+                <Description label="Last Modified">
+                  {dayjs(userDataQuery.state?.data?.time_updated).format(
+                    'YYYY-MM-DD HH:mm:ss',
+                  )}
+                </Description>
+              )}
             </div>
           </div>
           <div className="flex flex-row gap-x-2 self-end">
