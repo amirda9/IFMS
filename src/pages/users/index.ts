@@ -4,3 +4,4 @@ export {default as SingleUserLayout} from './SingleUserLayout';
 export {default as UserAccessPage} from './UserAccessPage';
 export {default as UserGroupsPage} from './UserGroupsPage';
 export {default as UserSessionsPage} from './UserSessionsPage';
+export {default as UserAuthenticationPage} from './UserAuthenticationPage';

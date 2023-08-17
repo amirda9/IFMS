@@ -81,6 +81,7 @@ function App() {
               <Route path="access" Component={pages.UserAccessPage} />
               <Route path="groups" Component={pages.UserGroupsPage} />
               <Route path="sessions" Component={pages.UserSessionsPage} />
+              <Route path="authentication" Component={pages.UserAuthenticationPage} />
             </Route>
           </Route>
 
