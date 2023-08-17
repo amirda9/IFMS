@@ -1,5 +1,6 @@
 import {FC} from 'react';
 import {SidebarItem} from '~/components';
+import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
@@ -25,7 +26,7 @@ const UsersPage: FC = () => {
           />
         ))
       ) : (
-        <p>loading</p>
+        <GeneralLoadingSpinner />
       )}
     </SidebarLayout>
   );
