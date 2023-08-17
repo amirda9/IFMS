@@ -1,6 +1,6 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
-import {FC} from 'react';
+import {FC, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
@@ -67,7 +67,9 @@ const UsersDetailPage: FC = () => {
     },
   });
 
-  console.log('userDataQuery :>> ', userDataQuery);
+  useEffect(() => {
+    userDataQuery.request('userData', {params: {user_id: userId!}});
+  }, [userId]);
 
   return (
     <div className="flex flex-grow flex-col gap-4">

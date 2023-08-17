@@ -12,8 +12,6 @@ const UsersPage: FC = () => {
     },
   });
 
-  console.log(userListQuery);
-
   return (
     <SidebarLayout searchOnChange={() => {}} createTitle="Users">
       {userListQuery.state &&
