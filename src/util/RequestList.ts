@@ -26,7 +26,7 @@ type RequestKeys =
   | 'regionAccessList'
   | 'regionAccessUpdate'
   | 'regionStationList'
-  ;
+  | 'regionLinkList';
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
@@ -119,6 +119,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  regionLinkList: {
+    url: api.baseUrl + api.regionLinkListUrl,
+    method: 'get',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -162,6 +167,7 @@ export type RequestListTypes = {
   };
   regionStationList: {params: {region_id: string}};
   networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
+  regionLinkList: {params: {region_id: string}};
 };
 
 export type ResponseListType = {
@@ -184,4 +190,5 @@ export type ResponseListType = {
   regionAccessUpdate: {count: number};
   regionStationList: T.StationListType[];
   networkUpdateAdmin: string;
+  regionLinkList: T.RegionLinkType[];
 };
