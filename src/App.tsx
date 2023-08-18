@@ -64,6 +64,10 @@ function App() {
             </Route>
           </Route>
 
+          <Route
+            path="/links/:linkId/edit-access"
+            Component={pages.LinkEditViewersPage}
+          />
           <Route path="/links" Component={pages.LinksPage}>
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
