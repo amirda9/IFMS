@@ -22,12 +22,9 @@ const StationsPage = () => {
       searchOnChange={() => {}}
       createTitle="Stations"
       canAdd={!!networkId}>
-      {stations?.data?.map((_, value) => (
-        <SidebarItem
-          name={`Station ${value + 1}`}
-          to={value.toString()}
-          key={value}
-        />
+      <SidebarItem name="example Station" to="0cc6dca3-bc1c-4036-bcf4-e121bfc4664b" key="test" />
+      {stations?.data?.map(value => (
+        <SidebarItem name={value.name} to={value.id} key={value.id} />
       ))}
     </SidebarLayout>
   );
