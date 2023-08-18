@@ -1,12 +1,18 @@
 import React, {Fragment, useState} from 'react';
-import {Description, Select, TextInput} from '~/components';
+import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
+import {FormLayout} from '~/layout';
 
 const LinkCablesAndSegmentsPage = () => {
   const [open, setOpen] = useState<Record<string, boolean>>({});
-
+  const buttons = (
+    <>
+      <SimpleBtn type="submit">Save</SimpleBtn>
+      <SimpleBtn>Cancel</SimpleBtn>
+    </>
+  );
   return (
-    <div>
+    <FormLayout buttons={buttons}>
       {[0].map((_, index) => {
         const Chevron = open[index] ? IoChevronUp : IoChevronDown;
         return (
@@ -143,7 +149,7 @@ const LinkCablesAndSegmentsPage = () => {
           </div>
         );
       })}
-    </div>
+    </FormLayout>
   );
 };
 
