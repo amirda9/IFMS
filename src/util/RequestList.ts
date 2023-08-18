@@ -138,7 +138,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
-  stationCreate: {url: api.baseUrl + api.stationUrl, method: 'get', auth: true},
+  stationCreate: {url: api.baseUrl + api.stationUrl, method: 'post', auth: true},
   stationDetail: {
     url: api.baseUrl + api.stationRUDUrl,
     method: 'post',
@@ -271,7 +271,7 @@ export type ResponseListType = {
   networkUpdateAdmin: string;
   regionLinkList: T.RegionLinkType[];
   regionAdminUpdate: string;
-  stationCreate: T.StationCreateType&{station_id:string};
+  stationCreate: T.StationCreateType & {station_id: string};
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
   stationDelete: {count: number};

@@ -53,6 +53,7 @@ function App() {
           </Route>
 
           <Route path="/stations" Component={pages.StationsPage}>
+            <Route path="create" Component={pages.StationCreatePage} />
             <Route path=":stationId" Component={pages.StationEmptyPage}>
               <Route path="" Component={pages.StationDetailPage} />
               <Route path="access" Component={pages.StationAccessPage} />
