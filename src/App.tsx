@@ -52,7 +52,6 @@ function App() {
             </Route>
           </Route>
 
-
           <Route
             path="/stations/:stationId/edit-access"
             Component={pages.StationEditViewerPage}
@@ -71,7 +70,11 @@ function App() {
               <Route path="access" Component={pages.LinkAccessPage} />
               <Route
                 path="cables-segments"
-                Component={pages.LinkCablesSegmentsPage}
+                Component={pages.LinkCablesAndSegmentsPage}
+              />
+              <Route
+                path="ducts-segments"
+                Component={pages.LinkDuctsAndSegmentsPage}
               />
               <Route path="points" Component={pages.LinkPointsPage} />
             </Route>
