@@ -63,7 +63,6 @@ const StationDetailPage = () => {
           region: '',
         }}
         onSubmit={values => {
-          console.log('submit');
           request('stationCreate', {
             data: {
               name: values.name,
@@ -71,7 +70,7 @@ const StationDetailPage = () => {
               longitude: values.longitude,
               latitude: values.latitude,
               region_id: values.region,
-              model: 'idk',
+              model: 'cables',
               network_id: networkId!,
             },
           });
