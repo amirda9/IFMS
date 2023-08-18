@@ -77,8 +77,8 @@ const RegionAccessPage = () => {
             onChange={event => {
               setUserAdmin(event.target.value);
             }}>
-            <option selected value="" className="hidden" />
-            <option selected value={undefined} className="hidden" />
+            <option value="" className="hidden" />
+            <option value={undefined} className="hidden" />
             {userList.map(user => (
               <option value={user.id} key={user.id}>
                 {user.username}

@@ -10,7 +10,7 @@ export const networkAccessListUrl = 'otdr/network/{network_id}/access/';
 export const networkAccessListUpdateUrl =
   'otdr/network/{network_id}/access/viewers';
 export const groupListUrl = 'auth/groups/';
-export const regionListUrl = 'otdr/region/network/{network_id}/';
+export const regionListUrl = 'otdr/region/{network_id}/';
 export const regionCreateUrl = 'otdr/region/{network_id}/';
 export const regionDetailUrl = 'otdr/region/{region_id}/';
 export const regionAccessUrl = 'otdr/region/{region_id}/access';
