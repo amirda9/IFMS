@@ -25,7 +25,8 @@ type RequestKeys =
   | 'regionUpdate'
   | 'regionAccessList'
   | 'regionAccessUpdate'
-  | 'regionStationList';
+  | 'regionStationList'
+  ;
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,

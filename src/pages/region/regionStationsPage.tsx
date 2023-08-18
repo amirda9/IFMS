@@ -11,11 +11,11 @@ const columns = {
 };
 
 const RegionStationsPage = () => {
-  const params = useParams<{RegionId: string}>();
+  const params = useParams<{regionId: string}>();
   const {state} = useHttpRequest({
     selector: state => ({list: state.http.regionStationList}),
     initialRequests: request => {
-      request('regionStationList', {params: {region_id: params.RegionId!}});
+      request('regionStationList', {params: {region_id: params.regionId!}});
     },
   });
   return (
