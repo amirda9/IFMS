@@ -1,7 +1,7 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
+import {regionStationListUrl} from '~/constant/api';
 import {GroupType} from '~/types/GroupType';
-import {regionStationListUrl, regionViewerUpdateUrl} from '~/constant/api';
 
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
@@ -27,7 +27,15 @@ type RequestKeys =
   | 'regionAccessUpdate'
   | 'regionStationList'
   | 'regionLinkList'
-  | 'regionAdminUpdate';
+  | 'regionAdminUpdate'
+  | 'stationCreate'
+  | 'stationDetail'
+  | 'stationUpdate'
+  | 'stationDelete'
+  | 'networkStationList'
+  | 'stationAccessList'
+  | 'stationViewerUpdate'
+  | 'stationAdminUpdate';
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
@@ -130,6 +138,42 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  stationCreate: {url: api.baseUrl + api.stationUrl, method: 'get', auth: true},
+  stationDetail: {
+    url: api.baseUrl + api.stationRUDUrl,
+    method: 'post',
+    auth: true,
+  },
+  stationUpdate: {
+    url: api.baseUrl + api.stationRUDUrl,
+    method: 'put',
+    auth: true,
+  },
+  stationDelete: {
+    url: api.baseUrl + api.stationRUDUrl,
+    method: 'delete',
+    auth: true,
+  },
+  networkStationList: {
+    url: api.baseUrl + api.networkStationListUrl,
+    method: 'get',
+    auth: true,
+  },
+  stationAccessList: {
+    url: api.baseUrl + api.stationAccessUrl,
+    method: 'get',
+    auth: true,
+  },
+  stationViewerUpdate: {
+    url: api.baseUrl + api.stationViewerUpdateUrl,
+    method: 'post',
+    auth: true,
+  },
+  stationAdminUpdate: {
+    url: api.baseUrl + api.stationAdminUpdateUrl,
+    method: 'put',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -175,6 +219,34 @@ export type RequestListTypes = {
   networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
   regionLinkList: {params: {region_id: string}};
   regionAdminUpdate: {params: {region_id: string}; data: {user_id: string}};
+  stationCreate: {data: T.StationCreateType};
+  stationDetail: {params: {station_id: string}};
+  stationUpdate: {
+    params: {station_id: string};
+    data: {
+      model: string;
+      longitude: number;
+      latitude: number;
+      description: string;
+    };
+  };
+  stationDelete: {
+    params: {station_id: string};
+  };
+  networkStationList: {
+    params: {network_id: string};
+  };
+  stationAccessList: {
+    params: {station_id: string};
+  };
+  stationViewerUpdate: {
+    params: {station_id: string};
+    data: {users: string};
+  };
+  stationAdminUpdate: {
+    params: {station_id: string};
+    data: {user_id: string};
+  };
 };
 
 export type ResponseListType = {
@@ -199,4 +271,12 @@ export type ResponseListType = {
   networkUpdateAdmin: string;
   regionLinkList: T.RegionLinkType[];
   regionAdminUpdate: string;
+  stationCreate: T.StationCreateType;
+  stationDetail: T.StationType;
+  stationUpdate: T.StationListType;
+  stationDelete: {count: number};
+  networkStationList: T.StationListType[];
+  stationAccessList: T.AccessListType;
+  stationViewerUpdate: {count: number};
+  stationAdminUpdate: string;
 };
