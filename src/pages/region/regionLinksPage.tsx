@@ -39,7 +39,9 @@ const RegionLinksPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-2 self-end">
-        <SimpleBtn>Edit Links List</SimpleBtn>
+        <SimpleBtn link to="/links">
+          Edit Links List
+        </SimpleBtn>
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

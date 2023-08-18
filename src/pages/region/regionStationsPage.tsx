@@ -36,7 +36,9 @@ const RegionStationsPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-2 self-end">
-        <SimpleBtn>Edit Stations List</SimpleBtn>
+        <SimpleBtn link to="/stations">
+          Edit Stations List
+        </SimpleBtn>
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
