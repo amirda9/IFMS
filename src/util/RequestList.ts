@@ -144,7 +144,7 @@ export type RequestListTypes = {
   networkAccessList: {params: {network_id: string}};
   networkAccessUpdate: {
     params: {network_id: string};
-    data: {users: T.AccessCreateType[]};
+    data: {users: string[]};
   };
   groupList: undefined;
   regionList: {params: {network_id: string}};

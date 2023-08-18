@@ -20,13 +20,23 @@ const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
 
   const selectAll = () => {
     if (keys.length >= items.length) {
+      items.forEach(value => {
+        if (selected.includes(value.value)) {
+          onSelect?.(value.value);
+        }
+      });
       setState({...state, selected: {}});
     } else {
-      const selected: Record<string, boolean> = {};
+      const stateSelected: Record<string, boolean> = {};
       items.forEach(item => {
-        selected[item.value] = true;
+        stateSelected[item.value] = true;
       });
-      setState({...state, selected});
+      items.forEach(value => {
+        if (!selected.includes(value.value)) {
+          onSelect?.(value.value);
+        }
+      });
+      setState({...state, selected: stateSelected});
     }
   };
   const selectItem = (value: string | number) => () => {
@@ -48,7 +58,7 @@ const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
       <div className="flex h-6 flex-row items-center">
         <input
           type="checkbox"
-          checked={items.every(value => value.value in state.selected)}
+          checked={items.every(value => selected.includes(value.value))}
           onChange={selectAll}
         />
         <span
