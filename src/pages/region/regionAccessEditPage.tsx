@@ -58,15 +58,8 @@ const RegionAccessPage = () => {
             }
           }
 
-          const users = viewerList.map(value => ({
-            access_types: AccessEnum.viewer,
-            user_id: value,
-          }));
-          if (admin)
-            users.push({
-              access_types: AccessEnum.admin,
-              user_id: admin.user.id,
-            });
+          const users = viewerList.map(value => value);
+
           request('regionAccessUpdate', {
             params: {region_id: params.regionId!},
             data: {users},
@@ -74,7 +67,9 @@ const RegionAccessPage = () => {
         }}>
         OK
       </SimpleBtn>
-      <SimpleBtn>Cancel</SimpleBtn>
+      <SimpleBtn link to="../">
+        Cancel
+      </SimpleBtn>
     </>
   );
 
