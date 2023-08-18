@@ -19,3 +19,10 @@ export const regionStationListUrl = 'otdr/station/region/{region_id}';
 export const networkUpdateAdminUrl = 'otdr/network/{network_id}/access/admin';
 export const regionLinkListUrl = 'otdr/link/region/{region_id}';
 export const regionAdminUpdateUrl = 'otdr/region/{region_id}/access/admin';
+export const networkStationLinkUrl = 'otdr/station/network/{network_id}';
+export const stationUrl = 'otdr/station/';
+export const stationRUDUrl = 'otdr/station/{station_id}';
+export const stationAccessUrl = 'otdr/station/{station_id}/access';
+export const stationViewerUpdateUrl =
+  'otdr/station/{station_id}/access/viewers';
+export const stationAdminUpdateUrl = 'otdr/station/{station_id}/access/admin';
