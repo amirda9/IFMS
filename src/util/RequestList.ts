@@ -160,7 +160,7 @@ export type RequestListTypes = {
     data: {users: T.AccessCreateType[]};
   };
   regionStationList: {params: {region_id: string}};
-  networkUpdateAdmin: {user_id: string};
+  networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
 };
 
 export type ResponseListType = {
