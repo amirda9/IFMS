@@ -1,7 +1,7 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
 import {GroupType} from '~/types/GroupType';
-import {regionStationListUrl} from '~/constant/api';
+import {regionStationListUrl, regionViewerUpdateUrl} from '~/constant/api';
 
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
@@ -26,7 +26,8 @@ type RequestKeys =
   | 'regionAccessList'
   | 'regionAccessUpdate'
   | 'regionStationList'
-  | 'regionLinkList';
+  | 'regionLinkList'
+  | 'regionAdminUpdate';
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.baseUrl + api.loginUrl,
@@ -105,7 +106,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     auth: true,
   },
   regionAccessUpdate: {
-    url: api.baseUrl + api.regionAccessUrl,
+    url: api.baseUrl + api.regionViewerUpdateUrl,
     method: 'post',
     auth: true,
   },
@@ -122,6 +123,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   regionLinkList: {
     url: api.baseUrl + api.regionLinkListUrl,
     method: 'get',
+    auth: true,
+  },
+  regionAdminUpdate: {
+    url: api.baseUrl + api.regionAdminUpdateUrl,
+    method: 'put',
     auth: true,
   },
 };
@@ -163,11 +169,12 @@ export type RequestListTypes = {
   regionAccessList: {params: {region_id: string}};
   regionAccessUpdate: {
     params: {region_id: string};
-    data: {users: T.AccessCreateType[]};
+    data: {users: string[]};
   };
   regionStationList: {params: {region_id: string}};
   networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
   regionLinkList: {params: {region_id: string}};
+  regionAdminUpdate: {params: {region_id: string}; data: {user_id: string}};
 };
 
 export type ResponseListType = {
@@ -191,4 +198,5 @@ export type ResponseListType = {
   regionStationList: T.StationListType[];
   networkUpdateAdmin: string;
   regionLinkList: T.RegionLinkType[];
+  regionAdminUpdate: string;
 };
