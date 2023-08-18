@@ -271,7 +271,7 @@ export type ResponseListType = {
   networkUpdateAdmin: string;
   regionLinkList: T.RegionLinkType[];
   regionAdminUpdate: string;
-  stationCreate: T.StationCreateType;
+  stationCreate: T.StationCreateType&{station_id:string};
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
   stationDelete: {count: number};
