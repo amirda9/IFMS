@@ -52,6 +52,11 @@ function App() {
             </Route>
           </Route>
 
+
+          <Route
+            path="/stations/:stationId/edit-access"
+            Component={pages.StationEditViewerPage}
+          />
           <Route path="/stations" Component={pages.StationsPage}>
             <Route path="create" Component={pages.StationCreatePage} />
             <Route path=":stationId" Component={pages.StationEmptyPage}>
