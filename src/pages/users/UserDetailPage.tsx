@@ -9,12 +9,12 @@ import dayjs from 'dayjs';
 import {RegionListType, UserDetailFormType} from '~/types';
 import {toast} from 'react-toastify';
 
+type RegionOptionType = {label: string; payload: RegionListType | null};
+
 const UsersDetailPage: FC = () => {
   const {userId} = useParams();
 
-  const [regionList, setRegionList] = useState<
-    {label: string; payload: RegionListType}[]
-  >([]);
+  const [regionList, setRegionList] = useState<RegionOptionType[]>([]);
 
   const userDetailQuery = useHttpRequest({
     selector: state => state.http.userDetail,
@@ -30,13 +30,13 @@ const UsersDetailPage: FC = () => {
         formik.setValues({
           name: state.data.name || '',
           username: state.data.username,
-          email: state.data.email,
-          station: state.data.station?.name || '',
-          region: state.data.region?.name || '',
           telephone: state.data.telephone || '',
           mobile: state.data.mobile || '',
+          email: state.data.email,
           address: state.data.address || '',
           comment: state.data.comment || '',
+          region_id: state.data.region?.id || '',
+          station_id: state.data.station?.id || '',
         });
       }
     },
@@ -55,12 +55,14 @@ const UsersDetailPage: FC = () => {
 
   useEffect(() => {
     if (allRegionsQuery.state?.httpRequestStatus === 'success') {
-      setRegionList(
-        allRegionsQuery.state.data!.map(item => ({
+      const regionsToSet: RegionOptionType[] = allRegionsQuery.state.data!.map(
+        item => ({
           label: item.name,
           payload: item,
-        })),
+        }),
       );
+      regionsToSet.unshift({label: 'None', payload: null});
+      setRegionList(regionsToSet);
     }
   }, [allRegionsQuery.state]);
 
@@ -86,16 +88,26 @@ const UsersDetailPage: FC = () => {
     email: '',
     address: '',
     comment: '',
-    region: '',
-    station: '',
+    region_id: '',
+    station_id: '',
   };
 
   const handleSaveUserDetailClick = (values: UserDetailFormType) => {
-    console.log('values:', values);
+    const valuesToSend = {
+      username: values.username,
+      name: values.name,
+      telephone: values.telephone,
+      mobile: values.mobile,
+      email: values.email,
+      address: values.address,
+      comment: values.comment,
+      region_id: values.region_id || null,
+      station_id: values.station_id || null,
+    };
 
     userDetailMutation.request('userDetailUpdate', {
       params: {user_id: userId!},
-      data: values,
+      data: valuesToSend,
     });
   };
 
@@ -183,8 +195,11 @@ const UsersDetailPage: FC = () => {
             <Description label="Region">
               <Select
                 options={regionList}
-                onChange={console.log}
-                value={3}
+                onChange={regionId =>
+                  formik.setFieldValue('region_id', regionId)
+                }
+                setValueProp={option => option.payload?.id || ""}
+                value={formik.values.region_id || ''}
               />
             </Description>
 
