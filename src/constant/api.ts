@@ -1,5 +1,7 @@
 export const baseUrl = 'http://37.32.27.143:8080/api';
 
+// TODO: Categorize or just separate the endpoints with comments (we can do it just like the Swagger categories)
+
 export const loginUrl = '/auth/users/login';
 export const refreshTokenUrl = '/auth/users/refresh_token';
 export const userListUrl = '/auth/users';
@@ -16,3 +18,5 @@ export const regionCreateUrl = '/otdr/region/{network_id}';
 export const regionDetailUrl = '/otdr/region/{region_id}';
 export const regionAccessUrl = '/otdr/region/{region_id}/access';
 export const regionStationListUrl = '/otdr/station/region/{region_id}';
+
+export const passwordResetUrl = '/auth/users/{user_id}/change_password';

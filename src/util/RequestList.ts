@@ -8,6 +8,7 @@ export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
 type RequestKeys =
   | 'login'
   | 'refresh'
+  | 'passwordReset'
   | 'networkList'
   | 'networkDetail'
   | 'networkCreate'
@@ -36,6 +37,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     url: api.baseUrl + api.refreshTokenUrl,
     method: 'post',
     headers: {'content-type': 'application/x-www-form-urlencoded'},
+  },
+  passwordReset: {
+    url: api.baseUrl + api.passwordResetUrl,
+    method: 'post',
+    auth: true,
   },
   userList: {
     url: api.baseUrl + api.userListUrl,
@@ -135,6 +141,13 @@ export type RequestListTypes = {
   refresh: {
     data: {refresh_token: string};
   };
+  passwordReset: {
+    params: {user_id: string};
+    data: {
+      new_password: string;
+      confirm_new_password: string;
+    };
+  };
   userList: undefined;
   userData: {
     params: {
@@ -176,6 +189,7 @@ export type RequestListTypes = {
 export type ResponseListType = {
   login: T.LoginResponseType;
   refresh: T.LoginResponseType;
+  passwordReset: string;
   userList: T.UserListType[];
   userData: T.UserDetailType;
   networkCreate: T.NetworkType & {network_id: string};

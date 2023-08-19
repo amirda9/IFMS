@@ -1,8 +1,11 @@
 import {Form, Formik} from 'formik';
 import * as Yup from 'yup';
-import {FC} from 'react';
+import {FC, useEffect} from 'react';
 import {Description, SimpleBtn} from '~/components';
 import {InputFormik} from '~/container';
+import {useHttpRequest} from '~/hooks';
+import {useParams} from 'react-router-dom';
+import {toast} from 'react-toastify';
 
 const initialValues = {
   password: '',
@@ -10,12 +13,35 @@ const initialValues = {
 };
 
 const UserAuthenticationPage: FC = () => {
+  const {userId} = useParams();
+
+  const passwordRestMutation = useHttpRequest({
+    selector: state => state.http.passwordReset,
+  });
+
   const handleFormSubmit = (values: {
     password: string;
     passwordConfirmation: string;
   }) => {
-    console.log('values :>> ', values);
+    passwordRestMutation.request('passwordReset', {
+      params: {user_id: userId!},
+      data: {
+        new_password: values.password,
+        confirm_new_password: values.passwordConfirmation,
+      },
+    });
   };
+
+  useEffect(() => {
+    if (passwordRestMutation.state?.httpRequestStatus === 'success') {
+      toast('Password changed successfully.', {type: 'success'});
+    } else if (passwordRestMutation.state?.httpRequestStatus === 'error') {
+      const error = passwordRestMutation.state.error;
+      
+    }
+  }, [passwordRestMutation.state]);
+
+  console.log('passwordRestMutation:', passwordRestMutation);
 
   const validationSchema = Yup.object().shape({
     password: Yup.string().required('Password is required.'),
