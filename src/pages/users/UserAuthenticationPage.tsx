@@ -70,14 +70,14 @@ const UserAuthenticationPage: FC = () => {
           <div className="flex flex-col">
             <Description label="New Password" items="start">
               <InputFormik
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-1/4"
                 type="password"
                 name="password"
               />
             </Description>
             <Description label="Confirm New Password" items="start">
               <InputFormik
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-1/4"
                 type="password"
                 name="passwordConfirmation"
               />
