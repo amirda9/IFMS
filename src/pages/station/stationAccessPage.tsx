@@ -32,7 +32,9 @@ const StationAccessPage = () => {
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-2 self-end">
-        <SimpleBtn>Edit Station Viewer(s)</SimpleBtn>
+        <SimpleBtn link to="../edit-access">
+          Edit Station Viewer(s)
+        </SimpleBtn>
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

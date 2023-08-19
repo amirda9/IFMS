@@ -57,16 +57,8 @@ const NetworkAccessPage = () => {
               viewerList.splice(index, 1);
             }
           }
+          const users = viewerList.map(value => value);
 
-          const users = viewerList.map(value => ({
-            access_types: AccessEnum.viewer,
-            user_id: value,
-          }));
-          if (admin)
-            users.push({
-              access_types: AccessEnum.admin,
-              user_id: admin.user.id,
-            });
           request('networkAccessUpdate', {
             params: {network_id: params.networkId!},
             data: {users},
@@ -74,7 +66,9 @@ const NetworkAccessPage = () => {
         }}>
         OK
       </SimpleBtn>
-      <SimpleBtn>Cancel</SimpleBtn>
+      <SimpleBtn link to="./../access">
+        Cancel
+      </SimpleBtn>
     </>
   );
 

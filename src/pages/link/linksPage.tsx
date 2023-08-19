@@ -4,7 +4,7 @@ import { SidebarItem } from "~/components";
 
 const LinksPage = () => {
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Links">
+    <SidebarLayout searchOnChange={() => {}} createTitle="Links" canAdd={true}>
       {[...new Array(4)].map((_, value) => (
         <SidebarItem
           name={`Link ${value + 1}`}

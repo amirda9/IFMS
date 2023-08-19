@@ -22,7 +22,7 @@ const RegionAccessPage = () => {
     selector: state => ({
       viewers: state.http.regionAccessList,
       users: state.http.userList,
-      update: state.http.regionAccessUpdate,
+      update: state.http.regionAdminUpdate,
     }),
     initialRequests: request => {
       request('regionAccessList', {params: {region_id: params.regionId!}});
@@ -44,9 +44,9 @@ const RegionAccessPage = () => {
       user_id: userAdmin || admin!.user.id,
       access_types: AccessEnum.admin,
     });
-    request('regionAccessUpdate', {
+    request('regionAdminUpdate', {
       params: {region_id: params.regionId!},
-      data: {users: viewerWithoutAdmin},
+      data: {user_id: userAdmin || admin!.user.id!},
     });
   };
 
@@ -77,8 +77,8 @@ const RegionAccessPage = () => {
             onChange={event => {
               setUserAdmin(event.target.value);
             }}>
-            <option selected value="" className="hidden" />
-            <option selected value={undefined} className="hidden" />
+            <option value="" className="hidden" />
+            <option value={undefined} className="hidden" />
             {userList.map(user => (
               <option value={user.id} key={user.id}>
                 {user.username}

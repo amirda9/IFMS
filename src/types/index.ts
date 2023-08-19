@@ -8,3 +8,4 @@ export * from './AccessType';
 export * from './RegionType';
 export * from './StationType';
 export * from './GroupType';
+export * from './LinkType';

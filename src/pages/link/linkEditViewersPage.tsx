@@ -9,7 +9,7 @@ import {AccessEnum} from '~/types';
 
 const RegionAccessPage = () => {
   const editor = useRef<EditorRefType>(null);
-  const params = useParams<{regionId: string}>();
+  const params = useParams<{linkId: string}>();
   const navigate = useNavigate();
   const {
     request,
@@ -20,7 +20,7 @@ const RegionAccessPage = () => {
       update: state.http.regionAccessUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.regionId!}});
+      request('regionAccessList', {params: {region_id: params.linkId!}});
     },
     onUpdate: lastState => {
       if (
@@ -35,7 +35,7 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('regionAccessList', {params: {region_id: params.regionId!}});
+        request('regionAccessList', {params: {region_id: params.linkId!}});
         navigate('../access', {replace: true, relative: 'path'});
       }
     },
@@ -61,7 +61,7 @@ const RegionAccessPage = () => {
           const users = viewerList.map(value => value);
 
           request('regionAccessUpdate', {
-            params: {region_id: params.regionId!},
+            params: {region_id: params.linkId!},
             data: {users},
           });
         }}>

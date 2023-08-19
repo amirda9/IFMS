@@ -14,6 +14,7 @@ const LinkEmptyPage = () => {
           name="Cables & Segments"
           className="w-40"
         />
+        <TabItem to="ducts-segments" name="Ducts & Segments" className="w-40" />
         <TabItem to="points" name="Points" />
       </div>
       <Outlet key={params.linkId} />

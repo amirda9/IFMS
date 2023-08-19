@@ -73,17 +73,20 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   );
 
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
-    const list = [...(side === 'left' ? state.selectLeft : state.selectRight)];
-    if (list.includes(id ?? key)) {
-      const index = list.indexOf(id ?? key);
-      list.splice(index, 1);
-    } else {
-      list.push(id ?? key);
-    }
-
-    setState({
-      ...state,
-      [side === 'left' ? 'selectLeft' : 'selectRight']: list,
+    setState(state => {
+      const list = [
+        ...(side === 'left' ? state.selectLeft : state.selectRight),
+      ];
+      if (list.includes(id ?? key)) {
+        const index = list.indexOf(id ?? key);
+        list.splice(index, 1);
+      } else {
+        list.push(id ?? key);
+      }
+      return {
+        ...state,
+        [side === 'left' ? 'selectLeft' : 'selectRight']: list,
+      };
     });
   };
   const renderDynamicColumn = (side: 'left' | 'right') => {

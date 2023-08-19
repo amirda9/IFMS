@@ -24,7 +24,7 @@ const NetworkAccessPage = () => {
     selector: state => ({
       viewers: state.http.networkAccessList,
       users: state.http.userList,
-      update: state.http.networkAccessUpdate,
+      update: state.http.networkUpdateAdmin,
     }),
     initialRequests: request => {
       request('networkAccessList', {params: {network_id: params.networkId!}});
@@ -32,23 +32,12 @@ const NetworkAccessPage = () => {
     },
   });
   const saveAdmin = () => {
-    const viewerWithoutAdmin =
-      viewers?.data?.users
-        .filter(viewer => viewer.access !== AccessEnum.admin)
-        .map(viewer => ({
-          user_id: viewer.user.id,
-          access_types: AccessEnum.viewer,
-        })) || [];
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
     );
-    viewerWithoutAdmin.push({
-      user_id: userAdmin || admin!.user.id,
-      access_types: AccessEnum.admin,
-    });
-    request('networkAccessUpdate', {
+    request('networkUpdateAdmin', {
       params: {network_id: params.networkId!},
-      data: {users: viewerWithoutAdmin},
+      data: {user_id: userAdmin || admin!.user.id},
     });
   };
 
@@ -79,8 +68,8 @@ const NetworkAccessPage = () => {
             onChange={event => {
               setUserAdmin(event.target.value);
             }}>
-            <option selected value="" className="hidden" />
-            <option selected value={undefined} className="hidden" />
+            <option value="" className="hidden" />
+            <option value={undefined} className="hidden" />
             {userList.map(user => (
               <option value={user.id} key={user.id}>
                 {user.username}

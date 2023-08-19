@@ -56,20 +56,33 @@ function App() {
             </Route>
           </Route>
 
+          <Route
+            path="/stations/:stationId/edit-access"
+            Component={pages.StationEditViewerPage}
+          />
           <Route path="/stations" Component={pages.StationsPage}>
+            <Route path="create" Component={pages.StationCreatePage} />
             <Route path=":stationId" Component={pages.StationEmptyPage}>
               <Route path="" Component={pages.StationDetailPage} />
               <Route path="access" Component={pages.StationAccessPage} />
             </Route>
           </Route>
 
+          <Route
+            path="/links/:linkId/edit-access"
+            Component={pages.LinkEditViewersPage}
+          />
           <Route path="/links" Component={pages.LinksPage}>
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
               <Route path="access" Component={pages.LinkAccessPage} />
               <Route
                 path="cables-segments"
-                Component={pages.LinkCablesSegmentsPage}
+                Component={pages.LinkCablesAndSegmentsPage}
+              />
+              <Route
+                path="ducts-segments"
+                Component={pages.LinkDuctsAndSegmentsPage}
               />
               <Route path="points" Component={pages.LinkPointsPage} />
             </Route>

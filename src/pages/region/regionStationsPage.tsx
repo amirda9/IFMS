@@ -11,11 +11,11 @@ const columns = {
 };
 
 const RegionStationsPage = () => {
-  const params = useParams<{RegionId: string}>();
+  const params = useParams<{regionId: string}>();
   const {state} = useHttpRequest({
     selector: state => ({list: state.http.regionStationList}),
     initialRequests: request => {
-      request('regionStationList', {params: {region_id: params.RegionId!}});
+      request('regionStationList', {params: {region_id: params.regionId!}});
     },
   });
   return (
@@ -36,7 +36,9 @@ const RegionStationsPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-2 self-end">
-        <SimpleBtn>Edit Stations List</SimpleBtn>
+        <SimpleBtn link to="/stations">
+          Edit Stations List
+        </SimpleBtn>
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

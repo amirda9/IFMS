@@ -6,6 +6,7 @@ import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import dayjs from 'dayjs';
 import * as Yup from 'yup';
+import {useHttpRequest} from '~/hooks';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -15,12 +16,22 @@ const stationSchema = Yup.object().shape({
 });
 const StationDetailPage = () => {
   const params = useParams<{stationId: string}>();
+  const {state, request} = useHttpRequest({
+    selector: state => ({detail: state.http.stationDetail}),
+    initialRequests: request => {
+      request('stationDetail', {params: {station_id: params.stationId!}});
+    },
+  });
   const buttons = (
     <>
-      <SimpleBtn type="submit" disabled={true}>
+      <SimpleBtn
+        type="submit"
+        disabled={state.detail?.httpRequestStatus === 'loading'}>
         Save
       </SimpleBtn>
-      <SimpleBtn>Cancel</SimpleBtn>
+      <SimpleBtn link to="../">
+        Cancel
+      </SimpleBtn>
     </>
   );
   return (
