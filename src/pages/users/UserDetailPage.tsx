@@ -2,7 +2,7 @@ import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
 import {FC, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
-import {Description, SimpleBtn} from '~/components';
+import {Description, Select, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import dayjs from 'dayjs';
@@ -105,11 +105,11 @@ const UsersDetailPage: FC = () => {
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
-            <Description label="ID" labelClassName="mt-2" items="start">
+            <Description label="ID" items="start">
               <span className="mb-4">{userId}</span>
             </Description>
 
-            <Description label="Username" labelClassName="mt-2" items="start">
+            <Description label="Username" items="start">
               <InputFormik
                 name="username"
                 wrapperClassName="w-2/3"
@@ -117,7 +117,7 @@ const UsersDetailPage: FC = () => {
               />
             </Description>
 
-            <Description label="Name" labelClassName="mt-2" items="start">
+            <Description label="Name" items="start">
               <InputFormik
                 name="name"
                 wrapperClassName="w-2/3"
@@ -125,7 +125,7 @@ const UsersDetailPage: FC = () => {
               />
             </Description>
 
-            <Description label="Telephone" labelClassName="mt-2" items="start">
+            <Description label="Telephone" items="start">
               <InputFormik
                 name="telephone"
                 wrapperClassName="w-2/3"
@@ -133,7 +133,7 @@ const UsersDetailPage: FC = () => {
               />
             </Description>
 
-            <Description label="Mobile" labelClassName="mt-2" items="start">
+            <Description label="Mobile" items="start">
               <InputFormik
                 name="mobile"
                 wrapperClassName="w-2/3"
@@ -141,7 +141,7 @@ const UsersDetailPage: FC = () => {
               />
             </Description>
 
-            <Description label="Email" labelClassName="mt-2" items="start">
+            <Description label="Email" items="start">
               <InputFormik
                 name="email"
                 wrapperClassName="w-2/3"
@@ -157,9 +157,17 @@ const UsersDetailPage: FC = () => {
               <TextareaFormik name="comment" className="w-2/3" />
             </Description>
 
-            <div className="flex">
+            <Description label="Region">
+              <Select
+                options={[{label: 'hi'}, {label: 'hi2'}, {label: 'hi3'}]}
+                onChange={console.log}
+                value={3}
+              />
+            </Description>
+
+            <div className="flex mt-4">
               {userDetailQuery.state?.data?.time_created && (
-                <Description label="Created" className="mb-4">
+                <Description label="Created">
                   {dayjs(userDetailQuery.state.data.time_created).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
