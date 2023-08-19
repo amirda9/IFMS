@@ -6,6 +6,7 @@ import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
+import {ValidationApiError} from '~/types/errorsTypes';
 
 const initialValues = {
   password: '',
@@ -37,7 +38,16 @@ const UserAuthenticationPage: FC = () => {
       toast('Password changed successfully.', {type: 'success'});
     } else if (passwordRestMutation.state?.httpRequestStatus === 'error') {
       const error = passwordRestMutation.state.error;
-      
+      if (error) {
+        if (error.status === 422) {
+          // TODO: Create a utility function to toast all the elements of the `detail` array
+          toast((error.data as ValidationApiError).detail[0].message, {
+            type: 'error',
+          });
+        } else {
+          toast(error.data.detail as string, {type: 'error'});
+        }
+      }
     }
   }, [passwordRestMutation.state]);
 
