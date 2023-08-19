@@ -8,13 +8,15 @@ type InputType = React.DetailedHTMLProps<
   HTMLInputElement
 >;
 type PropsType = Omit<InputType, 'value'> & {
+  wrapperClassName?: string;
   name: string;
   hideEye?: boolean;
 };
 const InputFormik = ({
   name,
   hideEye = false,
-  className,
+  wrapperClassName = "",
+  className = "",
   ...props
 }: PropsType) => {
   const [fields, meta] = useField(name);
@@ -33,7 +35,7 @@ const InputFormik = ({
       className={`flex flex-grow flex-col items-start ${
         meta.touched && meta.error ? 'pb-1' : 'pb-5'
       }`}>
-      <div className={`relative ${className}`}>
+      <div className={`relative ${wrapperClassName}`}>
         <TextInput
           {...props}
           name={name}
@@ -49,12 +51,12 @@ const InputFormik = ({
           props.type === 'password' &&
           (passwordVisible ? (
             <IoEyeOutline
-              className="absolute right-2 top-2"
+              className="absolute right-2 top-1/2 -translate-y-1/2"
               onClick={() => setPasswordVisible(false)}
             />
           ) : (
             <IoEyeOffOutline
-              className="absolute right-2 top-2"
+              className="absolute right-2 top-1/2 -translate-y-1/2"
               onClick={() => setPasswordVisible(true)}
             />
           ))}

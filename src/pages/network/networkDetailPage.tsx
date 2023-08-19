@@ -64,7 +64,8 @@ const NetworkDetailPage = () => {
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
-                className="w-2/3 disabled:bg-white"
+                wrapperClassName="w-2/3"
+                className="disabled:bg-white"
                 disabled
               />
             </Description>

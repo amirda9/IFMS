@@ -79,7 +79,8 @@ const UsersDetailPage: FC = () => {
             <Description label="ID" labelClassName="mt-2" items="start">
               <InputFormik
                 name="id"
-                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+                wrapperClassName="w-2/3"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 disabled
               />
             </Description>
@@ -87,35 +88,40 @@ const UsersDetailPage: FC = () => {
             <Description label="Username" labelClassName="mt-2" items="start">
               <InputFormik
                 name="username"
-                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+                wrapperClassName="w-2/3"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
 
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
-                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+                wrapperClassName="w-2/3"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
 
             <Description label="Telephone" labelClassName="mt-2" items="start">
               <InputFormik
                 name="telephone"
-                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+                wrapperClassName="w-2/3"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
 
             <Description label="Mobile" labelClassName="mt-2" items="start">
               <InputFormik
                 name="mobile"
-                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+                wrapperClassName="w-2/3"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
 
             <Description label="Email" labelClassName="mt-2" items="start">
               <InputFormik
                 name="email"
-                className="w-2/3 disabled:cursor-not-allowed disabled:bg-slate-200"
+                wrapperClassName="w-2/3"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
 

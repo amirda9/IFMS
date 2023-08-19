@@ -59,11 +59,11 @@ const UserAuthenticationPage: FC = () => {
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
             <Description label="New Password" items="start">
-              <InputFormik className="w-2/3" type="password" name="password" />
+              <InputFormik wrapperClassName="w-2/3" type="password" name="password" />
             </Description>
             <Description label="Confirm New Password" items="start">
               <InputFormik
-                className="w-2/3"
+                wrapperClassName="w-2/3"
                 type="password"
                 name="passwordConfirmation"
               />
