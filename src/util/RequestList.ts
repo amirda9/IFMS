@@ -138,10 +138,14 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
-  stationCreate: {url: api.baseUrl + api.stationUrl, method: 'post', auth: true},
+  stationCreate: {
+    url: api.baseUrl + api.stationUrl,
+    method: 'post',
+    auth: true,
+  },
   stationDetail: {
     url: api.baseUrl + api.stationRUDUrl,
-    method: 'post',
+    method: 'get',
     auth: true,
   },
   stationUpdate: {

@@ -83,6 +83,14 @@ function App() {
               <Route path="points" Component={pages.LinkPointsPage} />
             </Route>
           </Route>
+
+          <Route path="configuration" Component={pages.SystemSettingPage}>
+            <Route path="" Component={pages.SystemPage} />
+            <Route
+              path="threshold-settings"
+              Component={pages.ThresholdSettingPage}
+            />
+          </Route>
         </Route>
       </Routes>
     </Router>

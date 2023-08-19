@@ -19,7 +19,7 @@ export const navbarItems = [
     items: [
       {
         label: 'System Settings',
-        to: '/system-settings',
+        to: 'configuration',
       },
       {
         label: 'Alarm Types',
@@ -37,7 +37,7 @@ export const navbarItems = [
         label: 'All RTU Status',
         to: '/all-rtu-status',
       },
-      {label: 'Threshold Settings', to: '/threshold-settings'},
+      {label: 'Threshold Settings', to: 'configuration/threshold-settings'},
       {label: 'System Maintenance', to: '/system-maintenance'},
     ],
   },

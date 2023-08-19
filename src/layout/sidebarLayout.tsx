@@ -35,7 +35,10 @@ const SidebarLayout: FC<PropsType> = ({
         ) : null}
 
         {createTitle ? (
-          <div className="ml-[-10px] mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2">
+          <div
+            className={`ml-[-10px] ${
+              searchOnChange ? 'mt-14' : ''
+            } flex w-fit flex-row items-center rounded-md px-3 py-2`}>
             <span className="text-md font-semibold">{createTitle}</span>
             {canAdd ? (
               <Link to="create" className="ml-3 rounded-md">
