@@ -23,6 +23,7 @@ export const URLS = {
       adminAccess: '/otdr/network/{network_id}/access/admin',
     },
     region: {
+      all: '/otdr/region',
       create: '/otdr/region/{network_id}',
       single: '/otdr/region/{region_id}',
       listInNetwork: '/otdr/region/network/{network_id}',

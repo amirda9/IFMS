@@ -22,6 +22,7 @@ type RequestKeys =
   | 'networkUpdateAdmin'
   | 'groupList'
   | 'groupDetail'
+  | 'allRegions'
   | 'regionList'
   | 'regionCreate'
   | 'regionDetail'
@@ -112,6 +113,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   groupDetail: {
     url: api.BASE_URL + api.URLS.auth.groups.single,
+    method: 'get',
+    auth: true,
+  },
+  allRegions: {
+    url: api.BASE_URL + api.URLS.otdr.region.all,
     method: 'get',
     auth: true,
   },
@@ -253,6 +259,7 @@ export type RequestListTypes = {
   };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
+  allRegions: undefined,
   regionList: {params: {network_id: string}};
   regionCreate: {
     params: {network_id: string};
@@ -315,6 +322,7 @@ export type ResponseListType = {
   networkAccessUpdate: {count: number};
   groupList: T.GroupType[];
   groupDetail: T.GroupDetailType;
+  allRegions: T.RegionListType[];
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};
   regionDetail: T.RegionType;
