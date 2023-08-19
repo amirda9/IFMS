@@ -17,7 +17,8 @@ type RequestKeys =
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
-  | 'userData'
+  | 'userDetail'
+  | 'userDetailUpdate'
   | 'networkAccessUpdate'
   | 'networkUpdateAdmin'
   | 'groupList'
@@ -60,9 +61,14 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
-  userData: {
+  userDetail: {
     url: api.baseUrl + api.userDetailUrl,
     method: 'get',
+    auth: true,
+  },
+  userDetailUpdate: {
+    url: api.baseUrl + api.userDetailUrl,
+    method: 'put',
     auth: true,
   },
   networkCreate: {
@@ -156,7 +162,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
-  stationCreate: {url: api.baseUrl + api.stationUrl, method: 'post', auth: true},
+  stationCreate: {
+    url: api.baseUrl + api.stationUrl,
+    method: 'post',
+    auth: true,
+  },
   stationDetail: {
     url: api.baseUrl + api.stationRUDUrl,
     method: 'post',
@@ -212,10 +222,16 @@ export type RequestListTypes = {
     };
   };
   userList: undefined;
-  userData: {
+  userDetail: {
     params: {
       user_id: string;
     };
+  };
+  userDetailUpdate: {
+    params: {
+      user_id: string;
+    };
+    data: T.UserDetailFormType;
   };
   networkCreate: {
     data: {
@@ -285,7 +301,8 @@ export type ResponseListType = {
   refresh: T.LoginResponseType;
   passwordReset: string;
   userList: T.UserListType[];
-  userData: T.UserDetailType;
+  userDetail: T.UserDetailType;
+  userDetailUpdate: {id: string; username: string; role: string; email: string};
   networkCreate: T.NetworkType & {network_id: string};
   networkList: T.NetworkType[];
   networkDetail: T.NetworkDetailType;

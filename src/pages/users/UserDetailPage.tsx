@@ -6,47 +6,16 @@ import {Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import dayjs from 'dayjs';
+import {UserDetailFormType} from '~/types';
+import {toast} from 'react-toastify';
 
 const UsersDetailPage: FC = () => {
   const {userId} = useParams();
 
-  const validationSchema = Yup.object().shape({
-    username: Yup.string().min(3, 'Username must be longer than 3 characters.'),
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().email('Please provide a valid email.'),
-    telephone: Yup.string(),
-    mobile: Yup.string(),
-    address: Yup.string(),
-    comment: Yup.string(),
-    region: Yup.string(),
-    station: Yup.string(),
-  });
-
-  const initialValues = {
-    id: userId,
-    username: '',
-    name: '',
-    telephone: '',
-    mobile: '',
-    email: '',
-    address: '',
-    comment: '',
-    region: '',
-    station: '',
-  };
-
-  const formik = useFormik({
-    initialValues,
-    validationSchema,
-    onSubmit: values => {
-      console.log('SUBMITTED VALUES:', values);
-    },
-  });
-
-  const userDataQuery = useHttpRequest({
-    selector: state => state.http.userData,
+  const userDetailQuery = useHttpRequest({
+    selector: state => state.http.userDetail,
     initialRequests: request => {
-      request('userData', {params: {user_id: userId!}});
+      request('userDetail', {params: {user_id: userId!}});
     },
     onUpdate: (lastState, state) => {
       if (
@@ -55,6 +24,7 @@ const UsersDetailPage: FC = () => {
         state.data
       ) {
         formik.setFieldValue('id', state.data.id);
+        formik.setFieldValue('name', state.data.name || '');
         formik.setFieldValue('username', state.data.username);
         formik.setFieldValue('email', state.data.email);
         formik.setFieldValue('station', state.data.station?.name || '');
@@ -67,9 +37,68 @@ const UsersDetailPage: FC = () => {
     },
   });
 
+  const userDetailMutation = useHttpRequest({
+    selector: state => state.http.userDetailUpdate,
+  });
+
+  const validationSchema = Yup.object().shape({
+    username: Yup.string()
+      .required('Username is required.')
+      .min(3, 'Username must be longer than 3 characters.'),
+    name: Yup.string(),
+    email: Yup.string().email('Please provide a valid email.'),
+    telephone: Yup.string(),
+    mobile: Yup.string(),
+    address: Yup.string(),
+    comment: Yup.string(),
+    region: Yup.string(),
+    station: Yup.string(),
+  });
+
+  const initialValues: UserDetailFormType = {
+    username: '',
+    name: '',
+    telephone: '',
+    mobile: '',
+    email: '',
+    address: '',
+    comment: '',
+    region: '',
+    station: '',
+  };
+
+  const handleSaveUserDetailClick = (values: UserDetailFormType) => {
+    console.log('values:', values);
+
+    userDetailMutation.request('userDetailUpdate', {
+      params: {user_id: userId!},
+      data: values,
+    });
+  };
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: handleSaveUserDetailClick,
+  });
+
   useEffect(() => {
-    userDataQuery.request('userData', {params: {user_id: userId!}});
+    userDetailQuery.request('userDetail', {params: {user_id: userId!}});
   }, [userId]);
+
+  useEffect(() => {
+    console.log('userDetailMutation.state:', userDetailMutation.state);
+    if (userDetailMutation.state?.httpRequestStatus === 'success') {
+      toast('User updated successfully.', {type: 'success'});
+    } else if (userDetailMutation.state?.httpRequestStatus === 'error') {
+      if (userDetailMutation.state.error!.status === 422)
+        toast('Validation Error', {type: 'error'});
+      else
+        toast(userDetailMutation.state.error!.data.detail as string, {
+          type: 'error',
+        });
+    }
+  }, [userDetailMutation.state]);
 
   return (
     <div className="flex flex-grow flex-col gap-4">
@@ -77,12 +106,7 @@ const UsersDetailPage: FC = () => {
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
             <Description label="ID" labelClassName="mt-2" items="start">
-              <InputFormik
-                name="id"
-                wrapperClassName="w-2/3"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-                disabled
-              />
+              <span className="mb-4">{userId}</span>
             </Description>
 
             <Description label="Username" labelClassName="mt-2" items="start">
@@ -134,17 +158,17 @@ const UsersDetailPage: FC = () => {
             </Description>
 
             <div className="flex">
-              {userDataQuery.state?.data?.time_created && (
+              {userDetailQuery.state?.data?.time_created && (
                 <Description label="Created" className="mb-4">
-                  {dayjs(userDataQuery.state.data.time_created).format(
+                  {dayjs(userDetailQuery.state.data.time_created).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
                 </Description>
               )}
 
-              {userDataQuery.state?.data?.time_updated && (
+              {userDetailQuery.state?.data?.time_updated && (
                 <Description label="Last Modified">
-                  {dayjs(userDataQuery.state?.data?.time_updated).format(
+                  {dayjs(userDetailQuery.state?.data?.time_updated).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
                 </Description>
