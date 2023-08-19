@@ -51,7 +51,8 @@ const StationDetailPage = () => {
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
-                className="w-2/3 disabled:bg-white"
+                wrapperClassName="w-2/3"
+                className="disabled:bg-white"
                 disabled
               />
             </Description>
@@ -64,7 +65,8 @@ const StationDetailPage = () => {
               <InputFormik
                 type="number"
                 name="latitude"
-                className="w-1/4 disabled:bg-white"
+                wrapperClassName="w-1/4"
+                className="disabled:bg-white"
               />
             </Description>
 
@@ -72,7 +74,8 @@ const StationDetailPage = () => {
               <InputFormik
                 type="number"
                 name="longitude"
-                className="w-1/4 disabled:bg-white"
+                wrapperClassName="w-1/4"
+                className="disabled:bg-white"
               />
             </Description>
 

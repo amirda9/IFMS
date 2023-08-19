@@ -5,7 +5,7 @@ import {
   configHeader,
   convertObjectToFormData,
   convertObjectToUrlParams,
-  handelError,
+  handleError,
   request,
 } from '~/util';
 
@@ -41,7 +41,7 @@ function* HttpRequest(action: HttpActionType) {
       actionName: action._name,
     });
   } catch (error) {
-    yield handelError({
+    yield handleError({
       auth,
       error: error as any,
       requestData: action.payload.requestData,

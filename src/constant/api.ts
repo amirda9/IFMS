@@ -1,28 +1,32 @@
-export const baseUrl = 'http://37.32.27.143:8080/api/';
+export const baseUrl = "http://37.32.27.143:8080/api";
 
-export const loginUrl = 'auth/users/login';
-export const refreshTokenUrl = 'auth/users/refresh_token';
-export const userListUrl = 'auth/users/';
-export const networkCreateUrl = 'otdr/network/';
-export const networkListUrl = 'otdr/network/';
-export const networkDetailUrl = 'otdr/network/{networkId}/';
-export const networkAccessListUrl = 'otdr/network/{network_id}/access/';
-export const networkAccessListUpdateUrl =
-  'otdr/network/{network_id}/access/viewers';
-export const groupListUrl = 'auth/groups/';
-export const regionListUrl = 'otdr/region/';
-export const regionCreateUrl = 'otdr/region/{network_id}/';
-export const regionDetailUrl = 'otdr/region/{region_id}/';
-export const regionAccessUrl = 'otdr/region/{region_id}/access';
-export const regionViewerUpdateUrl = 'otdr/region/{region_id}/access/viewers';
-export const regionStationListUrl = 'otdr/station/region/{region_id}';
-export const networkUpdateAdminUrl = 'otdr/network/{network_id}/access/admin';
-export const regionLinkListUrl = 'otdr/link/region/{region_id}';
-export const regionAdminUpdateUrl = 'otdr/region/{region_id}/access/admin';
-export const networkStationListUrl = 'otdr/station/network/{network_id}';
-export const stationUrl = 'otdr/station/';
-export const stationRUDUrl = 'otdr/station/{station_id}';
-export const stationAccessUrl = 'otdr/station/{station_id}/access';
-export const stationViewerUpdateUrl =
-  'otdr/station/{station_id}/access/viewers';
-export const stationAdminUpdateUrl = 'otdr/station/{station_id}/access/admin';
+// TODO: Categorize or just separate the endpoints with comments (we can do it just like the Swagger categories)
+
+export const loginUrl = "/auth/users/login";
+export const refreshTokenUrl = "/auth/users/refresh_token";
+export const passwordResetUrl = "/auth/users/{user_id}/change_password";
+export const userListUrl = "/auth/users";
+export const userDetailUrl = "/auth/users/{user_id}";
+export const networkCreateUrl = "/otdr/network";
+export const networkListUrl = "/otdr/network";
+export const networkDetailUrl = "/otdr/network/{networkId}";
+export const networkAccessListUrl = "/otdr/network/{network_id}/access";
+export const networkAccessListUpdateUrl = "otdr/network/{network_id}/access/viewers";
+export const networkAccessListUpdate = "otdr/network/{network_id}/access";
+export const groupListUrl = "/auth/groups";
+export const groupDetailUrl = "/auth/groups/{group_id}";
+export const regionListUrl = "/otdr/region/network/{network_id}";
+export const regionCreateUrl = "/otdr/region/{network_id}";
+export const regionDetailUrl = "/otdr/region/{region_id}";
+export const regionAccessUrl = "/otdr/region/{region_id}/access";
+export const regionViewerUpdateUrl = "otdr/region/{region_id}/access/viewers";
+export const regionStationListUrl = "/otdr/station/region/{region_id}";
+export const networkUpdateAdminUrl = "otdr/network/{network_id}/access/admin";
+export const regionLinkListUrl = "otdr/link/region/{region_id}";
+export const regionAdminUpdateUrl = "otdr/region/{region_id}/access/admin";
+export const networkStationListUrl = "otdr/station/network/{network_id}";
+export const stationUrl = "otdr/station/";
+export const stationRUDUrl = "otdr/station/{station_id}";
+export const stationAccessUrl = "otdr/station/{station_id}/access";
+export const stationViewerUpdateUrl = "otdr/station/{station_id}/access/viewers";
+export const stationAdminUpdateUrl = "otdr/station/{station_id}/access/admin";

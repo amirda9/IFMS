@@ -65,7 +65,7 @@ const RegionDetailPage = () => {
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
             <Description label="Name" labelClassName="mt-2" items="start">
-              <InputFormik name="name" className="w-2/3 disabled:bg-white" />
+              <InputFormik name="name" wrapperClassName='w-2/3' className="disabled:bg-white" />
             </Description>
 
             <Description label="Comments" items="start">

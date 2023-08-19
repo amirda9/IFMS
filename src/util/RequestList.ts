@@ -9,6 +9,7 @@ export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
 type RequestKeys =
   | 'login'
   | 'refresh'
+  | 'passwordReset'
   | 'networkList'
   | 'networkDetail'
   | 'networkCreate'
@@ -16,9 +17,11 @@ type RequestKeys =
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
+  | 'userData'
   | 'networkAccessUpdate'
   | 'networkUpdateAdmin'
   | 'groupList'
+  | 'groupDetail'
   | 'regionList'
   | 'regionCreate'
   | 'regionDetail'
@@ -47,8 +50,18 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     headers: {'content-type': 'application/x-www-form-urlencoded'},
   },
+  passwordReset: {
+    url: api.baseUrl + api.passwordResetUrl,
+    method: 'post',
+    auth: true,
+  },
   userList: {
     url: api.baseUrl + api.userListUrl,
+    method: 'get',
+    auth: true,
+  },
+  userData: {
+    url: api.baseUrl + api.userDetailUrl,
     method: 'get',
     auth: true,
   },
@@ -89,6 +102,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   groupList: {
     url: api.baseUrl + api.groupListUrl,
+    method: 'get',
+    auth: true,
+  },
+  groupDetail: {
+    url: api.baseUrl + api.groupDetailUrl,
     method: 'get',
     auth: true,
   },
@@ -186,7 +204,19 @@ export type RequestListTypes = {
   refresh: {
     data: {refresh_token: string};
   };
+  passwordReset: {
+    params: {user_id: string};
+    data: {
+      new_password: string;
+      confirm_new_password: string;
+    };
+  };
   userList: undefined;
+  userData: {
+    params: {
+      user_id: string;
+    };
+  };
   networkCreate: {
     data: {
       name: string;
@@ -203,6 +233,7 @@ export type RequestListTypes = {
     data: {users: string[]};
   };
   groupList: undefined;
+  groupDetail: {params: {group_id: string}};
   regionList: {params: {network_id: string}};
   regionCreate: {
     params: {network_id: string};
@@ -252,7 +283,9 @@ export type RequestListTypes = {
 export type ResponseListType = {
   login: T.LoginResponseType;
   refresh: T.LoginResponseType;
+  passwordReset: string;
   userList: T.UserListType[];
+  userData: T.UserDetailType;
   networkCreate: T.NetworkType & {network_id: string};
   networkList: T.NetworkType[];
   networkDetail: T.NetworkDetailType;
@@ -260,7 +293,8 @@ export type ResponseListType = {
   networkUpdate: T.NetworkType;
   networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
-  groupList: GroupType[];
+  groupList: T.GroupType[];
+  groupDetail: T.GroupDetailType;
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};
   regionDetail: T.RegionType;

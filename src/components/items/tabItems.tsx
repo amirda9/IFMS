@@ -10,7 +10,7 @@ const TabItems: FC<PropsType> = ({to, name, className}) => {
   return (
     <NavLink
       className={({isActive}) =>
-        `flex flex h-8 w-20  items-center justify-center text-sm ${
+        `flex h-8 px-3 items-center justify-center text-sm ${
           isActive ? 'bg-p text-white' : 'bg-blue-200'
         } ${className}`
       }
