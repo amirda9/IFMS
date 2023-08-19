@@ -1,16 +1,20 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
-import {FC, useEffect} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import dayjs from 'dayjs';
-import {UserDetailFormType} from '~/types';
+import {RegionListType, UserDetailFormType} from '~/types';
 import {toast} from 'react-toastify';
 
 const UsersDetailPage: FC = () => {
   const {userId} = useParams();
+
+  const [regionList, setRegionList] = useState<
+    {label: string; payload: RegionListType}[]
+  >([]);
 
   const userDetailQuery = useHttpRequest({
     selector: state => state.http.userDetail,
@@ -41,6 +45,24 @@ const UsersDetailPage: FC = () => {
   const userDetailMutation = useHttpRequest({
     selector: state => state.http.userDetailUpdate,
   });
+
+  const allRegionsQuery = useHttpRequest({
+    selector: state => state.http.allRegions,
+    initialRequests: request => {
+      request('allRegions', undefined);
+    },
+  });
+
+  useEffect(() => {
+    if (allRegionsQuery.state?.httpRequestStatus === 'success') {
+      setRegionList(
+        allRegionsQuery.state.data!.map(item => ({
+          label: item.name,
+          payload: item,
+        })),
+      );
+    }
+  }, [allRegionsQuery.state]);
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
@@ -160,7 +182,7 @@ const UsersDetailPage: FC = () => {
 
             <Description label="Region">
               <Select
-                options={[{label: 'hi'}, {label: 'hi2'}, {label: 'hi3'}]}
+                options={regionList}
                 onChange={console.log}
                 value={3}
               />
