@@ -23,16 +23,17 @@ const UsersDetailPage: FC = () => {
         state?.httpRequestStatus === 'success' &&
         state.data
       ) {
-        formik.setFieldValue('id', state.data.id);
-        formik.setFieldValue('name', state.data.name || '');
-        formik.setFieldValue('username', state.data.username);
-        formik.setFieldValue('email', state.data.email);
-        formik.setFieldValue('station', state.data.station?.name || '');
-        formik.setFieldValue('region', state.data.region?.name || '');
-        formik.setFieldValue('telephone', state.data.telephone || '');
-        formik.setFieldValue('mobile', state.data.mobile || '');
-        formik.setFieldValue('address', state.data.address || '');
-        formik.setFieldValue('comment', state.data.comment || '');
+        formik.setValues({
+          name: state.data.name || '',
+          username: state.data.username,
+          email: state.data.email,
+          station: state.data.station?.name || '',
+          region: state.data.region?.name || '',
+          telephone: state.data.telephone || '',
+          mobile: state.data.mobile || '',
+          address: state.data.address || '',
+          comment: state.data.comment || '',
+        });
       }
     },
   });
@@ -165,7 +166,7 @@ const UsersDetailPage: FC = () => {
               />
             </Description>
 
-            <div className="flex mt-4">
+            <div className="mt-4 flex">
               {userDetailQuery.state?.data?.time_created && (
                 <Description label="Created">
                   {dayjs(userDetailQuery.state.data.time_created).format(
