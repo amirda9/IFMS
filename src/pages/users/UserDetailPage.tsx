@@ -2,7 +2,7 @@ import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
 import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {Description, Select, SimpleBtn} from '~/components';
+import {Description, ControlledSelect, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import dayjs from 'dayjs';
@@ -228,7 +228,7 @@ const UsersDetailPage: FC = () => {
 
             <div className="flex">
               <Description label="Region">
-                <Select
+                <ControlledSelect
                   options={regionOptions}
                   onChange={regionId => {
                     formik.setFieldValue('region_id', regionId);
@@ -240,7 +240,7 @@ const UsersDetailPage: FC = () => {
 
               {stationOptions.length > 0 && (
                 <Description label="Station">
-                  <Select
+                  <ControlledSelect
                     options={stationOptions}
                     onChange={stationId => {
                       formik.setFieldValue('station_id', stationId);
