@@ -4,6 +4,11 @@ import * as api from '~/constant/api';
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
 
+/**
+ * TODO: Find a way to better organize the names;
+ * As the number of APIs grow, it will get harder to keep track of available API definitions
+ */
+
 type RequestKeys =
   | 'login'
   | 'refresh'
@@ -39,7 +44,13 @@ type RequestKeys =
   | 'networkStationList'
   | 'stationAccessList'
   | 'stationViewerUpdate'
-  | 'stationAdminUpdate';
+  | 'stationAdminUpdate'
+  | 'userNetworkAccesses'
+  | 'userRegionsAccesses'
+  | 'userStationsAccesses'
+  | 'userLinksAccesses'
+  | 'userAllAccesses';
+
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.BASE_URL + api.URLS.auth.users.login,
@@ -216,6 +227,31 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  userNetworkAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.networks,
+    method: 'get',
+    auth: true,
+  },
+  userRegionsAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.regions,
+    method: 'get',
+    auth: true,
+  },
+  userStationsAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.stations,
+    method: 'get',
+    auth: true,
+  },
+  userLinksAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.links,
+    method: 'get',
+    auth: true,
+  },
+  userAllAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.all,
+    method: 'put',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -310,6 +346,29 @@ export type RequestListTypes = {
     params: {station_id: string};
     data: {user_id: string};
   };
+  userNetworkAccesses: {
+    params: {user_id: string};
+    data: {access_type?: 'ADMIN' | 'VIEWER'};
+  };
+  userRegionsAccesses: {
+    params: {user_id: string};
+    data: {network_id: string; access_type?: 'ADMIN' | 'VIEWER'};
+  };
+  userStationsAccesses: {
+    params: {user_id: string};
+    data: {network_id: string; access_type?: 'ADMIN' | 'VIEWER'};
+  };
+  userLinksAccesses: {
+    params: {user_id: string};
+    data: {network_id: string; access_type?: 'ADMIN' | 'VIEWER'};
+  };
+  userAllAccesses: {
+    params: {user_id: string};
+    data: {
+      access_type?: 'ADMIN' | 'VIEWER';
+      resource_type?: 'NETWORK' | 'REGION' | 'STATION' | 'LINK';
+    };
+  };
 };
 
 export type ResponseListType = {
@@ -348,4 +407,15 @@ export type ResponseListType = {
   stationAccessList: T.AccessListType;
   stationViewerUpdate: {count: number};
   stationAdminUpdate: string;
+  userNetworkAccesses: T.NetworkAccessType[];
+  userRegionsAccesses: T.RegionAccessType[];
+  userStationsAccesses: T.StationAccessType[];
+  userLinksAccesses: [];
+  userAllAccesses: {
+    params: {user_id: string};
+    data: {
+      access_type?: 'ADMIN' | 'VIEWER';
+      resource_type?: 'NETWORK' | 'REGION' | 'STATION' | 'LINK';
+    };
+  };
 };
