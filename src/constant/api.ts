@@ -32,8 +32,8 @@ export const URLS = {
       adminAccess: '/otdr/region/{region_id}/access/admin',
     },
     station: {
-      all: '/otdr/station/',
-      single: 'otdr/station/{station_id}',
+      all: '/otdr/station',
+      single: '/otdr/station/{station_id}',
       listInRegion: '/otdr/station/region/{region_id}',
       listInNetwork: '/otdr/station/network/{network_id}',
       allAccess: '/otdr/station/{station_id}/access',

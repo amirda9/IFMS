@@ -1,6 +1,5 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
-import {GroupType} from '~/types/GroupType';
 
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
@@ -32,6 +31,7 @@ type RequestKeys =
   | 'regionStationList'
   | 'regionLinkList'
   | 'regionAdminUpdate'
+  | 'allStations'
   | 'stationCreate'
   | 'stationDetail'
   | 'stationUpdate'
@@ -171,6 +171,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  allStations: {
+    url: api.BASE_URL + api.URLS.otdr.station.all,
+    method: 'get',
+    auth: true,
+  },
   stationCreate: {
     url: api.BASE_URL + api.URLS.otdr.station.all,
     method: 'post',
@@ -259,7 +264,7 @@ export type RequestListTypes = {
   };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
-  allRegions: undefined,
+  allRegions: undefined;
   regionList: {params: {network_id: string}};
   regionCreate: {
     params: {network_id: string};
@@ -276,6 +281,7 @@ export type RequestListTypes = {
   networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
   regionLinkList: {params: {region_id: string}};
   regionAdminUpdate: {params: {region_id: string}; data: {user_id: string}};
+  allStations: undefined;
   stationCreate: {data: T.StationCreateType};
   stationDetail: {params: {station_id: string}};
   stationUpdate: {
@@ -333,6 +339,7 @@ export type ResponseListType = {
   networkUpdateAdmin: string;
   regionLinkList: T.RegionLinkType[];
   regionAdminUpdate: string;
+  allStations: T.StationListType[];
   stationCreate: T.StationCreateType & {station_id: string};
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
