@@ -347,24 +347,32 @@ export type RequestListTypes = {
     data: {user_id: string};
   };
   userNetworkAccesses: {
-    params: {user_id: string};
-    data: {access_type?: 'ADMIN' | 'VIEWER'};
+    params: {user_id: string; access_type?: 'ADMIN' | 'VIEWER'};
   };
   userRegionsAccesses: {
-    params: {user_id: string};
-    data: {network_id: string; access_type?: 'ADMIN' | 'VIEWER'};
+    params: {
+      user_id: string;
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
   };
   userStationsAccesses: {
-    params: {user_id: string};
-    data: {network_id: string; access_type?: 'ADMIN' | 'VIEWER'};
+    params: {
+      user_id: string;
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
   };
   userLinksAccesses: {
-    params: {user_id: string};
-    data: {network_id: string; access_type?: 'ADMIN' | 'VIEWER'};
+    params: {
+      user_id: string;
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
   };
   userAllAccesses: {
-    params: {user_id: string};
-    data: {
+    params: {
+      user_id: string;
       access_type?: 'ADMIN' | 'VIEWER';
       resource_type?: 'NETWORK' | 'REGION' | 'STATION' | 'LINK';
     };
@@ -410,12 +418,6 @@ export type ResponseListType = {
   userNetworkAccesses: T.NetworkAccessType[];
   userRegionsAccesses: T.RegionAccessType[];
   userStationsAccesses: T.StationAccessType[];
-  userLinksAccesses: [];
-  userAllAccesses: {
-    params: {user_id: string};
-    data: {
-      access_type?: 'ADMIN' | 'VIEWER';
-      resource_type?: 'NETWORK' | 'REGION' | 'STATION' | 'LINK';
-    };
-  };
+  userLinksAccesses: undefined; // Temporarily unset
+  userAllAccesses: undefined; // Temporarily unset
 };
