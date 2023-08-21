@@ -1,4 +1,4 @@
-import {FC, useEffect} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {toast} from 'react-toastify';
@@ -15,6 +15,10 @@ type Props = {
 };
 
 const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
+  const [networkList, setNetworkList] = useState<
+    {index: number; network: string}[]
+  >([]);
+
   const networkAccessQuery = useHttpRequest({
     selector: state => state.http.userNetworkAccesses,
     initialRequests: request => {
@@ -26,7 +30,17 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
   });
 
   useEffect(() => {
-    if (networkAccessQuery.state?.httpRequestStatus === 'error') {
+    if (networkAccessQuery.state?.httpRequestStatus === 'success') {
+      console.log(networkAccessQuery.state.data);
+      if (networkAccessQuery.state.data) {
+        setNetworkList(
+          networkAccessQuery.state.data.map((item, index) => ({
+            index: index + 1,
+            network: item.network.name,
+          })),
+        );
+      }
+    } else if (networkAccessQuery.state?.httpRequestStatus === 'error') {
       if (networkAccessQuery.state.error?.status === 422) {
       } // TODO: Handle correctly
       else {
@@ -41,7 +55,7 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
     }
   }, [networkAccessQuery.state]);
 
-  return <Table items={[]} cols={columns} width="w-3/5" />;
+  return <Table items={networkList} cols={columns} width="w-3/5" />;
 };
 
 export default NetworkAccessTable;
