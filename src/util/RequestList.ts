@@ -418,6 +418,6 @@ export type ResponseListType = {
   userNetworkAccesses: T.NetworkAccessType[];
   userRegionsAccesses: T.RegionAccessType[];
   userStationsAccesses: T.StationAccessType[];
-  userLinksAccesses: undefined; // Temporarily unset
+  userLinksAccesses: T.LinkAccessType[];
   userAllAccesses: undefined; // Temporarily unset
 };
