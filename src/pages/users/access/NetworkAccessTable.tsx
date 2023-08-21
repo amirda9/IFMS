@@ -55,7 +55,7 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
     }
   }, [networkAccessQuery.state]);
 
-  return <Table items={networkList} cols={columns} width="w-3/5" />;
+  return <Table items={networkList} cols={columns} />;
 };
 
 export default NetworkAccessTable;
