@@ -3,6 +3,7 @@ import {Role} from '~/constant/users';
 import NetworkAccessTable from './NetworkAccessTable';
 import {AccessEnum} from '~/types';
 import RegionAccessTable from './RegionAccessTable';
+import StationAccessTable from './StationAccessTable';
 
 type Props = {
   userId: string;
@@ -52,7 +53,32 @@ const AccessTable: FC<Props> = ({userId, networkId, role}) => {
       );
       break;
     case Role.STATION_ADMIN:
-      // tableToRender =
+      if (!networkId) {
+        tableToRender = <></>;
+        break;
+      }
+
+      tableToRender = (
+        <StationAccessTable
+          userId={userId}
+          networkId={networkId}
+          access={AccessEnum.admin}
+        />
+      );
+      break;
+    case Role.STATION_VIEWER:
+      if (!networkId) {
+        tableToRender = <></>;
+        break;
+      }
+
+      tableToRender = (
+        <StationAccessTable
+          userId={userId}
+          networkId={networkId}
+          access={AccessEnum.viewer}
+        />
+      );
       break;
     case Role.LINK_ADMIN:
       break;

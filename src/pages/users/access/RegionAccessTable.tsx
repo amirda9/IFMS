@@ -20,7 +20,7 @@ const RegionAccessTable: FC<Props> = ({
   networkId,
   access = AccessEnum.admin,
 }) => {
-  const [networkList, setNetworkList] = useState<
+  const [regionTableItems, setRegionTableItems] = useState<
     {index: number; region: string}[]
   >([]);
 
@@ -38,7 +38,7 @@ const RegionAccessTable: FC<Props> = ({
     if (regionAccessQuery.state?.httpRequestStatus === 'success') {
       console.log(regionAccessQuery.state.data);
       if (regionAccessQuery.state.data) {
-        setNetworkList(
+        setRegionTableItems(
           regionAccessQuery.state.data.map((item, index) => ({
             index: index + 1,
             region: item.region.name,
@@ -60,7 +60,7 @@ const RegionAccessTable: FC<Props> = ({
     }
   }, [regionAccessQuery.state]);
 
-  return <Table items={networkList} cols={columns} />;
+  return <Table items={regionTableItems} cols={columns} />;
 };
 
 export default RegionAccessTable;

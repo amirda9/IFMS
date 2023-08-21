@@ -15,7 +15,7 @@ type Props = {
 };
 
 const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
-  const [networkList, setNetworkList] = useState<
+  const [networkTableItems, setNetworkTableItems] = useState<
     {index: number; network: string}[]
   >([]);
 
@@ -33,7 +33,7 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
     if (networkAccessQuery.state?.httpRequestStatus === 'success') {
       console.log(networkAccessQuery.state.data);
       if (networkAccessQuery.state.data) {
-        setNetworkList(
+        setNetworkTableItems(
           networkAccessQuery.state.data.map((item, index) => ({
             index: index + 1,
             network: item.network.name,
@@ -55,7 +55,7 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
     }
   }, [networkAccessQuery.state]);
 
-  return <Table items={networkList} cols={columns} />;
+  return <Table items={networkTableItems} cols={columns} />;
 };
 
 export default NetworkAccessTable;
