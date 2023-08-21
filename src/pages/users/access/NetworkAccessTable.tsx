@@ -23,8 +23,7 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
     selector: state => state.http.userNetworkAccesses,
     initialRequests: request => {
       request('userNetworkAccesses', {
-        params: {user_id: userId},
-        data: {access_type: access},
+        params: {user_id: userId, access_type: access},
       });
     },
   });
