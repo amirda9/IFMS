@@ -21,12 +21,13 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
 
   const networkAccessQuery = useHttpRequest({
     selector: state => state.http.userNetworkAccesses,
-    initialRequests: request => {
-      request('userNetworkAccesses', {
-        params: {user_id: userId, access_type: access},
-      });
-    },
   });
+
+  useEffect(() => {
+    networkAccessQuery.request('userNetworkAccesses', {
+      params: {user_id: userId, access_type: access},
+    });
+  }, [userId, access]);
 
   useEffect(() => {
     if (networkAccessQuery.state?.httpRequestStatus === 'success') {
