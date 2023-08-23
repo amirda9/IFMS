@@ -50,7 +50,7 @@ const UserAccessPage: FC = () => {
   });
 
   return (
-    <div className="flex w-3/4 flex-grow flex-col gap-y-4">
+    <div className="flex w-2/3 flex-grow flex-col gap-y-4">
       <div className="flex">
         <Description label="Role" items="start">
           <ControlledSelect
@@ -72,42 +72,16 @@ const UserAccessPage: FC = () => {
           </Description>
         )}
       </div>
-      <Description label="" items="start" className="flex-1">
+      <div className="flex flex-grow flex-col gap-y-4">
         {isEditing ? (
-          <EditAccessTables />
+          <EditAccessTables setIsEditing={setIsEditing} />
         ) : (
           <AccessTable
             userId={userId!}
             role={selectedRole}
             networkId={selectedNetworkId}
+            setIsEditing={setIsEditing}
           />
-        )}
-      </Description>
-      <div className="flex gap-x-2 self-end">
-        {isEditing ? (
-          <>
-            <SimpleBtn
-              type="submit"
-              onClick={() => {
-                alert('TO BE IMPLEMENTED!');
-              }}>
-              Ok
-            </SimpleBtn>
-            <SimpleBtn
-              onClick={() => {
-                setIsEditing(false);
-              }}>
-              Cancel
-            </SimpleBtn>
-          </>
-        ) : (
-          <SimpleBtn
-            type="submit"
-            onClick={() => {
-              setIsEditing(true);
-            }}>
-            Edit
-          </SimpleBtn>
         )}
       </div>
     </div>
