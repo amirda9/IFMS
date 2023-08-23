@@ -8,12 +8,17 @@ export const URLS = {
       login: '/auth/users/login',
       refreshToken: '/auth/users/refresh_token',
       changePassword: '/auth/users/{user_id}/change_password',
+      groups: '/auth/users/{user_id}/groups',
       accesses: {
         all: '/api/auth/users/{user_id}/accesses?access_type={access_type}&resource_type={resource_type}',
-        networks: '/auth/users/{user_id}/accesses/networks?access_type={access_type}',
-        regions: '/auth/users/{user_id}/accesses/regions?access_type={access_type}&network_id={network_id}',
-        stations: '/auth/users/{user_id}/accesses/stations?access_type={access_type}&network_id={network_id}',
-        links: '/auth/users/{user_id}/accesses/links?access_type={access_type}&network_id={network_id}',
+        networks:
+          '/auth/users/{user_id}/accesses/networks?access_type={access_type}',
+        regions:
+          '/auth/users/{user_id}/accesses/regions?access_type={access_type}&network_id={network_id}',
+        stations:
+          '/auth/users/{user_id}/accesses/stations?access_type={access_type}&network_id={network_id}',
+        links:
+          '/auth/users/{user_id}/accesses/links?access_type={access_type}&network_id={network_id}',
       },
     },
     groups: {

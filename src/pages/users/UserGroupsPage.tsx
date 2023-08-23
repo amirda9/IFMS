@@ -1,4 +1,5 @@
-import {FC, useMemo} from 'react';
+import {FC} from 'react';
+import {useParams} from 'react-router-dom';
 import {Table} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useHttpRequest} from '~/hooks';
@@ -9,10 +10,12 @@ const columns = {
 };
 
 const UserGroupsPage: FC = () => {
+  const {userId} = useParams();
+
   const groupsQuery = useHttpRequest({
-    selector: state => state.http.groupList,
+    selector: state => state.http.userGroupsList,
     initialRequests: request => {
-      request('groupList', undefined); // NOTE: This API is showing the groups of the logged in user, not the selected user. Will change the endpoint when it is available.
+      request('userGroupsList', {params: {user_id: userId!}});
     },
   });
 
