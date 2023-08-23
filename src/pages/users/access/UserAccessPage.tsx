@@ -1,10 +1,11 @@
 import {FC, useState} from 'react';
-import {ControlledSelect, Description, Select} from '~/components';
+import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
 import {Role} from '~/constant/users';
 import AccessTable from './AccessTable';
 import {useParams} from 'react-router-dom';
 import {useHttpRequest} from '~/hooks';
 import {NetworkType} from '~/types';
+import EditAccessTables from './EditAccessTables';
 
 const roleOptions = Object.values(Role)
   .filter(val => val !== Role.SUPER_ADMIN)
@@ -28,6 +29,8 @@ const UserAccessPage: FC = () => {
   const [networkOptions, setNetworkOptions] = useState<NetworkOptionType[]>([]);
   const [selectedNetworkId, setSelectedNetworkId] = useState<string>('');
 
+  const [isEditing, setIsEditing] = useState(false);
+
   const allNetworksQuery = useHttpRequest({
     selector: state => state.http.networkList,
     initialRequests: request => {
@@ -47,9 +50,9 @@ const UserAccessPage: FC = () => {
   });
 
   return (
-    <div className="w-3/5">
+    <div className="flex w-3/4 flex-grow flex-col gap-y-4">
       <div className="flex">
-        <Description label="Role" items="start" className="mb-4">
+        <Description label="Role" items="start">
           <ControlledSelect
             options={roleOptions}
             onChange={value => setSelectedRole(value as Role)}
@@ -59,7 +62,7 @@ const UserAccessPage: FC = () => {
         </Description>
 
         {rolesNeedingNetwork.includes(selectedRole) && (
-          <Description label="Network" items="start" className="mb-4">
+          <Description label="Network" items="start">
             <ControlledSelect
               options={networkOptions}
               onChange={value => setSelectedNetworkId(value as string)}
@@ -69,13 +72,44 @@ const UserAccessPage: FC = () => {
           </Description>
         )}
       </div>
-      <Description label="" items="start" className="h-full">
-        <AccessTable
-          userId={userId!}
-          role={selectedRole}
-          networkId={selectedNetworkId}
-        />
+      <Description label="" items="start" className="flex-1">
+        {isEditing ? (
+          <EditAccessTables />
+        ) : (
+          <AccessTable
+            userId={userId!}
+            role={selectedRole}
+            networkId={selectedNetworkId}
+          />
+        )}
       </Description>
+      <div className="flex gap-x-2 self-end">
+        {isEditing ? (
+          <>
+            <SimpleBtn
+              type="submit"
+              onClick={() => {
+                alert('TO BE IMPLEMENTED!');
+              }}>
+              Ok
+            </SimpleBtn>
+            <SimpleBtn
+              onClick={() => {
+                setIsEditing(false);
+              }}>
+              Cancel
+            </SimpleBtn>
+          </>
+        ) : (
+          <SimpleBtn
+            type="submit"
+            onClick={() => {
+              setIsEditing(true);
+            }}>
+            Edit
+          </SimpleBtn>
+        )}
+      </div>
     </div>
   );
 };
