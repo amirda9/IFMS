@@ -5,13 +5,15 @@ import {AccessEnum} from '~/types';
 import RegionAccessTable from './RegionAccessTable';
 import StationAccessTable from './StationAccessTable';
 import LinkAccessTable from './LinkAccessTable';
-import {Description, SimpleBtn} from '~/components';
+import {SimpleBtn} from '~/components';
+import NetworkEditAccessTable from './NetworkEditAccessTable';
 
 type Props = {
   userId: string;
   networkId?: string;
   role: Role;
-  setIsEditing: Dispatch<SetStateAction<boolean>>;
+  isEditing?: boolean;
+  setIsEditing?: Dispatch<SetStateAction<boolean>>;
   hideEditButton?: boolean;
 };
 
@@ -19,19 +21,28 @@ const AccessTable: FC<Props> = ({
   userId,
   networkId,
   role,
+  isEditing,
   hideEditButton = false,
   setIsEditing,
 }) => {
   let tableToRender = <></>;
+  let editTableToRender = <></>;
+
   switch (role) {
     case Role.NETWORK_ADMIN:
       tableToRender = (
         <NetworkAccessTable userId={userId} access={AccessEnum.admin} />
       );
+      editTableToRender = (
+        <NetworkEditAccessTable userId={userId} access={AccessEnum.admin} />
+      );
       break;
     case Role.NETWORK_VIEWER:
       tableToRender = (
         <NetworkAccessTable userId={userId} access={AccessEnum.viewer} />
+      );
+      editTableToRender = (
+        <NetworkEditAccessTable userId={userId} access={AccessEnum.viewer} />
       );
       break;
     case Role.REGION_ADMIN:
@@ -121,19 +132,34 @@ const AccessTable: FC<Props> = ({
   }
   return (
     <>
-      <Description label="" items="start">
-        {tableToRender}
-      </Description>
+      {isEditing ? editTableToRender : tableToRender}
       <div className="flex gap-x-2 self-end">
-        {!hideEditButton && (
-          <SimpleBtn
-            type="submit"
-            onClick={() => {
-              setIsEditing(true);
-            }}>
-            Edit
-          </SimpleBtn>
-        )}
+        {!hideEditButton &&
+          (isEditing ? (
+            <>
+              <SimpleBtn
+                onClick={() => {
+                  alert('Not implemented yet...');
+                }}>
+                Save
+              </SimpleBtn>
+              <SimpleBtn
+                type="submit"
+                onClick={() => {
+                  if (typeof setIsEditing === 'function') setIsEditing(false);
+                }}>
+                Cancel
+              </SimpleBtn>
+            </>
+          ) : (
+            <SimpleBtn
+              type="submit"
+              onClick={() => {
+                if (typeof setIsEditing === 'function') setIsEditing(true);
+              }}>
+              Edit
+            </SimpleBtn>
+          ))}
       </div>
     </>
   );
