@@ -1,5 +1,5 @@
-import {FC, useEffect, useState} from 'react';
-import {Table} from '~/components';
+import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
@@ -7,6 +7,7 @@ import {AccessEnum} from '~/types';
 type Props = {
   userId: string;
   access: AccessEnum;
+  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const columns = {
@@ -19,11 +20,13 @@ type AccessNetworkTableItem = {
   select: boolean;
   index: number;
   network: string;
+  id: string;
 };
 
 const NetworkEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
+  setIsEditing
 }) => {
   const [noAccessNetworks, setNoAccessNetworks] = useState<
     AccessNetworkTableItem[]
@@ -32,15 +35,19 @@ const NetworkEditAccessTable: FC<Props> = ({
     AccessNetworkTableItem[]
   >([]);
 
-  const [noAccessSelected, setNoAccessSelected] = useState<number[]>([]);
-  const [accessedNetsSelected, setAccessedNetsSelected] = useState<number[]>(
+  const [noAccessSelected, setNoAccessSelected] = useState<string[]>([]);
+  const [accessedNetsSelected, setAccessedNetsSelected] = useState<string[]>(
     [],
   );
 
-  useHttpRequest({
+  const {
+    request,
+    state: {userUpdateAccesses},
+  } = useHttpRequest({
     selector: state => ({
       networkList: state.http.networkList,
       userNetworkAccesses: state.http.userNetworkAccesses,
+      userUpdateAccesses: state.http.userUpdateAccesses,
     }),
     initialRequests: request => {
       request('networkList', undefined);
@@ -71,6 +78,7 @@ const NetworkEditAccessTable: FC<Props> = ({
             index: index + 1,
             network: item.name,
             select: false,
+            id: item.id,
           })),
         );
 
@@ -80,6 +88,7 @@ const NetworkEditAccessTable: FC<Props> = ({
                 index: index + 1,
                 network: item.network.name,
                 select: false,
+                id: item.network.id,
               }))
             : [],
         );
@@ -87,36 +96,94 @@ const NetworkEditAccessTable: FC<Props> = ({
     },
   });
 
-  const handleNoAccessCheckboxClick = (index: number) => {
-    noAccessSelected.includes(index)
-      ? setNoAccessSelected(prvState => prvState.filter(item => item !== index))
-      : setNoAccessSelected(prv => [...prv, index]);
+  const handleNoAccessCheckboxClick = (item: AccessNetworkTableItem) => {
+    noAccessSelected.includes(item.id)
+      ? setNoAccessSelected(prvState => prvState.filter(id => id !== item.id))
+      : setNoAccessSelected(prv => [...prv, item.id]);
+  };
+
+  const handleAccessedCheckboxClick = (item: AccessNetworkTableItem) => {
+    accessedNetsSelected.includes(item.id)
+      ? setAccessedNetsSelected(prvState =>
+          prvState.filter(id => id !== item.id),
+        )
+      : setAccessedNetsSelected(prv => [...prv, item.id]);
   };
 
   console.log(noAccessNetworks, accessedNetworks);
 
+  const handleNetworkAddClick = () => {
+    setAccessedNetworks(prevState =>
+      prevState.concat(
+        noAccessNetworks.filter(item => noAccessSelected.includes(item.id)),
+      ),
+    );
+    setNoAccessNetworks(prevState =>
+      prevState.filter(item => !noAccessSelected.includes(item.id)),
+    );
+    setNoAccessSelected([]);
+  };
+
+  const handleNetworkRemoveClick = () => {
+    setNoAccessNetworks(prevState =>
+      prevState.concat(
+        accessedNetworks.filter(item => accessedNetsSelected.includes(item.id)),
+      ),
+    );
+    setAccessedNetworks(prevState =>
+      prevState.filter(item => !accessedNetsSelected.includes(item.id)),
+    );
+    setAccessedNetsSelected([]);
+  };
+
   return (
-    <div className="flex">
-      <Table
-        cols={columns}
-        items={noAccessNetworks}
-        dynamicColumns={['select']}
-        renderDynamicColumn={({index}) => (
-          <input
-            type="checkbox"
-            onClick={() => handleNoAccessCheckboxClick(index)}
-            checked={noAccessSelected.includes(index)}
-          />
-        )}
-      />
-      <DoubleSideButtonGroup />
-      <Table
-        cols={columns}
-        items={accessedNetworks}
-        dynamicColumns={['select']}
-        renderDynamicColumn={() => <input type="checkbox" />}
-      />
-    </div>
+    <>
+      <div className="flex">
+        <Table
+          cols={columns}
+          items={noAccessNetworks}
+          dynamicColumns={['select']}
+          renderDynamicColumn={({value}) => (
+            <input
+              type="checkbox"
+              onChange={() => handleNoAccessCheckboxClick(value)}
+              checked={noAccessSelected.includes(value.id)}
+            />
+          )}
+        />
+        <DoubleSideButtonGroup
+          onClickRightButton={handleNetworkAddClick}
+          onClickLeftButton={handleNetworkRemoveClick}
+        />
+        <Table
+          cols={columns}
+          items={accessedNetworks}
+          dynamicColumns={['select']}
+          renderDynamicColumn={({value}) => (
+            <input
+              type="checkbox"
+              onChange={() => handleAccessedCheckboxClick(value)}
+              checked={accessedNetsSelected.includes(value.id)}
+            />
+          )}
+        />
+      </div>
+      <div className="flex gap-x-2 self-end">
+        <SimpleBtn
+          onClick={() => {
+            alert('Not implemented yet...');
+          }}>
+          Save
+        </SimpleBtn>
+        <SimpleBtn
+          type="submit"
+          onClick={() => {
+            if (typeof setIsEditing === 'function') setIsEditing(false);
+          }}>
+          Cancel
+        </SimpleBtn>
+      </div>
+    </>
   );
 };
 

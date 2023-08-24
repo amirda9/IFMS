@@ -50,7 +50,7 @@ type RequestKeys =
   | 'userRegionsAccesses'
   | 'userStationsAccesses'
   | 'userLinksAccesses'
-  | 'userAllAccesses';
+  | 'userUpdateAccesses';
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -253,7 +253,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
-  userAllAccesses: {
+  userUpdateAccesses: {
     url: api.BASE_URL + api.URLS.auth.users.accesses.all,
     method: 'put',
     auth: true,
@@ -381,11 +381,14 @@ export type RequestListTypes = {
       access_type?: 'ADMIN' | 'VIEWER';
     };
   };
-  userAllAccesses: {
+  userUpdateAccesses: {
     params: {
       user_id: string;
       access_type?: 'ADMIN' | 'VIEWER';
       resource_type?: 'NETWORK' | 'REGION' | 'STATION' | 'LINK';
+    };
+    data: {
+      ids: string[];
     };
   };
 };
@@ -431,5 +434,5 @@ export type ResponseListType = {
   userRegionsAccesses: T.RegionAccessType[];
   userStationsAccesses: T.StationAccessType[];
   userLinksAccesses: T.LinkAccessType[];
-  userAllAccesses: undefined; // Temporarily unset
+  userUpdateAccesses: undefined; // Temporarily unset
 };

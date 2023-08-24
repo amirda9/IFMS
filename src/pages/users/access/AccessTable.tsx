@@ -31,18 +31,34 @@ const AccessTable: FC<Props> = ({
   switch (role) {
     case Role.NETWORK_ADMIN:
       tableToRender = (
-        <NetworkAccessTable userId={userId} access={AccessEnum.admin} />
+        <NetworkAccessTable
+          userId={userId}
+          access={AccessEnum.admin}
+          setIsEditing={setIsEditing}
+        />
       );
       editTableToRender = (
-        <NetworkEditAccessTable userId={userId} access={AccessEnum.admin} />
+        <NetworkEditAccessTable
+          userId={userId}
+          access={AccessEnum.admin}
+          setIsEditing={setIsEditing}
+        />
       );
       break;
     case Role.NETWORK_VIEWER:
       tableToRender = (
-        <NetworkAccessTable userId={userId} access={AccessEnum.viewer} />
+        <NetworkAccessTable
+          userId={userId}
+          access={AccessEnum.viewer}
+          setIsEditing={setIsEditing}
+        />
       );
       editTableToRender = (
-        <NetworkEditAccessTable userId={userId} access={AccessEnum.viewer} />
+        <NetworkEditAccessTable
+          userId={userId}
+          access={AccessEnum.viewer}
+          setIsEditing={setIsEditing}
+        />
       );
       break;
     case Role.REGION_ADMIN:
@@ -130,39 +146,7 @@ const AccessTable: FC<Props> = ({
       );
       break;
   }
-  return (
-    <>
-      {isEditing ? editTableToRender : tableToRender}
-      <div className="flex gap-x-2 self-end">
-        {!hideEditButton &&
-          (isEditing ? (
-            <>
-              <SimpleBtn
-                onClick={() => {
-                  alert('Not implemented yet...');
-                }}>
-                Save
-              </SimpleBtn>
-              <SimpleBtn
-                type="submit"
-                onClick={() => {
-                  if (typeof setIsEditing === 'function') setIsEditing(false);
-                }}>
-                Cancel
-              </SimpleBtn>
-            </>
-          ) : (
-            <SimpleBtn
-              type="submit"
-              onClick={() => {
-                if (typeof setIsEditing === 'function') setIsEditing(true);
-              }}>
-              Edit
-            </SimpleBtn>
-          ))}
-      </div>
-    </>
-  );
+  return <>{isEditing ? editTableToRender : tableToRender}</>;
 };
 
 export default AccessTable;

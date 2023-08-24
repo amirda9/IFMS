@@ -1,8 +1,8 @@
-import {FC, useEffect, useState} from 'react';
+import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {toast} from 'react-toastify';
-import {Table} from '~/components';
+import {SimpleBtn, Table} from '~/components';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -12,9 +12,14 @@ const columns = {
 type Props = {
   userId: string;
   access?: AccessEnum;
+  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
-const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
+const NetworkAccessTable: FC<Props> = ({
+  userId,
+  access = AccessEnum.admin,
+  setIsEditing,
+}) => {
   const [networkTableItems, setNetworkTableItems] = useState<
     {index: number; network: string}[]
   >([]);
@@ -55,7 +60,18 @@ const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
     }
   }, [networkAccessQuery.state]);
 
-  return <Table items={networkTableItems} cols={columns} />;
+  return (
+    <>
+      <Table items={networkTableItems} cols={columns} />
+      <SimpleBtn
+        type="submit"
+        onClick={() => {
+          if (typeof setIsEditing === 'function') setIsEditing(true);
+        }}>
+        Edit
+      </SimpleBtn>
+    </>
+  );
 };
 
 export default NetworkAccessTable;
