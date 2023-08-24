@@ -56,33 +56,21 @@ const NetworkEditAccessTable: FC<Props> = ({
       });
     },
     onUpdate: (lastState, state) => {
-      console.log('lastState', lastState, ' currState:', state);
       if (
-        state.networkList?.httpRequestStatus === 'success' &&
+        lastState.userUpdateAccesses?.httpRequestStatus === 'loading' &&
+        state.userUpdateAccesses?.httpRequestStatus === 'success'
+      ) {
+        request('userNetworkAccesses', {
+          params: {user_id: userId, access_type: access},
+        });
+        return;
+      }
+
+      if (
+        state.userUpdateAccesses?.httpRequestStatus !== 'loading' &&
         state.userNetworkAccesses?.httpRequestStatus === 'success'
       ) {
-        console.log('HERE');
-        const networkList = state.networkList.data;
         const userAccessedNetworks = state.userNetworkAccesses.data;
-
-        // Extracting those networks which are not founded in userAccessedNetworks
-        const noAccessNetworks =
-          networkList && userAccessedNetworks
-            ? networkList.filter(
-                item =>
-                  !userAccessedNetworks.find(acc => acc.network.id === item.id),
-              )
-            : [];
-
-        setNoAccessNetworks(
-          noAccessNetworks.map((item, index) => ({
-            index: index + 1,
-            network: item.name,
-            select: false,
-            id: item.id,
-          })),
-        );
-
         setAccessedNetworks(
           userAccessedNetworks
             ? userAccessedNetworks.map((item, index) => ({
@@ -93,6 +81,30 @@ const NetworkEditAccessTable: FC<Props> = ({
               }))
             : [],
         );
+
+        if (state.networkList?.httpRequestStatus === 'success') {
+          const networkList = state.networkList.data;
+
+          // Extracting those networks which are not founded in userAccessedNetworks
+          const noAccessNetworks =
+            networkList && userAccessedNetworks
+              ? networkList.filter(
+                  item =>
+                    !userAccessedNetworks.find(
+                      acc => acc.network.id === item.id,
+                    ),
+                )
+              : [];
+
+          setNoAccessNetworks(
+            noAccessNetworks.map((item, index) => ({
+              index: index + 1,
+              network: item.name,
+              select: false,
+              id: item.id,
+            })),
+          );
+        }
       }
     },
   });

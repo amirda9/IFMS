@@ -36,7 +36,6 @@ const RegionAccessTable: FC<Props> = ({
 
   useEffect(() => {
     if (regionAccessQuery.state?.httpRequestStatus === 'success') {
-      console.log(regionAccessQuery.state.data);
       if (regionAccessQuery.state.data) {
         setRegionTableItems(
           regionAccessQuery.state.data.map((item, index) => ({

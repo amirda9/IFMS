@@ -26,7 +26,6 @@ const UserGroupsPage: FC = () => {
       }))
     : null;
 
-  console.log(groupsQuery);
 
   return (
     <div className="w-2/3">

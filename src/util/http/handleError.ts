@@ -51,7 +51,7 @@ export function* handleError({
   yield put(
     httpResponseAction(actionName as RequestKeyExclude, {
       httpResponseStatus: 'error',
-      error: JSON.parse(JSON.stringify(e.response)),
+      error: JSON.parse(JSON.stringify(e.response || {})), // This removes the unserializable properties 
       addToList: addToList,
     }),
   );

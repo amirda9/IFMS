@@ -38,7 +38,6 @@ const StationAccessTable: FC<Props> = ({
 
   useEffect(() => {
     if (stationAccessQuery.state?.httpRequestStatus === 'success') {
-      console.log(stationAccessQuery.state.data);
       if (stationAccessQuery.state.data) {
         setStationTableItems(
           stationAccessQuery.state.data.map((item, index) => ({

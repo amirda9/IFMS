@@ -36,7 +36,6 @@ const NetworkAccessTable: FC<Props> = ({
 
   useEffect(() => {
     if (networkAccessQuery.state?.httpRequestStatus === 'success') {
-      console.log(networkAccessQuery.state.data);
       if (networkAccessQuery.state.data) {
         setNetworkTableItems(
           networkAccessQuery.state.data.map((item, index) => ({

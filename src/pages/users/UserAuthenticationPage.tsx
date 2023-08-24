@@ -51,8 +51,6 @@ const UserAuthenticationPage: FC = () => {
     }
   }, [passwordRestMutation.state]);
 
-  console.log('passwordRestMutation:', passwordRestMutation);
-
   const validationSchema = Yup.object().shape({
     password: Yup.string().required('Password is required.'),
     passwordConfirmation: Yup.string()
