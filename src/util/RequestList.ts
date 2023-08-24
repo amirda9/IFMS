@@ -384,6 +384,8 @@ export type RequestListTypes = {
   userUpdateAccesses: {
     params: {
       user_id: string;
+    };
+    queryString: {
       access_type?: 'ADMIN' | 'VIEWER';
       resource_type?: 'NETWORK' | 'REGION' | 'STATION' | 'LINK';
     };

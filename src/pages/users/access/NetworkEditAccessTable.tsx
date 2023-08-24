@@ -26,7 +26,7 @@ type AccessNetworkTableItem = {
 const NetworkEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
-  setIsEditing
+  setIsEditing,
 }) => {
   const [noAccessNetworks, setNoAccessNetworks] = useState<
     AccessNetworkTableItem[]
@@ -55,12 +55,13 @@ const NetworkEditAccessTable: FC<Props> = ({
         params: {user_id: userId, access_type: access},
       });
     },
-    onUpdate: (_lastState, state) => {
+    onUpdate: (lastState, state) => {
+      console.log('lastState', lastState, ' currState:', state);
       if (
         state.networkList?.httpRequestStatus === 'success' &&
         state.userNetworkAccesses?.httpRequestStatus === 'success'
       ) {
-        console.log('HERERE', state);
+        console.log('HERE');
         const networkList = state.networkList.data;
         const userAccessedNetworks = state.userNetworkAccesses.data;
 
@@ -110,8 +111,6 @@ const NetworkEditAccessTable: FC<Props> = ({
       : setAccessedNetsSelected(prv => [...prv, item.id]);
   };
 
-  console.log(noAccessNetworks, accessedNetworks);
-
   const handleNetworkAddClick = () => {
     setAccessedNetworks(prevState =>
       prevState.concat(
@@ -134,6 +133,14 @@ const NetworkEditAccessTable: FC<Props> = ({
       prevState.filter(item => !accessedNetsSelected.includes(item.id)),
     );
     setAccessedNetsSelected([]);
+  };
+
+  const handleSaveClick = () => {
+    request('userUpdateAccesses', {
+      params: {user_id: userId},
+      queryString: {access_type: access, resource_type: 'NETWORK'},
+      data: {ids: accessedNetworks.map(item => item.id)},
+    });
   };
 
   return (
@@ -169,14 +176,8 @@ const NetworkEditAccessTable: FC<Props> = ({
         />
       </div>
       <div className="flex gap-x-2 self-end">
+        <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
         <SimpleBtn
-          onClick={() => {
-            alert('Not implemented yet...');
-          }}>
-          Save
-        </SimpleBtn>
-        <SimpleBtn
-          type="submit"
           onClick={() => {
             if (typeof setIsEditing === 'function') setIsEditing(false);
           }}>
