@@ -60,13 +60,13 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
-  userData: {
+  userDetail: {
     url: api.BASE_URL + api.URLS.auth.users.single,
     method: 'get',
     auth: true,
   },
   userDetailUpdate: {
-    url: api.baseUrl + api.userDetailUrl,
+    url: api.BASE_URL + api.URLS.auth.users.single,
     method: 'put',
     auth: true,
   },
