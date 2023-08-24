@@ -1,6 +1,5 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
-import {regionStationListUrl} from '~/constant/api';
 import {GroupType} from '~/types/GroupType';
 
 export const excludeList = ['categoryList'];
@@ -17,7 +16,8 @@ type RequestKeys =
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
-  | 'userData'
+  | 'userDetail'
+  | 'userDetailUpdate'
   | 'networkAccessUpdate'
   | 'networkUpdateAdmin'
   | 'groupList'
@@ -41,154 +41,167 @@ type RequestKeys =
   | 'stationAdminUpdate';
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
-    url: api.baseUrl + api.loginUrl,
+    url: api.BASE_URL + api.URLS.auth.users.login,
     method: 'post',
     headers: {'content-type': 'application/x-www-form-urlencoded'},
   },
   refresh: {
-    url: api.baseUrl + api.refreshTokenUrl,
+    url: api.BASE_URL + api.URLS.auth.users.refreshToken,
     method: 'post',
     headers: {'content-type': 'application/x-www-form-urlencoded'},
   },
   passwordReset: {
-    url: api.baseUrl + api.passwordResetUrl,
+    url: api.BASE_URL + api.URLS.auth.users.changePassword,
     method: 'post',
     auth: true,
   },
   userList: {
-    url: api.baseUrl + api.userListUrl,
+    url: api.BASE_URL + api.URLS.auth.users.all,
     method: 'get',
     auth: true,
   },
   userData: {
-    url: api.baseUrl + api.userDetailUrl,
+    url: api.BASE_URL + api.URLS.auth.users.single,
     method: 'get',
     auth: true,
   },
+  userDetailUpdate: {
+    url: api.baseUrl + api.userDetailUrl,
+    method: 'put',
+    auth: true,
+  },
   networkCreate: {
-    url: api.baseUrl + api.networkCreateUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.all,
     method: 'post',
     auth: true,
   },
   networkList: {
-    url: api.baseUrl + api.networkListUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.all,
     method: 'get',
     auth: true,
   },
   networkDetail: {
-    url: api.baseUrl + api.networkDetailUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.single,
     method: 'get',
     auth: true,
   },
   networkDelete: {
-    url: api.baseUrl + api.networkDetailUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.single,
     method: 'delete',
     auth: true,
   },
   networkUpdate: {
-    url: api.baseUrl + api.networkDetailUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.single,
     method: 'put',
     auth: true,
   },
   networkAccessList: {
-    url: api.baseUrl + api.networkAccessListUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.allAccess,
     method: 'get',
     auth: true,
   },
   networkAccessUpdate: {
-    url: api.baseUrl + api.networkAccessListUpdateUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.viewersAccess,
     method: 'post',
     auth: true,
   },
   groupList: {
-    url: api.baseUrl + api.groupListUrl,
+    url: api.BASE_URL + api.URLS.auth.groups.all,
     method: 'get',
     auth: true,
   },
   groupDetail: {
-    url: api.baseUrl + api.groupDetailUrl,
+    url: api.BASE_URL + api.URLS.auth.groups.single,
     method: 'get',
     auth: true,
   },
-  regionList: {url: api.baseUrl + api.regionListUrl, method: 'get', auth: true},
+  regionList: {
+    url: api.BASE_URL + api.URLS.otdr.region.listInNetwork,
+    method: 'get',
+    auth: true,
+  },
   regionCreate: {
-    url: api.baseUrl + api.regionCreateUrl,
+    url: api.BASE_URL + api.URLS.otdr.region.create,
     method: 'post',
     auth: true,
   },
   regionDetail: {
-    url: api.baseUrl + api.regionDetailUrl,
+    url: api.BASE_URL + api.URLS.otdr.region.single,
     method: 'get',
     auth: true,
   },
   regionUpdate: {
-    url: api.baseUrl + api.regionDetailUrl,
+    url: api.BASE_URL + api.URLS.otdr.region.single,
     method: 'put',
     auth: true,
   },
   regionAccessList: {
-    url: api.baseUrl + api.regionAccessUrl,
+    url: api.BASE_URL + api.URLS.otdr.region.allAccess,
     method: 'get',
     auth: true,
   },
   regionAccessUpdate: {
-    url: api.baseUrl + api.regionViewerUpdateUrl,
+    url: api.BASE_URL + api.URLS.otdr.region.viewersAccess,
     method: 'post',
     auth: true,
   },
   regionStationList: {
-    url: api.baseUrl + regionStationListUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.listInRegion,
     method: 'get',
     auth: true,
   },
   networkUpdateAdmin: {
-    url: api.baseUrl + api.networkUpdateAdminUrl,
+    url: api.BASE_URL + api.URLS.otdr.network.adminAccess,
     method: 'put',
     auth: true,
   },
   regionLinkList: {
-    url: api.baseUrl + api.regionLinkListUrl,
+    url: api.BASE_URL + api.URLS.otdr.link.listInRegion,
     method: 'get',
     auth: true,
   },
   regionAdminUpdate: {
-    url: api.baseUrl + api.regionAdminUpdateUrl,
+    url: api.BASE_URL + api.URLS.otdr.region.adminAccess,
     method: 'put',
     auth: true,
   },
-  stationCreate: {url: api.baseUrl + api.stationUrl, method: 'post', auth: true},
+  stationCreate: {
+    url: api.BASE_URL + api.URLS.otdr.station.all,
+    method: 'post',
+    auth: true,
+  },
   stationDetail: {
-    url: api.baseUrl + api.stationRUDUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.single,
     method: 'post',
     auth: true,
   },
   stationUpdate: {
-    url: api.baseUrl + api.stationRUDUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.single,
     method: 'put',
     auth: true,
   },
   stationDelete: {
-    url: api.baseUrl + api.stationRUDUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.single,
     method: 'delete',
     auth: true,
   },
   networkStationList: {
-    url: api.baseUrl + api.networkStationListUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.listInNetwork,
     method: 'get',
     auth: true,
   },
   stationAccessList: {
-    url: api.baseUrl + api.stationAccessUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.allAccess,
     method: 'get',
     auth: true,
   },
   stationViewerUpdate: {
-    url: api.baseUrl + api.stationViewerUpdateUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.viewersAccess,
     method: 'post',
     auth: true,
   },
   stationAdminUpdate: {
-    url: api.baseUrl + api.stationAdminUpdateUrl,
+    url: api.BASE_URL + api.URLS.otdr.station.adminAccess,
     method: 'put',
     auth: true,
   },
@@ -212,10 +225,16 @@ export type RequestListTypes = {
     };
   };
   userList: undefined;
-  userData: {
+  userDetail: {
     params: {
       user_id: string;
     };
+  };
+  userDetailUpdate: {
+    params: {
+      user_id: string;
+    };
+    data: T.UserDetailFormType;
   };
   networkCreate: {
     data: {
@@ -285,7 +304,8 @@ export type ResponseListType = {
   refresh: T.LoginResponseType;
   passwordReset: string;
   userList: T.UserListType[];
-  userData: T.UserDetailType;
+  userDetail: T.UserDetailType;
+  userDetailUpdate: {id: string; username: string; role: string; email: string};
   networkCreate: T.NetworkType & {network_id: string};
   networkList: T.NetworkType[];
   networkDetail: T.NetworkDetailType;
