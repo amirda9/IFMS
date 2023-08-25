@@ -12,13 +12,13 @@ export const URLS = {
       accesses: {
         all: '/auth/users/{user_id}/accesses',
         networks:
-          '/auth/users/{user_id}/accesses/networks?access_type={access_type}',
+          '/auth/users/{user_id}/accesses/networks',
         regions:
-          '/auth/users/{user_id}/accesses/regions?access_type={access_type}&network_id={network_id}',
+          '/auth/users/{user_id}/accesses/regions',
         stations:
-          '/auth/users/{user_id}/accesses/stations?access_type={access_type}&network_id={network_id}',
+          '/auth/users/{user_id}/accesses/stations',
         links:
-          '/auth/users/{user_id}/accesses/links?access_type={access_type}&network_id={network_id}',
+          '/auth/users/{user_id}/accesses/links',
       },
     },
     groups: {

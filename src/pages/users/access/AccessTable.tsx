@@ -7,6 +7,7 @@ import StationAccessTable from './StationAccessTable';
 import LinkAccessTable from './LinkAccessTable';
 import NetworkEditAccessTable from './NetworkEditAccessTable';
 import RegionEditAccessTable from './RegionEditAccessTable';
+import StationEditAccessTable from './StationEditAccessTable';
 
 type Props = {
   userId: string;
@@ -109,6 +110,15 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
+          setIsEditing={setIsEditing}
+        />
+      );
+      editTableToRender = (
+        <StationEditAccessTable
+          userId={userId}
+          networkId={networkId}
+          access={AccessEnum.admin}
+          setIsEditing={setIsEditing}
         />
       );
       break;
@@ -120,6 +130,15 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.viewer}
+          setIsEditing={setIsEditing}
+        />
+      );
+      editTableToRender = (
+        <StationEditAccessTable
+          userId={userId}
+          networkId={networkId}
+          access={AccessEnum.viewer}
+          setIsEditing={setIsEditing}
         />
       );
       break;

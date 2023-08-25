@@ -27,11 +27,11 @@ const LinkAccessTable: FC<Props> = ({
   >([]);
 
   const linkAccessQuery = useHttpRequest({
-    selector: state => state.http.userLinksAccesses,
+    selector: state => state.http.userLinkAccesses,
   });
 
   useEffect(() => {
-    linkAccessQuery.request('userLinksAccesses', {
+    linkAccessQuery.request('userLinkAccesses', {
       params: {user_id: userId, access_type: access, network_id: networkId},
     });
   }, [userId, access, networkId]);

@@ -15,27 +15,27 @@ type Props = {
 const columns = {
   select: {label: '', size: 'w-[5%]'},
   index: {label: '#', size: 'w-[10%]'},
-  region: {label: 'Region', size: 'w-[85%]'},
+  station: {label: 'Station', size: 'w-[85%]'},
 };
 
-type AccessRegionTableItem = {
+type AccessStationTableItem = {
   select: boolean;
   index: number;
-  region: string;
+  station: string;
   id: string;
 };
 
-const RegionEditAccessTable: FC<Props> = ({
+const StationEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
   networkId,
   setIsEditing,
 }) => {
-  const [noAccessRegions, setNoAccessRegions] = useState<
-    AccessRegionTableItem[]
+  const [noAccessStations, setNoAccessStations] = useState<
+    AccessStationTableItem[]
   >([]);
-  const [accessedRegions, setAccessedRegions] = useState<
-    AccessRegionTableItem[]
+  const [accessedStations, setAccessedStations] = useState<
+    AccessStationTableItem[]
   >([]);
 
   const [noAccessSelected, setNoAccessSelected] = useState<string[]>([]);
@@ -48,14 +48,14 @@ const RegionEditAccessTable: FC<Props> = ({
     state: {userUpdateAccesses},
   } = useHttpRequest({
     selector: state => ({
-      regionList: state.http.regionList,
-      userRegionAccesses: state.http.userRegionAccesses,
+      allStations: state.http.allStations,
+      userStationAccesses: state.http.userStationAccesses,
       userUpdateAccesses: state.http.userUpdateAccesses,
     }),
     clearAfterUnmount: ['userUpdateAccesses'],
     initialRequests: request => {
-      request('regionList', {params: {network_id: networkId}});
-      request('userRegionAccesses', {
+      request('allStations', undefined);
+      request('userStationAccesses', {
         params: {user_id: userId},
         queryString: {access_type: access, network_id: networkId},
       });
@@ -65,7 +65,7 @@ const RegionEditAccessTable: FC<Props> = ({
         lastState.userUpdateAccesses?.httpRequestStatus === 'loading' &&
         state.userUpdateAccesses?.httpRequestStatus === 'success'
       ) {
-        request('userRegionAccesses', {
+        request('userStationAccesses', {
           params: {user_id: userId},
           queryString: {access_type: access, network_id: networkId},
         });
@@ -85,36 +85,38 @@ const RegionEditAccessTable: FC<Props> = ({
       // We want to make sure we don't accidentally update the table items when the updating API is processing
       if (
         state.userUpdateAccesses?.httpRequestStatus !== 'loading' &&
-        state.userRegionAccesses?.httpRequestStatus === 'success'
+        state.userStationAccesses?.httpRequestStatus === 'success'
       ) {
-        const userAccessedRegions = state.userRegionAccesses.data;
-        setAccessedRegions(
-          userAccessedRegions
-            ? userAccessedRegions.map((item, index) => ({
+        const userAccessedStations = state.userStationAccesses.data;
+        setAccessedStations(
+          userAccessedStations
+            ? userAccessedStations.map((item, index) => ({
                 index: index + 1,
-                region: item.region.name,
+                station: item.station.name,
                 select: false,
-                id: item.region.id,
+                id: item.station.id,
               }))
             : [],
         );
 
-        if (state.regionList?.httpRequestStatus === 'success') {
-          const regionList = state.regionList.data;
+        if (state.allStations?.httpRequestStatus === 'success') {
+          const allStations = state.allStations.data;
 
-          // Extracting those regions which are not founded in userAccessedRegions
-          const noAccessRegions =
-            regionList && userAccessedRegions
-              ? regionList.filter(
+          // Extracting those stations which are not founded in userAccessedStations
+          const noAccessStations =
+            allStations && userAccessedStations
+              ? allStations.filter(
                   item =>
-                    !userAccessedRegions.find(acc => acc.region.id === item.id),
+                    !userAccessedStations.find(
+                      acc => acc.station.id === item.id,
+                    ),
                 )
               : [];
 
-          setNoAccessRegions(
-            noAccessRegions.map((item, index) => ({
+          setNoAccessStations(
+            noAccessStations.map((item, index) => ({
               index: index + 1,
-              region: item.name,
+              station: item.name,
               select: false,
               id: item.id,
             })),
@@ -124,13 +126,13 @@ const RegionEditAccessTable: FC<Props> = ({
     },
   });
 
-  const handleNoAccessCheckboxClick = (item: AccessRegionTableItem) => {
+  const handleNoAccessCheckboxClick = (item: AccessStationTableItem) => {
     noAccessSelected.includes(item.id)
       ? setNoAccessSelected(prvState => prvState.filter(id => id !== item.id))
       : setNoAccessSelected(prv => [...prv, item.id]);
   };
 
-  const handleAccessedCheckboxClick = (item: AccessRegionTableItem) => {
+  const handleAccessedCheckboxClick = (item: AccessStationTableItem) => {
     accessedNetsSelected.includes(item.id)
       ? setAccessedNetsSelected(prvState =>
           prvState.filter(id => id !== item.id),
@@ -138,25 +140,25 @@ const RegionEditAccessTable: FC<Props> = ({
       : setAccessedNetsSelected(prv => [...prv, item.id]);
   };
 
-  const handleRegionAddClick = () => {
-    setAccessedRegions(prevState =>
+  const handleStationAddClick = () => {
+    setAccessedStations(prevState =>
       prevState.concat(
-        noAccessRegions.filter(item => noAccessSelected.includes(item.id)),
+        noAccessStations.filter(item => noAccessSelected.includes(item.id)),
       ),
     );
-    setNoAccessRegions(prevState =>
+    setNoAccessStations(prevState =>
       prevState.filter(item => !noAccessSelected.includes(item.id)),
     );
     setNoAccessSelected([]);
   };
 
-  const handleRegionRemoveClick = () => {
-    setNoAccessRegions(prevState =>
+  const handleStationRemoveClick = () => {
+    setNoAccessStations(prevState =>
       prevState.concat(
-        accessedRegions.filter(item => accessedNetsSelected.includes(item.id)),
+        accessedStations.filter(item => accessedNetsSelected.includes(item.id)),
       ),
     );
-    setAccessedRegions(prevState =>
+    setAccessedStations(prevState =>
       prevState.filter(item => !accessedNetsSelected.includes(item.id)),
     );
     setAccessedNetsSelected([]);
@@ -166,7 +168,7 @@ const RegionEditAccessTable: FC<Props> = ({
     request('userUpdateAccesses', {
       params: {user_id: userId},
       queryString: {access_type: access, resource_type: 'REGION'},
-      data: {ids: accessedRegions.map(item => item.id)},
+      data: {ids: accessedStations.map(item => item.id)},
     });
   };
 
@@ -175,7 +177,7 @@ const RegionEditAccessTable: FC<Props> = ({
       <div className="flex flex-grow items-center gap-x-4">
         <Table
           cols={columns}
-          items={noAccessRegions}
+          items={noAccessStations}
           dynamicColumns={['select']}
           renderDynamicColumn={({value}) => (
             <input
@@ -186,12 +188,12 @@ const RegionEditAccessTable: FC<Props> = ({
           )}
         />
         <DoubleSideButtonGroup
-          onClickRightButton={handleRegionAddClick}
-          onClickLeftButton={handleRegionRemoveClick}
+          onClickRightButton={handleStationAddClick}
+          onClickLeftButton={handleStationRemoveClick}
         />
         <Table
           cols={columns}
-          items={accessedRegions}
+          items={accessedStations}
           dynamicColumns={['select']}
           renderDynamicColumn={({value}) => (
             <input
@@ -215,4 +217,4 @@ const RegionEditAccessTable: FC<Props> = ({
   );
 };
 
-export default RegionEditAccessTable;
+export default StationEditAccessTable;

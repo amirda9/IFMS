@@ -32,7 +32,8 @@ const RegionAccessTable: FC<Props> = ({
 
   useEffect(() => {
     regionAccessQuery.request('userRegionAccesses', {
-      params: {user_id: userId, access_type: access, network_id: networkId},
+      params: {user_id: userId},
+      queryString: {access_type: access, network_id: networkId},
     });
   }, [userId, access, networkId]);
 
