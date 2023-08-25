@@ -61,14 +61,19 @@ const NetworkAccessTable: FC<Props> = ({
 
   return (
     <>
-      <Table items={networkTableItems} cols={columns} />
-      <SimpleBtn
-        type="submit"
-        onClick={() => {
-          if (typeof setIsEditing === 'function') setIsEditing(true);
-        }}>
-        Edit
-      </SimpleBtn>
+      <div className='flex-1 w-3/5'>
+        <Table items={networkTableItems} cols={columns} />
+      </div>
+      <div className='self-end'>
+        <SimpleBtn
+          className="self-end"
+          type="submit"
+          onClick={() => {
+            if (typeof setIsEditing === 'function') setIsEditing(true);
+          }}>
+          Edit Network(s)
+        </SimpleBtn>
+      </div>
     </>
   );
 };

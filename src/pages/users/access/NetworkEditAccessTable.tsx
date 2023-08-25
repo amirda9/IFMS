@@ -170,7 +170,7 @@ const NetworkEditAccessTable: FC<Props> = ({
 
   return (
     <>
-      <div className="flex gap-x-4">
+      <div className="flex items-center flex-grow gap-x-4">
         <Table
           cols={columns}
           items={noAccessNetworks}

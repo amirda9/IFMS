@@ -85,15 +85,14 @@ const UserAccessPage: FC = () => {
             </Description>
           ))}
       </div>
-      <div className="flex flex-grow flex-col gap-y-4">
-        <AccessTable
-          userId={userId!}
-          role={selectedRole}
-          networkId={selectedNetworkId}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-        />
-      </div>
+
+      <AccessTable
+        userId={userId!}
+        role={selectedRole}
+        networkId={selectedNetworkId}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+      />
     </div>
   );
 };

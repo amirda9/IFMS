@@ -22,6 +22,7 @@ type PropsType<
   }) => ReactNode;
   cols: Record<C, ColType>;
   items: Array<Item>;
+  height?: string;
   width?: string;
   loading?: boolean;
   keyExtractor?: (value: Item) => string;
@@ -35,6 +36,7 @@ const Table = <
   cols,
   dynamicColumns = [],
   renderDynamicColumn,
+  height = 'h-full',
   width = 'w-full',
   loading,
   keyExtractor,
@@ -68,15 +70,16 @@ const Table = <
   };
 
   return (
-    <div className={`h-full ${width} rounded-md border border-black bg-white`}>
+    <div
+      className={`${width} ${height} rounded-md border border-black bg-white`}>
       {loading ? (
         'loading'
       ) : (
         <table className="max-h-full w-full [&_td]:text-center">
           <thead>
             <tr
-              className="[&_td]:border-r [&_td]:!border-goodGray
-           [&_td]:border-b [&_td]:bg-blueLight [&_td]:py-1 first:[&_td]:rounded-tl-md last:[&_td]:rounded-tr-md">
+              className="[&_td]:border-b [&_td]:border-r
+           [&_td]:!border-goodGray [&_td]:bg-blueLight [&_td]:py-1 first:[&_td]:rounded-tl-md last:[&_td]:rounded-tr-md">
               {headerItems.map(renderHeader)}
             </tr>
           </thead>
