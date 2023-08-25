@@ -75,7 +75,7 @@ const AccessTable: FC<Props> = ({
       editTableToRender = (
         <RegionEditAccessTable
           userId={userId}
-          // networkId={networkId}
+          networkId={networkId}
           access={AccessEnum.admin}
           setIsEditing={setIsEditing}
         />
@@ -95,7 +95,7 @@ const AccessTable: FC<Props> = ({
       editTableToRender = (
         <RegionEditAccessTable
           userId={userId}
-          // networkId={networkId}
+          networkId={networkId}
           access={AccessEnum.viewer}
           setIsEditing={setIsEditing}
         />

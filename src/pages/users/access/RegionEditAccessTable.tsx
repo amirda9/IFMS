@@ -163,7 +163,7 @@ const RegionEditAccessTable: FC<Props> = ({
   const handleSaveClick = () => {
     request('userUpdateAccesses', {
       params: {user_id: userId},
-      queryString: {access_type: access, resource_type: 'NETWORK'},
+      queryString: {access_type: access, resource_type: 'REGION'},
       data: {ids: accessedRegions.map(item => item.id)},
     });
   };
