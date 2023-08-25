@@ -5,8 +5,8 @@ import {AccessEnum} from '~/types';
 import RegionAccessTable from './RegionAccessTable';
 import StationAccessTable from './StationAccessTable';
 import LinkAccessTable from './LinkAccessTable';
-import {SimpleBtn} from '~/components';
 import NetworkEditAccessTable from './NetworkEditAccessTable';
+import RegionEditAccessTable from './RegionEditAccessTable';
 
 type Props = {
   userId: string;
@@ -62,38 +62,47 @@ const AccessTable: FC<Props> = ({
       );
       break;
     case Role.REGION_ADMIN:
-      if (!networkId) {
-        tableToRender = <></>;
-        break;
-      }
+      if (!networkId) break;
 
       tableToRender = (
         <RegionAccessTable
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
+          setIsEditing={setIsEditing}
+        />
+      );
+      editTableToRender = (
+        <RegionEditAccessTable
+          userId={userId}
+          // networkId={networkId}
+          access={AccessEnum.admin}
+          setIsEditing={setIsEditing}
         />
       );
       break;
     case Role.REGION_VIEWER:
-      if (!networkId) {
-        tableToRender = <></>;
-        break;
-      }
+      if (!networkId) break;
 
       tableToRender = (
         <RegionAccessTable
           userId={userId}
           networkId={networkId}
           access={AccessEnum.viewer}
+          setIsEditing={setIsEditing}
+        />
+      );
+      editTableToRender = (
+        <RegionEditAccessTable
+          userId={userId}
+          // networkId={networkId}
+          access={AccessEnum.viewer}
+          setIsEditing={setIsEditing}
         />
       );
       break;
     case Role.STATION_ADMIN:
-      if (!networkId) {
-        tableToRender = <></>;
-        break;
-      }
+      if (!networkId) break;
 
       tableToRender = (
         <StationAccessTable
@@ -104,10 +113,7 @@ const AccessTable: FC<Props> = ({
       );
       break;
     case Role.STATION_VIEWER:
-      if (!networkId) {
-        tableToRender = <></>;
-        break;
-      }
+      if (!networkId) break;
 
       tableToRender = (
         <StationAccessTable
@@ -118,10 +124,7 @@ const AccessTable: FC<Props> = ({
       );
       break;
     case Role.LINK_ADMIN:
-      if (!networkId) {
-        tableToRender = <></>;
-        break;
-      }
+      if (!networkId) break;
 
       tableToRender = (
         <LinkAccessTable
@@ -132,10 +135,7 @@ const AccessTable: FC<Props> = ({
       );
       break;
     case Role.LINK_VIEWER:
-      if (!networkId) {
-        tableToRender = <></>;
-        break;
-      }
+      if (!networkId) break;
 
       tableToRender = (
         <LinkAccessTable
@@ -146,11 +146,7 @@ const AccessTable: FC<Props> = ({
       );
       break;
   }
-  return (
-    <>
-      {isEditing ? editTableToRender : tableToRender}
-    </>
-  );
+  return <>{isEditing ? editTableToRender : tableToRender}</>;
 };
 
 export default AccessTable;

@@ -47,7 +47,7 @@ type RequestKeys =
   | 'stationViewerUpdate'
   | 'stationAdminUpdate'
   | 'userNetworkAccesses'
-  | 'userRegionsAccesses'
+  | 'userRegionAccesses'
   | 'userStationsAccesses'
   | 'userLinksAccesses'
   | 'userUpdateAccesses';
@@ -238,7 +238,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
-  userRegionsAccesses: {
+  userRegionAccesses: {
     url: api.BASE_URL + api.URLS.auth.users.accesses.regions,
     method: 'get',
     auth: true,
@@ -360,7 +360,7 @@ export type RequestListTypes = {
   userNetworkAccesses: {
     params: {user_id: string; access_type?: 'ADMIN' | 'VIEWER'};
   };
-  userRegionsAccesses: {
+  userRegionAccesses: {
     params: {
       user_id: string;
       network_id: string;
@@ -433,7 +433,7 @@ export type ResponseListType = {
   stationViewerUpdate: {count: number};
   stationAdminUpdate: string;
   userNetworkAccesses: T.NetworkAccessType[];
-  userRegionsAccesses: T.RegionAccessType[];
+  userRegionAccesses: T.RegionAccessType[];
   userStationsAccesses: T.StationAccessType[];
   userLinksAccesses: T.LinkAccessType[];
   userUpdateAccesses: undefined; // Temporarily unset

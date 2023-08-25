@@ -1,8 +1,8 @@
-import {FC, useEffect, useState} from 'react';
+import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {toast} from 'react-toastify';
-import {Table} from '~/components';
+import {SimpleBtn, Table} from '~/components';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -13,23 +13,25 @@ type Props = {
   userId: string;
   networkId: string;
   access?: AccessEnum;
+  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const RegionAccessTable: FC<Props> = ({
   userId,
   networkId,
   access = AccessEnum.admin,
+  setIsEditing,
 }) => {
   const [regionTableItems, setRegionTableItems] = useState<
     {index: number; region: string}[]
   >([]);
 
   const regionAccessQuery = useHttpRequest({
-    selector: state => state.http.userRegionsAccesses,
+    selector: state => state.http.userRegionAccesses,
   });
 
   useEffect(() => {
-    regionAccessQuery.request('userRegionsAccesses', {
+    regionAccessQuery.request('userRegionAccesses', {
       params: {user_id: userId, access_type: access, network_id: networkId},
     });
   }, [userId, access, networkId]);
@@ -59,7 +61,23 @@ const RegionAccessTable: FC<Props> = ({
     }
   }, [regionAccessQuery.state]);
 
-  return <Table items={regionTableItems} cols={columns} />;
+  return (
+    <>
+      <div className="w-3/5 flex-1">
+        <Table items={regionTableItems} cols={columns} />
+      </div>
+      <div className="self-end">
+        <SimpleBtn
+          className="self-end"
+          type="submit"
+          onClick={() => {
+            if (typeof setIsEditing === 'function') setIsEditing(true);
+          }}>
+          Edit Region(s)
+        </SimpleBtn>
+      </div>
+    </>
+  );
 };
 
 export default RegionAccessTable;
