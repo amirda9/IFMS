@@ -50,27 +50,40 @@ const UserAccessPage: FC = () => {
   });
 
   return (
-    <div className="flex w-2/3 flex-grow flex-col gap-y-4">
+    <div className="flex flex-grow flex-col gap-y-4">
       <div className="flex">
         <Description label="Role" items="start">
-          <ControlledSelect
-            options={roleOptions}
-            onChange={value => setSelectedRole(value as Role)}
-            value={selectedRole}
-            setValueProp={option => option.label}
-          />
+          {isEditing ? (
+            <span>{selectedRole}</span>
+          ) : (
+            <ControlledSelect
+              options={roleOptions}
+              onChange={value => setSelectedRole(value as Role)}
+              value={selectedRole}
+              setValueProp={option => option.label}
+            />
+          )}
         </Description>
 
-        {rolesNeedingNetwork.includes(selectedRole) && (
-          <Description label="Network" items="start">
-            <ControlledSelect
-              options={networkOptions}
-              onChange={value => setSelectedNetworkId(value as string)}
-              value={selectedNetworkId || ''}
-              setValueProp={option => option.payload?.id}
-            />
-          </Description>
-        )}
+        {rolesNeedingNetwork.includes(selectedRole) &&
+          (isEditing ? (
+            <span>
+              {
+                networkOptions.find(
+                  item => item.payload?.id === selectedNetworkId,
+                )?.label
+              }
+            </span>
+          ) : (
+            <Description label="Network" items="start">
+              <ControlledSelect
+                options={networkOptions}
+                onChange={value => setSelectedNetworkId(value as string)}
+                value={selectedNetworkId || ''}
+                setValueProp={option => option.payload?.id}
+              />
+            </Description>
+          ))}
       </div>
       <div className="flex flex-grow flex-col gap-y-4">
         <AccessTable

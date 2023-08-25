@@ -146,7 +146,11 @@ const AccessTable: FC<Props> = ({
       );
       break;
   }
-  return <>{isEditing ? editTableToRender : tableToRender}</>;
+  return (
+    <div className={`flex-grow flex flex-col gap-y-4 ${isEditing ? 'w-full' : 'w-2/3'}`}>
+      {isEditing ? editTableToRender : tableToRender}
+    </div>
+  );
 };
 
 export default AccessTable;

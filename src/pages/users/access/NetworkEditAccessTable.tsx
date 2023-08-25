@@ -1,4 +1,5 @@
 import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
@@ -49,6 +50,7 @@ const NetworkEditAccessTable: FC<Props> = ({
       userNetworkAccesses: state.http.userNetworkAccesses,
       userUpdateAccesses: state.http.userUpdateAccesses,
     }),
+    clearAfterUnmount: ['userUpdateAccesses'],
     initialRequests: request => {
       request('networkList', undefined);
       request('userNetworkAccesses', {
@@ -63,9 +65,20 @@ const NetworkEditAccessTable: FC<Props> = ({
         request('userNetworkAccesses', {
           params: {user_id: userId, access_type: access},
         });
+        toast('Updated successfully!', {type: 'success'});
         return;
+      } else if (state.userUpdateAccesses?.httpRequestStatus === 'error') {
+        if (state.userUpdateAccesses.error?.status === 422) {
+        } else {
+          toast(
+            (state.userUpdateAccesses.error?.data?.detail as string) ||
+              'Unknown error.',
+            {type: 'error'},
+          );
+        }
       }
 
+      // We want to make sure we don't accidentally update the table items when the updating API is processing
       if (
         state.userUpdateAccesses?.httpRequestStatus !== 'loading' &&
         state.userNetworkAccesses?.httpRequestStatus === 'success'
@@ -157,7 +170,7 @@ const NetworkEditAccessTable: FC<Props> = ({
 
   return (
     <>
-      <div className="flex">
+      <div className="flex gap-x-4">
         <Table
           cols={columns}
           items={noAccessNetworks}
