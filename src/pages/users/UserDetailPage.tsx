@@ -32,95 +32,85 @@ const UsersDetailPage: FC = () => {
   // List of the station items shown in the stations dropdown
   const [stationOptions, setStationOptions] = useState<StationOptionType[]>([]);
 
-  // Used to fetch user data and populate the form
-  const userDetailQuery = useHttpRequest({
-    selector: state => state.http.userDetail,
+  // Used to fetch the regions needed to show on the regions dropdown
+  const {request, state: {userDetail}} = useHttpRequest({
+    selector: state => ({
+      userDetail: state.http.userDetail,
+      userDetailUpdate: state.http.userDetailUpdate,
+      allRegions: state.http.allRegions,
+      regionStationList: state.http.regionStationList,
+    }),
     initialRequests: request => {
+      request('allRegions', undefined);
       request('userDetail', {params: {user_id: userId!}});
     },
     onUpdate: (lastState, state) => {
+      // Setting fetched user detail values
       if (
-        lastState?.httpRequestStatus === 'loading' &&
-        state?.httpRequestStatus === 'success' &&
-        state.data
+        lastState.userDetail?.httpRequestStatus === 'loading' &&
+        state.userDetail?.httpRequestStatus === 'success' &&
+        state.userDetail.data
       ) {
         formik.setValues({
-          name: state.data.name || '',
-          username: state.data.username,
-          telephone: state.data.telephone || '',
-          mobile: state.data.mobile || '',
-          email: state.data.email,
-          address: state.data.address || '',
-          comment: state.data.comment || '',
-          region_id: state.data.region?.id || '',
-          station_id: state.data.station?.id || '',
+          name: state.userDetail.data.name || '',
+          username: state.userDetail.data.username,
+          telephone: state.userDetail.data.telephone || '',
+          mobile: state.userDetail.data.mobile || '',
+          email: state.userDetail.data.email,
+          address: state.userDetail.data.address || '',
+          comment: state.userDetail.data.comment || '',
+          region_id: state.userDetail.data.region?.id || '',
+          station_id: state.userDetail.data.station?.id || '',
         });
+      }
+
+      // Showing API response to the user
+      if (lastState.userDetailUpdate?.httpRequestStatus === 'loading') {
+        if (state.userDetailUpdate?.httpRequestStatus === 'success') {
+          toast('User updated successfully.', {type: 'success'});
+        } else if (state.userDetailUpdate?.httpRequestStatus === 'error') {
+          if (state.userDetailUpdate.error!.status === 422)
+            toast('Validation Error', {type: 'error'});
+          else
+            toast(
+              (state.userDetailUpdate.error?.data?.detail as string) ||
+                'An unknown error has occurred.',
+              {
+                type: 'error',
+              },
+            );
+        }
+      }
+
+      // Setting the region list from the fetched data
+      if (state.allRegions?.httpRequestStatus === 'success') {
+        const regionsToSet: RegionOptionType[] = state.allRegions.data!.map(
+          item => ({
+            label: item.name,
+            payload: item,
+          }),
+        );
+        regionsToSet.unshift({label: 'None', payload: null});
+        setRegionOptions(regionsToSet);
+      }
+
+      // Setting the station list from the fetched data
+      if (state.regionStationList?.httpRequestStatus === 'success') {
+        const stationsToSet: StationOptionType[] =
+          state.regionStationList.data!.map(item => ({
+            label: item.name,
+            payload: item,
+          }));
+        stationsToSet.unshift({label: 'None', payload: null});
+        setStationOptions(stationsToSet);
       }
     },
   });
 
-  // Used to update user data when save button is clicked
-  const userDetailMutation = useHttpRequest({
-    selector: state => state.http.userDetailUpdate,
-  });
-
-  // Used to fetch the regions needed to show on the regions dropdown
-  const allRegionsQuery = useHttpRequest({
-    selector: state => state.http.allRegions,
-    initialRequests: request => {
-      request('allRegions', undefined);
-    },
-  });
-
-  // Used to fetch the stations available inside a selected region; will fetch the data in a useEffect
-  const allStationsQuery = useHttpRequest({
-    selector: state => state.http.regionStationList,
-  });
-
   useEffect(() => {
-    userDetailQuery.request('userDetail', {params: {user_id: userId!}});
+    request('userDetail', {params: {user_id: userId!}});
     setStationOptions([]);
   }, [userId]);
-
-  useEffect(() => {
-    if (userDetailMutation.state?.httpRequestStatus === 'success') {
-      toast('User updated successfully.', {type: 'success'});
-    } else if (userDetailMutation.state?.httpRequestStatus === 'error') {
-      if (userDetailMutation.state.error!.status === 422)
-        toast('Validation Error', {type: 'error'});
-      else
-        toast(userDetailMutation.state.error!.data?.detail as string, {
-          type: 'error',
-        });
-    }
-  }, [userDetailMutation.state]);
-
-  // Setting the region list from the fetched data
-  useEffect(() => {
-    if (allRegionsQuery.state?.httpRequestStatus === 'success') {
-      const regionsToSet: RegionOptionType[] = allRegionsQuery.state.data!.map(
-        item => ({
-          label: item.name,
-          payload: item,
-        }),
-      );
-      regionsToSet.unshift({label: 'None', payload: null});
-      setRegionOptions(regionsToSet);
-    }
-  }, [allRegionsQuery.state]);
-
-  // Setting the station list from the fetched data
-  useEffect(() => {
-    if (allStationsQuery.state?.httpRequestStatus === 'success') {
-      const stationsToSet: StationOptionType[] =
-        allStationsQuery.state.data!.map(item => ({
-          label: item.name,
-          payload: item,
-        }));
-      stationsToSet.unshift({label: 'None', payload: null});
-      setStationOptions(stationsToSet);
-    }
-  }, [allStationsQuery.state]);
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
@@ -149,7 +139,7 @@ const UsersDetailPage: FC = () => {
       station_id: values.station_id || null,
     };
 
-    userDetailMutation.request('userDetailUpdate', {
+    request('userDetailUpdate', {
       params: {user_id: userId!},
       data: valuesToSend,
     });
@@ -163,7 +153,7 @@ const UsersDetailPage: FC = () => {
 
   useEffect(() => {
     if (formik.values.region_id) {
-      allRegionsQuery.request('regionStationList', {
+      request('regionStationList', {
         params: {region_id: formik.values.region_id},
       });
     }
@@ -253,17 +243,17 @@ const UsersDetailPage: FC = () => {
             </div>
 
             <div className="mt-4 flex">
-              {userDetailQuery.state?.data?.time_created && (
+              {userDetail?.data?.time_created && (
                 <Description label="Created">
-                  {dayjs(userDetailQuery.state.data.time_created).format(
+                  {dayjs(userDetail.data.time_created).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
                 </Description>
               )}
 
-              {userDetailQuery.state?.data?.time_updated && (
+              {userDetail?.data?.time_updated && (
                 <Description label="Last Modified">
-                  {dayjs(userDetailQuery.state?.data?.time_updated).format(
+                  {dayjs(userDetail?.data?.time_updated).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
                 </Description>
