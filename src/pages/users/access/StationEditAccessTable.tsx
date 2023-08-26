@@ -100,7 +100,9 @@ const StationEditAccessTable: FC<Props> = ({
         );
 
         if (state.allStations?.httpRequestStatus === 'success') {
-          const allStations = state.allStations.data;
+          const allStations = state.allStations.data?.filter(
+            station => station.network_id === networkId,
+          );
 
           // Extracting those stations which are not founded in userAccessedStations
           const noAccessStations =

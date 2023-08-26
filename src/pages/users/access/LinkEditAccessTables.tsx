@@ -31,12 +31,8 @@ const LinkEditAccessTable: FC<Props> = ({
   networkId,
   setIsEditing,
 }) => {
-  const [noAccessLinks, setNoAccessLinks] = useState<
-    AccessLinkTableItem[]
-  >([]);
-  const [accessedLinks, setAccessedLinks] = useState<
-    AccessLinkTableItem[]
-  >([]);
+  const [noAccessLinks, setNoAccessLinks] = useState<AccessLinkTableItem[]>([]);
+  const [accessedLinks, setAccessedLinks] = useState<AccessLinkTableItem[]>([]);
 
   const [noAccessSelected, setNoAccessSelected] = useState<string[]>([]);
   const [accessedNetsSelected, setAccessedNetsSelected] = useState<string[]>(
@@ -100,7 +96,9 @@ const LinkEditAccessTable: FC<Props> = ({
         );
 
         if (state.allLinks?.httpRequestStatus === 'success') {
-          const allLinks = state.allLinks.data;
+          const allLinks = state.allLinks.data?.filter(
+            link => link.network_id === networkId,
+          );
 
           // Extracting those links which are not founded in userAccessedLinks
           const noAccessLinks =
