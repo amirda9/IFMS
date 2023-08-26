@@ -65,25 +65,26 @@ const UserAccessPage: FC = () => {
           )}
         </Description>
 
-        {rolesNeedingNetwork.includes(selectedRole) &&
-          (isEditing ? (
-            <span>
-              {
-                networkOptions.find(
-                  item => item.payload?.id === selectedNetworkId,
-                )?.label
-              }
-            </span>
-          ) : (
-            <Description label="Network" items="start">
+        {rolesNeedingNetwork.includes(selectedRole) && (
+          <Description label="Network" items="start">
+            {isEditing ? (
+              <span>
+                {
+                  networkOptions.find(
+                    item => item.payload?.id === selectedNetworkId,
+                  )?.label
+                }
+              </span>
+            ) : (
               <ControlledSelect
                 options={networkOptions}
                 onChange={value => setSelectedNetworkId(value as string)}
                 value={selectedNetworkId || ''}
                 setValueProp={option => option.payload?.id}
               />
-            </Description>
-          ))}
+            )}
+          </Description>
+        )}
       </div>
 
       <AccessTable
