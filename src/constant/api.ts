@@ -53,6 +53,7 @@ export const URLS = {
       adminAccess: '/otdr/station/{station_id}/access/admin',
     },
     link: {
+      all: '/otdr/link',
       listInRegion: '/otdr/link/region/{region_id}',
     },
   },

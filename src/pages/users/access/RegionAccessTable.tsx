@@ -52,7 +52,7 @@ const RegionAccessTable: FC<Props> = ({
       } // TODO: Handle correctly
       else {
         toast(
-          (regionAccessQuery.state.error?.data.detail as string) ||
+          (regionAccessQuery.state.error?.data?.detail as string) ||
             'An unknown error has occurred.',
           {
             type: 'error',

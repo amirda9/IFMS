@@ -15,27 +15,27 @@ type Props = {
 const columns = {
   select: {label: '', size: 'w-[5%]'},
   index: {label: '#', size: 'w-[10%]'},
-  station: {label: 'Station', size: 'w-[85%]'},
+  link: {label: 'Link', size: 'w-[85%]'},
 };
 
-type AccessStationTableItem = {
+type AccessLinkTableItem = {
   select: boolean;
   index: number;
-  station: string;
+  link: string;
   id: string;
 };
 
-const StationEditAccessTable: FC<Props> = ({
+const LinkEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
   networkId,
   setIsEditing,
 }) => {
-  const [noAccessStations, setNoAccessStations] = useState<
-    AccessStationTableItem[]
+  const [noAccessLinks, setNoAccessLinks] = useState<
+    AccessLinkTableItem[]
   >([]);
-  const [accessedStations, setAccessedStations] = useState<
-    AccessStationTableItem[]
+  const [accessedLinks, setAccessedLinks] = useState<
+    AccessLinkTableItem[]
   >([]);
 
   const [noAccessSelected, setNoAccessSelected] = useState<string[]>([]);
@@ -48,14 +48,14 @@ const StationEditAccessTable: FC<Props> = ({
     state: {userUpdateAccesses},
   } = useHttpRequest({
     selector: state => ({
-      allStations: state.http.allStations,
-      userStationAccesses: state.http.userStationAccesses,
+      allLinks: state.http.allLinks,
+      userLinkAccesses: state.http.userLinkAccesses,
       userUpdateAccesses: state.http.userUpdateAccesses,
     }),
     clearAfterUnmount: ['userUpdateAccesses'],
     initialRequests: request => {
-      request('allStations', undefined);
-      request('userStationAccesses', {
+      request('allLinks', undefined);
+      request('userLinkAccesses', {
         params: {user_id: userId},
         queryString: {access_type: access, network_id: networkId},
       });
@@ -65,7 +65,7 @@ const StationEditAccessTable: FC<Props> = ({
         lastState.userUpdateAccesses?.httpRequestStatus === 'loading' &&
         state.userUpdateAccesses?.httpRequestStatus === 'success'
       ) {
-        request('userStationAccesses', {
+        request('userLinkAccesses', {
           params: {user_id: userId},
           queryString: {access_type: access, network_id: networkId},
         });
@@ -85,38 +85,36 @@ const StationEditAccessTable: FC<Props> = ({
       // We want to make sure we don't accidentally update the table items when the updating API is processing
       if (
         state.userUpdateAccesses?.httpRequestStatus !== 'loading' &&
-        state.userStationAccesses?.httpRequestStatus === 'success'
+        state.userLinkAccesses?.httpRequestStatus === 'success'
       ) {
-        const userAccessedStations = state.userStationAccesses.data;
-        setAccessedStations(
-          userAccessedStations
-            ? userAccessedStations.map((item, index) => ({
+        const userAccessedLinks = state.userLinkAccesses.data;
+        setAccessedLinks(
+          userAccessedLinks
+            ? userAccessedLinks.map((item, index) => ({
                 index: index + 1,
-                station: item.station.name,
+                link: item.link.name,
                 select: false,
-                id: item.station.id,
+                id: item.link.id,
               }))
             : [],
         );
 
-        if (state.allStations?.httpRequestStatus === 'success') {
-          const allStations = state.allStations.data;
+        if (state.allLinks?.httpRequestStatus === 'success') {
+          const allLinks = state.allLinks.data;
 
-          // Extracting those stations which are not founded in userAccessedStations
-          const noAccessStations =
-            allStations && userAccessedStations
-              ? allStations.filter(
+          // Extracting those links which are not founded in userAccessedLinks
+          const noAccessLinks =
+            allLinks && userAccessedLinks
+              ? allLinks.filter(
                   item =>
-                    !userAccessedStations.find(
-                      acc => acc.station.id === item.id,
-                    ),
+                    !userAccessedLinks.find(acc => acc.link.id === item.id),
                 )
               : [];
 
-          setNoAccessStations(
-            noAccessStations.map((item, index) => ({
+          setNoAccessLinks(
+            noAccessLinks.map((item, index) => ({
               index: index + 1,
-              station: item.name,
+              link: item.name,
               select: false,
               id: item.id,
             })),
@@ -126,13 +124,13 @@ const StationEditAccessTable: FC<Props> = ({
     },
   });
 
-  const handleNoAccessCheckboxClick = (item: AccessStationTableItem) => {
+  const handleNoAccessCheckboxClick = (item: AccessLinkTableItem) => {
     noAccessSelected.includes(item.id)
       ? setNoAccessSelected(prvState => prvState.filter(id => id !== item.id))
       : setNoAccessSelected(prv => [...prv, item.id]);
   };
 
-  const handleAccessedCheckboxClick = (item: AccessStationTableItem) => {
+  const handleAccessedCheckboxClick = (item: AccessLinkTableItem) => {
     accessedNetsSelected.includes(item.id)
       ? setAccessedNetsSelected(prvState =>
           prvState.filter(id => id !== item.id),
@@ -140,25 +138,25 @@ const StationEditAccessTable: FC<Props> = ({
       : setAccessedNetsSelected(prv => [...prv, item.id]);
   };
 
-  const handleStationAddClick = () => {
-    setAccessedStations(prevState =>
+  const handleLinkAddClick = () => {
+    setAccessedLinks(prevState =>
       prevState.concat(
-        noAccessStations.filter(item => noAccessSelected.includes(item.id)),
+        noAccessLinks.filter(item => noAccessSelected.includes(item.id)),
       ),
     );
-    setNoAccessStations(prevState =>
+    setNoAccessLinks(prevState =>
       prevState.filter(item => !noAccessSelected.includes(item.id)),
     );
     setNoAccessSelected([]);
   };
 
-  const handleStationRemoveClick = () => {
-    setNoAccessStations(prevState =>
+  const handleLinkRemoveClick = () => {
+    setNoAccessLinks(prevState =>
       prevState.concat(
-        accessedStations.filter(item => accessedNetsSelected.includes(item.id)),
+        accessedLinks.filter(item => accessedNetsSelected.includes(item.id)),
       ),
     );
-    setAccessedStations(prevState =>
+    setAccessedLinks(prevState =>
       prevState.filter(item => !accessedNetsSelected.includes(item.id)),
     );
     setAccessedNetsSelected([]);
@@ -167,8 +165,8 @@ const StationEditAccessTable: FC<Props> = ({
   const handleSaveClick = () => {
     request('userUpdateAccesses', {
       params: {user_id: userId},
-      queryString: {access_type: access, resource_type: 'STATION'},
-      data: {ids: accessedStations.map(item => item.id)},
+      queryString: {access_type: access, resource_type: 'LINK'},
+      data: {ids: accessedLinks.map(item => item.id)},
     });
   };
 
@@ -177,7 +175,7 @@ const StationEditAccessTable: FC<Props> = ({
       <div className="flex flex-grow items-center gap-x-4">
         <Table
           cols={columns}
-          items={noAccessStations}
+          items={noAccessLinks}
           dynamicColumns={['select']}
           renderDynamicColumn={({value}) => (
             <input
@@ -188,12 +186,12 @@ const StationEditAccessTable: FC<Props> = ({
           )}
         />
         <DoubleSideButtonGroup
-          onClickRightButton={handleStationAddClick}
-          onClickLeftButton={handleStationRemoveClick}
+          onClickRightButton={handleLinkAddClick}
+          onClickLeftButton={handleLinkRemoveClick}
         />
         <Table
           cols={columns}
-          items={accessedStations}
+          items={accessedLinks}
           dynamicColumns={['select']}
           renderDynamicColumn={({value}) => (
             <input
@@ -217,4 +215,4 @@ const StationEditAccessTable: FC<Props> = ({
   );
 };
 
-export default StationEditAccessTable;
+export default LinkEditAccessTable;

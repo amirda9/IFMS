@@ -45,7 +45,7 @@ const UserAuthenticationPage: FC = () => {
             type: 'error',
           });
         } else {
-          toast(error.data.detail as string, {type: 'error'});
+          toast(error.data?.detail as string, {type: 'error'});
         }
       }
     }

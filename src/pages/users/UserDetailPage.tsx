@@ -89,7 +89,7 @@ const UsersDetailPage: FC = () => {
       if (userDetailMutation.state.error!.status === 422)
         toast('Validation Error', {type: 'error'});
       else
-        toast(userDetailMutation.state.error!.data.detail as string, {
+        toast(userDetailMutation.state.error!.data?.detail as string, {
           type: 'error',
         });
     }

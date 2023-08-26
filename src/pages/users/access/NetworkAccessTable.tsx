@@ -49,7 +49,7 @@ const NetworkAccessTable: FC<Props> = ({
       } // TODO: Handle correctly
       else {
         toast(
-          (networkAccessQuery.state.error?.data.detail as string) ||
+          (networkAccessQuery.state.error?.data?.detail as string) ||
             'An unknown error has occurred.',
           {
             type: 'error',

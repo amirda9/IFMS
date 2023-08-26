@@ -17,7 +17,7 @@ const UserGroupsLayout: FC = () => {
     if (groupsListQuery.state?.error) {
       if (groupsListQuery.state?.error.status === 422) {
       } else {
-        toast(groupsListQuery.state?.error.data.detail as string, {
+        toast(groupsListQuery.state?.error.data?.detail as string, {
           type: 'error',
         });
       }

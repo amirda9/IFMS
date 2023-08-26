@@ -56,7 +56,7 @@ const StationAccessTable: FC<Props> = ({
       } // TODO: Handle correctly
       else {
         toast(
-          (stationAccessQuery.state.error?.data.detail as string) ||
+          (stationAccessQuery.state.error?.data?.detail as string) ||
             'An unknown error has occurred.',
           {
             type: 'error',

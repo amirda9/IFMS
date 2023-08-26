@@ -1,8 +1,8 @@
-import {FC, useEffect, useState} from 'react';
+import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {toast} from 'react-toastify';
-import {Table} from '~/components';
+import {SimpleBtn, Table} from '~/components';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -15,12 +15,14 @@ type Props = {
   userId: string;
   networkId: string;
   access?: AccessEnum;
+  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const LinkAccessTable: FC<Props> = ({
   userId,
   networkId,
   access = AccessEnum.admin,
+  setIsEditing,
 }) => {
   const [linkTableItems, setLinkTableItems] = useState<
     {index: number; link: string; source: string; destination: string}[]
@@ -32,7 +34,8 @@ const LinkAccessTable: FC<Props> = ({
 
   useEffect(() => {
     linkAccessQuery.request('userLinkAccesses', {
-      params: {user_id: userId, access_type: access, network_id: networkId},
+      params: {user_id: userId},
+      queryString: {access_type: access, network_id: networkId},
     });
   }, [userId, access, networkId]);
 
@@ -53,7 +56,8 @@ const LinkAccessTable: FC<Props> = ({
       } // TODO: Handle correctly
       else {
         toast(
-          (linkAccessQuery.state.error?.data.detail as string) ||
+          (linkAccessQuery.state.error?.data?.detail as string) ||
+          (linkAccessQuery.state.error?.data?.detail as string) ||
             'An unknown error has occurred.',
           {
             type: 'error',
@@ -63,7 +67,23 @@ const LinkAccessTable: FC<Props> = ({
     }
   }, [linkAccessQuery.state]);
 
-  return <Table items={linkTableItems} cols={columns} />;
+  return (
+    <>
+      <div className="w-3/5 flex-1">
+        <Table items={linkTableItems} cols={columns} />
+      </div>
+      <div className="self-end">
+        <SimpleBtn
+          className="self-end"
+          type="submit"
+          onClick={() => {
+            if (typeof setIsEditing === 'function') setIsEditing(true);
+          }}>
+          Edit Link(s)
+        </SimpleBtn>
+      </div>
+    </>
+  );
 };
 
 export default LinkAccessTable;
