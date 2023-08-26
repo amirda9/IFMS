@@ -27,7 +27,7 @@ const GroupDetailPage: FC = () => {
             />
           </Description>
           <Description label="Owner">
-            <span>{groupDetailQuery.state.data.owner || 'N/A'}</span>
+            <span>{groupDetailQuery.state.data.owner?.name || 'N/A'}</span>
           </Description>
           <Description label="Created">
             <span>{groupDetailQuery.state.data.time_created || 'N/A'}</span>

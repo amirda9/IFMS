@@ -25,18 +25,18 @@ const GroupMembersPage: FC = () => {
     ? groupDetailQuery.state.data.users.map((user, index) => ({
         index: index + 1,
         user: user.username,
-        region: user.region?.name || "N/A",
-        station: user.station?.name || "N/A",
+        region: user.region?.name || 'N/A',
+        station: user.station?.name || 'N/A',
       }))
-    : null;
+    : [];
 
   return (
     <div>
-      {groupDetailQuery.state?.data && items ? (
-        <Table cols={columns} items={items} />
-      ) : (
-        <GeneralLoadingSpinner />
-      )}
+      <Table
+        cols={columns}
+        items={items}
+        loading={groupDetailQuery.state?.httpRequestStatus === 'loading'}
+      />
     </div>
   );
 };
