@@ -1,4 +1,5 @@
 import {Dispatch, FC, SetStateAction, useState} from 'react';
+import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
@@ -59,7 +60,7 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
       request('userList', undefined);
       request('groupDetail', {params: {group_id: groupId}});
     },
-    onUpdate: (_lastState, state) => {
+    onUpdate: (lastState, state) => {
       if (state.userList?.httpRequestStatus === 'success') {
         const allUsers = state.userList.data || [];
 
@@ -73,6 +74,18 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
           );
 
           setNonMembersList(userToTableItem(nonMembers));
+        }
+      }
+
+      if (lastState.updateGroup?.httpRequestStatus === 'loading') {
+        if (state.updateGroup?.httpRequestStatus === 'success') {
+          toast('Members updated successfully!', {type: 'success'});
+        } else if (state.updateGroup?.httpRequestStatus === 'error') {
+          toast(
+            (state.updateGroup.error?.data?.detail as string) ||
+              'Unknown error has occurred!',
+            {type: 'error'},
+          );
         }
       }
     },
