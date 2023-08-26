@@ -57,7 +57,7 @@ const LinkAccessTable: FC<Props> = ({
       else {
         toast(
           (linkAccessQuery.state.error?.data?.detail as string) ||
-          (linkAccessQuery.state.error?.data?.detail as string) ||
+            (linkAccessQuery.state.error?.data?.detail as string) ||
             'An unknown error has occurred.',
           {
             type: 'error',
@@ -70,7 +70,11 @@ const LinkAccessTable: FC<Props> = ({
   return (
     <>
       <div className="w-3/5 flex-1">
-        <Table items={linkTableItems} cols={columns} />
+        <Table
+          items={linkTableItems}
+          cols={columns}
+          loading={linkAccessQuery.state?.httpRequestStatus === 'loading'}
+        />
       </div>
       <div className="self-end">
         <SimpleBtn

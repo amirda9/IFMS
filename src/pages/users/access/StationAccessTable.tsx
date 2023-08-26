@@ -69,7 +69,11 @@ const StationAccessTable: FC<Props> = ({
   return (
     <>
       <div className="w-3/5 flex-1">
-        <Table items={stationTableItems} cols={columns} />
+        <Table
+          items={stationTableItems}
+          cols={columns}
+          loading={stationAccessQuery.state?.httpRequestStatus === 'loading'}
+        />
       </div>
       <div className="self-end">
         <SimpleBtn

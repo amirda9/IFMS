@@ -65,7 +65,11 @@ const RegionAccessTable: FC<Props> = ({
   return (
     <>
       <div className="w-3/5 flex-1">
-        <Table items={regionTableItems} cols={columns} />
+        <Table
+          items={regionTableItems}
+          cols={columns}
+          loading={regionAccessQuery.state?.httpRequestStatus === 'loading'}
+        />
       </div>
       <div className="self-end">
         <SimpleBtn

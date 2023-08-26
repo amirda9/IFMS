@@ -45,7 +45,7 @@ const StationEditAccessTable: FC<Props> = ({
 
   const {
     request,
-    state: {userUpdateAccesses},
+    state: {userUpdateAccesses, allStations, userStationAccesses},
   } = useHttpRequest({
     selector: state => ({
       allStations: state.http.allStations,
@@ -188,6 +188,10 @@ const StationEditAccessTable: FC<Props> = ({
               checked={noAccessSelected.includes(value.id)}
             />
           )}
+          loading={
+            userStationAccesses?.httpRequestStatus === 'loading' ||
+            allStations?.httpRequestStatus === 'loading'
+          }
         />
         <DoubleSideButtonGroup
           onClickRightButton={handleStationAddClick}
@@ -204,6 +208,10 @@ const StationEditAccessTable: FC<Props> = ({
               checked={accessedNetsSelected.includes(value.id)}
             />
           )}
+          loading={
+            userStationAccesses?.httpRequestStatus === 'loading' ||
+            allStations?.httpRequestStatus === 'loading'
+          }
         />
       </div>
       <div className="flex gap-x-2 self-end">

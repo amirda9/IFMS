@@ -45,7 +45,7 @@ const RegionEditAccessTable: FC<Props> = ({
 
   const {
     request,
-    state: {userUpdateAccesses},
+    state: {userUpdateAccesses, regionList, userRegionAccesses},
   } = useHttpRequest({
     selector: state => ({
       regionList: state.http.regionList,
@@ -184,6 +184,10 @@ const RegionEditAccessTable: FC<Props> = ({
               checked={noAccessSelected.includes(value.id)}
             />
           )}
+          loading={
+            userRegionAccesses?.httpRequestStatus === 'loading' ||
+            regionList?.httpRequestStatus === 'loading'
+          }
         />
         <DoubleSideButtonGroup
           onClickRightButton={handleRegionAddClick}
@@ -200,6 +204,10 @@ const RegionEditAccessTable: FC<Props> = ({
               checked={accessedNetsSelected.includes(value.id)}
             />
           )}
+          loading={
+            userRegionAccesses?.httpRequestStatus === 'loading' ||
+            regionList?.httpRequestStatus === 'loading'
+          }
         />
       </div>
       <div className="flex gap-x-2 self-end">

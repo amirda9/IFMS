@@ -43,7 +43,7 @@ const NetworkEditAccessTable: FC<Props> = ({
 
   const {
     request,
-    state: {userUpdateAccesses},
+    state: {userUpdateAccesses, userNetworkAccesses, networkList},
   } = useHttpRequest({
     selector: state => ({
       networkList: state.http.networkList,
@@ -184,6 +184,10 @@ const NetworkEditAccessTable: FC<Props> = ({
               checked={noAccessSelected.includes(value.id)}
             />
           )}
+          loading={
+            userNetworkAccesses?.httpRequestStatus === 'loading' ||
+            networkList?.httpRequestStatus === 'loading'
+          }
         />
         <DoubleSideButtonGroup
           onClickRightButton={handleNetworkAddClick}
@@ -200,6 +204,10 @@ const NetworkEditAccessTable: FC<Props> = ({
               checked={accessedNetsSelected.includes(value.id)}
             />
           )}
+          loading={
+            userNetworkAccesses?.httpRequestStatus === 'loading' ||
+            networkList?.httpRequestStatus === 'loading'
+          }
         />
       </div>
       <div className="flex gap-x-2 self-end">

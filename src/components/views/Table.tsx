@@ -1,4 +1,5 @@
-import React, {ReactNode} from 'react';
+import {ReactNode} from 'react';
+import GeneralLoadingSpinner from '../loading/GeneralLoadingSpinner';
 
 type ColType = {label: string; size?: string; sort?: boolean};
 
@@ -73,7 +74,7 @@ const Table = <
     <div
       className={`${width} ${height} rounded-md border border-black bg-white`}>
       {loading ? (
-        'loading'
+        <GeneralLoadingSpinner />
       ) : (
         <table className="max-h-full w-full [&_td]:text-center">
           <thead>

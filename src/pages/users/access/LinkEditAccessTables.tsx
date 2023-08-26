@@ -41,7 +41,7 @@ const LinkEditAccessTable: FC<Props> = ({
 
   const {
     request,
-    state: {userUpdateAccesses},
+    state: {userUpdateAccesses, allLinks, userLinkAccesses},
   } = useHttpRequest({
     selector: state => ({
       allLinks: state.http.allLinks,
@@ -182,6 +182,10 @@ const LinkEditAccessTable: FC<Props> = ({
               checked={noAccessSelected.includes(value.id)}
             />
           )}
+          loading={
+            userLinkAccesses?.httpRequestStatus === 'loading' ||
+            allLinks?.httpRequestStatus === 'loading'
+          }
         />
         <DoubleSideButtonGroup
           onClickRightButton={handleLinkAddClick}
@@ -198,6 +202,10 @@ const LinkEditAccessTable: FC<Props> = ({
               checked={accessedNetsSelected.includes(value.id)}
             />
           )}
+          loading={
+            userLinkAccesses?.httpRequestStatus === 'loading' ||
+            allLinks?.httpRequestStatus === 'loading'
+          }
         />
       </div>
       <div className="flex gap-x-2 self-end">

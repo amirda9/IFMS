@@ -63,7 +63,11 @@ const NetworkAccessTable: FC<Props> = ({
   return (
     <>
       <div className="w-3/5 flex-1">
-        <Table items={networkTableItems} cols={columns} />
+        <Table
+          items={networkTableItems}
+          cols={columns}
+          loading={networkAccessQuery.state?.httpRequestStatus === 'loading'}
+        />
       </div>
       <div className="self-end">
         <SimpleBtn
