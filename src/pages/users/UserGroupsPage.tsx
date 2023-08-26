@@ -1,7 +1,6 @@
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
 import {Table} from '~/components';
-import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useHttpRequest} from '~/hooks';
 
 const columns = {
@@ -24,17 +23,21 @@ const UserGroupsPage: FC = () => {
         index: index + 1,
         groupName: group.name,
       }))
-    : null;
-
+    : [];
 
   return (
     <div className="w-2/3">
-      {groupsQuery.state?.httpRequestStatus === 'success' && items ? (
-        <Table cols={columns} items={items} />
-      ) : groupsQuery.state?.httpRequestStatus === 'loading' ? (
-        <GeneralLoadingSpinner />
+      {groupsQuery.state?.httpRequestStatus === 'error' ? (
+        <p className="text-red-600">
+          {(groupsQuery.state.error?.data?.detail as string) ||
+            'Encountered an error.'}
+        </p>
       ) : (
-        <p className="text-red-600">Encountered an error.</p> //TODO: Find out the error format and show the actual error message
+        <Table
+          cols={columns}
+          items={items}
+          loading={groupsQuery.state?.httpRequestStatus === 'loading'}
+        />
       )}
     </div>
   );
