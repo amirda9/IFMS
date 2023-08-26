@@ -54,7 +54,8 @@ const NetworkEditAccessTable: FC<Props> = ({
     initialRequests: request => {
       request('networkList', undefined);
       request('userNetworkAccesses', {
-        params: {user_id: userId, access_type: access},
+        params: {user_id: userId},
+        queryString: {access_type: access},
       });
     },
     onUpdate: (lastState, state) => {
@@ -63,7 +64,8 @@ const NetworkEditAccessTable: FC<Props> = ({
         state.userUpdateAccesses?.httpRequestStatus === 'success'
       ) {
         request('userNetworkAccesses', {
-          params: {user_id: userId, access_type: access},
+          params: {user_id: userId},
+          queryString: {access_type: access},
         });
         toast('Updated successfully!', {type: 'success'});
         return;
@@ -170,7 +172,7 @@ const NetworkEditAccessTable: FC<Props> = ({
 
   return (
     <>
-      <div className="flex items-center flex-grow gap-x-4">
+      <div className="flex flex-grow items-center gap-x-4">
         <Table
           cols={columns}
           items={noAccessNetworks}

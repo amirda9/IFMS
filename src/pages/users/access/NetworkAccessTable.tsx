@@ -30,7 +30,8 @@ const NetworkAccessTable: FC<Props> = ({
 
   useEffect(() => {
     networkAccessQuery.request('userNetworkAccesses', {
-      params: {user_id: userId, access_type: access},
+      params: {user_id: userId},
+      queryString: {access_type: access},
     });
   }, [userId, access]);
 
@@ -61,10 +62,10 @@ const NetworkAccessTable: FC<Props> = ({
 
   return (
     <>
-      <div className='flex-1 w-3/5'>
+      <div className="w-3/5 flex-1">
         <Table items={networkTableItems} cols={columns} />
       </div>
-      <div className='self-end'>
+      <div className="self-end">
         <SimpleBtn
           className="self-end"
           type="submit"

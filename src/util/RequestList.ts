@@ -365,7 +365,8 @@ export type RequestListTypes = {
     data: {user_id: string};
   };
   userNetworkAccesses: {
-    params: {user_id: string; access_type?: 'ADMIN' | 'VIEWER'};
+    params: {user_id: string};
+    queryString: {access_type?: 'ADMIN' | 'VIEWER'};
   };
   userRegionAccesses: {
     params: {
