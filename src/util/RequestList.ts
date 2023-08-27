@@ -52,7 +52,10 @@ type RequestKeys =
   | 'userRegionAccesses'
   | 'userStationAccesses'
   | 'userLinkAccesses'
-  | 'userUpdateAccesses';
+  | 'updateUserNetworkAccesses'
+  | 'updateUserRegionAccesses'
+  | 'updateUserStationAccesses'
+  | 'updateUserLinkAccesses';
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -265,8 +268,23 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
-  userUpdateAccesses: {
-    url: api.BASE_URL + api.URLS.auth.users.accesses.all,
+  updateUserNetworkAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.networks,
+    method: 'put',
+    auth: true,
+  },
+  updateUserRegionAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.regions,
+    method: 'put',
+    auth: true,
+  },
+  updateUserStationAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.stations,
+    method: 'put',
+    auth: true,
+  },
+  updateUserLinkAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.links,
     method: 'put',
     auth: true,
   },
@@ -405,13 +423,44 @@ export type RequestListTypes = {
       access_type?: 'ADMIN' | 'VIEWER';
     };
   };
-  userUpdateAccesses: {
+  updateUserNetworkAccesses: {
+    params: {user_id: string};
+    queryString: {access_type?: 'ADMIN' | 'VIEWER'};
+    data: {
+      ids: string[];
+    };
+  };
+  updateUserRegionAccesses: {
     params: {
       user_id: string;
     };
     queryString: {
+      network_id: string;
       access_type?: 'ADMIN' | 'VIEWER';
-      resource_type?: 'NETWORK' | 'REGION' | 'STATION' | 'LINK';
+    };
+    data: {
+      ids: string[];
+    };
+  };
+  updateUserStationAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
+    data: {
+      ids: string[];
+    };
+  };
+  updateUserLinkAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
     };
     data: {
       ids: string[];
@@ -462,5 +511,8 @@ export type ResponseListType = {
   userRegionAccesses: T.RegionAccessType[];
   userStationAccesses: T.StationAccessType[];
   userLinkAccesses: T.LinkAccessType[];
-  userUpdateAccesses: undefined; // Temporarily unset
+  updateUserNetworkAccesses: string | null;
+  updateUserRegionAccesses: string | null;
+  updateUserStationAccesses: string | null;
+  updateUserLinkAccesses: string | null;
 };

@@ -10,7 +10,6 @@ export const URLS = {
       changePassword: '/auth/users/{user_id}/change_password',
       groups: '/auth/users/{user_id}/groups',
       accesses: {
-        all: '/auth/users/{user_id}/accesses',
         networks:
           '/auth/users/{user_id}/accesses/networks',
         regions:
