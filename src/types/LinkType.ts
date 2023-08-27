@@ -1,4 +1,4 @@
-export type RegionLinkType = {
+export type LinkType = {
   id: string;
   name: string;
   network_id: string;

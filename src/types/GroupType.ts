@@ -9,7 +9,10 @@ export type GroupType = {
 export type GroupDetailType = {
   name: string;
   id: string;
-  owner: string;
+  owner: {
+    id: string;
+    name: string
+  } | null;
   users: UserListType[];
   time_created?: string; // Times are in ISO 8601
   time_updated?: string;

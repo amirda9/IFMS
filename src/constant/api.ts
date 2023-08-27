@@ -8,6 +8,17 @@ export const URLS = {
       login: '/auth/users/login',
       refreshToken: '/auth/users/refresh_token',
       changePassword: '/auth/users/{user_id}/change_password',
+      groups: '/auth/users/{user_id}/groups',
+      accesses: {
+        networks:
+          '/auth/users/{user_id}/accesses/networks',
+        regions:
+          '/auth/users/{user_id}/accesses/regions',
+        stations:
+          '/auth/users/{user_id}/accesses/stations',
+        links:
+          '/auth/users/{user_id}/accesses/links',
+      },
     },
     groups: {
       all: '/auth/groups',
@@ -23,6 +34,7 @@ export const URLS = {
       adminAccess: '/otdr/network/{network_id}/access/admin',
     },
     region: {
+      all: '/otdr/region',
       create: '/otdr/region/{network_id}',
       single: '/otdr/region/{region_id}',
       listInNetwork: '/otdr/region/network/{network_id}',
@@ -31,8 +43,8 @@ export const URLS = {
       adminAccess: '/otdr/region/{region_id}/access/admin',
     },
     station: {
-      all: '/otdr/station/',
-      single: 'otdr/station/{station_id}',
+      all: '/otdr/station',
+      single: '/otdr/station/{station_id}',
       listInRegion: '/otdr/station/region/{region_id}',
       listInNetwork: '/otdr/station/network/{network_id}',
       allAccess: '/otdr/station/{station_id}/access',
@@ -40,6 +52,7 @@ export const URLS = {
       adminAccess: '/otdr/station/{station_id}/access/admin',
     },
     link: {
+      all: '/otdr/link',
       listInRegion: '/otdr/link/region/{region_id}',
     },
   },

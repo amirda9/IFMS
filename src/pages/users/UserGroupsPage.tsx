@@ -1,6 +1,6 @@
-import {FC, useMemo} from 'react';
+import {FC} from 'react';
+import {useParams} from 'react-router-dom';
 import {Table} from '~/components';
-import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useHttpRequest} from '~/hooks';
 
 const columns = {
@@ -9,10 +9,12 @@ const columns = {
 };
 
 const UserGroupsPage: FC = () => {
+  const {userId} = useParams();
+
   const groupsQuery = useHttpRequest({
-    selector: state => state.http.groupList,
+    selector: state => state.http.userGroupsList,
     initialRequests: request => {
-      request('groupList', undefined); // NOTE: This API is showing the groups of the logged in user, not the selected user. Will change the endpoint when it is available.
+      request('userGroupsList', {params: {user_id: userId!}});
     },
   });
 
@@ -21,18 +23,21 @@ const UserGroupsPage: FC = () => {
         index: index + 1,
         groupName: group.name,
       }))
-    : null;
-
-  console.log(groupsQuery);
+    : [];
 
   return (
     <div className="w-2/3">
-      {groupsQuery.state?.httpRequestStatus === 'success' && items ? (
-        <Table cols={columns} items={items} />
-      ) : groupsQuery.state?.httpRequestStatus === 'loading' ? (
-        <GeneralLoadingSpinner />
+      {groupsQuery.state?.httpRequestStatus === 'error' ? (
+        <p className="text-red-600">
+          {(groupsQuery.state.error?.data?.detail as string) ||
+            'Encountered an error.'}
+        </p>
       ) : (
-        <p className="text-red-600">Encountered an error.</p> //TODO: Find out the error format and show the actual error message
+        <Table
+          cols={columns}
+          items={items}
+          loading={groupsQuery.state?.httpRequestStatus === 'loading'}
+        />
       )}
     </div>
   );

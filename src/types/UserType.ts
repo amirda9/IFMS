@@ -2,6 +2,7 @@ export type UserListType = {
   id: string;
   username: string;
   email: string;
+  role: string;
   station?: {
     name: string;
   };
@@ -17,9 +18,11 @@ export type UserDetailType = {
   email: string;
   station: {
     name: string;
+    id: string;
   } | null;
   region: {
     name: string;
+    id: string;
   } | null;
   is_valid: boolean;
   telephone: string | null;
@@ -32,12 +35,12 @@ export type UserDetailType = {
 
 export type UserDetailFormType = {
   username: string;
-  name: string;
-  telephone: string;
-  mobile: string;
+  name: string | null;
+  telephone: string | null;
+  mobile: string | null;
   email: string;
-  address: string;
-  comment: string;
-  region: string;
-  station: string;
+  address: string | null;
+  comment: string | null;
+  region_id: string | null;
+  station_id: string | null;
 };

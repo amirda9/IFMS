@@ -1,45 +1,116 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
-import {FC, useEffect} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {Description, Select, SimpleBtn} from '~/components';
+import {Description, ControlledSelect, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import dayjs from 'dayjs';
-import {UserDetailFormType} from '~/types';
+import {RegionListType, StationListType, UserDetailFormType} from '~/types';
 import {toast} from 'react-toastify';
+
+type RegionOptionType = {label: string; payload: RegionListType | null};
+type StationOptionType = {label: string; payload: StationListType | null};
+
+const initialValues: UserDetailFormType = {
+  username: '',
+  name: '',
+  telephone: '',
+  mobile: '',
+  email: '',
+  address: '',
+  comment: '',
+  region_id: '',
+  station_id: '',
+};
 
 const UsersDetailPage: FC = () => {
   const {userId} = useParams();
 
-  const userDetailQuery = useHttpRequest({
-    selector: state => state.http.userDetail,
+  // List of the region items shown in the regions dropdown
+  const [regionOptions, setRegionOptions] = useState<RegionOptionType[]>([]);
+  // List of the station items shown in the stations dropdown
+  const [stationOptions, setStationOptions] = useState<StationOptionType[]>([]);
+
+  // Used to fetch the regions needed to show on the regions dropdown
+  const {request, state: {userDetail}} = useHttpRequest({
+    selector: state => ({
+      userDetail: state.http.userDetail,
+      userDetailUpdate: state.http.userDetailUpdate,
+      allRegions: state.http.allRegions,
+      regionStationList: state.http.regionStationList,
+    }),
     initialRequests: request => {
+      request('allRegions', undefined);
       request('userDetail', {params: {user_id: userId!}});
     },
     onUpdate: (lastState, state) => {
+      // Setting fetched user detail values
       if (
-        lastState?.httpRequestStatus === 'loading' &&
-        state?.httpRequestStatus === 'success' &&
-        state.data
+        lastState.userDetail?.httpRequestStatus === 'loading' &&
+        state.userDetail?.httpRequestStatus === 'success' &&
+        state.userDetail.data
       ) {
-        formik.setFieldValue('id', state.data.id);
-        formik.setFieldValue('name', state.data.name || '');
-        formik.setFieldValue('username', state.data.username);
-        formik.setFieldValue('email', state.data.email);
-        formik.setFieldValue('station', state.data.station?.name || '');
-        formik.setFieldValue('region', state.data.region?.name || '');
-        formik.setFieldValue('telephone', state.data.telephone || '');
-        formik.setFieldValue('mobile', state.data.mobile || '');
-        formik.setFieldValue('address', state.data.address || '');
-        formik.setFieldValue('comment', state.data.comment || '');
+        formik.setValues({
+          name: state.userDetail.data.name || '',
+          username: state.userDetail.data.username,
+          telephone: state.userDetail.data.telephone || '',
+          mobile: state.userDetail.data.mobile || '',
+          email: state.userDetail.data.email,
+          address: state.userDetail.data.address || '',
+          comment: state.userDetail.data.comment || '',
+          region_id: state.userDetail.data.region?.id || '',
+          station_id: state.userDetail.data.station?.id || '',
+        });
+      }
+
+      // Showing API response to the user
+      if (lastState.userDetailUpdate?.httpRequestStatus === 'loading') {
+        if (state.userDetailUpdate?.httpRequestStatus === 'success') {
+          toast('User updated successfully.', {type: 'success'});
+        } else if (state.userDetailUpdate?.httpRequestStatus === 'error') {
+          if (state.userDetailUpdate.error!.status === 422)
+            toast('Validation Error', {type: 'error'});
+          else
+            toast(
+              (state.userDetailUpdate.error?.data?.detail as string) ||
+                'An unknown error has occurred.',
+              {
+                type: 'error',
+              },
+            );
+        }
+      }
+
+      // Setting the region list from the fetched data
+      if (state.allRegions?.httpRequestStatus === 'success') {
+        const regionsToSet: RegionOptionType[] = state.allRegions.data!.map(
+          item => ({
+            label: item.name,
+            payload: item,
+          }),
+        );
+        regionsToSet.unshift({label: 'None', payload: null});
+        setRegionOptions(regionsToSet);
+      }
+
+      // Setting the station list from the fetched data
+      if (state.regionStationList?.httpRequestStatus === 'success') {
+        const stationsToSet: StationOptionType[] =
+          state.regionStationList.data!.map(item => ({
+            label: item.name,
+            payload: item,
+          }));
+        stationsToSet.unshift({label: 'None', payload: null});
+        setStationOptions(stationsToSet);
       }
     },
   });
 
-  const userDetailMutation = useHttpRequest({
-    selector: state => state.http.userDetailUpdate,
-  });
+  useEffect(() => {
+    request('userDetail', {params: {user_id: userId!}});
+    setStationOptions([]);
+  }, [userId]);
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
@@ -55,24 +126,22 @@ const UsersDetailPage: FC = () => {
     station: Yup.string(),
   });
 
-  const initialValues: UserDetailFormType = {
-    username: '',
-    name: '',
-    telephone: '',
-    mobile: '',
-    email: '',
-    address: '',
-    comment: '',
-    region: '',
-    station: '',
-  };
-
   const handleSaveUserDetailClick = (values: UserDetailFormType) => {
-    console.log('values:', values);
+    const valuesToSend = {
+      username: values.username,
+      name: values.name,
+      telephone: values.telephone,
+      mobile: values.mobile,
+      email: values.email,
+      address: values.address,
+      comment: values.comment,
+      region_id: values.region_id || null,
+      station_id: values.station_id || null,
+    };
 
-    userDetailMutation.request('userDetailUpdate', {
+    request('userDetailUpdate', {
       params: {user_id: userId!},
-      data: values,
+      data: valuesToSend,
     });
   };
 
@@ -83,22 +152,12 @@ const UsersDetailPage: FC = () => {
   });
 
   useEffect(() => {
-    userDetailQuery.request('userDetail', {params: {user_id: userId!}});
-  }, [userId]);
-
-  useEffect(() => {
-    console.log('userDetailMutation.state:', userDetailMutation.state);
-    if (userDetailMutation.state?.httpRequestStatus === 'success') {
-      toast('User updated successfully.', {type: 'success'});
-    } else if (userDetailMutation.state?.httpRequestStatus === 'error') {
-      if (userDetailMutation.state.error!.status === 422)
-        toast('Validation Error', {type: 'error'});
-      else
-        toast(userDetailMutation.state.error!.data.detail as string, {
-          type: 'error',
-        });
+    if (formik.values.region_id) {
+      request('regionStationList', {
+        params: {region_id: formik.values.region_id},
+      });
     }
-  }, [userDetailMutation.state]);
+  }, [formik.values.region_id]);
 
   return (
     <div className="flex flex-grow flex-col gap-4">
@@ -157,26 +216,44 @@ const UsersDetailPage: FC = () => {
               <TextareaFormik name="comment" className="w-2/3" />
             </Description>
 
-            <Description label="Region">
-              <Select
-                options={[{label: 'hi'}, {label: 'hi2'}, {label: 'hi3'}]}
-                onChange={console.log}
-                value={3}
-              />
-            </Description>
+            <div className="flex">
+              <Description label="Region">
+                <ControlledSelect
+                  options={regionOptions}
+                  onChange={regionId => {
+                    formik.setFieldValue('region_id', regionId);
+                  }}
+                  setValueProp={option => option.payload?.id || ''}
+                  value={formik.values.region_id || ''}
+                />
+              </Description>
 
-            <div className="flex mt-4">
-              {userDetailQuery.state?.data?.time_created && (
+              {stationOptions.length > 0 && (
+                <Description label="Station">
+                  <ControlledSelect
+                    options={stationOptions}
+                    onChange={stationId => {
+                      formik.setFieldValue('station_id', stationId);
+                    }}
+                    setValueProp={option => option.payload?.id || ''}
+                    value={formik.values.station_id || ''}
+                  />
+                </Description>
+              )}
+            </div>
+
+            <div className="mt-4 flex">
+              {userDetail?.data?.time_created && (
                 <Description label="Created">
-                  {dayjs(userDetailQuery.state.data.time_created).format(
+                  {dayjs(userDetail.data.time_created).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
                 </Description>
               )}
 
-              {userDetailQuery.state?.data?.time_updated && (
+              {userDetail?.data?.time_updated && (
                 <Description label="Last Modified">
-                  {dayjs(userDetailQuery.state?.data?.time_updated).format(
+                  {dayjs(userDetail?.data?.time_updated).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
                 </Description>

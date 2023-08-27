@@ -1,9 +1,13 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
-import {GroupType} from '~/types/GroupType';
 
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
+
+/**
+ * TODO: Find a way to better organize the names;
+ * As the number of APIs grow, it will get harder to keep track of available API definitions
+ */
 
 type RequestKeys =
   | 'login'
@@ -18,10 +22,13 @@ type RequestKeys =
   | 'userList'
   | 'userDetail'
   | 'userDetailUpdate'
+  | 'userGroupsList'
   | 'networkAccessUpdate'
   | 'networkUpdateAdmin'
   | 'groupList'
   | 'groupDetail'
+  | 'updateGroup'
+  | 'allRegions'
   | 'regionList'
   | 'regionCreate'
   | 'regionDetail'
@@ -29,8 +36,10 @@ type RequestKeys =
   | 'regionAccessList'
   | 'regionAccessUpdate'
   | 'regionStationList'
+  | 'allLinks'
   | 'regionLinkList'
   | 'regionAdminUpdate'
+  | 'allStations'
   | 'stationCreate'
   | 'stationDetail'
   | 'stationUpdate'
@@ -38,7 +47,16 @@ type RequestKeys =
   | 'networkStationList'
   | 'stationAccessList'
   | 'stationViewerUpdate'
-  | 'stationAdminUpdate';
+  | 'stationAdminUpdate'
+  | 'userNetworkAccesses'
+  | 'userRegionAccesses'
+  | 'userStationAccesses'
+  | 'userLinkAccesses'
+  | 'updateUserNetworkAccesses'
+  | 'updateUserRegionAccesses'
+  | 'updateUserStationAccesses'
+  | 'updateUserLinkAccesses';
+
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
     url: api.BASE_URL + api.URLS.auth.users.login,
@@ -68,6 +86,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   userDetailUpdate: {
     url: api.BASE_URL + api.URLS.auth.users.single,
     method: 'put',
+    auth: true,
+  },
+  userGroupsList: {
+    url: api.BASE_URL + api.URLS.auth.users.groups,
+    method: 'get',
     auth: true,
   },
   networkCreate: {
@@ -115,6 +138,16 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  updateGroup: {
+    url: api.BASE_URL + api.URLS.auth.groups.single,
+    method: 'put',
+    auth: true,
+  },
+  allRegions: {
+    url: api.BASE_URL + api.URLS.otdr.region.all,
+    method: 'get',
+    auth: true,
+  },
   regionList: {
     url: api.BASE_URL + api.URLS.otdr.region.listInNetwork,
     method: 'get',
@@ -155,6 +188,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  allLinks: {
+    url: api.BASE_URL + api.URLS.otdr.link.all,
+    method: 'get',
+    auth: true,
+  },
   regionLinkList: {
     url: api.BASE_URL + api.URLS.otdr.link.listInRegion,
     method: 'get',
@@ -163,6 +201,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   regionAdminUpdate: {
     url: api.BASE_URL + api.URLS.otdr.region.adminAccess,
     method: 'put',
+    auth: true,
+  },
+  allStations: {
+    url: api.BASE_URL + api.URLS.otdr.station.all,
+    method: 'get',
     auth: true,
   },
   stationCreate: {
@@ -205,6 +248,46 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  userNetworkAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.networks,
+    method: 'get',
+    auth: true,
+  },
+  userRegionAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.regions,
+    method: 'get',
+    auth: true,
+  },
+  userStationAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.stations,
+    method: 'get',
+    auth: true,
+  },
+  userLinkAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.links,
+    method: 'get',
+    auth: true,
+  },
+  updateUserNetworkAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.networks,
+    method: 'put',
+    auth: true,
+  },
+  updateUserRegionAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.regions,
+    method: 'put',
+    auth: true,
+  },
+  updateUserStationAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.stations,
+    method: 'put',
+    auth: true,
+  },
+  updateUserLinkAccesses: {
+    url: api.BASE_URL + api.URLS.auth.users.accesses.links,
+    method: 'put',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -236,6 +319,11 @@ export type RequestListTypes = {
     };
     data: T.UserDetailFormType;
   };
+  userGroupsList: {
+    params: {
+      user_id: string;
+    };
+  };
   networkCreate: {
     data: {
       name: string;
@@ -253,6 +341,11 @@ export type RequestListTypes = {
   };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
+  updateGroup: {
+    params: {group_id: string};
+    data: {name: string; users: string[]};
+  };
+  allRegions: undefined;
   regionList: {params: {network_id: string}};
   regionCreate: {
     params: {network_id: string};
@@ -267,8 +360,10 @@ export type RequestListTypes = {
   };
   regionStationList: {params: {region_id: string}};
   networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
+  allLinks: undefined;
   regionLinkList: {params: {region_id: string}};
   regionAdminUpdate: {params: {region_id: string}; data: {user_id: string}};
+  allStations: undefined;
   stationCreate: {data: T.StationCreateType};
   stationDetail: {params: {station_id: string}};
   stationUpdate: {
@@ -297,6 +392,80 @@ export type RequestListTypes = {
     params: {station_id: string};
     data: {user_id: string};
   };
+  userNetworkAccesses: {
+    params: {user_id: string};
+    queryString: {access_type?: 'ADMIN' | 'VIEWER'};
+  };
+  userRegionAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
+  };
+  userStationAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
+  };
+  userLinkAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
+  };
+  updateUserNetworkAccesses: {
+    params: {user_id: string};
+    queryString: {access_type?: 'ADMIN' | 'VIEWER'};
+    data: {
+      ids: string[];
+    };
+  };
+  updateUserRegionAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
+    data: {
+      ids: string[];
+    };
+  };
+  updateUserStationAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
+    data: {
+      ids: string[];
+    };
+  };
+  updateUserLinkAccesses: {
+    params: {
+      user_id: string;
+    };
+    queryString: {
+      network_id: string;
+      access_type?: 'ADMIN' | 'VIEWER';
+    };
+    data: {
+      ids: string[];
+    };
+  };
 };
 
 export type ResponseListType = {
@@ -306,6 +475,7 @@ export type ResponseListType = {
   userList: T.UserListType[];
   userDetail: T.UserDetailType;
   userDetailUpdate: {id: string; username: string; role: string; email: string};
+  userGroupsList: {id: string; name: string}[];
   networkCreate: T.NetworkType & {network_id: string};
   networkList: T.NetworkType[];
   networkDetail: T.NetworkDetailType;
@@ -315,6 +485,8 @@ export type ResponseListType = {
   networkAccessUpdate: {count: number};
   groupList: T.GroupType[];
   groupDetail: T.GroupDetailType;
+  updateGroup: T.GroupType;
+  allRegions: T.RegionListType[];
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};
   regionDetail: T.RegionType;
@@ -323,8 +495,10 @@ export type ResponseListType = {
   regionAccessUpdate: {count: number};
   regionStationList: T.StationListType[];
   networkUpdateAdmin: string;
-  regionLinkList: T.RegionLinkType[];
+  allLinks: T.LinkType[];
+  regionLinkList: T.LinkType[];
   regionAdminUpdate: string;
+  allStations: T.StationListType[];
   stationCreate: T.StationCreateType & {station_id: string};
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
@@ -333,4 +507,12 @@ export type ResponseListType = {
   stationAccessList: T.AccessListType;
   stationViewerUpdate: {count: number};
   stationAdminUpdate: string;
+  userNetworkAccesses: T.NetworkAccessType[];
+  userRegionAccesses: T.RegionAccessType[];
+  userStationAccesses: T.StationAccessType[];
+  userLinkAccesses: T.LinkAccessType[];
+  updateUserNetworkAccesses: string | null;
+  updateUserRegionAccesses: string | null;
+  updateUserStationAccesses: string | null;
+  updateUserLinkAccesses: string | null;
 };

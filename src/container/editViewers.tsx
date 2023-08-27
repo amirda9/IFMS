@@ -1,6 +1,7 @@
 import React, {FC, forwardRef, useImperativeHandle, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
+import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 
 type UserTableType = {
   id: string;
@@ -159,33 +160,23 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           renderDynamicColumn={renderDynamicColumn('left')}
         />
       )}
-      <div className="flex flex-col items-center">
-        <SimpleBtn
-          className="!w-28"
-          onClick={() => {
-            setState({
-              ...state,
-              selectLeft: [],
-              values: [...state.values, ...state.selectLeft],
-            });
-          }}>
-          Add
-        </SimpleBtn>
-        <TallArrow className="mt-7" />
-        <TallArrow className="mb-7 mt-14 rotate-180" />
-        <SimpleBtn
-          className="!w-28"
-          onClick={() => {
-            const values = [...state.values];
-            state.selectRight.forEach(value => {
-              const index = values.indexOf(value);
-              values.splice(index, 1);
-            });
-            setState({...state, selectRight: [], values});
-          }}>
-          Remove
-        </SimpleBtn>
-      </div>
+      <DoubleSideButtonGroup
+        onClickRightButton={() => {
+          setState({
+            ...state,
+            selectLeft: [],
+            values: [...state.values, ...state.selectLeft],
+          });
+        }}
+        onClickLeftButton={() => {
+          const values = [...state.values];
+          state.selectRight.forEach(value => {
+            const index = values.indexOf(value);
+            values.splice(index, 1);
+          });
+          setState({...state, selectRight: [], values});
+        }}
+      />
       <Table
         loading={
           (groups?.httpRequestStatus !== 'success' && state.group) ||

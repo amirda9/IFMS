@@ -45,13 +45,11 @@ const UserAuthenticationPage: FC = () => {
             type: 'error',
           });
         } else {
-          toast(error.data.detail as string, {type: 'error'});
+          toast(error.data?.detail as string, {type: 'error'});
         }
       }
     }
   }, [passwordRestMutation.state]);
-
-  console.log('passwordRestMutation:', passwordRestMutation);
 
   const validationSchema = Yup.object().shape({
     password: Yup.string().required('Password is required.'),

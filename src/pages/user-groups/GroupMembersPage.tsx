@@ -1,8 +1,8 @@
-import {FC} from 'react';
+import {FC, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {Table} from '~/components';
-import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
+import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
+import EditGroupMembers from './EditGroupMembers';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -13,6 +13,8 @@ const columns = {
 
 const GroupMembersPage: FC = () => {
   const {groupId} = useParams();
+
+  const [isEditingMembers, setIsEditingMembers] = useState(false);
 
   const groupDetailQuery = useHttpRequest({
     selector: state => state.http.groupDetail,
@@ -25,19 +27,40 @@ const GroupMembersPage: FC = () => {
     ? groupDetailQuery.state.data.users.map((user, index) => ({
         index: index + 1,
         user: user.username,
-        region: user.region?.name || "N/A",
-        station: user.station?.name || "N/A",
+        region: user.region?.name || 'N/A',
+        station: user.station?.name || 'N/A',
       }))
-    : null;
+    : [];
 
   return (
-    <div>
-      {groupDetailQuery.state?.data && items ? (
-        <Table cols={columns} items={items} />
-      ) : (
-        <GeneralLoadingSpinner />
+    <>
+      <div className="flex flex-col flex-grow gap-y-10">
+        {isEditingMembers ? (
+          <EditGroupMembers
+            groupId={groupId!}
+            setIsEditingMembers={setIsEditingMembers}
+          />
+        ) : (
+          <Table
+            cols={columns}
+            items={items}
+            loading={groupDetailQuery.state?.httpRequestStatus === 'loading'}
+            width="w-3/5"
+            height="h-auto"
+          />
+        )}
+      </div>
+      {!isEditingMembers && (
+        <div className="self-end">
+          <SimpleBtn
+            onClick={() => {
+              setIsEditingMembers(true);
+            }}>
+            Edit Members
+          </SimpleBtn>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
