@@ -5,6 +5,7 @@ import {RedirectAfterLogin} from '~/components';
 import {selectElement} from '~/util';
 import '~/styles/index.scss';
 import {MainLayout} from '~/layout';
+import ErrorPage404 from './pages/errors/404';
 function App() {
   const auth = useAppSelector(
     state =>
@@ -18,11 +19,13 @@ function App() {
           path="/login"
           Component={selectElement(!auth, pages.LoginPage, RedirectAfterLogin)}
         />
+
         <Route path="/" Component={selectElement(auth, MainLayout)}>
           <Route
             path="/networks/:networkId/edit-access"
             Component={pages.NetworkAccessEditPage}
           />
+
           <Route
             path="/networks"
             Component={selectElement(auth, pages.NetworksPage)}>
@@ -40,6 +43,7 @@ function App() {
             path="/regions/:regionId/edit-access"
             Component={pages.RegionAccessEditPage}
           />
+
           <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
@@ -91,6 +95,27 @@ function App() {
               Component={pages.ThresholdSettingPage}
             />
           </Route>
+          <Route path="/users" Component={pages.UsersLayout}>
+            <Route path=":userId" Component={pages.SingleUserLayout}>
+              <Route index Component={pages.UserDetailPage} />
+              <Route path="access" Component={pages.UserAccessPage} />
+              <Route path="groups" Component={pages.UserGroupsPage} />
+              <Route path="sessions" Component={pages.UserSessionsPage} />
+              <Route
+                path="authentication"
+                Component={pages.UserAuthenticationPage}
+              />
+            </Route>
+          </Route>
+
+          <Route path="/user-groups" Component={pages.UserGroupsLayout}>
+            <Route path=":groupId" Component={pages.SingleGroupLayout}>
+              <Route index Component={pages.GroupDetailPage} />
+              <Route path="members" Component={pages.GroupMembersPage} />
+            </Route>
+          </Route>
+
+          <Route path="*" Component={ErrorPage404} />
         </Route>
       </Routes>
     </Router>

@@ -1,28 +1,59 @@
-export const baseUrl = 'http://37.32.27.143:8080/api/';
+export const BASE_URL = 'http://37.32.27.143:8080/api';
 
-export const loginUrl = 'auth/users/login';
-export const refreshTokenUrl = 'auth/users/refresh_token';
-export const userListUrl = 'auth/users/';
-export const networkCreateUrl = 'otdr/network/';
-export const networkListUrl = 'otdr/network/';
-export const networkDetailUrl = 'otdr/network/{networkId}/';
-export const networkAccessListUrl = 'otdr/network/{network_id}/access/';
-export const networkAccessListUpdateUrl =
-  'otdr/network/{network_id}/access/viewers';
-export const groupListUrl = 'auth/groups/';
-export const regionListUrl = 'otdr/region/';
-export const regionCreateUrl = 'otdr/region/{network_id}/';
-export const regionDetailUrl = 'otdr/region/{region_id}/';
-export const regionAccessUrl = 'otdr/region/{region_id}/access';
-export const regionViewerUpdateUrl = 'otdr/region/{region_id}/access/viewers';
-export const regionStationListUrl = 'otdr/station/region/{region_id}';
-export const networkUpdateAdminUrl = 'otdr/network/{network_id}/access/admin';
-export const regionLinkListUrl = 'otdr/link/region/{region_id}';
-export const regionAdminUpdateUrl = 'otdr/region/{region_id}/access/admin';
-export const networkStationListUrl = 'otdr/station/network/{network_id}';
-export const stationUrl = 'otdr/station/';
-export const stationRUDUrl = 'otdr/station/{station_id}';
-export const stationAccessUrl = 'otdr/station/{station_id}/access';
-export const stationViewerUpdateUrl =
-  'otdr/station/{station_id}/access/viewers';
-export const stationAdminUpdateUrl = 'otdr/station/{station_id}/access/admin';
+export const URLS = {
+  auth: {
+    users: {
+      all: '/auth/users',
+      single: '/auth/users/{user_id}',
+      login: '/auth/users/login',
+      refreshToken: '/auth/users/refresh_token',
+      changePassword: '/auth/users/{user_id}/change_password',
+      groups: '/auth/users/{user_id}/groups',
+      accesses: {
+        networks:
+          '/auth/users/{user_id}/accesses/networks',
+        regions:
+          '/auth/users/{user_id}/accesses/regions',
+        stations:
+          '/auth/users/{user_id}/accesses/stations',
+        links:
+          '/auth/users/{user_id}/accesses/links',
+      },
+    },
+    groups: {
+      all: '/auth/groups',
+      single: '/auth/groups/{group_id}',
+    },
+  },
+  otdr: {
+    network: {
+      all: '/otdr/network',
+      single: '/otdr/network/{networkId}',
+      allAccess: '/otdr/network/{network_id}/access',
+      viewersAccess: '/otdr/network/{network_id}/access/viewers',
+      adminAccess: '/otdr/network/{network_id}/access/admin',
+    },
+    region: {
+      all: '/otdr/region',
+      create: '/otdr/region/{network_id}',
+      single: '/otdr/region/{region_id}',
+      listInNetwork: '/otdr/region/network/{network_id}',
+      allAccess: '/otdr/region/{region_id}/access',
+      viewersAccess: '/otdr/region/{region_id}/access/viewers',
+      adminAccess: '/otdr/region/{region_id}/access/admin',
+    },
+    station: {
+      all: '/otdr/station',
+      single: '/otdr/station/{station_id}',
+      listInRegion: '/otdr/station/region/{region_id}',
+      listInNetwork: '/otdr/station/network/{network_id}',
+      allAccess: '/otdr/station/{station_id}/access',
+      viewersAccess: '/otdr/station/{station_id}/access/viewers',
+      adminAccess: '/otdr/station/{station_id}/access/admin',
+    },
+    link: {
+      all: '/otdr/link',
+      listInRegion: '/otdr/link/region/{region_id}',
+    },
+  },
+};

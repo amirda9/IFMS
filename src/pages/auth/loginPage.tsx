@@ -42,6 +42,7 @@ const LoginPage = () => {
                 </span>
                 <InputFormik
                   name="username"
+                  wrapperClassName="w-full"
                   className="!h-11 w-80 rounded-lg bg-[#D9D9D9] px-4 text-sm"
                 />
               </div>
@@ -51,7 +52,7 @@ const LoginPage = () => {
                 </span>
                 <InputFormik
                   name="password"
-                  className="!h-11 w-80  rounded-lg bg-[#D9D9D9] px-4"
+                  className="!h-11 w-80 rounded-lg bg-[#D9D9D9] px-4"
                   type="password"
                 />
               </div>

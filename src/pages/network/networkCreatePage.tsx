@@ -36,7 +36,7 @@ const NetworkCreatePage = () => {
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
             <Description label="Name" items="start" labelClassName="mt-2">
-              <InputFormik name="name" className="w-2/3" />
+              <InputFormik name="name" wrapperClassName="w-2/3" />
             </Description>
             <Description label="Comment" items="start">
               <TextareaFormik name="description" className="w-2/3" />
