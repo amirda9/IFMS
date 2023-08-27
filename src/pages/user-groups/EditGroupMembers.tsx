@@ -76,9 +76,10 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
           setNonMembersList(userToTableItem(nonMembers));
         }
       }
-
       if (lastState.updateGroup?.httpRequestStatus === 'loading') {
         if (state.updateGroup?.httpRequestStatus === 'success') {
+          request('groupDetail', {params: {group_id: groupId}});
+
           toast('Members updated successfully!', {type: 'success'});
         } else if (state.updateGroup?.httpRequestStatus === 'error') {
           toast(
@@ -131,10 +132,10 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
   };
 
   const handleSaveClick = () => {
-    const newMembersIds = membersList.map(member => member.userId);
+    const newMemberIds = membersList.map(member => member.userId);
     request('updateGroup', {
       params: {group_id: groupId},
-      data: {name: groupDetail?.data?.name || '', users: newMembersIds},
+      data: {name: groupDetail?.data?.name || '', users: newMemberIds},
     });
   };
 
