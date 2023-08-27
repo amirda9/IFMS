@@ -41,14 +41,14 @@ const LinkEditAccessTable: FC<Props> = ({
 
   const {
     request,
-    state: {userUpdateAccesses, allLinks, userLinkAccesses},
+    state: {updateUserLinkAccesses, allLinks, userLinkAccesses},
   } = useHttpRequest({
     selector: state => ({
       allLinks: state.http.allLinks,
       userLinkAccesses: state.http.userLinkAccesses,
-      userUpdateAccesses: state.http.userUpdateAccesses,
+      updateUserLinkAccesses: state.http.updateUserLinkAccesses,
     }),
-    clearAfterUnmount: ['userUpdateAccesses'],
+    clearAfterUnmount: ['updateUserLinkAccesses'],
     initialRequests: request => {
       request('allLinks', undefined);
       request('userLinkAccesses', {
@@ -58,8 +58,8 @@ const LinkEditAccessTable: FC<Props> = ({
     },
     onUpdate: (lastState, state) => {
       if (
-        lastState.userUpdateAccesses?.httpRequestStatus === 'loading' &&
-        state.userUpdateAccesses?.httpRequestStatus === 'success'
+        lastState.updateUserLinkAccesses?.httpRequestStatus === 'loading' &&
+        state.updateUserLinkAccesses?.httpRequestStatus === 'success'
       ) {
         request('userLinkAccesses', {
           params: {user_id: userId},
@@ -67,11 +67,11 @@ const LinkEditAccessTable: FC<Props> = ({
         });
         toast('Updated successfully!', {type: 'success'});
         return;
-      } else if (state.userUpdateAccesses?.httpRequestStatus === 'error') {
-        if (state.userUpdateAccesses.error?.status === 422) {
+      } else if (state.updateUserLinkAccesses?.httpRequestStatus === 'error') {
+        if (state.updateUserLinkAccesses.error?.status === 422) {
         } else {
           toast(
-            (state.userUpdateAccesses.error?.data?.detail as string) ||
+            (state.updateUserLinkAccesses.error?.data?.detail as string) ||
               'Unknown error.',
             {type: 'error'},
           );
@@ -80,7 +80,7 @@ const LinkEditAccessTable: FC<Props> = ({
 
       // We want to make sure we don't accidentally update the table items when the updating API is processing
       if (
-        state.userUpdateAccesses?.httpRequestStatus !== 'loading' &&
+        state.updateUserLinkAccesses?.httpRequestStatus !== 'loading' &&
         state.userLinkAccesses?.httpRequestStatus === 'success'
       ) {
         const userAccessedLinks = state.userLinkAccesses.data;
@@ -161,9 +161,9 @@ const LinkEditAccessTable: FC<Props> = ({
   };
 
   const handleSaveClick = () => {
-    request('userUpdateAccesses', {
+    request('updateUserLinkAccesses', {
       params: {user_id: userId},
-      queryString: {access_type: access, resource_type: 'LINK'},
+      queryString: {access_type: access, network_id: networkId},
       data: {ids: accessedLinks.map(item => item.id)},
     });
   };

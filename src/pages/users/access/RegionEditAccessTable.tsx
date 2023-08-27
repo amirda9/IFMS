@@ -45,14 +45,14 @@ const RegionEditAccessTable: FC<Props> = ({
 
   const {
     request,
-    state: {userUpdateAccesses, regionList, userRegionAccesses},
+    state: {updateUserRegionAccesses, regionList, userRegionAccesses},
   } = useHttpRequest({
     selector: state => ({
       regionList: state.http.regionList,
       userRegionAccesses: state.http.userRegionAccesses,
-      userUpdateAccesses: state.http.userUpdateAccesses,
+      updateUserRegionAccesses: state.http.updateUserRegionAccesses,
     }),
-    clearAfterUnmount: ['userUpdateAccesses'],
+    clearAfterUnmount: ['updateUserRegionAccesses'],
     initialRequests: request => {
       request('regionList', {params: {network_id: networkId}});
       request('userRegionAccesses', {
@@ -62,8 +62,8 @@ const RegionEditAccessTable: FC<Props> = ({
     },
     onUpdate: (lastState, state) => {
       if (
-        lastState.userUpdateAccesses?.httpRequestStatus === 'loading' &&
-        state.userUpdateAccesses?.httpRequestStatus === 'success'
+        lastState.updateUserRegionAccesses?.httpRequestStatus === 'loading' &&
+        state.updateUserRegionAccesses?.httpRequestStatus === 'success'
       ) {
         request('userRegionAccesses', {
           params: {user_id: userId},
@@ -71,11 +71,13 @@ const RegionEditAccessTable: FC<Props> = ({
         });
         toast('Updated successfully!', {type: 'success'});
         return;
-      } else if (state.userUpdateAccesses?.httpRequestStatus === 'error') {
-        if (state.userUpdateAccesses.error?.status === 422) {
+      } else if (
+        state.updateUserRegionAccesses?.httpRequestStatus === 'error'
+      ) {
+        if (state.updateUserRegionAccesses.error?.status === 422) {
         } else {
           toast(
-            (state.userUpdateAccesses.error?.data?.detail as string) ||
+            (state.updateUserRegionAccesses.error?.data?.detail as string) ||
               'Unknown error.',
             {type: 'error'},
           );
@@ -84,7 +86,7 @@ const RegionEditAccessTable: FC<Props> = ({
 
       // We want to make sure we don't accidentally update the table items when the updating API is processing
       if (
-        state.userUpdateAccesses?.httpRequestStatus !== 'loading' &&
+        state.updateUserRegionAccesses?.httpRequestStatus !== 'loading' &&
         state.userRegionAccesses?.httpRequestStatus === 'success'
       ) {
         const userAccessedRegions = state.userRegionAccesses.data;
@@ -163,9 +165,9 @@ const RegionEditAccessTable: FC<Props> = ({
   };
 
   const handleSaveClick = () => {
-    request('userUpdateAccesses', {
+    request('updateUserRegionAccesses', {
       params: {user_id: userId},
-      queryString: {access_type: access, resource_type: 'REGION'},
+      queryString: {access_type: access, network_id: networkId},
       data: {ids: accessedRegions.map(item => item.id)},
     });
   };

@@ -45,14 +45,14 @@ const StationEditAccessTable: FC<Props> = ({
 
   const {
     request,
-    state: {userUpdateAccesses, allStations, userStationAccesses},
+    state: {updateUserStationAccesses, allStations, userStationAccesses},
   } = useHttpRequest({
     selector: state => ({
       allStations: state.http.allStations,
       userStationAccesses: state.http.userStationAccesses,
-      userUpdateAccesses: state.http.userUpdateAccesses,
+      updateUserStationAccesses: state.http.updateUserStationAccesses,
     }),
-    clearAfterUnmount: ['userUpdateAccesses'],
+    clearAfterUnmount: ['updateUserStationAccesses'],
     initialRequests: request => {
       request('allStations', undefined);
       request('userStationAccesses', {
@@ -62,8 +62,8 @@ const StationEditAccessTable: FC<Props> = ({
     },
     onUpdate: (lastState, state) => {
       if (
-        lastState.userUpdateAccesses?.httpRequestStatus === 'loading' &&
-        state.userUpdateAccesses?.httpRequestStatus === 'success'
+        lastState.updateUserStationAccesses?.httpRequestStatus === 'loading' &&
+        state.updateUserStationAccesses?.httpRequestStatus === 'success'
       ) {
         request('userStationAccesses', {
           params: {user_id: userId},
@@ -71,11 +71,13 @@ const StationEditAccessTable: FC<Props> = ({
         });
         toast('Updated successfully!', {type: 'success'});
         return;
-      } else if (state.userUpdateAccesses?.httpRequestStatus === 'error') {
-        if (state.userUpdateAccesses.error?.status === 422) {
+      } else if (
+        state.updateUserStationAccesses?.httpRequestStatus === 'error'
+      ) {
+        if (state.updateUserStationAccesses.error?.status === 422) {
         } else {
           toast(
-            (state.userUpdateAccesses.error?.data?.detail as string) ||
+            (state.updateUserStationAccesses.error?.data?.detail as string) ||
               'Unknown error.',
             {type: 'error'},
           );
@@ -84,7 +86,7 @@ const StationEditAccessTable: FC<Props> = ({
 
       // We want to make sure we don't accidentally update the table items when the updating API is processing
       if (
-        state.userUpdateAccesses?.httpRequestStatus !== 'loading' &&
+        state.updateUserStationAccesses?.httpRequestStatus !== 'loading' &&
         state.userStationAccesses?.httpRequestStatus === 'success'
       ) {
         const userAccessedStations = state.userStationAccesses.data;
@@ -167,9 +169,9 @@ const StationEditAccessTable: FC<Props> = ({
   };
 
   const handleSaveClick = () => {
-    request('userUpdateAccesses', {
+    request('updateUserStationAccesses', {
       params: {user_id: userId},
-      queryString: {access_type: access, resource_type: 'STATION'},
+      queryString: {access_type: access, network_id: networkId},
       data: {ids: accessedStations.map(item => item.id)},
     });
   };
