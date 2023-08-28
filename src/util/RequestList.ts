@@ -58,7 +58,8 @@ type RequestKeys =
   | 'updateUserNetworkAccesses'
   | 'updateUserRegionAccesses'
   | 'updateUserStationAccesses'
-  | 'updateUserLinkAccesses';
+  | 'updateUserLinkAccesses'
+  | 'regionDelete';
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -306,6 +307,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  regionDelete: {
+    url: api.BASE_URL + api.URLS.otdr.region.single,
+    method: 'delete',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -503,6 +509,7 @@ export type RequestListTypes = {
       ids: string[];
     };
   };
+  regionDelete: {params: {region_id: string}};
 };
 
 export type ResponseListType = {
@@ -554,4 +561,5 @@ export type ResponseListType = {
   updateUserRegionAccesses: string | null;
   updateUserStationAccesses: string | null;
   updateUserLinkAccesses: string | null;
+  regionDelete: {count: number};
 };
