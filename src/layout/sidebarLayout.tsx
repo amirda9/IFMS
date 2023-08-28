@@ -8,12 +8,14 @@ type PropsType = {
   createTitle?: string;
   searchOnChange?: (text: string) => void;
   canAdd?: boolean;
+  addButtonLink?: string;
 };
 const SidebarLayout: FC<PropsType> = ({
   children,
   createTitle,
   searchOnChange,
   canAdd,
+  addButtonLink,
 }) => {
   return (
     <>
@@ -38,7 +40,7 @@ const SidebarLayout: FC<PropsType> = ({
           <div className="ml-[-10px] mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2">
             <span className="text-md font-semibold">{createTitle}</span>
             {canAdd ? (
-              <Link to="create" className="ml-3 rounded-md">
+              <Link to={addButtonLink || 'create'} className="ml-3 rounded-md">
                 <IoAddOutline className="text-2xl text-green-500 active:text-green-300" />
               </Link>
             ) : null}

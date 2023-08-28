@@ -20,6 +20,7 @@ type RequestKeys =
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
+  | 'userRegister'
   | 'userDetail'
   | 'userDetailUpdate'
   | 'userGroupsList'
@@ -27,7 +28,9 @@ type RequestKeys =
   | 'networkUpdateAdmin'
   | 'groupList'
   | 'groupDetail'
+  | 'createGroup'
   | 'updateGroup'
+  | 'deleteGroup'
   | 'allRegions'
   | 'regionList'
   | 'regionCreate'
@@ -76,6 +79,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   userList: {
     url: api.BASE_URL + api.URLS.auth.users.all,
     method: 'get',
+    auth: true,
+  },
+  userRegister: {
+    url: api.BASE_URL + api.URLS.auth.users.all,
+    method: 'post',
     auth: true,
   },
   userDetail: {
@@ -138,9 +146,19 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  createGroup: {
+    url: api.BASE_URL + api.URLS.auth.groups.all,
+    method: 'post',
+    auth: true,
+  },
   updateGroup: {
     url: api.BASE_URL + api.URLS.auth.groups.single,
     method: 'put',
+    auth: true,
+  },
+  deleteGroup: {
+    url: api.BASE_URL + api.URLS.auth.groups.single,
+    method: 'delete',
     auth: true,
   },
   allRegions: {
@@ -308,6 +326,21 @@ export type RequestListTypes = {
     };
   };
   userList: undefined;
+  userRegister: {
+    data: {
+      username: string;
+      password: string;
+      confirm_password: string;
+      email: string | null;
+      name: string | null;
+      telephone: string | null;
+      mobile: string | null;
+      address: string | null;
+      comment: string | null;
+      station_id: string | null;
+      region_id: string | null;
+    };
+  };
   userDetail: {
     params: {
       user_id: string;
@@ -341,9 +374,13 @@ export type RequestListTypes = {
   };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
+  createGroup: {data: {name: string; users: string[]}};
   updateGroup: {
     params: {group_id: string};
     data: {name: string; users: string[]};
+  };
+  deleteGroup: {
+    params: {group_id: string};
   };
   allRegions: undefined;
   regionList: {params: {network_id: string}};
@@ -473,6 +510,7 @@ export type ResponseListType = {
   refresh: T.LoginResponseType;
   passwordReset: string;
   userList: T.UserListType[];
+  userRegister: T.UserDetailType[];
   userDetail: T.UserDetailType;
   userDetailUpdate: {id: string; username: string; role: string; email: string};
   userGroupsList: {id: string; name: string}[];
@@ -486,6 +524,7 @@ export type ResponseListType = {
   groupList: T.GroupType[];
   groupDetail: T.GroupDetailType;
   updateGroup: T.GroupType;
+  deleteGroup: string | null;
   allRegions: T.RegionListType[];
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};

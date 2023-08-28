@@ -89,6 +89,7 @@ function App() {
           </Route>
 
           <Route path="/users" Component={pages.UsersLayout}>
+            <Route path="register" Component={pages.UserRegisterPage} />
             <Route path=":userId" Component={pages.SingleUserLayout}>
               <Route index Component={pages.UserDetailPage} />
               <Route path="access" Component={pages.UserAccessPage} />
@@ -102,6 +103,7 @@ function App() {
           </Route>
 
           <Route path="/user-groups" Component={pages.UserGroupsLayout}>
+            <Route path="create" Component={pages.CreateGroupPage} />
             <Route path=":groupId" Component={pages.SingleGroupLayout}>
               <Route index Component={pages.GroupDetailPage} />
               <Route path="members" Component={pages.GroupMembersPage} />
