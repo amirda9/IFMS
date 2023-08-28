@@ -1,5 +1,6 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 import {FC, useState} from 'react';
+import {toast} from 'react-toastify';
 import * as Yup from 'yup';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
@@ -35,6 +36,7 @@ const UserRegisterPage: FC = () => {
   const [stationOptions, setStationOptions] = useState<StationOptionType[]>([]);
 
   const {
+    request,
     state: {userRegister, allRegions, allStations},
   } = useHttpRequest({
     selector: state => ({
@@ -42,6 +44,22 @@ const UserRegisterPage: FC = () => {
       allRegions: state.http.allRegions,
       allStations: state.http.allStations,
     }),
+    onUpdate: (lastState, state) => {
+      if (lastState.userRegister?.httpRequestStatus === 'loading') {
+        if (state.userRegister?.httpRequestStatus === 'success') {
+          toast('User was registered successfully', {type: 'success'});
+        } else if (state.userRegister?.httpRequestStatus === 'error') {
+          if (state.userRegister.error?.status === 422) {
+          } else {
+            toast(
+              (state.userRegister.error?.data?.detail as string) ||
+                'An unknown error has occurred.',
+              {type: 'error'},
+            );
+          }
+        }
+      }
+    },
   });
 
   const validationSchema = Yup.object().shape({
@@ -62,7 +80,25 @@ const UserRegisterPage: FC = () => {
     station: Yup.string(),
   });
 
-  const handleSaveUserDetailClick = () => {};
+  const handleSaveUserDetailClick = (values: FormType) => {
+    console.log('values :>> ', values);
+
+    request('userRegister', {
+      data: {
+        username: values.username,
+        password: values.password,
+        confirm_password: values.passwordConfirmation,
+        name: values.name,
+        email: values.email,
+        telephone: values.telephone,
+        mobile: values.mobile,
+        address: values.address,
+        comment: values.comment,
+        region_id: null,
+        station_id: null,
+      },
+    });
+  };
 
   const formik = useFormik({
     initialValues,
@@ -168,7 +204,11 @@ const UserRegisterPage: FC = () => {
             </div>
           </div>
           <div className="flex flex-row gap-x-2 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
+            <SimpleBtn
+              loading={userRegister?.httpRequestStatus === 'loading'}
+              type="submit">
+              Save
+            </SimpleBtn>
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>

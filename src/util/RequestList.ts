@@ -315,17 +315,19 @@ export type RequestListTypes = {
   };
   userList: undefined;
   userRegister: {
-    username: string;
-    password: string;
-    confirm_password: string;
-    email: string | null;
-    name: string | null;
-    telephone: string | null;
-    mobile: string | null;
-    address: string | null;
-    comment: string | null;
-    station_id: string | null;
-    region_id: string | null;
+    data: {
+      username: string;
+      password: string;
+      confirm_password: string;
+      email: string | null;
+      name: string | null;
+      telephone: string | null;
+      mobile: string | null;
+      address: string | null;
+      comment: string | null;
+      station_id: string | null;
+      region_id: string | null;
+    };
   };
   userDetail: {
     params: {
