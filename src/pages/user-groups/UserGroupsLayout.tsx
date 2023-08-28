@@ -25,7 +25,7 @@ const UserGroupsLayout: FC = () => {
   }, [groupsListQuery.state]);
 
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Groups">
+    <SidebarLayout searchOnChange={() => {}} createTitle="Groups" canAdd>
       {groupsListQuery.state?.httpRequestStatus === 'success' ? (
         groupsListQuery.state.data!.map(group => (
           <SidebarItem name={group.name} to={group.id} key={group.id} />

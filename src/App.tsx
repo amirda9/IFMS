@@ -103,6 +103,7 @@ function App() {
           </Route>
 
           <Route path="/user-groups" Component={pages.UserGroupsLayout}>
+            <Route path="create" Component={pages.CreateGroupPage} />
             <Route path=":groupId" Component={pages.SingleGroupLayout}>
               <Route index Component={pages.GroupDetailPage} />
               <Route path="members" Component={pages.GroupMembersPage} />

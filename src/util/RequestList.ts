@@ -28,6 +28,7 @@ type RequestKeys =
   | 'networkUpdateAdmin'
   | 'groupList'
   | 'groupDetail'
+  | 'createGroup'
   | 'updateGroup'
   | 'allRegions'
   | 'regionList'
@@ -142,6 +143,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   groupDetail: {
     url: api.BASE_URL + api.URLS.auth.groups.single,
     method: 'get',
+    auth: true,
+  },
+  createGroup: {
+    url: api.BASE_URL + api.URLS.auth.groups.all,
+    method: 'post',
     auth: true,
   },
   updateGroup: {
@@ -362,6 +368,7 @@ export type RequestListTypes = {
   };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
+  createGroup: {data: {name: string; users: string[]}};
   updateGroup: {
     params: {group_id: string};
     data: {name: string; users: string[]};
