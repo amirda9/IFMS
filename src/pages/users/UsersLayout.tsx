@@ -19,7 +19,7 @@ const UsersPage: FC = () => {
   };
 
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Users">
+    <SidebarLayout searchOnChange={() => {}} createTitle="Users" canAdd addButtonLink='register'>
       {userListQuery.state &&
       userListQuery.state.httpRequestStatus === 'success' ? (
         userListQuery.state.data!.map(user => (

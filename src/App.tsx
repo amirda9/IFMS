@@ -89,6 +89,7 @@ function App() {
           </Route>
 
           <Route path="/users" Component={pages.UsersLayout}>
+            <Route path="register" Component={pages.UserRegisterPage} />
             <Route path=":userId" Component={pages.SingleUserLayout}>
               <Route index Component={pages.UserDetailPage} />
               <Route path="access" Component={pages.UserAccessPage} />

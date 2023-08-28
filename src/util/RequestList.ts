@@ -20,6 +20,7 @@ type RequestKeys =
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
+  | 'userRegister'
   | 'userDetail'
   | 'userDetailUpdate'
   | 'userGroupsList'
@@ -76,6 +77,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   userList: {
     url: api.BASE_URL + api.URLS.auth.users.all,
     method: 'get',
+    auth: true,
+  },
+  userRegister: {
+    url: api.BASE_URL + api.URLS.auth.users.all,
+    method: 'post',
     auth: true,
   },
   userDetail: {
@@ -308,6 +314,19 @@ export type RequestListTypes = {
     };
   };
   userList: undefined;
+  userRegister: {
+    username: string;
+    password: string;
+    confirm_password: string;
+    email: string | null;
+    name: string | null;
+    telephone: string | null;
+    mobile: string | null;
+    address: string | null;
+    comment: string | null;
+    station_id: string | null;
+    region_id: string | null;
+  };
   userDetail: {
     params: {
       user_id: string;
@@ -473,6 +492,7 @@ export type ResponseListType = {
   refresh: T.LoginResponseType;
   passwordReset: string;
   userList: T.UserListType[];
+  userRegister: T.UserDetailType[];
   userDetail: T.UserDetailType;
   userDetailUpdate: {id: string; username: string; role: string; email: string};
   userGroupsList: {id: string; name: string}[];
