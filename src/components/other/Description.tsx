@@ -22,7 +22,9 @@ const Description: FC<PropsType> = ({
         'flex flex-grow flex-row',
         className,
       )}>
-      <label className={'w-40 text-sm ' + labelClassName}>{label}</label>
+      <label className={classNames('w-40 text-sm', labelClassName)}>
+        {label}
+      </label>
       {typeof children === 'string' ? (
         <span className="text-sm">{children}</span>
       ) : (

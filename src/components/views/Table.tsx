@@ -1,9 +1,10 @@
 import {ReactNode} from 'react';
 import GeneralLoadingSpinner from '../loading/GeneralLoadingSpinner';
+import classNames from '~/util/classNames';
 
-type ColType = {label: string; size?: string; sort?: boolean};
+export type ColType = {label: string; size?: string; sort?: boolean};
 
-type ItemType<C extends string, DC extends C | never> = Record<
+export type ItemType<C extends string, DC extends C | never> = Record<
   Exclude<C, DC>,
   ReactNode
 > &
@@ -25,6 +26,7 @@ type PropsType<
   items: Array<Item>;
   height?: string;
   width?: string;
+  containerClassName?: string;
   loading?: boolean;
   keyExtractor?: (value: Item) => string;
 };
@@ -37,8 +39,7 @@ const Table = <
   cols,
   dynamicColumns = [],
   renderDynamicColumn,
-  height = 'h-full',
-  width = 'w-full',
+  containerClassName,
   loading,
   keyExtractor,
 }: PropsType<C, DC, Item>) => {
@@ -72,7 +73,10 @@ const Table = <
 
   return (
     <div
-      className={`${width} ${height} rounded-md border border-black bg-white`}>
+      className={classNames(
+        'rounded-md border border-black bg-white',
+        containerClassName,
+      )}>
       <table className="max-h-full w-full [&_td]:text-center">
         <thead>
           <tr

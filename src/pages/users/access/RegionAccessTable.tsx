@@ -3,6 +3,7 @@ import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
+import AccessTablesView from './AccessTablesView';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -63,25 +64,13 @@ const RegionAccessTable: FC<Props> = ({
   }, [regionAccessQuery.state]);
 
   return (
-    <>
-      <div className="w-3/5 flex-1">
-        <Table
-          items={regionTableItems}
-          cols={columns}
-          loading={regionAccessQuery.state?.httpRequestStatus === 'loading'}
-        />
-      </div>
-      <div className="self-end">
-        <SimpleBtn
-          className="self-end"
-          type="submit"
-          onClick={() => {
-            if (typeof setIsEditing === 'function') setIsEditing(true);
-          }}>
-          Edit Region(s)
-        </SimpleBtn>
-      </div>
-    </>
+    <AccessTablesView
+      editButtonText="Edit Region(s)"
+      setIsEditing={setIsEditing!}
+      tableItems={regionTableItems}
+      tableColumns={columns}
+      tableLoading={regionAccessQuery.state?.httpRequestStatus === 'loading'}
+    />
   );
 };
 

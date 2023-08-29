@@ -9,6 +9,7 @@ import NetworkEditAccessTable from './NetworkEditAccessTable';
 import RegionEditAccessTable from './RegionEditAccessTable';
 import StationEditAccessTable from './StationEditAccessTable';
 import LinkEditAccessTable from './LinkEditAccessTables';
+import {Description} from '~/components';
 
 type Props = {
   userId: string;
