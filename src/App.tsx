@@ -88,11 +88,13 @@ function App() {
             </Route>
           </Route>
 
-          <Route path="configuration" Component={pages.SystemSettingPage}>
-            <Route path="" Component={pages.SystemPage} />
+          <Route path="configuration" Component={pages.SystemSettingsPage}>
+            <Route path="system-settings" Component={pages.SystemPage}>
+              
+            </Route>
             <Route
               path="threshold-settings"
-              Component={pages.ThresholdSettingPage}
+              Component={pages.ThresholdSettingsPage}
             />
           </Route>
           <Route path="/users" Component={pages.UsersLayout}>

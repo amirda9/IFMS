@@ -1,4 +1,3 @@
-import React from 'react';
 import {SidebarItem} from '~/components';
 import {SidebarLayout} from '~/layout';
 
@@ -6,7 +5,7 @@ const SystemSettingsPage = () => {
   return (
     <SidebarLayout createTitle="System Settings">
       <SidebarItem name="Optical Route" to="optical-route" className="mr-6" />
-      <SidebarItem name="System" to="." className="mr-6" />
+      <SidebarItem name="System" to="system-settings" className="mr-6" />
       <SidebarItem
         name="Threshold Setting"
         to="threshold-settings"

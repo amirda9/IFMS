@@ -2,7 +2,7 @@ import React from 'react';
 import {FormLayout} from '~/layout';
 import {Description, Select, SimpleBtn} from '~/components';
 
-const ThresholdSettingPage = () => {
+const ThresholdSettingsPage = () => {
   const buttons = (
     <>
       <SimpleBtn>Save</SimpleBtn>
@@ -69,7 +69,7 @@ const ThresholdSettingPage = () => {
         </Description>
 
         <Description
-          label="Degraded fiber Handeling Strategy"
+          label="Degraded fiber Handling Strategy"
           labelClassName="w-80">
           <Select className="w-1/5">
             <option value="" className="hidden">
@@ -87,4 +87,4 @@ const ThresholdSettingPage = () => {
   );
 };
 
-export default ThresholdSettingPage;
+export default ThresholdSettingsPage;

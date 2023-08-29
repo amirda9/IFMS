@@ -1,4 +1,3 @@
-import React from 'react';
 import {FormLayout} from '~/layout';
 import {Description, Select, SimpleBtn} from '~/components';
 
