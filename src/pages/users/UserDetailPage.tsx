@@ -160,7 +160,7 @@ const UsersDetailPage: FC = () => {
   }, [formik.values.region_id]);
 
   return (
-    <div className="flex flex-grow flex-col gap-4">
+    <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col">
@@ -216,7 +216,7 @@ const UsersDetailPage: FC = () => {
               <TextareaFormik name="comment" className="w-2/3" />
             </Description>
 
-            <div className="flex">
+            <div className="flex flex-col gap-y-5">
               <Description label="Region">
                 <ControlledSelect
                   options={regionOptions}
@@ -242,7 +242,7 @@ const UsersDetailPage: FC = () => {
               )}
             </div>
 
-            <div className="mt-4 flex">
+            <div className="mt-5 flex">
               {userDetail?.data?.time_created && (
                 <Description label="Created">
                   {dayjs(userDetail.data.time_created).format(
