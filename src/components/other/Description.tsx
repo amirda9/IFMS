@@ -19,7 +19,7 @@ const Description: FC<PropsType> = ({
     <div
       className={classNames(
         `items-${items}`,
-        'flex flex-grow flex-row',
+        'flex flex-row',
         className,
       )}>
       <label className={classNames('w-40 text-sm', labelClassName)}>

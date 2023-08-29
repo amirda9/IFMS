@@ -51,7 +51,7 @@ const UserAccessPage: FC = () => {
 
   return (
     <div className="flex flex-grow flex-col gap-y-4">
-      <div className="flex">
+      <div className="flex w-3/5 justify-between">
         <Description label="Role" items="start">
           {isEditing ? (
             <span>{selectedRole}</span>
