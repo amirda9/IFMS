@@ -523,6 +523,7 @@ export type ResponseListType = {
   networkAccessUpdate: {count: number};
   groupList: T.GroupType[];
   groupDetail: T.GroupDetailType;
+  createGroup: string | null;
   updateGroup: T.GroupType;
   deleteGroup: string | null;
   allRegions: T.RegionListType[];
