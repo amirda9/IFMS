@@ -225,6 +225,7 @@ const UsersDetailPage: FC = () => {
                   }}
                   setValueProp={option => option.payload?.id || ''}
                   value={formik.values.region_id || ''}
+                  className='min-w-[19rem]'
                 />
               </Description>
 
@@ -237,6 +238,7 @@ const UsersDetailPage: FC = () => {
                     }}
                     setValueProp={option => option.payload?.id || ''}
                     value={formik.values.station_id || ''}
+                    className='min-w-[19rem]'
                   />
                 </Description>
               )}
