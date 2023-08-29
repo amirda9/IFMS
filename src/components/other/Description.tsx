@@ -1,4 +1,5 @@
 import React, {FC, ReactNode} from 'react';
+import classNames from '~/util/classNames';
 
 type PropsType = {
   label: string;
@@ -15,7 +16,12 @@ const Description: FC<PropsType> = ({
   labelClassName,
 }) => {
   return (
-    <div className={`items-${items} flex flex-grow flex-row ${className}`}>
+    <div
+      className={classNames(
+        `items-${items}`,
+        'flex flex-grow flex-row',
+        className,
+      )}>
       <label className={'w-40 text-sm ' + labelClassName}>{label}</label>
       {typeof children === 'string' ? (
         <span className="text-sm">{children}</span>
