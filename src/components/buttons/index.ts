@@ -1,1 +1,1 @@
-export {default as SimpleBtn} from './simpleBtn';
+export {default as SimpleBtn} from './SimpleBtn';

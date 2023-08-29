@@ -34,7 +34,7 @@ const GroupMembersPage: FC = () => {
 
   return (
     <>
-      <div className="flex flex-col flex-grow gap-y-10">
+      <div className="flex flex-grow flex-col gap-y-10">
         {isEditingMembers ? (
           <EditGroupMembers
             groupId={groupId!}
@@ -51,12 +51,15 @@ const GroupMembersPage: FC = () => {
         )}
       </div>
       {!isEditingMembers && (
-        <div className="self-end">
+        <div className="flex flex-row self-end gap-x-4">
           <SimpleBtn
             onClick={() => {
               setIsEditingMembers(true);
             }}>
             Edit Members
+          </SimpleBtn>
+          <SimpleBtn link to="../../">
+            Cancel
           </SimpleBtn>
         </div>
       )}

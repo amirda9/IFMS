@@ -87,7 +87,7 @@ const GroupDetailPage: FC = () => {
           <GeneralLoadingSpinner />
         )}
       </div>
-      <div className="self-end">
+      <div className="flex flex-row self-end gap-x-4">
         <SimpleBtn
           disabled={
             !groupDetail?.data || updateGroup?.httpRequestStatus === 'loading'
@@ -96,6 +96,9 @@ const GroupDetailPage: FC = () => {
           {!groupDetail?.data || updateGroup?.httpRequestStatus === 'loading'
             ? 'Please wait...'
             : 'Save'}
+        </SimpleBtn>
+        <SimpleBtn link to="..">
+          Cancel
         </SimpleBtn>
       </div>
     </form>
