@@ -53,7 +53,7 @@ const NavItems: FC<PropsType> = ({
         <IoChevronDown className="close ml-2" />
         <IoChevronUp className="open ml-2 hidden" />
       </Link>
-      <ul className="absolute  top-full hidden w-fit -translate-y-4 rounded-md bg-white z-10">
+      <ul className="absolute  top-full z-10 z-[999] hidden w-fit -translate-y-4 rounded-md bg-white">
         {!items || !items.length ? (
           <span className="break-keep p-4 text-black">Not set any item</span>
         ) : (
