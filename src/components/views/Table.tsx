@@ -24,8 +24,6 @@ type PropsType<
   }) => ReactNode;
   cols: Record<C, ColType>;
   items: Array<Item>;
-  height?: string;
-  width?: string;
   containerClassName?: string;
   loading?: boolean;
   keyExtractor?: (value: Item) => string;
@@ -52,7 +50,9 @@ const Table = <
       key={key}
       className={classNames(
         col.size,
-        bordered ? 'border-b border-r border-gray96 last:border-r-0' : 'border-r last:border-0',
+        bordered
+          ? 'border-b border-r border-gray96 last:border-r-0'
+          : 'border-r last:border-0',
         'bg-blueLight py-1 font-normal',
       )}>
       {col.label}
@@ -82,13 +82,14 @@ const Table = <
 
   return (
     <div
-      className={classNames("overflow-hidden bg-white",
+      className={classNames(
+        'overflow-hidden bg-white',
         bordered
           ? 'rounded-t-lg border border-gray96'
           : 'rounded-md border border-black',
         containerClassName,
       )}>
-      <table className="rounded-lg max-h-full w-full [&_td]:text-center">
+      <table className="max-h-full w-full rounded-lg [&_td]:text-center">
         <thead>
           <tr
             className={classNames(
