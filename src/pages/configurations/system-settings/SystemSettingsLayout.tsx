@@ -5,7 +5,7 @@ const SystemSettingsPage = () => {
   return (
     <SidebarLayout createTitle="System Settings">
       <SidebarItem name="Optical Route" to="optical-route" className="mr-6" />
-      <SidebarItem name="System" to="system-settings" className="mr-6" />
+      <SidebarItem name="System" to="system" className="mr-6" />
       <SidebarItem
         name="Threshold Setting"
         to="threshold-settings"

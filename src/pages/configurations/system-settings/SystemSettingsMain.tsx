@@ -13,8 +13,8 @@ const SystemSettingsMain: FC<Props> = ({
   children,
 }) => {
   return (
-    <div className="flex flex-col w-full">
-      <div className="flex-grow">{children}</div>
+    <div className="flex flex-col w-full h-full overflow-auto">
+      <div className="flex-1">{children}</div>
       <div className="flex flex-row gap-x-4 self-end">
         <SimpleBtn onClick={onSaveButtonClick}>Save</SimpleBtn>
         <SimpleBtn onClick={onResetButtonClick}>Reset to Default</SimpleBtn>

@@ -1,16 +1,9 @@
-import {FormLayout} from '~/layout';
-import {Description, Select, SimpleBtn} from '~/components';
+import {Description, Select} from '~/components';
+import SystemSettingsMain from '../SystemSettingsMain';
 
 const SystemPage = () => {
-  const buttons = (
-    <>
-      <SimpleBtn>Save</SimpleBtn>
-      <SimpleBtn>Reset to Default</SimpleBtn>
-      <SimpleBtn>Cancel</SimpleBtn>
-    </>
-  );
   return (
-    <FormLayout buttons={buttons}>
+    <SystemSettingsMain>
       <div className="flex flex-col gap-y-4">
         <Description label="Break Strategy" labelClassName="w-80">
           <Select className="w-1/5">
@@ -82,7 +75,7 @@ const SystemPage = () => {
           </Select>
         </Description>
       </div>
-    </FormLayout>
+    </SystemSettingsMain>
   );
 };
 
