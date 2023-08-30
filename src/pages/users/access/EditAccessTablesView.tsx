@@ -79,7 +79,7 @@ const EditAccessTablesView = <
           containerClassName="flex-grow h-full"
         />
       </div>
-      <div className="flex gap-x-2 self-end">
+      <div className="flex gap-x-4 self-end">
         <SimpleBtn onClick={handleSaveClick}>Ok</SimpleBtn>
         <SimpleBtn
           onClick={() => {

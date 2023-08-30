@@ -81,9 +81,9 @@ const UserAuthenticationPage: FC = () => {
               />
             </Description>
           </div>
-          <div className="flex flex-row gap-x-2 self-end">
+          <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn type="submit">Save</SimpleBtn>
-            <SimpleBtn link to="../">
+            <SimpleBtn link to="../../">
               Cancel
             </SimpleBtn>
           </div>

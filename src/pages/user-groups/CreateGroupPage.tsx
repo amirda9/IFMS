@@ -50,7 +50,7 @@ const CreateGroupPage: FC = () => {
             />
           </Description>
         </div>
-        <div className="flex flex-row gap-x-2 self-end">
+        <div className="flex flex-row gap-x-4 self-end">
           <SimpleBtn
             loading={createGroup?.httpRequestStatus === 'loading'}
             type="submit">

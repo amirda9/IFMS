@@ -157,6 +157,7 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
             userList?.httpRequestStatus === 'loading' ||
             groupDetail?.httpRequestStatus === 'loading'
           }
+          containerClassName="flex-grow h-full"
         />
         <DoubleSideButtonGroup
           onClickRightButton={handleMemberAddClick}
@@ -177,9 +178,10 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
             userList?.httpRequestStatus === 'loading' ||
             groupDetail?.httpRequestStatus === 'loading'
           }
+          containerClassName="flex-grow h-full"
         />
       </div>
-      <div className="flex gap-x-2 self-end">
+      <div className="flex gap-x-4 self-end">
         <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
         <SimpleBtn
           onClick={() => {
