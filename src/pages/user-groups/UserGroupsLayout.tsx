@@ -1,15 +1,19 @@
-import {FC, useEffect, useRef, useState} from 'react';
+import {FC, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
 const UserGroupsLayout: FC = () => {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
   const selectedGroupToDelete = useRef<string | null>(null);
+
+  const isEditingGroupMembers = useAppSelector(
+    state => state.userGroups.isEditingGroupMembers,
+  );
 
   const {
     request,
@@ -55,7 +59,11 @@ const UserGroupsLayout: FC = () => {
   };
 
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Groups" canAdd>
+    <SidebarLayout
+      searchOnChange={() => {}}
+      createTitle="Groups"
+      canAdd
+      hideSidebar={isEditingGroupMembers}>
       {groupList?.httpRequestStatus === 'success' ? (
         groupList.data!.map(group => (
           <SidebarItem

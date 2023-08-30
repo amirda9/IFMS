@@ -18,3 +18,7 @@ export type HttpSliceType<K extends RequestKeyExclude = RequestKeyExclude> = {
 export type UserAccessSliceType = {
   isEditingUserAccess: boolean;
 };
+
+export type UserGroupsSliceType = {
+  isEditingGroupMembers: boolean;
+};
