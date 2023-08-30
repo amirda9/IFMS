@@ -1,11 +1,10 @@
 import {FC, useState} from 'react';
-import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
+import {ControlledSelect, Description} from '~/components';
 import {Role} from '~/constant/users';
 import AccessTable from './AccessTable';
 import {useParams} from 'react-router-dom';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {NetworkType} from '~/types';
-import EditAccessTables from './EditAccessTables';
 
 const roleOptions = Object.values(Role)
   .filter(val => val !== Role.SUPER_ADMIN)
@@ -24,14 +23,16 @@ type NetworkOptionType = {label: string; payload: NetworkType | null};
 
 const UserAccessPage: FC = () => {
   const {userId} = useParams();
+  const isEditingUserAccess = useAppSelector(
+    state => state.userAccess.isEditingUserAccess,
+  );
+
   const [selectedRole, setSelectedRole] = useState<Role>(Role.NETWORK_ADMIN);
 
   const [networkOptions, setNetworkOptions] = useState<NetworkOptionType[]>([]);
   const [selectedNetworkId, setSelectedNetworkId] = useState<string>('');
 
-  const [isEditing, setIsEditing] = useState(false);
-
-  const allNetworksQuery = useHttpRequest({
+  useHttpRequest({
     selector: state => state.http.networkList,
     initialRequests: request => {
       request('networkList', undefined);
@@ -51,9 +52,9 @@ const UserAccessPage: FC = () => {
 
   return (
     <div className="flex flex-grow flex-col gap-y-4">
-      <div className="flex">
+      <div className="flex w-3/5 justify-between">
         <Description label="Role" items="start">
-          {isEditing ? (
+          {isEditingUserAccess ? (
             <span>{selectedRole}</span>
           ) : (
             <ControlledSelect
@@ -67,7 +68,7 @@ const UserAccessPage: FC = () => {
 
         {rolesNeedingNetwork.includes(selectedRole) && (
           <Description label="Network" items="start">
-            {isEditing ? (
+            {isEditingUserAccess ? (
               <span>
                 {
                   networkOptions.find(
@@ -91,8 +92,6 @@ const UserAccessPage: FC = () => {
         userId={userId!}
         role={selectedRole}
         networkId={selectedNetworkId}
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
       />
     </div>
   );

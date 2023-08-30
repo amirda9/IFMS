@@ -35,7 +35,7 @@ const RegionStationsPage = () => {
           width="w-3/5"
         />
       </div>
-      <div className="mr-4 flex flex-row gap-x-2 self-end">
+      <div className="mr-4 flex flex-row gap-x-4 self-end">
         <SimpleBtn link to="/stations">
           Edit Stations List
         </SimpleBtn>

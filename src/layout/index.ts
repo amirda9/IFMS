@@ -1,3 +1,3 @@
-export {default as MainLayout} from './mainLayout';
-export {default as FormLayout} from './formLayout';
-export {default as SidebarLayout} from './sidebarLayout';
+export {default as MainLayout} from './MainLayout';
+export {default as FormLayout} from './FormLayout';
+export {default as SidebarLayout} from './SidebarLayout';

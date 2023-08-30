@@ -1,8 +1,8 @@
-import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {toast} from 'react-toastify';
-import {SimpleBtn, Table} from '~/components';
+import AccessTablesView from './AccessTablesView';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -12,13 +12,11 @@ const columns = {
 type Props = {
   userId: string;
   access?: AccessEnum;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const NetworkAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
-  setIsEditing,
 }) => {
   const [networkTableItems, setNetworkTableItems] = useState<
     {index: number; network: string}[]
@@ -61,25 +59,12 @@ const NetworkAccessTable: FC<Props> = ({
   }, [networkAccessQuery.state]);
 
   return (
-    <>
-      <div className="w-3/5 flex-1">
-        <Table
-          items={networkTableItems}
-          cols={columns}
-          loading={networkAccessQuery.state?.httpRequestStatus === 'loading'}
-        />
-      </div>
-      <div className="self-end">
-        <SimpleBtn
-          className="self-end"
-          type="submit"
-          onClick={() => {
-            if (typeof setIsEditing === 'function') setIsEditing(true);
-          }}>
-          Edit Network(s)
-        </SimpleBtn>
-      </div>
-    </>
+    <AccessTablesView
+      editButtonText="Edit Network(s)"
+      tableItems={networkTableItems}
+      tableColumns={columns}
+      tableLoading={networkAccessQuery.state?.httpRequestStatus === 'loading'}
+    />
   );
 };
 

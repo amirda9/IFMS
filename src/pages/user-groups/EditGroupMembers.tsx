@@ -1,8 +1,10 @@
 import {Dispatch, FC, SetStateAction, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
+import {userGroupsActions} from '~/store/slices';
 import {UserListType} from '~/types';
 
 const columns = {
@@ -24,7 +26,6 @@ type MemberTableItem = {
 
 type Props = {
   groupId: string;
-  setIsEditingMembers: Dispatch<SetStateAction<boolean>>;
 };
 
 const userToTableItem = (users: UserListType[]): MemberTableItem[] => {
@@ -38,7 +39,9 @@ const userToTableItem = (users: UserListType[]): MemberTableItem[] => {
   }));
 };
 
-const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
+const EditGroupMembers: FC<Props> = ({groupId}) => {
+  const dispatch = useDispatch();
+
   const [membersList, setMembersList] = useState<MemberTableItem[]>([]);
   const [nonMembersList, setNonMembersList] = useState<MemberTableItem[]>([]);
 
@@ -157,6 +160,7 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
             userList?.httpRequestStatus === 'loading' ||
             groupDetail?.httpRequestStatus === 'loading'
           }
+          containerClassName="flex-grow h-full"
         />
         <DoubleSideButtonGroup
           onClickRightButton={handleMemberAddClick}
@@ -177,14 +181,14 @@ const EditGroupMembers: FC<Props> = ({groupId, setIsEditingMembers}) => {
             userList?.httpRequestStatus === 'loading' ||
             groupDetail?.httpRequestStatus === 'loading'
           }
+          containerClassName="flex-grow h-full"
         />
       </div>
-      <div className="flex gap-x-2 self-end">
+      <div className="flex gap-x-4 self-end">
         <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
         <SimpleBtn
           onClick={() => {
-            if (typeof setIsEditingMembers === 'function')
-              setIsEditingMembers(false);
+            dispatch(userGroupsActions.setIsEditingGroupMembers(false));
           }}>
           Cancel
         </SimpleBtn>

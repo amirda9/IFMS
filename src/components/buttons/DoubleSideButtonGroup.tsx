@@ -1,5 +1,5 @@
 import {FC} from 'react';
-import SimpleBtn from './simpleBtn';
+import SimpleBtn from './SimpleBtn';
 import {TallArrow} from '../icons';
 
 type Props = {

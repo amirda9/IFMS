@@ -1,15 +1,13 @@
-import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
-import {SimpleBtn, Table} from '~/components';
-import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
+import EditAccessTablesView from './EditAccessTablesView';
 
 type Props = {
   userId: string;
   access: AccessEnum;
   networkId: string;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const columns = {
@@ -29,7 +27,6 @@ const StationEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
   networkId,
-  setIsEditing,
 }) => {
   const [noAccessStations, setNoAccessStations] = useState<
     AccessStationTableItem[]
@@ -39,9 +36,7 @@ const StationEditAccessTable: FC<Props> = ({
   >([]);
 
   const [noAccessSelected, setNoAccessSelected] = useState<string[]>([]);
-  const [accessedNetsSelected, setAccessedNetsSelected] = useState<string[]>(
-    [],
-  );
+  const [accessedSelected, setAccessedSelected] = useState<string[]>([]);
 
   const {
     request,
@@ -137,11 +132,9 @@ const StationEditAccessTable: FC<Props> = ({
   };
 
   const handleAccessedCheckboxClick = (item: AccessStationTableItem) => {
-    accessedNetsSelected.includes(item.id)
-      ? setAccessedNetsSelected(prvState =>
-          prvState.filter(id => id !== item.id),
-        )
-      : setAccessedNetsSelected(prv => [...prv, item.id]);
+    accessedSelected.includes(item.id)
+      ? setAccessedSelected(prvState => prvState.filter(id => id !== item.id))
+      : setAccessedSelected(prv => [...prv, item.id]);
   };
 
   const handleStationAddClick = () => {
@@ -159,13 +152,13 @@ const StationEditAccessTable: FC<Props> = ({
   const handleStationRemoveClick = () => {
     setNoAccessStations(prevState =>
       prevState.concat(
-        accessedStations.filter(item => accessedNetsSelected.includes(item.id)),
+        accessedStations.filter(item => accessedSelected.includes(item.id)),
       ),
     );
     setAccessedStations(prevState =>
-      prevState.filter(item => !accessedNetsSelected.includes(item.id)),
+      prevState.filter(item => !accessedSelected.includes(item.id)),
     );
-    setAccessedNetsSelected([]);
+    setAccessedSelected([]);
   };
 
   const handleSaveClick = () => {
@@ -177,55 +170,26 @@ const StationEditAccessTable: FC<Props> = ({
   };
 
   return (
-    <>
-      <div className="flex flex-grow items-center gap-x-4">
-        <Table
-          cols={columns}
-          items={noAccessStations}
-          dynamicColumns={['select']}
-          renderDynamicColumn={({value}) => (
-            <input
-              type="checkbox"
-              onChange={() => handleNoAccessCheckboxClick(value)}
-              checked={noAccessSelected.includes(value.id)}
-            />
-          )}
-          loading={
-            userStationAccesses?.httpRequestStatus === 'loading' ||
-            allStations?.httpRequestStatus === 'loading'
-          }
-        />
-        <DoubleSideButtonGroup
-          onClickRightButton={handleStationAddClick}
-          onClickLeftButton={handleStationRemoveClick}
-        />
-        <Table
-          cols={columns}
-          items={accessedStations}
-          dynamicColumns={['select']}
-          renderDynamicColumn={({value}) => (
-            <input
-              type="checkbox"
-              onChange={() => handleAccessedCheckboxClick(value)}
-              checked={accessedNetsSelected.includes(value.id)}
-            />
-          )}
-          loading={
-            userStationAccesses?.httpRequestStatus === 'loading' ||
-            allStations?.httpRequestStatus === 'loading'
-          }
-        />
-      </div>
-      <div className="flex gap-x-2 self-end">
-        <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
-        <SimpleBtn
-          onClick={() => {
-            if (typeof setIsEditing === 'function') setIsEditing(false);
-          }}>
-          Cancel
-        </SimpleBtn>
-      </div>
-    </>
+    <EditAccessTablesView
+      tableColumns={columns}
+      accessedItems={accessedStations}
+      noAccessItems={noAccessStations}
+      accessedSelected={accessedSelected}
+      noAccessSelected={noAccessSelected}
+      handleAddClick={handleStationAddClick}
+      handleRemoveClick={handleStationRemoveClick}
+      handleAccessedCheckboxClick={handleAccessedCheckboxClick}
+      handleNoAccessCheckboxClick={handleNoAccessCheckboxClick}
+      handleSaveClick={handleSaveClick}
+      accessedTableLoading={
+        userStationAccesses?.httpRequestStatus === 'loading' ||
+        allStations?.httpRequestStatus === 'loading'
+      }
+      noAccessTableLoading={
+        userStationAccesses?.httpRequestStatus === 'loading' ||
+        allStations?.httpRequestStatus === 'loading'
+      }
+    />
   );
 };
 

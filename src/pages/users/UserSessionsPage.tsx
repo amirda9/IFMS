@@ -1,5 +1,6 @@
 import {FC} from 'react';
-import {Table} from '~/components';
+import {IoTrashBinOutline, IoTrashOutline} from 'react-icons/io5';
+import {SimpleBtn, Table} from '~/components';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -17,7 +18,12 @@ const items = [
     startDate: '2022-02-02 20:30:30',
     lastAccess: '2022-02-02 20:30:30',
     state: 'Offline',
-    terminate: <p>hi</p>,
+    terminate: (
+      <IoTrashOutline
+        className="mx-auto text-red-500 active:text-red-300"
+        size={25}
+      />
+    ),
   },
   {
     index: 2,
@@ -25,15 +31,27 @@ const items = [
     startDate: '2022-02-02 20:30:30',
     lastAccess: '2022-02-02 20:30:30',
     state: 'Offline',
-    terminate: <p>hi</p>,
+    terminate: (
+      <IoTrashOutline
+        className="mx-auto text-red-500 active:text-red-300"
+        size={25}
+      />
+    ),
   },
 ];
 
 const UserSessionsPage: FC = () => {
   return (
-    <div>
-      <Table width="w-full" cols={columns} items={items} />
-    </div>
+    <>
+      <div className='flex-grow'>
+        <Table width="w-full" cols={columns} items={items} bordered />
+      </div>
+      <div className="flex flex-row gap-x-4 self-end">
+        <SimpleBtn link to="../../">
+          Cancel
+        </SimpleBtn>
+      </div>
+    </>
   );
 };
 

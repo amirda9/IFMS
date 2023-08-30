@@ -2,9 +2,12 @@ import {FC, FormEventHandler, useState} from 'react';
 import {toast} from 'react-toastify';
 import {Description, SimpleBtn, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
+import CreateGroupMembersTable from './CreateGroupMembersTable';
 
 const CreateGroupPage: FC = () => {
   const [groupNameValue, setGroupNameValue] = useState('');
+
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const {
     request,
@@ -33,7 +36,9 @@ const CreateGroupPage: FC = () => {
   const handleFormSubmit: FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
 
-    request('createGroup', {data: {name: groupNameValue, users: []}});
+    request('createGroup', {
+      data: {name: groupNameValue, users: selectedUsers},
+    });
   };
 
   return (
@@ -41,7 +46,7 @@ const CreateGroupPage: FC = () => {
       <form
         className="flex h-full flex-col justify-between"
         onSubmit={handleFormSubmit}>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-y-8">
           <Description label="Name" items="start">
             <TextInput
               name="name"
@@ -49,8 +54,14 @@ const CreateGroupPage: FC = () => {
               className="disabled:cursor-not-allowed disabled:bg-slate-200"
             />
           </Description>
+          <Description label="Members" items="start">
+            <CreateGroupMembersTable
+              selectedUsers={selectedUsers}
+              setSelectedUsers={setSelectedUsers}
+            />
+          </Description>
         </div>
-        <div className="flex flex-row gap-x-2 self-end">
+        <div className="flex flex-row gap-x-4 self-end">
           <SimpleBtn
             loading={createGroup?.httpRequestStatus === 'loading'}
             type="submit">

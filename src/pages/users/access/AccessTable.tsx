@@ -1,4 +1,4 @@
-import {Dispatch, FC, SetStateAction} from 'react';
+import {FC} from 'react';
 import {Role} from '~/constant/users';
 import NetworkAccessTable from './NetworkAccessTable';
 import {AccessEnum} from '~/types';
@@ -9,13 +9,13 @@ import NetworkEditAccessTable from './NetworkEditAccessTable';
 import RegionEditAccessTable from './RegionEditAccessTable';
 import StationEditAccessTable from './StationEditAccessTable';
 import LinkEditAccessTable from './LinkEditAccessTables';
+import {useAppSelector} from '~/hooks';
 
 type Props = {
   userId: string;
   networkId?: string;
   role: Role;
   isEditing?: boolean;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
   hideEditButton?: boolean;
 };
 
@@ -25,42 +25,29 @@ const AccessTable: FC<Props> = ({
   role,
   isEditing,
   hideEditButton = false,
-  setIsEditing,
 }) => {
+  const isEditingUserAccess = useAppSelector(
+    state => state.userAccess.isEditingUserAccess,
+  );
+
   let tableToRender = <></>;
   let editTableToRender = <></>;
 
   switch (role) {
     case Role.NETWORK_ADMIN:
       tableToRender = (
-        <NetworkAccessTable
-          userId={userId}
-          access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
-        />
+        <NetworkAccessTable userId={userId} access={AccessEnum.admin} />
       );
       editTableToRender = (
-        <NetworkEditAccessTable
-          userId={userId}
-          access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
-        />
+        <NetworkEditAccessTable userId={userId} access={AccessEnum.admin} />
       );
       break;
     case Role.NETWORK_VIEWER:
       tableToRender = (
-        <NetworkAccessTable
-          userId={userId}
-          access={AccessEnum.viewer}
-          setIsEditing={setIsEditing}
-        />
+        <NetworkAccessTable userId={userId} access={AccessEnum.viewer} />
       );
       editTableToRender = (
-        <NetworkEditAccessTable
-          userId={userId}
-          access={AccessEnum.viewer}
-          setIsEditing={setIsEditing}
-        />
+        <NetworkEditAccessTable userId={userId} access={AccessEnum.viewer} />
       );
       break;
     case Role.REGION_ADMIN:
@@ -71,7 +58,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
         />
       );
       editTableToRender = (
@@ -79,7 +65,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
         />
       );
       break;
@@ -91,7 +76,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.viewer}
-          setIsEditing={setIsEditing}
         />
       );
       editTableToRender = (
@@ -99,7 +83,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.viewer}
-          setIsEditing={setIsEditing}
         />
       );
       break;
@@ -111,7 +94,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
         />
       );
       editTableToRender = (
@@ -119,7 +101,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
         />
       );
       break;
@@ -131,7 +112,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.viewer}
-          setIsEditing={setIsEditing}
         />
       );
       editTableToRender = (
@@ -139,7 +119,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.viewer}
-          setIsEditing={setIsEditing}
         />
       );
       break;
@@ -151,7 +130,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
         />
       );
       editTableToRender = (
@@ -159,7 +137,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
         />
       );
       break;
@@ -171,7 +148,6 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.admin}
-          setIsEditing={setIsEditing}
         />
       );
       editTableToRender = (
@@ -179,12 +155,11 @@ const AccessTable: FC<Props> = ({
           userId={userId}
           networkId={networkId}
           access={AccessEnum.viewer}
-          setIsEditing={setIsEditing}
         />
       );
       break;
   }
-  return <>{isEditing ? editTableToRender : tableToRender}</>;
+  return <>{isEditingUserAccess ? editTableToRender : tableToRender}</>;
 };
 
 export default AccessTable;

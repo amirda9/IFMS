@@ -5,7 +5,7 @@ import {
   HttpResponseAction,
   HttpResponseActionType,
 } from '../actions/httpResponse.action';
-import {HttpSliceType} from '~/types/HttpSliceType';
+import {HttpSliceType} from '~/types/SliceTypes';
 
 const initialState = (): HttpSliceType => {
   const login = localStorage.getItem('login');
@@ -63,4 +63,4 @@ export const httpsSlice = createSlice({
   },
 });
 export const {httpClear} = httpsSlice.actions;
-export const httpsReducer = httpsSlice.reducer;
+export const httpReducer = httpsSlice.reducer;

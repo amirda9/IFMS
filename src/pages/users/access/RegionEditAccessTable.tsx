@@ -1,15 +1,13 @@
-import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
-import {SimpleBtn, Table} from '~/components';
-import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
+import EditAccessTablesView from './EditAccessTablesView';
 
 type Props = {
   userId: string;
   access: AccessEnum;
   networkId: string;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const columns = {
@@ -29,7 +27,6 @@ const RegionEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
   networkId,
-  setIsEditing,
 }) => {
   const [noAccessRegions, setNoAccessRegions] = useState<
     AccessRegionTableItem[]
@@ -39,9 +36,7 @@ const RegionEditAccessTable: FC<Props> = ({
   >([]);
 
   const [noAccessSelected, setNoAccessSelected] = useState<string[]>([]);
-  const [accessedNetsSelected, setAccessedNetsSelected] = useState<string[]>(
-    [],
-  );
+  const [accessedSelected, setAccessedSelected] = useState<string[]>([]);
 
   const {
     request,
@@ -133,11 +128,9 @@ const RegionEditAccessTable: FC<Props> = ({
   };
 
   const handleAccessedCheckboxClick = (item: AccessRegionTableItem) => {
-    accessedNetsSelected.includes(item.id)
-      ? setAccessedNetsSelected(prvState =>
-          prvState.filter(id => id !== item.id),
-        )
-      : setAccessedNetsSelected(prv => [...prv, item.id]);
+    accessedSelected.includes(item.id)
+      ? setAccessedSelected(prvState => prvState.filter(id => id !== item.id))
+      : setAccessedSelected(prv => [...prv, item.id]);
   };
 
   const handleRegionAddClick = () => {
@@ -155,13 +148,13 @@ const RegionEditAccessTable: FC<Props> = ({
   const handleRegionRemoveClick = () => {
     setNoAccessRegions(prevState =>
       prevState.concat(
-        accessedRegions.filter(item => accessedNetsSelected.includes(item.id)),
+        accessedRegions.filter(item => accessedSelected.includes(item.id)),
       ),
     );
     setAccessedRegions(prevState =>
-      prevState.filter(item => !accessedNetsSelected.includes(item.id)),
+      prevState.filter(item => !accessedSelected.includes(item.id)),
     );
-    setAccessedNetsSelected([]);
+    setAccessedSelected([]);
   };
 
   const handleSaveClick = () => {
@@ -173,55 +166,26 @@ const RegionEditAccessTable: FC<Props> = ({
   };
 
   return (
-    <>
-      <div className="flex flex-grow items-center gap-x-4">
-        <Table
-          cols={columns}
-          items={noAccessRegions}
-          dynamicColumns={['select']}
-          renderDynamicColumn={({value}) => (
-            <input
-              type="checkbox"
-              onChange={() => handleNoAccessCheckboxClick(value)}
-              checked={noAccessSelected.includes(value.id)}
-            />
-          )}
-          loading={
-            userRegionAccesses?.httpRequestStatus === 'loading' ||
-            regionList?.httpRequestStatus === 'loading'
-          }
-        />
-        <DoubleSideButtonGroup
-          onClickRightButton={handleRegionAddClick}
-          onClickLeftButton={handleRegionRemoveClick}
-        />
-        <Table
-          cols={columns}
-          items={accessedRegions}
-          dynamicColumns={['select']}
-          renderDynamicColumn={({value}) => (
-            <input
-              type="checkbox"
-              onChange={() => handleAccessedCheckboxClick(value)}
-              checked={accessedNetsSelected.includes(value.id)}
-            />
-          )}
-          loading={
-            userRegionAccesses?.httpRequestStatus === 'loading' ||
-            regionList?.httpRequestStatus === 'loading'
-          }
-        />
-      </div>
-      <div className="flex gap-x-2 self-end">
-        <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
-        <SimpleBtn
-          onClick={() => {
-            if (typeof setIsEditing === 'function') setIsEditing(false);
-          }}>
-          Cancel
-        </SimpleBtn>
-      </div>
-    </>
+    <EditAccessTablesView
+      tableColumns={columns}
+      accessedItems={accessedRegions}
+      noAccessItems={noAccessRegions}
+      accessedSelected={accessedSelected}
+      noAccessSelected={noAccessSelected}
+      handleAddClick={handleRegionAddClick}
+      handleRemoveClick={handleRegionRemoveClick}
+      handleAccessedCheckboxClick={handleAccessedCheckboxClick}
+      handleNoAccessCheckboxClick={handleNoAccessCheckboxClick}
+      handleSaveClick={handleSaveClick}
+      accessedTableLoading={
+        userRegionAccesses?.httpRequestStatus === 'loading' ||
+        regionList?.httpRequestStatus === 'loading'
+      }
+      noAccessTableLoading={
+        userRegionAccesses?.httpRequestStatus === 'loading' ||
+        regionList?.httpRequestStatus === 'loading'
+      }
+    />
   );
 };
 
