@@ -80,7 +80,7 @@ const EditAccessTablesView = <
         />
       </div>
       <div className="flex gap-x-2 self-end">
-        <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
+        <SimpleBtn onClick={handleSaveClick}>Ok</SimpleBtn>
         <SimpleBtn
           onClick={() => {
             dispatch(userAccessActions.setIsEditingUserAccess(false));

@@ -1,3 +1,4 @@
+import {useNavigate} from 'react-router-dom';
 import {Description, SimpleBtn, Table} from '~/components';
 import {ColType, ItemType} from '~/components/views/Table';
 import {useAppDispatch} from '~/hooks';
@@ -26,6 +27,8 @@ const AccessTablesView = <
 }: Props<C, DC, Item>) => {
   const dispatch = useAppDispatch();
 
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="w-3/5 flex-1">
@@ -38,14 +41,20 @@ const AccessTablesView = <
           />
         </Description>
       </div>
-      <div className="self-end">
+      <div className="flex flex-row self-end gap-x-4">
         <SimpleBtn
           className="self-end"
-          type="submit"
           onClick={() => {
             dispatch(userAccessActions.setIsEditingUserAccess(true));
           }}>
           {editButtonText}
+        </SimpleBtn>
+        <SimpleBtn
+          className="self-end"
+          onClick={() => {
+            navigate('../../');
+          }}>
+          Cancel
         </SimpleBtn>
       </div>
     </>
