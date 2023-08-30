@@ -35,7 +35,7 @@ export const URLS = {
     },
     region: {
       all: '/otdr/region',
-      create: '/otdr/region/{network_id}',
+      create: '/otdr/region/network/{network_id}',
       single: '/otdr/region/{region_id}',
       listInNetwork: '/otdr/region/network/{network_id}',
       allAccess: '/otdr/region/{region_id}/access',

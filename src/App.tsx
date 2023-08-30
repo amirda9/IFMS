@@ -4,8 +4,11 @@ import {useAppSelector} from '~/hooks';
 import {RedirectAfterLogin} from '~/components';
 import {selectElement} from '~/util';
 import '~/styles/index.scss';
+import 'leaflet/dist/leaflet.css';
 import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
+
+
 function App() {
   const auth = useAppSelector(
     state =>
@@ -110,8 +113,11 @@ function App() {
             </Route>
           </Route>
 
+          <Route path='/map' Component={pages.MapPage} />
+
           <Route path="*" Component={ErrorPage404} />
         </Route>
+
       </Routes>
     </Router>
   );

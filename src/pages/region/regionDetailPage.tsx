@@ -7,8 +7,6 @@ import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import {FormLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
-import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
 
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
@@ -52,10 +50,7 @@ const RegionDetailPage = () => {
       <Formik
         initialValues={{
           name: state.detail?.data?.name,
-          description:
-            state.detail?.data?.versions.find(
-              version => version.id === state.detail?.data?.version_id,
-            )?.description || '',
+          description: state.detail?.data?.current_version.description!,
         }}
         onSubmit={values => {
           request('regionUpdate', {
@@ -80,7 +75,7 @@ const RegionDetailPage = () => {
             </Description>
 
             <Description label="Owner" items="start" className="mb-4">
-              {state.detail?.data?.owner_id}
+              {state.detail?.data?.current_version.owner.username}
             </Description>
 
             <Description label="Created" className="mb-4">
