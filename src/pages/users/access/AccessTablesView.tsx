@@ -1,4 +1,5 @@
 import {Dispatch, SetStateAction} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {Description, SimpleBtn, Table} from '~/components';
 import {ColType, ItemType} from '~/components/views/Table';
 
@@ -25,6 +26,8 @@ const AccessTablesView = <
   tableItems,
   tableLoading,
 }: Props<C, DC, Item>) => {
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="w-3/5 flex-1">
@@ -43,6 +46,7 @@ const AccessTablesView = <
           type="submit"
           onClick={() => {
             if (typeof setIsEditing === 'function') setIsEditing(true);
+            navigate('./', {state: {isEditing: ''}});
           }}>
           {editButtonText}
         </SimpleBtn>

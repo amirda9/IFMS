@@ -4,6 +4,7 @@ import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
+import EditAccessTablesView from './EditAccessTablesView';
 
 type Props = {
   userId: string;
@@ -35,9 +36,7 @@ const LinkEditAccessTable: FC<Props> = ({
   const [accessedLinks, setAccessedLinks] = useState<AccessLinkTableItem[]>([]);
 
   const [noAccessSelected, setNoAccessSelected] = useState<string[]>([]);
-  const [accessedNetsSelected, setAccessedNetsSelected] = useState<string[]>(
-    [],
-  );
+  const [accessedSelected, setAccessedSelected] = useState<string[]>([]);
 
   const {
     request,
@@ -129,11 +128,9 @@ const LinkEditAccessTable: FC<Props> = ({
   };
 
   const handleAccessedCheckboxClick = (item: AccessLinkTableItem) => {
-    accessedNetsSelected.includes(item.id)
-      ? setAccessedNetsSelected(prvState =>
-          prvState.filter(id => id !== item.id),
-        )
-      : setAccessedNetsSelected(prv => [...prv, item.id]);
+    accessedSelected.includes(item.id)
+      ? setAccessedSelected(prvState => prvState.filter(id => id !== item.id))
+      : setAccessedSelected(prv => [...prv, item.id]);
   };
 
   const handleLinkAddClick = () => {
@@ -151,13 +148,13 @@ const LinkEditAccessTable: FC<Props> = ({
   const handleLinkRemoveClick = () => {
     setNoAccessLinks(prevState =>
       prevState.concat(
-        accessedLinks.filter(item => accessedNetsSelected.includes(item.id)),
+        accessedLinks.filter(item => accessedSelected.includes(item.id)),
       ),
     );
     setAccessedLinks(prevState =>
-      prevState.filter(item => !accessedNetsSelected.includes(item.id)),
+      prevState.filter(item => !accessedSelected.includes(item.id)),
     );
-    setAccessedNetsSelected([]);
+    setAccessedSelected([]);
   };
 
   const handleSaveClick = () => {
@@ -169,55 +166,27 @@ const LinkEditAccessTable: FC<Props> = ({
   };
 
   return (
-    <>
-      <div className="flex flex-grow items-center gap-x-4">
-        <Table
-          cols={columns}
-          items={noAccessLinks}
-          dynamicColumns={['select']}
-          renderDynamicColumn={({value}) => (
-            <input
-              type="checkbox"
-              onChange={() => handleNoAccessCheckboxClick(value)}
-              checked={noAccessSelected.includes(value.id)}
-            />
-          )}
-          loading={
-            userLinkAccesses?.httpRequestStatus === 'loading' ||
-            allLinks?.httpRequestStatus === 'loading'
-          }
-        />
-        <DoubleSideButtonGroup
-          onClickRightButton={handleLinkAddClick}
-          onClickLeftButton={handleLinkRemoveClick}
-        />
-        <Table
-          cols={columns}
-          items={accessedLinks}
-          dynamicColumns={['select']}
-          renderDynamicColumn={({value}) => (
-            <input
-              type="checkbox"
-              onChange={() => handleAccessedCheckboxClick(value)}
-              checked={accessedNetsSelected.includes(value.id)}
-            />
-          )}
-          loading={
-            userLinkAccesses?.httpRequestStatus === 'loading' ||
-            allLinks?.httpRequestStatus === 'loading'
-          }
-        />
-      </div>
-      <div className="flex gap-x-2 self-end">
-        <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
-        <SimpleBtn
-          onClick={() => {
-            if (typeof setIsEditing === 'function') setIsEditing(false);
-          }}>
-          Cancel
-        </SimpleBtn>
-      </div>
-    </>
+    <EditAccessTablesView
+      tableColumns={columns}
+      accessedItems={accessedLinks}
+      noAccessItems={noAccessLinks}
+      accessedSelected={accessedSelected}
+      noAccessSelected={noAccessSelected}
+      handleAddClick={handleLinkAddClick}
+      handleRemoveClick={handleLinkRemoveClick}
+      handleAccessedCheckboxClick={handleAccessedCheckboxClick}
+      handleNoAccessCheckboxClick={handleNoAccessCheckboxClick}
+      handleSaveClick={handleSaveClick}
+      accessedTableLoading={
+        userLinkAccesses?.httpRequestStatus === 'loading' ||
+        allLinks?.httpRequestStatus === 'loading'
+      }
+      noAccessTableLoading={
+        userLinkAccesses?.httpRequestStatus === 'loading' ||
+        allLinks?.httpRequestStatus === 'loading'
+      }
+      setIsEditing={setIsEditing}
+    />
   );
 };
 

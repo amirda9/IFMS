@@ -1,11 +1,10 @@
 import {FC, useState} from 'react';
-import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
+import {ControlledSelect, Description} from '~/components';
 import {Role} from '~/constant/users';
 import AccessTable from './AccessTable';
 import {useParams} from 'react-router-dom';
 import {useHttpRequest} from '~/hooks';
 import {NetworkType} from '~/types';
-import EditAccessTables from './EditAccessTables';
 
 const roleOptions = Object.values(Role)
   .filter(val => val !== Role.SUPER_ADMIN)
@@ -31,7 +30,7 @@ const UserAccessPage: FC = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const allNetworksQuery = useHttpRequest({
+  useHttpRequest({
     selector: state => state.http.networkList,
     initialRequests: request => {
       request('networkList', undefined);
