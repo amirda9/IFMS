@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { navbarItems } from '~/constant';
 import { NavItem } from '~/components';
 import { IoPersonOutline } from 'react-icons/io5';

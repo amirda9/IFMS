@@ -15,30 +15,30 @@ export const navbarItems = [
   },
   {
     name: 'Configuration',
-    to: '/configuration',
+    to: '/config',
     items: [
       {
         label: 'System Settings',
-        to: 'configuration',
+        to: '/config/system-settings',
       },
       {
         label: 'Alarm Types',
-        to: '/alarm-types',
+        to: '/config/alarm-types',
       },
       {
         label: 'Optical Routes',
-        to: '/optical-routes',
+        to: '/config/optical-routes',
       },
       {
         label: 'Remote Test Units',
-        to: '/remote-test-units',
+        to: '/config/remote-test-units',
       },
       {
         label: 'All RTU Status',
-        to: '/all-rtu-status',
+        to: '/config/all-rtu-status',
       },
-      {label: 'Threshold Settings', to: 'configuration/threshold-settings'},
-      {label: 'System Maintenance', to: '/system-maintenance'},
+      {label: 'Threshold Settings', to: '/configuration/threshold-settings'},
+      {label: 'System Maintenance', to: '/config/system-maintenance'},
     ],
   },
   {

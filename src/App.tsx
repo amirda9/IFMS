@@ -88,14 +88,21 @@ function App() {
             </Route>
           </Route>
 
-          <Route path="configuration" Component={pages.SystemSettingsPage}>
-            <Route path="system-settings" Component={pages.SystemPage}>
-              
+          <Route path="/config">
+            <Route path="system-settings" Component={pages.SystemSettingsLayout}>
+              <Route
+                path="optical-route"
+                Component={pages.OpticalRoutePage}
+              />
+              <Route
+                path="system"
+                Component={pages.SystemPage}
+              />
+              <Route
+                path="threshold-settings"
+                Component={pages.ThresholdSettingsPage}
+              />
             </Route>
-            <Route
-              path="threshold-settings"
-              Component={pages.ThresholdSettingsPage}
-            />
           </Route>
           <Route path="/users" Component={pages.UsersLayout}>
             <Route path=":userId" Component={pages.SingleUserLayout}>
