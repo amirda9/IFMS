@@ -1,4 +1,5 @@
 import {FC} from 'react';
+import { IoTrashBinOutline, IoTrashOutline } from 'react-icons/io5';
 import {Table} from '~/components';
 
 const columns = {
@@ -17,7 +18,7 @@ const items = [
     startDate: '2022-02-02 20:30:30',
     lastAccess: '2022-02-02 20:30:30',
     state: 'Offline',
-    terminate: <p>hi</p>,
+    terminate: <IoTrashOutline className='text-red-500 active:text-red-300 mx-auto' size={25} />,
   },
   {
     index: 2,
@@ -25,14 +26,14 @@ const items = [
     startDate: '2022-02-02 20:30:30',
     lastAccess: '2022-02-02 20:30:30',
     state: 'Offline',
-    terminate: <p>hi</p>,
+    terminate: <IoTrashOutline className='text-red-500 active:text-red-300 mx-auto' size={25} />,
   },
 ];
 
 const UserSessionsPage: FC = () => {
   return (
     <div>
-      <Table width="w-full" cols={columns} items={items} />
+      <Table width="w-full" cols={columns} items={items} bordered />
     </div>
   );
 };

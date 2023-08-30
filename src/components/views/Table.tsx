@@ -29,6 +29,7 @@ type PropsType<
   containerClassName?: string;
   loading?: boolean;
   keyExtractor?: (value: Item) => string;
+  bordered?: boolean;
 };
 const Table = <
   C extends string,
@@ -42,46 +43,58 @@ const Table = <
   containerClassName,
   loading,
   keyExtractor,
+  bordered,
 }: PropsType<C, DC, Item>) => {
-  const headerItems = Object.entries(cols) as Array<[key: C, value: ColType]>;
+  const headerItems = Object.entries(cols) as Array<[C, ColType]>;
 
-  const renderHeader = ([key, col]: [key: C, col: ColType]) => {
-    return (
-      <td key={key} className={`${col.size ? col.size : ''} `}>
-        {col.label}
-      </td>
-    );
-  };
+  const renderHeader = ([key, col]: [C, ColType]) => (
+    <th
+      key={key}
+      className={classNames(
+        col.size,
+        bordered ? 'border-b border-r border-gray96 last:border-r-0' : 'border-r last:border-0',
+        'bg-blueLight py-1 font-normal',
+      )}>
+      {col.label}
+    </th>
+  );
 
-  const renderRow = (row: Item, index: number) => {
-    return (
-      <tr
-        className="[&_td]:bg-white [&_td]:py-1 last:[&_td]:last:rounded-br-md first:[&_td]:last:rounded-bl-md"
-        key={keyExtractor ? keyExtractor(row) : Object.values(row).join('')}>
-        {headerItems.map(([key]) => {
-          return (
-            <td key={key}>
-              {dynamicColumns?.includes(key as DC)
-                ? renderDynamicColumn?.({key: key as DC, value: row, index})
-                : row[key as Exclude<C, DC>]}
-            </td>
-          );
-        })}
-      </tr>
-    );
-  };
+  const renderRow = (row: Item, index: number) => (
+    <tr
+      className={classNames(
+        '[&_td]:bg-white [&_td]:py-1',
+        bordered && 'border-b border-gray96 last:border-b-0',
+      )}
+      key={keyExtractor ? keyExtractor(row) : Object.values(row).join('')}>
+      {headerItems.map(([key]) => (
+        <td
+          key={key}
+          className={classNames(
+            bordered && 'border-r border-gray96 last:border-r-0',
+          )}>
+          {dynamicColumns?.includes(key as DC)
+            ? renderDynamicColumn?.({key: key as DC, value: row, index})
+            : row[key as Exclude<C, DC>]}
+        </td>
+      ))}
+    </tr>
+  );
 
   return (
     <div
-      className={classNames(
-        'rounded-md border border-black bg-white',
+      className={classNames("overflow-hidden bg-white",
+        bordered
+          ? 'rounded-t-lg border border-gray96'
+          : 'rounded-md border border-black',
         containerClassName,
       )}>
-      <table className="max-h-full w-full [&_td]:text-center">
+      <table className="rounded-lg max-h-full w-full [&_td]:text-center">
         <thead>
           <tr
-            className="[&_td]:border-b [&_td]:border-r
-           [&_td]:!border-goodGray [&_td]:bg-blueLight [&_td]:py-1 first:[&_td]:rounded-tl-md last:[&_td]:rounded-tr-md">
+            className={classNames(
+              !bordered &&
+                '[&_td]:border-b [&_td]:border-r [&_td]:!border-goodGray',
+            )}>
             {headerItems.map(renderHeader)}
           </tr>
         </thead>
