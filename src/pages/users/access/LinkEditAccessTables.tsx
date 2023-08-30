@@ -1,7 +1,5 @@
-import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
-import {SimpleBtn, Table} from '~/components';
-import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import EditAccessTablesView from './EditAccessTablesView';
@@ -10,7 +8,6 @@ type Props = {
   userId: string;
   access: AccessEnum;
   networkId: string;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const columns = {
@@ -30,7 +27,6 @@ const LinkEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
   networkId,
-  setIsEditing,
 }) => {
   const [noAccessLinks, setNoAccessLinks] = useState<AccessLinkTableItem[]>([]);
   const [accessedLinks, setAccessedLinks] = useState<AccessLinkTableItem[]>([]);
@@ -185,7 +181,6 @@ const LinkEditAccessTable: FC<Props> = ({
         userLinkAccesses?.httpRequestStatus === 'loading' ||
         allLinks?.httpRequestStatus === 'loading'
       }
-      setIsEditing={setIsEditing}
     />
   );
 };

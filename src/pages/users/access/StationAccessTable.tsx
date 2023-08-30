@@ -1,8 +1,7 @@
-import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {toast} from 'react-toastify';
-import {SimpleBtn, Table} from '~/components';
 import AccessTablesView from './AccessTablesView';
 
 const columns = {
@@ -16,14 +15,12 @@ type Props = {
   userId: string;
   networkId: string;
   access?: AccessEnum;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const StationAccessTable: FC<Props> = ({
   userId,
   networkId,
   access = AccessEnum.admin,
-  setIsEditing,
 }) => {
   const [stationTableItems, setStationTableItems] = useState<
     {index: number; station: string; lat: 0; long: 0}[]
@@ -70,7 +67,6 @@ const StationAccessTable: FC<Props> = ({
   return (
     <AccessTablesView
       editButtonText="Edit Station(s)"
-      setIsEditing={setIsEditing!}
       tableItems={stationTableItems}
       tableColumns={columns}
       tableLoading={stationAccessQuery.state?.httpRequestStatus === 'loading'}

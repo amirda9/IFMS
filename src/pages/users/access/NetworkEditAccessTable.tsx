@@ -1,7 +1,5 @@
-import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
-import {SimpleBtn, Table} from '~/components';
-import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import EditAccessTablesView from './EditAccessTablesView';
@@ -9,7 +7,6 @@ import EditAccessTablesView from './EditAccessTablesView';
 type Props = {
   userId: string;
   access: AccessEnum;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
 };
 
 const columns = {
@@ -28,7 +25,6 @@ type AccessNetworkTableItem = {
 const NetworkEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
-  setIsEditing,
 }) => {
   const [noAccessNetworks, setNoAccessNetworks] = useState<
     AccessNetworkTableItem[]
@@ -189,7 +185,6 @@ const NetworkEditAccessTable: FC<Props> = ({
         userNetworkAccesses?.httpRequestStatus === 'loading' ||
         networkList?.httpRequestStatus === 'loading'
       }
-      setIsEditing={setIsEditing}
     />
   );
 };

@@ -4,7 +4,7 @@ import {
   ResponseListType,
 } from '~/util/RequestList';
 import {HttpRequestStatusType} from '~/types/HttpRequestStatusType';
-import { HttpErrorType } from './errorsTypes';
+import {HttpErrorType} from './errorsTypes';
 
 export type HttpSliceType<K extends RequestKeyExclude = RequestKeyExclude> = {
   [k in K]?: {
@@ -13,4 +13,8 @@ export type HttpSliceType<K extends RequestKeyExclude = RequestKeyExclude> = {
     error?: HttpErrorType;
     request?: RequestListTypes[k];
   };
+};
+
+export type UserAccessSliceType = {
+  isEditingUserAccess: boolean;
 };

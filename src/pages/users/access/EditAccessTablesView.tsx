@@ -1,7 +1,8 @@
-import {Dispatch, SetStateAction} from 'react';
+import {useDispatch} from 'react-redux';
 import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {ColType, ItemType} from '~/components/views/Table';
+import {userAccessActions} from '~/store/slices';
 
 type Props<
   C extends string,
@@ -13,7 +14,6 @@ type Props<
   accessedItems: Array<Item>;
   noAccessTableLoading?: boolean;
   accessedTableLoading?: boolean;
-  setIsEditing?: Dispatch<SetStateAction<boolean>>;
   handleNoAccessCheckboxClick: (item: Item) => void;
   handleAccessedCheckboxClick: (item: Item) => void;
   noAccessSelected: string[];
@@ -33,7 +33,6 @@ const EditAccessTablesView = <
   accessedItems,
   noAccessTableLoading,
   accessedTableLoading,
-  setIsEditing,
   handleNoAccessCheckboxClick,
   handleAccessedCheckboxClick,
   noAccessSelected,
@@ -41,7 +40,9 @@ const EditAccessTablesView = <
   handleAddClick,
   handleRemoveClick,
   handleSaveClick,
-}: Props<C | "select", DC, Item>) => {
+}: Props<C | 'select', DC, Item>) => {
+  const dispatch = useDispatch();
+
   return (
     <>
       <div className="flex flex-grow items-center gap-x-4">
@@ -82,7 +83,7 @@ const EditAccessTablesView = <
         <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
         <SimpleBtn
           onClick={() => {
-            if (typeof setIsEditing === 'function') setIsEditing(false);
+            dispatch(userAccessActions.setIsEditingUserAccess(false));
           }}>
           Cancel
         </SimpleBtn>

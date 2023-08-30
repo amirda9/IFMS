@@ -1,7 +1,7 @@
-import {Dispatch, SetStateAction} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {Description, SimpleBtn, Table} from '~/components';
 import {ColType, ItemType} from '~/components/views/Table';
+import {useAppDispatch} from '~/hooks';
+import {userAccessActions} from '~/store/slices';
 
 type Props<
   C extends string,
@@ -9,7 +9,6 @@ type Props<
   Item extends ItemType<C, DC>,
 > = {
   editButtonText: string;
-  setIsEditing: Dispatch<SetStateAction<boolean>>;
   tableColumns: Record<C, ColType>;
   tableItems: Array<Item>;
   tableLoading: boolean;
@@ -21,12 +20,11 @@ const AccessTablesView = <
   DC extends C | never = never,
 >({
   editButtonText,
-  setIsEditing,
   tableColumns,
   tableItems,
   tableLoading,
 }: Props<C, DC, Item>) => {
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -45,8 +43,7 @@ const AccessTablesView = <
           className="self-end"
           type="submit"
           onClick={() => {
-            if (typeof setIsEditing === 'function') setIsEditing(true);
-            navigate('./', {state: {isEditing: ''}});
+            dispatch(userAccessActions.setIsEditingUserAccess(true));
           }}>
           {editButtonText}
         </SimpleBtn>
