@@ -18,29 +18,35 @@ const rbsInitialValues = [
 
 const OpticalRoutePage = () => {
   return (
-    <SystemSettingsMain>
-        <Description labelClassName='min-w-[25rem]' label="Helix factor of multimode fiber">
-          <TextInput type="number" defaultValue={1.01} />
+    <SystemSettingsMain contentClassName="flex flex-col gap-y-4">
+      <Description
+        labelClassName="min-w-[25rem]"
+        label="Helix factor of multimode fiber">
+        <TextInput type="number" defaultValue={1.01} />
+      </Description>
+      <Description
+        labelClassName="min-w-[25rem]"
+        label="Helix factor of singlemode fiber">
+        <TextInput type="number" defaultValue={1.01} />
+      </Description>
+      {wavelengths.map((wl, i) => (
+        <Description
+          labelClassName="min-w-[25rem]"
+          label={`IOR for ${wl} nm wavelength on ${
+            i <= 1 ? 'multimode' : 'singlemode'
+          } fiber`}>
+          <TextInput type="number" defaultValue={iorInitialValues[i]} />
         </Description>
-        <Description labelClassName='min-w-[25rem]' label="Helix factor of singlemode fiber">
-          <TextInput type="number" defaultValue={1.01} />
+      ))}
+      {wavelengths.map((wl, i) => (
+        <Description
+          labelClassName="min-w-[25rem]"
+          label={`RBS for ${wl} nm wavelength on ${
+            i <= 1 ? 'multimode' : 'singlemode'
+          } fiber`}>
+          <TextInput type="number" defaultValue={rbsInitialValues[i]} />
         </Description>
-        {wavelengths.map((wl, i) => (
-          <Description labelClassName='min-w-[25rem]'
-            label={`IOR for ${wl} nm wavelength on ${
-              i <= 1 ? 'multimode' : 'singlemode'
-            } fiber`}>
-            <TextInput type="number" defaultValue={iorInitialValues[i]} />
-          </Description>
-        ))}
-        {wavelengths.map((wl, i) => (
-          <Description labelClassName='min-w-[25rem]'
-            label={`RBS for ${wl} nm wavelength on ${
-              i <= 1 ? 'multimode' : 'singlemode'
-            } fiber`}>
-            <TextInput type="number" defaultValue={rbsInitialValues[i]} />
-          </Description>
-        ))}
+      ))}
     </SystemSettingsMain>
   );
 };
