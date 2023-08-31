@@ -104,6 +104,10 @@ function App() {
                 path="monitoring-test"
                 Component={pages.MonitoringTestPage}
               />
+              <Route
+                path="proactive-maintenance-test"
+                Component={pages.ProactiveMaintenanceTestPage}
+              />
             </Route>
           </Route>
           <Route path="/users" Component={pages.UsersLayout}>
