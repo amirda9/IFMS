@@ -1,6 +1,7 @@
 import React, {FC} from 'react';
 import {NavLink} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
+import classNames from '~/util/classNames';
 
 type PropsType = {
   name: string;
@@ -27,16 +28,15 @@ const SidebarItem: FC<PropsType> = ({
         }>
         {name}
       </NavLink>
-      {onDelete ? (
-        <button className="ml-4" onClick={onDelete}>
-          <IoTrashOutline
-            size={24}
-            className={` ${
-              disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500'
-            }  active:text-red-300`}
-          />
-        </button>
-      ) : null}
+      <button className="ml-4" onClick={onDelete}>
+        <IoTrashOutline
+          size={24}
+          className={classNames(
+            disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500',
+            'active:text-red-300',
+          )}
+        />
+      </button>
     </div>
   );
 };

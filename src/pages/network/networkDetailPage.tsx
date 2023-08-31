@@ -82,7 +82,7 @@ const NetworkDetailPage = () => {
               {dayjs(detail.data!.time_updated).format('YYYY-MM-DD HH:mm:ss')}
             </Description>
           </div>
-          <div className="flex flex-row gap-x-2 self-end">
+          <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn
               onClick={() => {
                 Cookies.set(networkExplored, params.networkId!);

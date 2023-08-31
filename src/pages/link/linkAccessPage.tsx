@@ -25,10 +25,10 @@ const LinkAccessPage = () => {
           </Select>
         </Description>
         <Description label="Link Viewers(s)" items="start" className="h-full">
-          <Table cols={columns} items={dummy} width="w-3/5" />
+          <Table cols={columns} items={dummy} containerClassName="w-3/5" />
         </Description>
       </div>
-      <div className="mr-4 flex flex-row gap-x-2 self-end">
+      <div className="mr-4 flex flex-row gap-x-4 self-end">
         <SimpleBtn link to="../edit-access">
           Edit Station Viewer(s)
         </SimpleBtn>

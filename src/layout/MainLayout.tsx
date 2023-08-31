@@ -1,10 +1,10 @@
-import { FC } from 'react';
-import { navbarItems } from '~/constant';
-import { NavItem } from '~/components';
-import { IoPersonOutline } from 'react-icons/io5';
-import { httpClear } from '~/store/slices';
-import { useAppDispatch } from '~/hooks';
-import { Outlet } from 'react-router-dom';
+import {FC} from 'react';
+import {navbarItems} from '~/constant';
+import {NavItem} from '~/components';
+import {IoPersonOutline} from 'react-icons/io5';
+import {httpClear} from '~/store/slices';
+import {useAppDispatch} from '~/hooks';
+import {Outlet} from 'react-router-dom';
 
 const MainLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -27,8 +27,8 @@ const MainLayout: FC = () => {
           className="ml-auto"
           icon={IoPersonOutline}
           items={[
-            { label: 'Profile', to: '/profile' },
-            { label: 'Logout', handelSelf: true },
+            {label: 'Profile', to: '/profile'},
+            {label: 'Logout', handelSelf: true},
           ]}
           onClick={() => {
             localStorage.removeItem('refresh');

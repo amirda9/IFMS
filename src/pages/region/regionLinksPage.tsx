@@ -34,11 +34,11 @@ const RegionLinksPage = () => {
           }
           dynamicColumns={['index']}
           renderDynamicColumn={data => data.index}
-          width="w-3/5"
+          containerClassName="w-3/5"
           loading={list?.httpRequestStatus === 'loading'}
         />
       </div>
-      <div className="mr-4 flex flex-row gap-x-2 self-end">
+      <div className="mr-4 flex flex-row gap-x-4 self-end">
         <SimpleBtn link to="/links">
           Edit Links List
         </SimpleBtn>

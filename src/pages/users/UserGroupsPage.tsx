@@ -1,6 +1,6 @@
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
-import {Table} from '~/components';
+import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 
 const columns = {
@@ -26,20 +26,27 @@ const UserGroupsPage: FC = () => {
     : [];
 
   return (
-    <div className="w-2/3">
-      {groupsQuery.state?.httpRequestStatus === 'error' ? (
-        <p className="text-red-600">
-          {(groupsQuery.state.error?.data?.detail as string) ||
-            'Encountered an error.'}
-        </p>
-      ) : (
-        <Table
-          cols={columns}
-          items={items}
-          loading={groupsQuery.state?.httpRequestStatus === 'loading'}
-        />
-      )}
-    </div>
+    <>
+      <div className="w-2/3 flex-grow">
+        {groupsQuery.state?.httpRequestStatus === 'error' ? (
+          <p className="text-red-600">
+            {(groupsQuery.state.error?.data?.detail as string) ||
+              'Encountered an error.'}
+          </p>
+        ) : (
+          <Table
+            cols={columns}
+            items={items}
+            loading={groupsQuery.state?.httpRequestStatus === 'loading'}
+          />
+        )}
+      </div>
+      <div className="flex flex-row gap-x-4 self-end">
+        <SimpleBtn link to="../../">
+          Cancel
+        </SimpleBtn>
+      </div>
+    </>
   );
 };
 

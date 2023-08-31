@@ -6,3 +6,4 @@ export * from './link';
 export * from './configurations';
 export * from './users';
 export * from './user-groups';
+export * from './map';

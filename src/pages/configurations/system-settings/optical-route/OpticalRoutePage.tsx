@@ -19,14 +19,14 @@ const rbsInitialValues = [
 const OpticalRoutePage = () => {
   return (
     <SystemSettingsMain>
-        <Description label="Helix factor of multimode fiber">
+        <Description labelClassName='min-w-[25rem]' label="Helix factor of multimode fiber">
           <TextInput type="number" defaultValue={1.01} />
         </Description>
-        <Description label="Helix factor of singlemode fiber">
+        <Description labelClassName='min-w-[25rem]' label="Helix factor of singlemode fiber">
           <TextInput type="number" defaultValue={1.01} />
         </Description>
         {wavelengths.map((wl, i) => (
-          <Description
+          <Description labelClassName='min-w-[25rem]'
             label={`IOR for ${wl} nm wavelength on ${
               i <= 1 ? 'multimode' : 'singlemode'
             } fiber`}>
@@ -34,7 +34,7 @@ const OpticalRoutePage = () => {
           </Description>
         ))}
         {wavelengths.map((wl, i) => (
-          <Description
+          <Description labelClassName='min-w-[25rem]'
             label={`RBS for ${wl} nm wavelength on ${
               i <= 1 ? 'multimode' : 'singlemode'
             } fiber`}>

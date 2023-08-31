@@ -91,7 +91,7 @@ const RegionAccessPage = () => {
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
             items={items}
-            width="w-3/5"
+            containerClassName="w-3/5"
           />
         </Description>
       </>

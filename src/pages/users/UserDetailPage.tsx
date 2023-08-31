@@ -160,10 +160,10 @@ const UsersDetailPage: FC = () => {
   }, [formik.values.region_id]);
 
   return (
-    <div className="flex flex-grow flex-col gap-4">
+    <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col w-2/3">
             <Description label="ID" items="start">
               <span className="mb-4">{userId}</span>
             </Description>
@@ -171,7 +171,7 @@ const UsersDetailPage: FC = () => {
             <Description label="Username" items="start">
               <InputFormik
                 name="username"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-full"
                 className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
@@ -179,7 +179,7 @@ const UsersDetailPage: FC = () => {
             <Description label="Name" items="start">
               <InputFormik
                 name="name"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-full"
                 className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
@@ -187,7 +187,7 @@ const UsersDetailPage: FC = () => {
             <Description label="Telephone" items="start">
               <InputFormik
                 name="telephone"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-full"
                 className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
@@ -195,7 +195,7 @@ const UsersDetailPage: FC = () => {
             <Description label="Mobile" items="start">
               <InputFormik
                 name="mobile"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-full"
                 className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
@@ -203,20 +203,20 @@ const UsersDetailPage: FC = () => {
             <Description label="Email" items="start">
               <InputFormik
                 name="email"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-full"
                 className="disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </Description>
 
             <Description label="Address" items="start">
-              <TextareaFormik name="address" className="w-2/3" />
+              <TextareaFormik name="address" className="w-full" />
             </Description>
 
             <Description label="Comment" items="start">
-              <TextareaFormik name="comment" className="w-2/3" />
+              <TextareaFormik name="comment" className="w-full" />
             </Description>
 
-            <div className="flex">
+            <div className="flex flex-col gap-y-5">
               <Description label="Region">
                 <ControlledSelect
                   options={regionOptions}
@@ -225,6 +225,7 @@ const UsersDetailPage: FC = () => {
                   }}
                   setValueProp={option => option.payload?.id || ''}
                   value={formik.values.region_id || ''}
+                  className='min-w-[19rem]'
                 />
               </Description>
 
@@ -237,12 +238,13 @@ const UsersDetailPage: FC = () => {
                     }}
                     setValueProp={option => option.payload?.id || ''}
                     value={formik.values.station_id || ''}
+                    className='min-w-[19rem]'
                   />
                 </Description>
               )}
             </div>
 
-            <div className="mt-4 flex">
+            <div className="mt-5 flex justify-between w-full">
               {userDetail?.data?.time_created && (
                 <Description label="Created">
                   {dayjs(userDetail.data.time_created).format(
@@ -252,7 +254,7 @@ const UsersDetailPage: FC = () => {
               )}
 
               {userDetail?.data?.time_updated && (
-                <Description label="Last Modified">
+                <Description label="Last Modified" className='self-end'>
                   {dayjs(userDetail?.data?.time_updated).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
@@ -260,7 +262,7 @@ const UsersDetailPage: FC = () => {
               )}
             </div>
           </div>
-          <div className="flex flex-row gap-x-2 self-end">
+          <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn type="submit">Save</SimpleBtn>
             <SimpleBtn link to="../">
               Cancel
