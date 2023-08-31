@@ -18,7 +18,7 @@ const rbsInitialValues = [
 
 const OpticalRoutePage = () => {
   return (
-    <SystemSettingsMain contentClassName="flex flex-col gap-y-4">
+    <SystemSettingsMain>
       <Description
         labelClassName="min-w-[25rem]"
         label="Helix factor of multimode fiber">

@@ -7,7 +7,7 @@ const SystemSettingsPage = () => {
       <SidebarItem name="Optical Route" to="optical-route" className="mr-6" />
       <SidebarItem name="System" to="system" className="mr-6" />
       <SidebarItem
-        name="Threshold Setting"
+        name="Threshold Settings"
         to="threshold-settings"
         className="mr-6"
       />

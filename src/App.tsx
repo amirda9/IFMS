@@ -8,7 +8,6 @@ import 'leaflet/dist/leaflet.css';
 import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
 
-
 function App() {
   const auth = useAppSelector(
     state =>
@@ -92,18 +91,18 @@ function App() {
           </Route>
 
           <Route path="/config">
-            <Route path="system-settings" Component={pages.SystemSettingsLayout}>
-              <Route
-                path="optical-route"
-                Component={pages.OpticalRoutePage}
-              />
-              <Route
-                path="system"
-                Component={pages.SystemPage}
-              />
+            <Route
+              path="system-settings"
+              Component={pages.SystemSettingsLayout}>
+              <Route path="optical-route" Component={pages.OpticalRoutePage} />
+              <Route path="system" Component={pages.SystemPage} />
               <Route
                 path="threshold-settings"
                 Component={pages.ThresholdSettingsPage}
+              />
+              <Route
+                path="monitoring-test"
+                Component={pages.MonitoringTestPage}
               />
             </Route>
           </Route>
@@ -129,11 +128,10 @@ function App() {
             </Route>
           </Route>
 
-          <Route path='/map' Component={pages.MapPage} />
+          <Route path="/map" Component={pages.MapPage} />
 
           <Route path="*" Component={ErrorPage404} />
         </Route>
-
       </Routes>
     </Router>
   );

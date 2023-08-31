@@ -61,7 +61,7 @@ const SystemPage = () => {
         </Description>
 
         <Description
-          label="Degraded fiber Handeling Strategy"
+          label="Degraded fiber Handling Strategy"
           labelClassName="w-80">
           <Select className="w-1/5">
             <option value="" className="hidden">

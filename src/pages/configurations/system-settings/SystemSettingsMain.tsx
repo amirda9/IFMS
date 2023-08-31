@@ -13,11 +13,17 @@ const SystemSettingsMain: FC<Props> = ({
   onSaveButtonClick,
   onResetButtonClick,
   children,
-  contentClassName
+  contentClassName,
 }) => {
   return (
-    <div className="flex flex-col w-full h-full overflow-auto">
-      <div className={classNames("flex-1", contentClassName)}>{children}</div>
+    <div className="flex h-full w-full flex-col overflow-auto">
+      <div
+        className={classNames(
+          'flex flex-1 flex-col gap-y-4',
+          contentClassName,
+        )}>
+        {children}
+      </div>
       <div className="flex flex-row gap-x-4 self-end">
         <SimpleBtn onClick={onSaveButtonClick}>Save</SimpleBtn>
         <SimpleBtn onClick={onResetButtonClick}>Reset to Default</SimpleBtn>
