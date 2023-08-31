@@ -44,7 +44,7 @@ const UserSessionsPage: FC = () => {
   return (
     <>
       <div className='flex-grow'>
-        <Table width="w-full" cols={columns} items={items} bordered />
+        <Table cols={columns} items={items} bordered />
       </div>
       <div className="flex flex-row gap-x-4 self-end">
         <SimpleBtn link to="../../">

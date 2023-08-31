@@ -132,7 +132,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       {state.group ? (
         <Table
           keyExtractor={value => value.label}
-          width="w-[44%]"
+          containerClassName="w-[44%] h-full"
           cols={{groups: {label: 'Groups'}}}
           items={groupList}
           dynamicColumns={['groups']}
@@ -155,7 +155,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           }
           cols={columns}
           items={userList.filter(user => !state.values.includes(user.id))}
-          width="w-[44%]"
+          containerClassName="w-[44%] h-full"
           dynamicColumns={['select', 'index']}
           renderDynamicColumn={renderDynamicColumn('left')}
         />
@@ -184,7 +184,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
         }
         cols={columns}
         items={userList.filter(user => state.values.includes(user.id))}
-        width="w-[44%]"
+        containerClassName="w-[44%] h-full"
         dynamicColumns={['select', 'index']}
         renderDynamicColumn={renderDynamicColumn('right')}
       />

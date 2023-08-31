@@ -34,7 +34,7 @@ const RegionLinksPage = () => {
           }
           dynamicColumns={['index']}
           renderDynamicColumn={data => data.index}
-          width="w-3/5"
+          containerClassName="w-3/5"
           loading={list?.httpRequestStatus === 'loading'}
         />
       </div>

@@ -48,8 +48,7 @@ const GroupMembersPage: FC = () => {
             cols={columns}
             items={items}
             loading={groupDetailQuery.state?.httpRequestStatus === 'loading'}
-            width="w-3/5"
-            height="h-auto"
+            containerClassName="w-3/5"
           />
         )}
       </div>
