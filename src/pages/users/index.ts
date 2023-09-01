@@ -1,5 +1,5 @@
 export {default as UsersLayout} from './UsersLayout';
-export {default as UserDetailPage} from './UserDetailPage';
+export {default as UserDetailsPage} from './UserDetailsPage';
 export {default as UserRegisterPage} from './UserRegisterPage';
 export {default as SingleUserLayout} from './SingleUserLayout';
 export {default as UserAccessPage} from './access/UserAccessPage';

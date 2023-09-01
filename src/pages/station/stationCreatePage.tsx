@@ -114,7 +114,7 @@ const StationDetailPage = () => {
                   className="hidden"
                 />
                 {state.regions?.data?.map(region => (
-                  <option key={region.id} label={region.name}>
+                  <option key={region.id} label={region.name} value={region.id}>
                     {region.name}
                   </option>
                 ))}
