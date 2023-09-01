@@ -24,7 +24,7 @@ const initialValues: UserDetailFormType = {
   station_id: '',
 };
 
-const UsersDetailPage: FC = () => {
+const UsersDetailsPage: FC = () => {
   const {userId} = useParams();
 
   // List of the region items shown in the regions dropdown
@@ -274,4 +274,4 @@ const UsersDetailPage: FC = () => {
   );
 };
 
-export default UsersDetailPage;
+export default UsersDetailsPage;

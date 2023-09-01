@@ -133,7 +133,7 @@ function App() {
           <Route path="/users" Component={pages.UsersLayout}>
             <Route path="register" Component={pages.UserRegisterPage} />
             <Route path=":userId" Component={pages.SingleUserLayout}>
-              <Route index Component={pages.UserDetailPage} />
+              <Route index Component={pages.UserDetailsPage} />
               <Route path="access" Component={pages.UserAccessPage} />
               <Route path="groups" Component={pages.UserGroupsPage} />
               <Route path="sessions" Component={pages.UserSessionsPage} />
