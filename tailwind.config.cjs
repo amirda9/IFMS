@@ -14,6 +14,7 @@ module.exports = {
         blueLight: "#9BC7F4",
         goodGray: "#D9D9D9",
         gray96: "#969696",
+        arioCyan: "#C0E7F2",
         gis:"#C0E7F2",
       },
       fontFamily: {
