@@ -109,7 +109,27 @@ function App() {
                 Component={pages.ProactiveMaintenanceTestPage}
               />
             </Route>
+            <Route path="alarm-types" Component={pages.AlarmTypesLayout}>
+              <Route path=":alarmId" Component={pages.SingleAlarmTypeLayout}>
+                <Route index Component={pages.AlarmTypeDetailsPage} />
+                <Route
+                  path="definition"
+                  Component={pages.AlarmTypeDefinitionPage}
+                />
+                <Route path="content" Component={pages.AlarmTypeContentPage} />
+                <Route
+                  path="alert-sending"
+                  Component={pages.AlarmTypeAlertPage}
+                />
+                <Route
+                  path="automatic-events"
+                  Component={pages.AlarmTypeEventPage}
+                />
+                <Route path="access" Component={pages.AlarmTypeAccessPage} />
+              </Route>
+            </Route>
           </Route>
+
           <Route path="/users" Component={pages.UsersLayout}>
             <Route path="register" Component={pages.UserRegisterPage} />
             <Route path=":userId" Component={pages.SingleUserLayout}>
