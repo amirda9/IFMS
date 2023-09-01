@@ -7,7 +7,7 @@ type PropsType = {
   name: string;
   to: string;
   className?: string;
-  items?: Array<{label: string; to?: string; handelSelf?: boolean}>;
+  items?: Array<{label: string; to?: string; handleSelf?: boolean}>;
   onClick?: (label: string) => void;
   icon?: IconType;
 };
@@ -22,7 +22,7 @@ const NavItems: FC<PropsType> = ({
   const menu = (
     <div className="flex flex-col first:[&_a]:rounded-tl-md first:[&_a]:rounded-tr-md last:[&_a]:rounded-bl-md last:[&_a]:rounded-br-md">
       {items?.map(item =>
-        item.to && !item.handelSelf ? (
+        item.to && !item.handleSelf ? (
           <NavLink
             to={item.to}
             key={item.label}
