@@ -33,12 +33,15 @@ const UsersDetailsPage: FC = () => {
   const [stationOptions, setStationOptions] = useState<StationOptionType[]>([]);
 
   // Used to fetch the regions needed to show on the regions dropdown
-  const {request, state: {userDetail}} = useHttpRequest({
+  const {
+    request,
+    state: {userDetail},
+  } = useHttpRequest({
     selector: state => ({
       userDetail: state.http.userDetail,
       userDetailUpdate: state.http.userDetailUpdate,
       allRegions: state.http.allRegions,
-      regionStationList: state.http.regionStationList,
+      allStations: state.http.allStations,
     }),
     initialRequests: request => {
       request('allRegions', undefined);
@@ -94,10 +97,11 @@ const UsersDetailsPage: FC = () => {
         setRegionOptions(regionsToSet);
       }
 
-      // Setting the station list from the fetched data
-      if (state.regionStationList?.httpRequestStatus === 'success') {
-        const stationsToSet: StationOptionType[] =
-          state.regionStationList.data!.map(item => ({
+      // Setting the station list from the fetched and then filtered data
+      if (state.allStations?.httpRequestStatus === 'success') {
+        const stationsToSet: StationOptionType[] = state.allStations
+          .data!.filter(item => item.region_id === formik.values.region_id)
+          .map(item => ({
             label: item.name,
             payload: item,
           }));
@@ -153,9 +157,7 @@ const UsersDetailsPage: FC = () => {
 
   useEffect(() => {
     if (formik.values.region_id) {
-      request('regionStationList', {
-        params: {region_id: formik.values.region_id},
-      });
+      request('allStations', undefined);
     }
   }, [formik.values.region_id]);
 
@@ -163,7 +165,7 @@ const UsersDetailsPage: FC = () => {
     <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col w-2/3">
+          <div className="flex w-2/3 flex-col">
             <Description label="ID" items="start">
               <span className="mb-4">{userId}</span>
             </Description>
@@ -225,7 +227,7 @@ const UsersDetailsPage: FC = () => {
                   }}
                   setValueProp={option => option.payload?.id || ''}
                   value={formik.values.region_id || ''}
-                  className='min-w-[19rem]'
+                  className="min-w-[19rem]"
                 />
               </Description>
 
@@ -238,13 +240,13 @@ const UsersDetailsPage: FC = () => {
                     }}
                     setValueProp={option => option.payload?.id || ''}
                     value={formik.values.station_id || ''}
-                    className='min-w-[19rem]'
+                    className="min-w-[19rem]"
                   />
                 </Description>
               )}
             </div>
 
-            <div className="mt-5 flex justify-between w-full">
+            <div className="mt-5 flex w-full justify-between">
               {userDetail?.data?.time_created && (
                 <Description label="Created">
                   {dayjs(userDetail.data.time_created).format(
@@ -254,7 +256,7 @@ const UsersDetailsPage: FC = () => {
               )}
 
               {userDetail?.data?.time_updated && (
-                <Description label="Last Modified" className='self-end'>
+                <Description label="Last Modified" className="self-end">
                   {dayjs(userDetail?.data?.time_updated).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
