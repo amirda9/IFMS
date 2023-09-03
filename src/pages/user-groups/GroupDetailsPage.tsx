@@ -5,7 +5,7 @@ import {Description, SimpleBtn, TextInput} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useHttpRequest} from '~/hooks';
 
-const GroupDetailPage: FC = () => {
+const GroupDetailsPage: FC = () => {
   const {groupId} = useParams();
 
   const [groupNameValue, setGroupNameValue] = useState('');
@@ -106,4 +106,4 @@ const GroupDetailPage: FC = () => {
   );
 };
 
-export default GroupDetailPage;
+export default GroupDetailsPage;
