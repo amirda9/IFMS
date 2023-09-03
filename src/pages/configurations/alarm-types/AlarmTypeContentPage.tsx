@@ -1,6 +1,6 @@
 import {FC} from 'react';
 import {SimpleBtn} from '~/components';
-import AlarmContentBox from './AlarmContentBox';
+import AlarmCheckboxList from './AlarmCheckboxList';
 
 const items = [
   {
@@ -45,15 +45,15 @@ const items = [
 
 const AlarmTypeContentPage: FC = () => {
   return (
-    <div className="flex flex-grow flex-col">
+    <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow gap-x-8">
-        <AlarmContentBox title="Primary Source" items={items} />
-        <AlarmContentBox
+        <AlarmCheckboxList title="Primary Source" items={items} />
+        <AlarmCheckboxList
           title="Group By Secondary Source"
           items={items}
           titleCheckbox
         />
-        <AlarmContentBox title="Alarm Details" items={items} />
+        <AlarmCheckboxList title="Alarm Details" items={items} />
       </div>
       <div className="flex flex-row gap-x-4 self-end">
         <SimpleBtn type="submit">Save</SimpleBtn>

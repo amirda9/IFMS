@@ -6,7 +6,7 @@ type Item = {
 };
 
 type Props = {
-  title: string;
+  title?: string;
   titleCheckbox?: boolean;
   items: Item[];
 };
@@ -14,7 +14,7 @@ type Props = {
 const renderItemGroup = (item: Item) => {
   return (
     <>
-      <div className='pb-2'>
+      <div className="pb-2">
         <span className="mr-2">
           <input type="checkbox" />
         </span>
@@ -27,17 +27,19 @@ const renderItemGroup = (item: Item) => {
   );
 };
 
-const AlarmContentBox: FC<Props> = ({title, titleCheckbox, items}) => {
+const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items}) => {
   return (
     <div className="flex flex-1 flex-col gap-y-4">
-      <div>
-        {titleCheckbox && (
-          <span className='mr-2'>
-            <input type="checkbox" />
-          </span>
-        )}
-        <span>{title}</span>
-      </div>
+      {(title || titleCheckbox) && (
+        <div>
+          {titleCheckbox && (
+            <span className="mr-2">
+              <input type="checkbox" />
+            </span>
+          )}
+          {title && <span>{title}</span>}
+        </div>
+      )}
       <div className="flex-grow border border-black bg-white p-4">
         {items.map(renderItemGroup)}
       </div>
@@ -45,4 +47,4 @@ const AlarmContentBox: FC<Props> = ({title, titleCheckbox, items}) => {
   );
 };
 
-export default AlarmContentBox;
+export default AlarmCheckboxList;
