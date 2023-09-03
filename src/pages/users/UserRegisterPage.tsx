@@ -51,6 +51,7 @@ const UserRegisterPage: FC = () => {
       if (lastState.userRegister?.httpRequestStatus === 'loading') {
         if (state.userRegister?.httpRequestStatus === 'success') {
           toast('User was registered successfully', {type: 'success'});
+          request("userList", undefined);
         } else if (state.userRegister?.httpRequestStatus === 'error') {
           if (state.userRegister.error?.status === 422) {
           } else {
