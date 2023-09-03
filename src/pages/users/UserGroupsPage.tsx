@@ -41,11 +41,6 @@ const UserGroupsPage: FC = () => {
           />
         )}
       </div>
-      <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn link to="../../">
-          Cancel
-        </SimpleBtn>
-      </div>
     </>
   );
 };
