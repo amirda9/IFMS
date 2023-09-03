@@ -1,8 +1,9 @@
 import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
-import {useHttpRequest} from '~/hooks';
+import {useAppDispatch, useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import EditAccessTablesView from './EditAccessTablesView';
+import {userAccessActions} from '~/store/slices';
 
 type Props = {
   userId: string;
@@ -26,6 +27,8 @@ const NetworkEditAccessTable: FC<Props> = ({
   userId,
   access = AccessEnum.admin,
 }) => {
+  const dispatch = useAppDispatch();
+
   const [noAccessNetworks, setNoAccessNetworks] = useState<
     AccessNetworkTableItem[]
   >([]);
@@ -58,11 +61,8 @@ const NetworkEditAccessTable: FC<Props> = ({
         lastState.updateUserNetworkAccesses?.httpRequestStatus === 'loading' &&
         state.updateUserNetworkAccesses?.httpRequestStatus === 'success'
       ) {
-        request('userNetworkAccesses', {
-          params: {user_id: userId},
-          queryString: {access_type: access},
-        });
         toast('Updated successfully!', {type: 'success'});
+        dispatch(userAccessActions.setIsEditingUserAccess(false));
         return;
       } else if (
         state.updateUserNetworkAccesses?.httpRequestStatus === 'error'

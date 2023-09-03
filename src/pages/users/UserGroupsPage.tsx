@@ -1,6 +1,6 @@
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
-import {SimpleBtn, Table} from '~/components';
+import {Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 
 const columns = {

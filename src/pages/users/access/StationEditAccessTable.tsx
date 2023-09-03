@@ -1,8 +1,9 @@
 import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
-import {useHttpRequest} from '~/hooks';
+import {useAppDispatch, useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import EditAccessTablesView from './EditAccessTablesView';
+import { userAccessActions } from '~/store/slices';
 
 type Props = {
   userId: string;
@@ -28,6 +29,8 @@ const StationEditAccessTable: FC<Props> = ({
   access = AccessEnum.admin,
   networkId,
 }) => {
+  const dispatch = useAppDispatch();
+
   const [noAccessStations, setNoAccessStations] = useState<
     AccessStationTableItem[]
   >([]);
@@ -60,11 +63,8 @@ const StationEditAccessTable: FC<Props> = ({
         lastState.updateUserStationAccesses?.httpRequestStatus === 'loading' &&
         state.updateUserStationAccesses?.httpRequestStatus === 'success'
       ) {
-        request('userStationAccesses', {
-          params: {user_id: userId},
-          queryString: {access_type: access, network_id: networkId},
-        });
         toast('Updated successfully!', {type: 'success'});
+        dispatch(userAccessActions.setIsEditingUserAccess(false));
         return;
       } else if (
         state.updateUserStationAccesses?.httpRequestStatus === 'error'
