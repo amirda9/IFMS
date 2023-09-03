@@ -218,35 +218,33 @@ const UsersDetailsPage: FC = () => {
               <TextareaFormik name="comment" className="w-full" />
             </Description>
 
-            <div className="flex flex-col gap-y-5">
-              <Description label="Region">
+            <Description label="Region" className="mb-5">
+              <ControlledSelect
+                options={regionOptions}
+                onChange={regionId => {
+                  formik.setFieldValue('region_id', regionId);
+                }}
+                setValueProp={option => option.payload?.id || ''}
+                value={formik.values.region_id || ''}
+                className="min-w-[19rem]"
+              />
+            </Description>
+
+            {stationOptions.length > 0 && (
+              <Description label="Station" className="mb-5">
                 <ControlledSelect
-                  options={regionOptions}
-                  onChange={regionId => {
-                    formik.setFieldValue('region_id', regionId);
+                  options={stationOptions}
+                  onChange={stationId => {
+                    formik.setFieldValue('station_id', stationId);
                   }}
                   setValueProp={option => option.payload?.id || ''}
-                  value={formik.values.region_id || ''}
+                  value={formik.values.station_id || ''}
                   className="min-w-[19rem]"
                 />
               </Description>
+            )}
 
-              {stationOptions.length > 0 && (
-                <Description label="Station">
-                  <ControlledSelect
-                    options={stationOptions}
-                    onChange={stationId => {
-                      formik.setFieldValue('station_id', stationId);
-                    }}
-                    setValueProp={option => option.payload?.id || ''}
-                    value={formik.values.station_id || ''}
-                    className="min-w-[19rem]"
-                  />
-                </Description>
-              )}
-            </div>
-
-            <div className="mt-5 flex w-full justify-between">
+            <div className="flex w-full justify-between">
               {userDetail?.data?.time_created && (
                 <Description label="Created">
                   {dayjs(userDetail.data.time_created).format(
