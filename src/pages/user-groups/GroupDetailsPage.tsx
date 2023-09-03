@@ -5,7 +5,7 @@ import {Description, SimpleBtn, TextInput} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useHttpRequest} from '~/hooks';
 
-const GroupDetailPage: FC = () => {
+const GroupDetailsPage: FC = () => {
   const {groupId} = useParams();
 
   const [groupNameValue, setGroupNameValue] = useState('');
@@ -33,6 +33,7 @@ const GroupDetailPage: FC = () => {
         if (state.updateGroup?.httpRequestStatus === 'success') {
           toast('Group detail was updated successfully!', {type: 'success'});
           request('groupDetail', {params: {group_id: groupId!}});
+          request("groupList", undefined);
         } else if (state.updateGroup?.httpRequestStatus === 'error') {
           if (state.updateGroup.error?.status === 422) {
             toast('Validation Error', {type: 'error'});
@@ -68,7 +69,7 @@ const GroupDetailPage: FC = () => {
             <Description label="Name">
               <TextInput
                 name="groupName"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200 w-3/5"
                 value={groupNameValue}
                 onChange={e => setGroupNameValue(e.target.value)}
               />
@@ -105,4 +106,4 @@ const GroupDetailPage: FC = () => {
   );
 };
 
-export default GroupDetailPage;
+export default GroupDetailsPage;

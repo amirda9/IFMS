@@ -1,9 +1,8 @@
-import {Dispatch, FC, SetStateAction, useState} from 'react';
-import {useDispatch} from 'react-redux';
+import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
-import {useHttpRequest} from '~/hooks';
+import {useAppDispatch, useHttpRequest} from '~/hooks';
 import {userGroupsActions} from '~/store/slices';
 import {UserListType} from '~/types';
 
@@ -40,7 +39,7 @@ const userToTableItem = (users: UserListType[]): MemberTableItem[] => {
 };
 
 const EditGroupMembers: FC<Props> = ({groupId}) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [membersList, setMembersList] = useState<MemberTableItem[]>([]);
   const [nonMembersList, setNonMembersList] = useState<MemberTableItem[]>([]);
@@ -84,6 +83,8 @@ const EditGroupMembers: FC<Props> = ({groupId}) => {
           request('groupDetail', {params: {group_id: groupId}});
 
           toast('Members updated successfully!', {type: 'success'});
+
+          dispatch(userGroupsActions.setIsEditingGroupMembers(false));
         } else if (state.updateGroup?.httpRequestStatus === 'error') {
           toast(
             (state.updateGroup.error?.data?.detail as string) ||
