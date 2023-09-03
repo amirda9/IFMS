@@ -69,7 +69,7 @@ const GroupDetailsPage: FC = () => {
             <Description label="Name">
               <TextInput
                 name="groupName"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200 w-[30rem]"
+                className="disabled:cursor-not-allowed disabled:bg-slate-200 w-3/5"
                 value={groupNameValue}
                 onChange={e => setGroupNameValue(e.target.value)}
               />
