@@ -5,6 +5,7 @@ import {IoPersonOutline} from 'react-icons/io5';
 import {httpClear} from '~/store/slices';
 import {useAppDispatch, useHttpRequest} from '~/hooks';
 import {Outlet} from 'react-router-dom';
+import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 
 const MainLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,19 @@ const MainLayout: FC = () => {
 
   if (state?.httpRequestStatus === 'error') {
     handleLogout();
+    return <></>;
   }
+
+  if (!state || state.httpRequestStatus === 'loading') {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-y-4 bg-blue-100">
+        <GeneralLoadingSpinner size="h-20 w-20" />
+        <span>Verifying token...</span>
+      </div>
+    );
+  }
+
+  console.log('state:', state);
 
   return (
     <div className="flex min-h-screen flex-col">
