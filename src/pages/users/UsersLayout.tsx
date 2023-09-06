@@ -10,11 +10,6 @@ const UsersPage: FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const userRole = useAppSelector(state => state.http.verifyToken?.data?.role);
-  const userAccessType = useAppSelector(
-    state => state.http.verifyToken?.data?.is_admin,
-  );
-
-  console.log(userRole, userAccessType);
 
   const isEditingUserAccess = useAppSelector(
     state => state.userAccess.isEditingUserAccess,

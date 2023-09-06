@@ -4,10 +4,11 @@ import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, ControlledSelect, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import dayjs from 'dayjs';
 import {RegionListType, StationListType, UserDetailFormType} from '~/types';
 import {toast} from 'react-toastify';
+import {UserRole} from '~/constant/users';
 
 type RegionOptionType = {label: string; payload: RegionListType | null};
 type StationOptionType = {label: string; payload: StationListType | null};
@@ -27,13 +28,18 @@ const initialValues: UserDetailFormType = {
 const UsersDetailPage: FC = () => {
   const {userId} = useParams();
 
+  const userRole = useAppSelector(state => state.http.verifyToken?.data?.role);
+
   // List of the region items shown in the regions dropdown
   const [regionOptions, setRegionOptions] = useState<RegionOptionType[]>([]);
   // List of the station items shown in the stations dropdown
   const [stationOptions, setStationOptions] = useState<StationOptionType[]>([]);
 
   // Used to fetch the regions needed to show on the regions dropdown
-  const {request, state: {userDetail}} = useHttpRequest({
+  const {
+    request,
+    state: {userDetail},
+  } = useHttpRequest({
     selector: state => ({
       userDetail: state.http.userDetail,
       userDetailUpdate: state.http.userDetailUpdate,
@@ -163,74 +169,106 @@ const UsersDetailPage: FC = () => {
     <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col w-2/3">
+          <div className="flex w-2/3 flex-col">
             <Description label="ID" items="start">
               <span className="mb-4">{userId}</span>
             </Description>
 
             <Description label="Username" items="start">
-              <InputFormik
-                name="username"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="username"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span>{userDetail?.data?.username}</span>
+              )}
             </Description>
 
             <Description label="Name" items="start">
-              <InputFormik
-                name="name"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="name"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span>{userDetail?.data?.name}</span>
+              )}
             </Description>
 
             <Description label="Telephone" items="start">
-              <InputFormik
-                name="telephone"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="telephone"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span>{userDetail?.data?.telephone}</span>
+              )}
             </Description>
 
             <Description label="Mobile" items="start">
-              <InputFormik
-                name="mobile"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="mobile"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span>{userDetail?.data?.mobile}</span>
+              )}
             </Description>
 
             <Description label="Email" items="start">
-              <InputFormik
-                name="email"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="email"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span>{userDetail?.data?.email}</span>
+              )}
             </Description>
 
             <Description label="Address" items="start">
-              <TextareaFormik name="address" className="w-full" />
+              {userRole === UserRole.SUPER_USER ? (
+                <TextareaFormik name="address" className="w-full" />
+              ) : (
+                <span>{userDetail?.data?.address}</span>
+              )}
             </Description>
 
             <Description label="Comment" items="start">
-              <TextareaFormik name="comment" className="w-full" />
+              {userRole === UserRole.SUPER_USER ? (
+                <TextareaFormik name="comment" className="w-full" />
+              ) : (
+                <span>{userDetail?.data?.comment}</span>
+              )}
             </Description>
 
             <div className="flex flex-col gap-y-5">
               <Description label="Region">
-                <ControlledSelect
-                  options={regionOptions}
-                  onChange={regionId => {
-                    formik.setFieldValue('region_id', regionId);
-                  }}
-                  setValueProp={option => option.payload?.id || ''}
-                  value={formik.values.region_id || ''}
-                  className='min-w-[19rem]'
-                />
+                {userRole === UserRole.SUPER_USER ? (
+                  <ControlledSelect
+                    options={regionOptions}
+                    onChange={regionId => {
+                      formik.setFieldValue('region_id', regionId);
+                    }}
+                    setValueProp={option => option.payload?.id || ''}
+                    value={formik.values.region_id || ''}
+                    className="min-w-[19rem]"
+                  />
+                ) : (
+                  <span>{userDetail?.data?.region?.name}</span>
+                )}
               </Description>
 
-              {stationOptions.length > 0 && (
-                <Description label="Station">
+              <Description label="Station">
+                {userRole === UserRole.SUPER_USER ? (
                   <ControlledSelect
                     options={stationOptions}
                     onChange={stationId => {
@@ -238,13 +276,15 @@ const UsersDetailPage: FC = () => {
                     }}
                     setValueProp={option => option.payload?.id || ''}
                     value={formik.values.station_id || ''}
-                    className='min-w-[19rem]'
+                    className="min-w-[19rem]"
                   />
-                </Description>
-              )}
+                ) : (
+                  <span>{userDetail?.data?.station?.name}</span>
+                )}
+              </Description>
             </div>
 
-            <div className="mt-5 flex justify-between w-full">
+            <div className="mt-5 flex w-full justify-between">
               {userDetail?.data?.time_created && (
                 <Description label="Created">
                   {dayjs(userDetail.data.time_created).format(
@@ -254,7 +294,7 @@ const UsersDetailPage: FC = () => {
               )}
 
               {userDetail?.data?.time_updated && (
-                <Description label="Last Modified" className='self-end'>
+                <Description label="Last Modified" className="self-end">
                   {dayjs(userDetail?.data?.time_updated).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )}
@@ -262,12 +302,14 @@ const UsersDetailPage: FC = () => {
               )}
             </div>
           </div>
-          <div className="flex flex-row gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
-            <SimpleBtn link to="../">
-              Cancel
-            </SimpleBtn>
-          </div>
+          {userRole === UserRole.SUPER_USER && (
+            <div className="flex flex-row gap-x-4 self-end">
+              <SimpleBtn type="submit">Save</SimpleBtn>
+              <SimpleBtn link to="../">
+                Cancel
+              </SimpleBtn>
+            </div>
+          )}
         </Form>
       </FormikProvider>
     </div>
