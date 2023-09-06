@@ -1,10 +1,11 @@
 import {FC, useState} from 'react';
 import {ControlledSelect, Description} from '~/components';
-import {ResourceAccessType} from '~/constant/users';
+import {ResourceAccessType, UserRole} from '~/constant/users';
 import AccessTable from './AccessTable';
 import {useLocation, useParams} from 'react-router-dom';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {NetworkType} from '~/types';
+import ErrorPage403 from '~/pages/errors/403';
 
 const roleOptions = Object.values(ResourceAccessType)
   .filter(val => val !== ResourceAccessType.SUPER_ADMIN)
@@ -24,6 +25,12 @@ type NetworkOptionType = {label: string; payload: NetworkType | null};
 const UserAccessPage: FC = () => {
   const {userId} = useParams();
   const location = useLocation();
+
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
+  if (loggedInUser.role !== UserRole.SUPER_USER && loggedInUser.id !== userId) {
+    return <ErrorPage403 />;
+  }
 
   const [selectedRole, setSelectedRole] = useState<ResourceAccessType>(
     ResourceAccessType.NETWORK_ADMIN,

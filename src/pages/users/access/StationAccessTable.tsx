@@ -28,6 +28,34 @@ const StationAccessTable: FC<Props> = ({
 
   const stationAccessQuery = useHttpRequest({
     selector: state => state.http.userStationAccesses,
+    onUpdate: (lastState, state) => {
+      if (lastState?.httpRequestStatus === 'loading') {
+        if (state?.httpRequestStatus === 'success') {
+          if (state.data) {
+            setStationTableItems(
+              state.data.map((item, index) => ({
+                index: index + 1,
+                station: item.station.name,
+                lat: 0,
+                long: 0,
+              })),
+            );
+          }
+        } else if (state?.httpRequestStatus === 'error') {
+          if (state.error?.status === 422) {
+          } // TODO: Handle correctly
+          else {
+            toast(
+              (state.error?.data?.detail as string) ||
+                'An unknown error has occurred.',
+              {
+                type: 'error',
+              },
+            );
+          }
+        }
+      }
+    },
   });
 
   useEffect(() => {
@@ -36,33 +64,6 @@ const StationAccessTable: FC<Props> = ({
       queryString: {access_type: access, network_id: networkId},
     });
   }, [userId, access, networkId]);
-
-  useEffect(() => {
-    if (stationAccessQuery.state?.httpRequestStatus === 'success') {
-      if (stationAccessQuery.state.data) {
-        setStationTableItems(
-          stationAccessQuery.state.data.map((item, index) => ({
-            index: index + 1,
-            station: item.station.name,
-            lat: 0,
-            long: 0,
-          })),
-        );
-      }
-    } else if (stationAccessQuery.state?.httpRequestStatus === 'error') {
-      if (stationAccessQuery.state.error?.status === 422) {
-      } // TODO: Handle correctly
-      else {
-        toast(
-          (stationAccessQuery.state.error?.data?.detail as string) ||
-            'An unknown error has occurred.',
-          {
-            type: 'error',
-          },
-        );
-      }
-    }
-  }, [stationAccessQuery.state]);
 
   return (
     <AccessTablesView

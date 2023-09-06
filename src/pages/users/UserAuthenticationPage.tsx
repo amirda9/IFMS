@@ -3,10 +3,12 @@ import * as Yup from 'yup';
 import {FC, useEffect} from 'react';
 import {Description, SimpleBtn} from '~/components';
 import {InputFormik} from '~/container';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {ValidationApiError} from '~/types/errorsTypes';
+import {UserRole} from '~/constant/users';
+import ErrorPage403 from '../errors/403';
 
 const initialValues = {
   password: '',
@@ -15,6 +17,12 @@ const initialValues = {
 
 const UserAuthenticationPage: FC = () => {
   const {userId} = useParams();
+
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
+  if (loggedInUser.role !== UserRole.SUPER_USER && loggedInUser.id !== userId) {
+    return <ErrorPage403 />;
+  }
 
   const passwordRestMutation = useHttpRequest({
     selector: state => state.http.passwordReset,

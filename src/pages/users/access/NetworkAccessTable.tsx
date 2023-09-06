@@ -14,16 +14,39 @@ type Props = {
   access?: AccessEnum;
 };
 
-const NetworkAccessTable: FC<Props> = ({
-  userId,
-  access = AccessEnum.admin,
-}) => {
+const NetworkAccessTable: FC<Props> = ({userId, access = AccessEnum.admin}) => {
   const [networkTableItems, setNetworkTableItems] = useState<
     {index: number; network: string}[]
   >([]);
 
   const networkAccessQuery = useHttpRequest({
     selector: state => state.http.userNetworkAccesses,
+    onUpdate: (lastState, state) => {
+      if (lastState?.httpRequestStatus === 'loading') {
+        if (state?.httpRequestStatus === 'success') {
+          if (state.data) {
+            setNetworkTableItems(
+              state.data.map((item, index) => ({
+                index: index + 1,
+                network: item.network.name,
+              })),
+            );
+          }
+        } else if (state?.httpRequestStatus === 'error') {
+          if (state.error?.status === 422) {
+          } // TODO: Handle correctly
+          else {
+            toast(
+              (state.error?.data?.detail as string) ||
+                'An unknown error has occurred.',
+              {
+                type: 'error',
+              },
+            );
+          }
+        }
+      }
+    },
   });
 
   useEffect(() => {
@@ -32,31 +55,6 @@ const NetworkAccessTable: FC<Props> = ({
       queryString: {access_type: access},
     });
   }, [userId, access]);
-
-  useEffect(() => {
-    if (networkAccessQuery.state?.httpRequestStatus === 'success') {
-      if (networkAccessQuery.state.data) {
-        setNetworkTableItems(
-          networkAccessQuery.state.data.map((item, index) => ({
-            index: index + 1,
-            network: item.network.name,
-          })),
-        );
-      }
-    } else if (networkAccessQuery.state?.httpRequestStatus === 'error') {
-      if (networkAccessQuery.state.error?.status === 422) {
-      } // TODO: Handle correctly
-      else {
-        toast(
-          (networkAccessQuery.state.error?.data?.detail as string) ||
-            'An unknown error has occurred.',
-          {
-            type: 'error',
-          },
-        );
-      }
-    }
-  }, [networkAccessQuery.state]);
 
   return (
     <AccessTablesView

@@ -26,6 +26,32 @@ const RegionAccessTable: FC<Props> = ({
 
   const regionAccessQuery = useHttpRequest({
     selector: state => state.http.userRegionAccesses,
+    onUpdate: (lastState, state) => {
+      if (lastState?.httpRequestStatus === 'loading') {
+        if (state?.httpRequestStatus === 'success') {
+          if (state.data) {
+            setRegionTableItems(
+              state.data.map((item, index) => ({
+                index: index + 1,
+                region: item.region.name,
+              })),
+            );
+          }
+        } else if (state?.httpRequestStatus === 'error') {
+          if (state.error?.status === 422) {
+          } // TODO: Handle correctly
+          else {
+            toast(
+              (state.error?.data?.detail as string) ||
+                'An unknown error has occurred.',
+              {
+                type: 'error',
+              },
+            );
+          }
+        }
+      }
+    },
   });
 
   useEffect(() => {
@@ -34,31 +60,6 @@ const RegionAccessTable: FC<Props> = ({
       queryString: {access_type: access, network_id: networkId},
     });
   }, [userId, access, networkId]);
-
-  useEffect(() => {
-    if (regionAccessQuery.state?.httpRequestStatus === 'success') {
-      if (regionAccessQuery.state.data) {
-        setRegionTableItems(
-          regionAccessQuery.state.data.map((item, index) => ({
-            index: index + 1,
-            region: item.region.name,
-          })),
-        );
-      }
-    } else if (regionAccessQuery.state?.httpRequestStatus === 'error') {
-      if (regionAccessQuery.state.error?.status === 422) {
-      } // TODO: Handle correctly
-      else {
-        toast(
-          (regionAccessQuery.state.error?.data?.detail as string) ||
-            'An unknown error has occurred.',
-          {
-            type: 'error',
-          },
-        );
-      }
-    }
-  }, [regionAccessQuery.state]);
 
   return (
     <AccessTablesView

@@ -28,6 +28,35 @@ const LinkAccessTable: FC<Props> = ({
 
   const linkAccessQuery = useHttpRequest({
     selector: state => state.http.userLinkAccesses,
+    onUpdate: (lastState, state) => {
+      if (lastState?.httpRequestStatus === 'loading') {
+        if (state?.httpRequestStatus === 'success') {
+          if (state.data) {
+            setLinkTableItems(
+              state.data.map((item, index) => ({
+                index: index + 1,
+                link: item.link.name,
+                source: item.link.source.name,
+                destination: item.link.destination.name,
+              })),
+            );
+          }
+        } else if (state?.httpRequestStatus === 'error') {
+          if (state.error?.status === 422) {
+          } // TODO: Handle correctly
+          else {
+            toast(
+              (state.error?.data?.detail as string) ||
+                (state.error?.data?.detail as string) ||
+                'An unknown error has occurred.',
+              {
+                type: 'error',
+              },
+            );
+          }
+        }
+      }
+    },
   });
 
   useEffect(() => {
@@ -36,34 +65,6 @@ const LinkAccessTable: FC<Props> = ({
       queryString: {access_type: access, network_id: networkId},
     });
   }, [userId, access, networkId]);
-
-  useEffect(() => {
-    if (linkAccessQuery.state?.httpRequestStatus === 'success') {
-      if (linkAccessQuery.state.data) {
-        setLinkTableItems(
-          linkAccessQuery.state.data.map((item, index) => ({
-            index: index + 1,
-            link: item.link.name,
-            source: item.link.source.name,
-            destination: item.link.destination.name,
-          })),
-        );
-      }
-    } else if (linkAccessQuery.state?.httpRequestStatus === 'error') {
-      if (linkAccessQuery.state.error?.status === 422) {
-      } // TODO: Handle correctly
-      else {
-        toast(
-          (linkAccessQuery.state.error?.data?.detail as string) ||
-            (linkAccessQuery.state.error?.data?.detail as string) ||
-            'An unknown error has occurred.',
-          {
-            type: 'error',
-          },
-        );
-      }
-    }
-  }, [linkAccessQuery.state]);
 
   return (
     <AccessTablesView

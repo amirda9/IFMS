@@ -1,7 +1,9 @@
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
 import {Table} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {UserRole} from '~/constant/users';
+import {useAppSelector, useHttpRequest} from '~/hooks';
+import ErrorPage403 from '../errors/403';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -10,6 +12,12 @@ const columns = {
 
 const UserGroupsPage: FC = () => {
   const {userId} = useParams();
+
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
+  if (loggedInUser.role !== UserRole.SUPER_USER && loggedInUser.id !== userId) {
+    return <ErrorPage403 />;
+  }
 
   const groupsQuery = useHttpRequest({
     selector: state => state.http.userGroupsList,

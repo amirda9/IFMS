@@ -1,6 +1,10 @@
 import {FC} from 'react';
 import {IoTrashBinOutline, IoTrashOutline} from 'react-icons/io5';
+import {useParams} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
+import {useAppSelector} from '~/hooks';
+import ErrorPage403 from '../errors/403';
+import {UserRole} from '~/constant/users';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -41,9 +45,17 @@ const items = [
 ];
 
 const UserSessionsPage: FC = () => {
+  const {userId} = useParams();
+
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
+  if (loggedInUser.role !== UserRole.SUPER_USER && loggedInUser.id !== userId) {
+    return <ErrorPage403 />;
+  }
+
   return (
     <>
-      <div className='flex-grow'>
+      <div className="flex-grow">
         <Table cols={columns} items={items} bordered />
       </div>
       <div className="flex flex-row gap-x-4 self-end">
