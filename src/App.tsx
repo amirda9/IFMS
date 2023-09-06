@@ -7,6 +7,8 @@ import '~/styles/index.scss';
 import 'leaflet/dist/leaflet.css';
 import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
+import ErrorPage403 from './pages/errors/403';
+import {UserRole} from './constant/users';
 
 function App() {
   const auth = useAppSelector(
@@ -14,6 +16,9 @@ function App() {
       state.http.refresh?.httpRequestStatus === 'success' ||
       state.http.login?.httpRequestStatus === 'success',
   );
+
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data);
+
   return (
     <Router>
       <Routes>
@@ -131,10 +136,18 @@ function App() {
           </Route>
 
           <Route path="/users" Component={pages.UsersLayout}>
-            <Route path="register" Component={pages.UserRegisterPage} />
+            <Route
+              path="register"
+              Component={selectElement(
+                loggedInUser?.role === UserRole.SUPER_USER,
+                pages.UserRegisterPage,
+                ErrorPage403,
+              )}
+            />
             <Route path=":userId" Component={pages.SingleUserLayout}>
               <Route index Component={pages.UserDetailsPage} />
               <Route path="access" Component={pages.UserAccessPage} />
+              <Route path="edit-access" Component={pages.UserAccessPage} />
               <Route path="groups" Component={pages.UserGroupsPage} />
               <Route path="sessions" Component={pages.UserSessionsPage} />
               <Route
@@ -149,6 +162,10 @@ function App() {
             <Route path=":groupId" Component={pages.SingleGroupLayout}>
               <Route index Component={pages.GroupDetailsPage} />
               <Route path="members" Component={pages.GroupMembersPage} />
+              <Route
+                path="edit-members"
+                Component={pages.EditGroupMembersPage}
+              />
             </Route>
           </Route>
 

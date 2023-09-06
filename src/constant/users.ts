@@ -1,4 +1,4 @@
-export enum Role {
+export enum ResourceAccessType {
   SUPER_ADMIN = 'Super Admin',
   LINK_ADMIN = 'Link Admin',
   LINK_VIEWER = 'Link Viewer',
@@ -8,4 +8,9 @@ export enum Role {
   REGION_VIEWER = 'Region Viewer',
   NETWORK_ADMIN = 'Network Admin',
   NETWORK_VIEWER = 'Network Viewer',
+}
+
+export enum UserRole {
+  SUPER_USER = 'superuser',
+  USER = 'user',
 }

@@ -1,9 +1,9 @@
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
-import {useAppDispatch, useHttpRequest} from '~/hooks';
-import {userGroupsActions} from '~/store/slices';
+import {useHttpRequest} from '~/hooks';
 import {UserListType} from '~/types';
 
 const columns = {
@@ -23,10 +23,6 @@ type MemberTableItem = {
   station: string;
 };
 
-type Props = {
-  groupId: string;
-};
-
 const userToTableItem = (users: UserListType[]): MemberTableItem[] => {
   return users.map((m, index) => ({
     select: false,
@@ -38,8 +34,10 @@ const userToTableItem = (users: UserListType[]): MemberTableItem[] => {
   }));
 };
 
-const EditGroupMembers: FC<Props> = ({groupId}) => {
-  const dispatch = useAppDispatch();
+const EditGroupMembersPage: FC = () => {
+  const navigate = useNavigate();
+
+  const {groupId} = useParams();
 
   const [membersList, setMembersList] = useState<MemberTableItem[]>([]);
   const [nonMembersList, setNonMembersList] = useState<MemberTableItem[]>([]);
@@ -60,7 +58,7 @@ const EditGroupMembers: FC<Props> = ({groupId}) => {
     }),
     initialRequests: request => {
       request('userList', undefined);
-      request('groupDetail', {params: {group_id: groupId}});
+      request('groupDetail', {params: {group_id: groupId!}});
     },
     onUpdate: (lastState, state) => {
       if (state.userList?.httpRequestStatus === 'success') {
@@ -80,11 +78,11 @@ const EditGroupMembers: FC<Props> = ({groupId}) => {
       }
       if (lastState.updateGroup?.httpRequestStatus === 'loading') {
         if (state.updateGroup?.httpRequestStatus === 'success') {
-          request('groupDetail', {params: {group_id: groupId}});
+          request('groupDetail', {params: {group_id: groupId!}});
 
           toast('Members updated successfully!', {type: 'success'});
 
-          dispatch(userGroupsActions.setIsEditingGroupMembers(false));
+          navigate('../members');
         } else if (state.updateGroup?.httpRequestStatus === 'error') {
           toast(
             (state.updateGroup.error?.data?.detail as string) ||
@@ -95,6 +93,10 @@ const EditGroupMembers: FC<Props> = ({groupId}) => {
       }
     },
   });
+
+  useEffect(() => {
+    navigate('.', {state: {fullLayout: true}}); // Navigate to current path with location states
+  }, []);
 
   const handleMemberSelect = (
     item: MemberTableItem,
@@ -138,14 +140,14 @@ const EditGroupMembers: FC<Props> = ({groupId}) => {
   const handleSaveClick = () => {
     const newMemberIds = membersList.map(member => member.userId);
     request('updateGroup', {
-      params: {group_id: groupId},
+      params: {group_id: groupId!},
       data: {name: groupDetail?.data?.name || '', users: newMemberIds},
     });
   };
 
   return (
     <>
-      <div className="flex flex-grow items-center gap-x-4">
+      <div className="mb-8 flex flex-grow items-center gap-x-4">
         <Table
           cols={columns}
           items={nonMembersList}
@@ -186,11 +188,8 @@ const EditGroupMembers: FC<Props> = ({groupId}) => {
         />
       </div>
       <div className="flex gap-x-4 self-end">
-        <SimpleBtn onClick={handleSaveClick}>Save</SimpleBtn>
-        <SimpleBtn
-          onClick={() => {
-            dispatch(userGroupsActions.setIsEditingGroupMembers(false));
-          }}>
+        <SimpleBtn onClick={handleSaveClick}>Ok</SimpleBtn>
+        <SimpleBtn link to="../members">
           Cancel
         </SimpleBtn>
       </div>
@@ -198,4 +197,4 @@ const EditGroupMembers: FC<Props> = ({groupId}) => {
   );
 };
 
-export default EditGroupMembers;
+export default EditGroupMembersPage;

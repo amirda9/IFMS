@@ -1,10 +1,7 @@
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
-import {useAppSelector, useHttpRequest} from '~/hooks';
-import EditGroupMembers from './EditGroupMembers';
-import {useDispatch} from 'react-redux';
-import {userGroupsActions} from '~/store/slices';
+import {useHttpRequest} from '~/hooks';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -14,13 +11,7 @@ const columns = {
 };
 
 const GroupMembersPage: FC = () => {
-  const dispatch = useDispatch();
-
   const {groupId} = useParams();
-
-  const isEditingGroupMembers = useAppSelector(
-    state => state.userGroups.isEditingGroupMembers,
-  );
 
   const groupDetailQuery = useHttpRequest({
     selector: state => state.http.groupDetail,
@@ -41,30 +32,21 @@ const GroupMembersPage: FC = () => {
   return (
     <>
       <div className="flex flex-grow flex-col gap-y-10">
-        {isEditingGroupMembers ? (
-          <EditGroupMembers groupId={groupId!} />
-        ) : (
-          <Table
-            cols={columns}
-            items={items}
-            loading={groupDetailQuery.state?.httpRequestStatus === 'loading'}
-            containerClassName="w-3/5"
-          />
-        )}
+        <Table
+          cols={columns}
+          items={items}
+          loading={groupDetailQuery.state?.httpRequestStatus === 'loading'}
+          containerClassName="w-3/5"
+        />
       </div>
-      {!isEditingGroupMembers && (
-        <div className="flex flex-row gap-x-4 self-end">
-          <SimpleBtn
-            onClick={() => {
-              dispatch(userGroupsActions.setIsEditingGroupMembers(true));
-            }}>
-            Edit Members
-          </SimpleBtn>
-          <SimpleBtn link to="../../">
-            Cancel
-          </SimpleBtn>
-        </div>
-      )}
+      <div className="flex flex-row gap-x-4 self-end">
+        <SimpleBtn link to="../edit-members">
+          Edit Members
+        </SimpleBtn>
+        <SimpleBtn link to="../../">
+          Cancel
+        </SimpleBtn>
+      </div>
     </>
   );
 };

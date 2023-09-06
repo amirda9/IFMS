@@ -3,11 +3,40 @@ import {navbarItems} from '~/constant';
 import {NavItem} from '~/components';
 import {IoPersonOutline} from 'react-icons/io5';
 import {httpClear} from '~/store/slices';
-import {useAppDispatch} from '~/hooks';
+import {useAppDispatch, useHttpRequest} from '~/hooks';
 import {Outlet} from 'react-router-dom';
+import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 
 const MainLayout: FC = () => {
   const dispatch = useAppDispatch();
+
+  const {state} = useHttpRequest({
+    selector: state => state.http.verifyToken,
+    initialRequests: request => {
+      request('verifyToken', undefined);
+    },
+  });
+
+  const handleLogout = () => {
+    localStorage.removeItem('refresh');
+    localStorage.removeItem('login');
+    dispatch(httpClear(['login', 'refresh']));
+  };
+
+  if (state?.httpRequestStatus === 'error') {
+    handleLogout();
+    return <></>;
+  }
+
+  if (!state || state.httpRequestStatus === 'loading') {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-y-4 bg-b">
+        <GeneralLoadingSpinner size="h-20 w-20" />
+        <span>Verifying token...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <nav className="flex h-20 flex-row items-center bg-p px-4 ">
@@ -30,11 +59,7 @@ const MainLayout: FC = () => {
             {label: 'Profile', to: '/profile'},
             {label: 'Logout', handleSelf: true},
           ]}
-          onClick={() => {
-            localStorage.removeItem('refresh');
-            localStorage.removeItem('login');
-            dispatch(httpClear(['login', 'refresh']));
-          }}
+          onClick={handleLogout}
         />
       </nav>
       <div className="flex min-h-[90vh] flex-row bg-b">

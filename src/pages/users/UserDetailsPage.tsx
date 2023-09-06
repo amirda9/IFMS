@@ -4,10 +4,11 @@ import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, ControlledSelect, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import dayjs from 'dayjs';
 import {RegionListType, StationListType, UserDetailFormType} from '~/types';
 import {toast} from 'react-toastify';
+import {UserRole} from '~/constant/users';
 
 type RegionOptionType = {label: string; payload: RegionListType | null};
 type StationOptionType = {label: string; payload: StationListType | null};
@@ -26,6 +27,8 @@ const initialValues: UserDetailFormType = {
 
 const UsersDetailsPage: FC = () => {
   const {userId} = useParams();
+
+  const userRole = useAppSelector(state => state.http.verifyToken?.data?.role);
 
   // List of the region items shown in the regions dropdown
   const [regionOptions, setRegionOptions] = useState<RegionOptionType[]>([]);
@@ -171,67 +174,109 @@ const UsersDetailsPage: FC = () => {
             </Description>
 
             <Description label="Username" items="start">
-              <InputFormik
-                name="username"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="username"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span className="mb-5">
+                  {userDetail?.data?.username || 'N/A'}
+                </span>
+              )}
             </Description>
 
             <Description label="Name" items="start">
-              <InputFormik
-                name="name"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="name"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span className="mb-5">{userDetail?.data?.name || 'N/A'}</span>
+              )}
             </Description>
 
             <Description label="Telephone" items="start">
-              <InputFormik
-                name="telephone"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="telephone"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span className="mb-5">
+                  {userDetail?.data?.telephone || 'N/A'}
+                </span>
+              )}
             </Description>
 
             <Description label="Mobile" items="start">
-              <InputFormik
-                name="mobile"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="mobile"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span className="mb-5">
+                  {userDetail?.data?.mobile || 'N/A'}
+                </span>
+              )}
             </Description>
 
             <Description label="Email" items="start">
-              <InputFormik
-                name="email"
-                wrapperClassName="w-full"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <InputFormik
+                  name="email"
+                  wrapperClassName="w-full"
+                  className="disabled:cursor-not-allowed disabled:bg-slate-200"
+                />
+              ) : (
+                <span className="mb-5">{userDetail?.data?.email || 'N/A'}</span>
+              )}
             </Description>
 
             <Description label="Address" items="start">
-              <TextareaFormik name="address" className="w-full" />
+              {userRole === UserRole.SUPER_USER ? (
+                <TextareaFormik name="address" className="w-full" />
+              ) : (
+                <span className="mb-5">
+                  {userDetail?.data?.address || 'N/A'}
+                </span>
+              )}
             </Description>
 
             <Description label="Comment" items="start">
-              <TextareaFormik name="comment" className="w-full" />
+              {userRole === UserRole.SUPER_USER ? (
+                <TextareaFormik name="comment" className="w-full" />
+              ) : (
+                <span className="mb-5">
+                  {userDetail?.data?.comment || 'N/A'}
+                </span>
+              )}
             </Description>
 
             <Description label="Region" className="mb-5">
-              <ControlledSelect
-                options={regionOptions}
-                onChange={regionId => {
-                  formik.setFieldValue('region_id', regionId);
-                }}
-                setValueProp={option => option.payload?.id || ''}
-                value={formik.values.region_id || ''}
-                className="min-w-[19rem]"
-              />
+              {userRole === UserRole.SUPER_USER ? (
+                <ControlledSelect
+                  options={regionOptions}
+                  onChange={regionId => {
+                    formik.setFieldValue('region_id', regionId);
+                  }}
+                  setValueProp={option => option.payload?.id || ''}
+                  value={formik.values.region_id || ''}
+                  className="min-w-[19rem]"
+                />
+              ) : (
+                <span>{userDetail?.data?.region?.name || 'N/A'}</span>
+              )}
             </Description>
 
-            {stationOptions.length > 0 && (
-              <Description label="Station" className="mb-5">
+            <Description label="Station" className="mb-5">
+              {userRole === UserRole.SUPER_USER ? (
                 <ControlledSelect
                   options={stationOptions}
                   onChange={stationId => {
@@ -241,8 +286,10 @@ const UsersDetailsPage: FC = () => {
                   value={formik.values.station_id || ''}
                   className="min-w-[19rem]"
                 />
-              </Description>
-            )}
+              ) : (
+                <span>{userDetail?.data?.station?.name || 'N/A'}</span>
+              )}
+            </Description>
 
             <div className="flex w-full justify-between">
               {userDetail?.data?.time_created && (
@@ -262,12 +309,14 @@ const UsersDetailsPage: FC = () => {
               )}
             </div>
           </div>
-          <div className="flex flex-row gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
-            <SimpleBtn link to="../">
-              Cancel
-            </SimpleBtn>
-          </div>
+          {userRole === UserRole.SUPER_USER && (
+            <div className="flex flex-row gap-x-4 self-end">
+              <SimpleBtn type="submit">Save</SimpleBtn>
+              <SimpleBtn link to="../">
+                Cancel
+              </SimpleBtn>
+            </div>
+          )}
         </Form>
       </FormikProvider>
     </div>

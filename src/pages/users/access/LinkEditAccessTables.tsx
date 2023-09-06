@@ -1,9 +1,9 @@
 import {FC, useState} from 'react';
 import {toast} from 'react-toastify';
-import {useAppDispatch, useHttpRequest} from '~/hooks';
+import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import EditAccessTablesView from './EditAccessTablesView';
-import {userAccessActions} from '~/store/slices';
+import {useNavigate} from 'react-router-dom';
 
 type Props = {
   userId: string;
@@ -29,7 +29,7 @@ const LinkEditAccessTable: FC<Props> = ({
   access = AccessEnum.admin,
   networkId,
 }) => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [noAccessLinks, setNoAccessLinks] = useState<AccessLinkTableItem[]>([]);
   const [accessedLinks, setAccessedLinks] = useState<AccessLinkTableItem[]>([]);
@@ -60,7 +60,7 @@ const LinkEditAccessTable: FC<Props> = ({
         state.updateUserLinkAccesses?.httpRequestStatus === 'success'
       ) {
         toast('Updated successfully!', {type: 'success'});
-        dispatch(userAccessActions.setIsEditingUserAccess(false));
+        navigate('../access');
         return;
       } else if (state.updateUserLinkAccesses?.httpRequestStatus === 'error') {
         if (state.updateUserLinkAccesses.error?.status === 422) {

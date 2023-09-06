@@ -1,8 +1,8 @@
-import {useDispatch} from 'react-redux';
+import {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {ColType, ItemType} from '~/components/views/Table';
-import {userAccessActions} from '~/store/slices';
 
 type Props<
   C extends string,
@@ -41,7 +41,11 @@ const EditAccessTablesView = <
   handleRemoveClick,
   handleSaveClick,
 }: Props<C | 'select', DC, Item>) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate('.', {state: {isEditingUserAccess: true}});
+  }, []);
 
   return (
     <>
@@ -83,7 +87,7 @@ const EditAccessTablesView = <
         <SimpleBtn onClick={handleSaveClick}>Ok</SimpleBtn>
         <SimpleBtn
           onClick={() => {
-            dispatch(userAccessActions.setIsEditingUserAccess(false));
+            navigate('../access');
           }}>
           Cancel
         </SimpleBtn>

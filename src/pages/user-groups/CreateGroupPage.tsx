@@ -3,8 +3,11 @@ import {toast} from 'react-toastify';
 import {Description, SimpleBtn, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import CreateGroupMembersTable from './CreateGroupMembersTable';
+import { useNavigate } from 'react-router-dom';
 
 const CreateGroupPage: FC = () => {
+  const navigate = useNavigate();
+
   const [groupNameValue, setGroupNameValue] = useState('');
 
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -18,6 +21,8 @@ const CreateGroupPage: FC = () => {
       if (lastState.createGroup?.httpRequestStatus === 'loading') {
         if (state.createGroup?.httpRequestStatus === 'success') {
           toast('Group was created successfully.', {type: 'success'});
+          request("groupList", undefined);
+          navigate("..");
         } else if (state.createGroup?.httpRequestStatus === 'error') {
           if (state.createGroup.error?.status === 422) {
             toast('Validation error.', {type: 'error'});

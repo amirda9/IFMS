@@ -1,8 +1,8 @@
 import {useNavigate} from 'react-router-dom';
 import {Description, SimpleBtn, Table} from '~/components';
 import {ColType, ItemType} from '~/components/views/Table';
-import {useAppDispatch} from '~/hooks';
-import {userAccessActions} from '~/store/slices';
+import {UserRole} from '~/constant/users';
+import {useAppDispatch, useAppSelector} from '~/hooks';
 
 type Props<
   C extends string,
@@ -25,9 +25,9 @@ const AccessTablesView = <
   tableItems,
   tableLoading,
 }: Props<C, DC, Item>) => {
-  const dispatch = useAppDispatch();
-
   const navigate = useNavigate();
+
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   return (
     <>
@@ -41,14 +41,12 @@ const AccessTablesView = <
           />
         </Description>
       </div>
-      <div className="flex flex-row self-end gap-x-4">
-        <SimpleBtn
-          className="self-end"
-          onClick={() => {
-            dispatch(userAccessActions.setIsEditingUserAccess(true));
-          }}>
-          {editButtonText}
-        </SimpleBtn>
+      <div className="flex flex-row gap-x-4 self-end">
+        {loggedInUser.role === UserRole.SUPER_USER && (
+          <SimpleBtn className="self-end" link to="../edit-access">
+            {editButtonText}
+          </SimpleBtn>
+        )}
         <SimpleBtn
           className="self-end"
           onClick={() => {

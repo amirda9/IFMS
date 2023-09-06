@@ -1,4 +1,5 @@
-import {FC, useRef, useState} from 'react';
+import {FC, useEffect, useRef, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
@@ -7,13 +8,13 @@ import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
 const UserGroupsLayout: FC = () => {
+  const location = useLocation();
+
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
   const selectedGroupToDelete = useRef<string | null>(null);
 
-  const isEditingGroupMembers = useAppSelector(
-    state => state.userGroups.isEditingGroupMembers,
-  );
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const {
     request,
@@ -27,13 +28,13 @@ const UserGroupsLayout: FC = () => {
       request('groupList', undefined);
     },
     onUpdate: (lastState, state) => {
-      if (state.groupList?.error) {
-        if (state.groupList?.error.status === 422) {
-        } else {
-          toast(state.groupList?.error.data?.detail as string, {
-            type: 'error',
-          });
-        }
+      if (
+        lastState.groupList?.httpRequestStatus === 'loading' &&
+        state.groupList?.httpRequestStatus === 'error'
+      ) {
+        toast(state.groupList.error?.data?.detail as string, {
+          type: 'error',
+        });
       }
 
       if (lastState.deleteGroup?.httpRequestStatus === 'loading') {
@@ -68,8 +69,8 @@ const UserGroupsLayout: FC = () => {
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Groups"
-      canAdd
-      hideSidebar={isEditingGroupMembers}>
+      canAdd={loggedInUser.is_admin}
+      hideSidebar={location.state?.fullLayout}>
       {groupList?.httpRequestStatus === 'success' ? (
         groupListSorted.map(group => (
           <SidebarItem

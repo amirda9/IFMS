@@ -1,27 +1,34 @@
-import React from 'react';
 import logo from '~/assets/images/logo.png';
 import {Form, Formik} from 'formik';
 import {InputFormik} from '~/container';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 
+type LoginFormType = {
+  username: string;
+  password: string;
+};
+
 const loginSchema = Yup.object().shape({
   username: Yup.string().required('Please enter username or email'),
   password: Yup.string().required('Please Enter password'),
   remember: Yup.boolean(),
 });
+
 const LoginPage = () => {
   const {state, request} = useHttpRequest({
     selector: state => state.http.login,
   });
 
+  const handleLoginSubmit = (values: LoginFormType) => {
+    request('login', {data: values});
+  };
+
   return (
     <Formik
       initialValues={{username: '', password: ''}}
       validationSchema={loginSchema}
-      onSubmit={data => {
-        request('login', {data});
-      }}>
+      onSubmit={handleLoginSubmit}>
       <div className="flex h-screen flex-col justify-between bg-[url('~/assets/images/loginBackground.png')] pl-10 pt-10">
         <div className="flex flex-row items-center">
           <img src={logo} className="h-24 w-24" />

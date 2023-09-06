@@ -1,2 +1,2 @@
-export {default as RedirectToLogin} from './redirectToLogin';
-export {default as RedirectAfterLogin} from './redirectAfterLogin';
+export {default as RedirectToLogin} from './RedirectToLogin';
+export {default as RedirectAfterLogin} from './RedirectAfterLogin';
