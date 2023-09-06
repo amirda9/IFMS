@@ -1,4 +1,5 @@
 import {FC, useEffect, useRef, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
@@ -7,6 +8,8 @@ import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
 const UserGroupsLayout: FC = () => {
+  const location = useLocation();
+
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
   const selectedGroupToDelete = useRef<string | null>(null);
@@ -62,20 +65,12 @@ const UserGroupsLayout: FC = () => {
       )
     : [];
 
-  useEffect(() => {
-    console.log('UserGroupsLayout Mounted');
-
-    return () => {
-      console.log('UserGroupsLayout Unmounted');
-    };
-  }, []);
-
   return (
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Groups"
       canAdd={loggedInUser.is_admin}
-      hideSidebar={false}>
+      hideSidebar={location.state?.fullLayout}>
       {groupList?.httpRequestStatus === 'success' ? (
         groupListSorted.map(group => (
           <SidebarItem

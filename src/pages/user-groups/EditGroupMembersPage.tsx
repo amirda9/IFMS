@@ -1,4 +1,4 @@
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
@@ -93,6 +93,10 @@ const EditGroupMembersPage: FC = () => {
       }
     },
   });
+
+  useEffect(() => {
+    navigate('.', {state: {fullLayout: true}}); // Navigate to current path with location states
+  }, []);
 
   const handleMemberSelect = (
     item: MemberTableItem,
