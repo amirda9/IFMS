@@ -30,13 +30,13 @@ const UserGroupsLayout: FC = () => {
       request('groupList', undefined);
     },
     onUpdate: (lastState, state) => {
-      if (state.groupList?.error) {
-        if (state.groupList?.error.status === 422) {
-        } else {
-          toast(state.groupList?.error.data?.detail as string, {
-            type: 'error',
-          });
-        }
+      if (
+        lastState.groupList?.httpRequestStatus === 'loading' &&
+        state.groupList?.httpRequestStatus === 'error'
+      ) {
+        toast(state.groupList.error?.data?.detail as string, {
+          type: 'error',
+        });
       }
 
       if (lastState.deleteGroup?.httpRequestStatus === 'loading') {
