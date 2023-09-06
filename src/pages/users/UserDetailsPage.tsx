@@ -181,7 +181,9 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span>{userDetail?.data?.username}</span>
+                <span className="mb-5">
+                  {userDetail?.data?.username || 'N/A'}
+                </span>
               )}
             </Description>
 
@@ -193,7 +195,7 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span>{userDetail?.data?.name}</span>
+                <span className="mb-5">{userDetail?.data?.name || 'N/A'}</span>
               )}
             </Description>
 
@@ -205,7 +207,9 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span>{userDetail?.data?.telephone}</span>
+                <span className="mb-5">
+                  {userDetail?.data?.telephone || 'N/A'}
+                </span>
               )}
             </Description>
 
@@ -217,7 +221,9 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span>{userDetail?.data?.mobile}</span>
+                <span className="mb-5">
+                  {userDetail?.data?.mobile || 'N/A'}
+                </span>
               )}
             </Description>
 
@@ -229,7 +235,7 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span>{userDetail?.data?.email}</span>
+                <span className="mb-5">{userDetail?.data?.email || 'N/A'}</span>
               )}
             </Description>
 
@@ -237,7 +243,9 @@ const UsersDetailsPage: FC = () => {
               {userRole === UserRole.SUPER_USER ? (
                 <TextareaFormik name="address" className="w-full" />
               ) : (
-                <span>{userDetail?.data?.address}</span>
+                <span className="mb-5">
+                  {userDetail?.data?.address || 'N/A'}
+                </span>
               )}
             </Description>
 
@@ -245,7 +253,9 @@ const UsersDetailsPage: FC = () => {
               {userRole === UserRole.SUPER_USER ? (
                 <TextareaFormik name="comment" className="w-full" />
               ) : (
-                <span>{userDetail?.data?.comment}</span>
+                <span className="mb-5">
+                  {userDetail?.data?.comment || 'N/A'}
+                </span>
               )}
             </Description>
 
@@ -261,7 +271,7 @@ const UsersDetailsPage: FC = () => {
                   className="min-w-[19rem]"
                 />
               ) : (
-                <span>{userDetail?.data?.region?.name}</span>
+                <span>{userDetail?.data?.region?.name || 'N/A'}</span>
               )}
             </Description>
 
@@ -277,7 +287,7 @@ const UsersDetailsPage: FC = () => {
                   className="min-w-[19rem]"
                 />
               ) : (
-                <span>{userDetail?.data?.station?.name}</span>
+                <span>{userDetail?.data?.station?.name || 'N/A'}</span>
               )}
             </Description>
 
