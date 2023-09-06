@@ -22,7 +22,10 @@ const SingleUserLayout: FC = () => {
             loggedInUser.id === params.userId) && (
             <TabItem to="access" name="Access" />
           )}
-          <TabItem to="groups" name="Groups" />
+          {(loggedInUser.role === UserRole.SUPER_USER ||
+            loggedInUser.id === params.userId) && (
+            <TabItem to="groups" name="Groups" />
+          )}
           <TabItem to="sessions" name="Sessions" />
           <TabItem to="authentication" name="Authentication" />
         </div>
