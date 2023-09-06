@@ -1,22 +1,22 @@
 import {FC, useState} from 'react';
 import {ControlledSelect, Description} from '~/components';
-import {Role} from '~/constant/users';
+import {ResourceAccessType} from '~/constant/users';
 import AccessTable from './AccessTable';
 import {useParams} from 'react-router-dom';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {NetworkType} from '~/types';
 
-const roleOptions = Object.values(Role)
-  .filter(val => val !== Role.SUPER_ADMIN)
+const roleOptions = Object.values(ResourceAccessType)
+  .filter(val => val !== ResourceAccessType.SUPER_ADMIN)
   .map(role => ({label: role}));
 
 const rolesNeedingNetwork = [
-  Role.REGION_ADMIN,
-  Role.REGION_VIEWER,
-  Role.STATION_ADMIN,
-  Role.STATION_VIEWER,
-  Role.LINK_ADMIN,
-  Role.LINK_VIEWER,
+  ResourceAccessType.REGION_ADMIN,
+  ResourceAccessType.REGION_VIEWER,
+  ResourceAccessType.STATION_ADMIN,
+  ResourceAccessType.STATION_VIEWER,
+  ResourceAccessType.LINK_ADMIN,
+  ResourceAccessType.LINK_VIEWER,
 ];
 
 type NetworkOptionType = {label: string; payload: NetworkType | null};
@@ -27,7 +27,7 @@ const UserAccessPage: FC = () => {
     state => state.userAccess.isEditingUserAccess,
   );
 
-  const [selectedRole, setSelectedRole] = useState<Role>(Role.NETWORK_ADMIN);
+  const [selectedRole, setSelectedRole] = useState<ResourceAccessType>(ResourceAccessType.NETWORK_ADMIN);
 
   const [networkOptions, setNetworkOptions] = useState<NetworkOptionType[]>([]);
   const [selectedNetworkId, setSelectedNetworkId] = useState<string>('');
@@ -59,7 +59,7 @@ const UserAccessPage: FC = () => {
           ) : (
             <ControlledSelect
               options={roleOptions}
-              onChange={value => setSelectedRole(value as Role)}
+              onChange={value => setSelectedRole(value as ResourceAccessType)}
               value={selectedRole}
               setValueProp={option => option.label}
             />

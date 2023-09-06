@@ -21,15 +21,17 @@ const SidebarItem: FC<PropsType> = ({to, name, onDelete, disabled}) => {
         }>
         {name}
       </NavLink>
-      <button className="ml-4" onClick={onDelete}>
-        <IoTrashOutline
-          size={24}
-          className={classNames(
-            disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500',
-            'active:text-red-300',
-          )}
-        />
-      </button>
+      {onDelete && (
+        <button className="ml-4" onClick={onDelete}>
+          <IoTrashOutline
+            size={24}
+            className={classNames(
+              disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500',
+              'active:text-red-300',
+            )}
+          />
+        </button>
+      )}
     </div>
   );
 };

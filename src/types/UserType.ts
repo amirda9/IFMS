@@ -1,8 +1,10 @@
+import {UserRole} from '~/constant/users';
+
 export type UserListType = {
   id: string;
   username: string;
   email: string;
-  role: string;
+  role: UserRole;
   station?: {
     name: string;
   };
@@ -14,6 +16,7 @@ export type UserListType = {
 export type UserDetailType = {
   id: string;
   username: string;
+  role: UserRole;
   name: string;
   email: string;
   station: {
