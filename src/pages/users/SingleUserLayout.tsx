@@ -18,16 +18,20 @@ const SingleUserLayout: FC = () => {
       {!isEditingUserAccess && (
         <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
           <TabItem to="." name="Details" />
+
           {(loggedInUser.role === UserRole.SUPER_USER ||
             loggedInUser.id === params.userId) && (
-            <TabItem to="access" name="Access" />
+            <>
+              <TabItem to="access" name="Access" />
+
+              <TabItem to="groups" name="Groups" />
+
+              <TabItem to="sessions" name="Sessions" />
+
+              <TabItem to="authentication" name="Authentication" />
+            </>
           )}
-          {(loggedInUser.role === UserRole.SUPER_USER ||
-            loggedInUser.id === params.userId) && (
-            <TabItem to="groups" name="Groups" />
-          )}
-          <TabItem to="sessions" name="Sessions" />
-          <TabItem to="authentication" name="Authentication" />
+
         </div>
       )}
       <Outlet key={params.username} />
