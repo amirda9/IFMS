@@ -3,7 +3,6 @@ import {Description, SimpleBtn, Table} from '~/components';
 import {ColType, ItemType} from '~/components/views/Table';
 import {UserRole} from '~/constant/users';
 import {useAppDispatch, useAppSelector} from '~/hooks';
-import {userAccessActions} from '~/store/slices';
 
 type Props<
   C extends string,
@@ -26,8 +25,6 @@ const AccessTablesView = <
   tableItems,
   tableLoading,
 }: Props<C, DC, Item>) => {
-  const dispatch = useAppDispatch();
-
   const navigate = useNavigate();
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
@@ -46,11 +43,7 @@ const AccessTablesView = <
       </div>
       <div className="flex flex-row gap-x-4 self-end">
         {loggedInUser.role === UserRole.SUPER_USER && (
-          <SimpleBtn
-            className="self-end"
-            onClick={() => {
-              dispatch(userAccessActions.setIsEditingUserAccess(true));
-            }}>
+          <SimpleBtn className="self-end" link to="../edit-access">
             {editButtonText}
           </SimpleBtn>
         )}

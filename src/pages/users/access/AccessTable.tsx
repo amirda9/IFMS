@@ -1,4 +1,4 @@
-import {FC} from 'react';
+import {FC, useEffect} from 'react';
 import {ResourceAccessType} from '~/constant/users';
 import NetworkAccessTable from './NetworkAccessTable';
 import {AccessEnum} from '~/types';
@@ -9,26 +9,17 @@ import NetworkEditAccessTable from './NetworkEditAccessTable';
 import RegionEditAccessTable from './RegionEditAccessTable';
 import StationEditAccessTable from './StationEditAccessTable';
 import LinkEditAccessTable from './LinkEditAccessTables';
-import {useAppSelector} from '~/hooks';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 type Props = {
   userId: string;
   networkId?: string;
   role: ResourceAccessType;
-  isEditing?: boolean;
-  hideEditButton?: boolean;
 };
 
-const AccessTable: FC<Props> = ({
-  userId,
-  networkId,
-  role,
-  isEditing,
-  hideEditButton = false,
-}) => {
-  const isEditingUserAccess = useAppSelector(
-    state => state.userAccess.isEditingUserAccess,
-  );
+const AccessTable: FC<Props> = ({userId, networkId, role}) => {
+  const location = useLocation();
+  const navigate = useNavigate();
 
   let tableToRender = <></>;
   let editTableToRender = <></>;
@@ -159,7 +150,20 @@ const AccessTable: FC<Props> = ({
       );
       break;
   }
-  return <>{isEditingUserAccess ? editTableToRender : tableToRender}</>;
+
+  useEffect(() => {
+    const regex = /^\/users\/.*\/edit-access$/; // Matches this format: /users/[anything]/edit-access
+
+    if (regex.test(location.pathname)) {
+      navigate('.', {state: {isEditingUserAccess: true}});
+    }
+  }, [location.pathname]);
+
+  return (
+    <>
+      {location.state?.isEditingUserAccess ? editTableToRender : tableToRender}
+    </>
+  );
 };
 
 export default AccessTable;

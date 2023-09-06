@@ -1,4 +1,5 @@
 import {FC, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
@@ -11,9 +12,7 @@ const UsersLayout: FC = () => {
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
-  const isEditingUserAccess = useAppSelector(
-    state => state.userAccess.isEditingUserAccess,
-  );
+  const location = useLocation();
 
   const userListQuery = useHttpRequest({
     selector: state => state.http.userList,
@@ -32,7 +31,7 @@ const UsersLayout: FC = () => {
       createTitle="Users"
       canAdd={loggedInUser.role === UserRole.SUPER_USER}
       addButtonLink="register"
-      hideSidebar={isEditingUserAccess}>
+      hideSidebar={location.state?.isEditingUserAccess}>
       <SidebarItem
         name={loggedInUser.username + ' (You)'}
         to={loggedInUser.id}

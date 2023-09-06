@@ -1,5 +1,5 @@
 import {configureStore, Middleware} from '@reduxjs/toolkit';
-import {httpReducer, userAccessReducer} from './slices';
+import {httpReducer} from './slices';
 import createSagaMiddleware from 'redux-saga';
 import {AppSaga} from './saga';
 
@@ -11,7 +11,6 @@ middlewares.push(sagaMiddleware);
 export const store = configureStore({
   reducer: {
     http: httpReducer,
-    userAccess: userAccessReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),

@@ -2,8 +2,8 @@ import {FC, useState} from 'react';
 import {ControlledSelect, Description} from '~/components';
 import {ResourceAccessType} from '~/constant/users';
 import AccessTable from './AccessTable';
-import {useParams} from 'react-router-dom';
-import {useAppSelector, useHttpRequest} from '~/hooks';
+import {useLocation, useParams} from 'react-router-dom';
+import {useHttpRequest} from '~/hooks';
 import {NetworkType} from '~/types';
 
 const roleOptions = Object.values(ResourceAccessType)
@@ -23,11 +23,11 @@ type NetworkOptionType = {label: string; payload: NetworkType | null};
 
 const UserAccessPage: FC = () => {
   const {userId} = useParams();
-  const isEditingUserAccess = useAppSelector(
-    state => state.userAccess.isEditingUserAccess,
-  );
+  const location = useLocation();
 
-  const [selectedRole, setSelectedRole] = useState<ResourceAccessType>(ResourceAccessType.NETWORK_ADMIN);
+  const [selectedRole, setSelectedRole] = useState<ResourceAccessType>(
+    ResourceAccessType.NETWORK_ADMIN,
+  );
 
   const [networkOptions, setNetworkOptions] = useState<NetworkOptionType[]>([]);
   const [selectedNetworkId, setSelectedNetworkId] = useState<string>('');
@@ -54,7 +54,7 @@ const UserAccessPage: FC = () => {
     <div className="flex flex-grow flex-col gap-y-4">
       <div className="flex w-3/5 justify-between">
         <Description label="Role" items="start">
-          {isEditingUserAccess ? (
+          {location.state?.isEditingUserAccess ? (
             <span>{selectedRole}</span>
           ) : (
             <ControlledSelect
@@ -68,7 +68,7 @@ const UserAccessPage: FC = () => {
 
         {rolesNeedingNetwork.includes(selectedRole) && (
           <Description label="Network" items="start">
-            {isEditingUserAccess ? (
+            {location.state?.isEditingUserAccess ? (
               <span>
                 {
                   networkOptions.find(

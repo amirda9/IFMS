@@ -1,5 +1,5 @@
 import {FC} from 'react';
-import {Outlet, useParams} from 'react-router-dom';
+import {Outlet, useLocation, useParams} from 'react-router-dom';
 import {TabItem} from '~/components';
 import {UserRole} from '~/constant/users';
 import {useAppSelector} from '~/hooks';
@@ -7,15 +7,13 @@ import {useAppSelector} from '~/hooks';
 const SingleUserLayout: FC = () => {
   const params = useParams();
 
-  const isEditingUserAccess = useAppSelector(
-    state => state.userAccess.isEditingUserAccess,
-  );
+  const location = useLocation();
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   return (
     <div className="flex h-full w-full flex-col">
-      {!isEditingUserAccess && (
+      {!location.state?.isEditingUserAccess && (
         <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
           <TabItem to="." name="Details" />
 
