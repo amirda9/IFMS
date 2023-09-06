@@ -9,7 +9,7 @@ import {SidebarLayout} from '~/layout';
 const UsersPage: FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const userRole = useAppSelector(state => state.http.verifyToken?.data?.role);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const isEditingUserAccess = useAppSelector(
     state => state.userAccess.isEditingUserAccess,
@@ -30,9 +30,15 @@ const UsersPage: FC = () => {
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Users"
-      canAdd={userRole === UserRole.SUPER_USER}
+      canAdd={loggedInUser.role === UserRole.SUPER_USER}
       addButtonLink="register"
       hideSidebar={isEditingUserAccess}>
+      <SidebarItem
+        name={loggedInUser.username + ' (You)'}
+        to={loggedInUser.id}
+        key={loggedInUser.id}
+      />
+
       {userListQuery.state &&
       userListQuery.state.httpRequestStatus === 'success' ? (
         userListQuery.state.data!.map(user => (
@@ -41,7 +47,7 @@ const UsersPage: FC = () => {
             to={user.id}
             key={user.id}
             onDelete={
-              userRole === UserRole.SUPER_USER
+              loggedInUser.role === UserRole.SUPER_USER
                 ? handleDeleteButtonClick
                 : undefined
             }
