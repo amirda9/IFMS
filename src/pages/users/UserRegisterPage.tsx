@@ -51,7 +51,7 @@ const UserRegisterPage: FC = () => {
       if (lastState.userRegister?.httpRequestStatus === 'loading') {
         if (state.userRegister?.httpRequestStatus === 'success') {
           toast('User was registered successfully', {type: 'success'});
-          request("userList", undefined);
+          request('userList', undefined);
         } else if (state.userRegister?.httpRequestStatus === 'error') {
           if (state.userRegister.error?.status === 422) {
           } else {
@@ -120,8 +120,8 @@ const UserRegisterPage: FC = () => {
         mobile: values.mobile,
         address: values.address,
         comment: values.comment,
-        region_id: values.region_id,
-        station_id: values.station_id,
+        region_id: values.region_id || null,
+        station_id: values.station_id || null,
       },
     });
   };
