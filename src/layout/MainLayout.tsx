@@ -37,8 +37,6 @@ const MainLayout: FC = () => {
     );
   }
 
-  console.log('state:', state);
-
   return (
     <div className="flex min-h-screen flex-col">
       <nav className="flex h-20 flex-row items-center bg-p px-4 ">

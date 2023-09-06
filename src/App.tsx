@@ -149,6 +149,7 @@ function App() {
             <Route path=":groupId" Component={pages.SingleGroupLayout}>
               <Route index Component={pages.GroupDetailsPage} />
               <Route path="members" Component={pages.GroupMembersPage} />
+              <Route path="edit-members" Component={pages.EditGroupMembersPage} />
             </Route>
           </Route>
 

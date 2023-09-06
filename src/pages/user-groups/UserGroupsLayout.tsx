@@ -1,9 +1,8 @@
-import {FC, useRef, useState} from 'react';
+import {FC, useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
-import {UserRole} from '~/constant/users';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
@@ -13,10 +12,6 @@ const UserGroupsLayout: FC = () => {
   const selectedGroupToDelete = useRef<string | null>(null);
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-
-  const isEditingGroupMembers = useAppSelector(
-    state => state.userGroups.isEditingGroupMembers,
-  );
 
   const {
     request,
@@ -67,12 +62,20 @@ const UserGroupsLayout: FC = () => {
       )
     : [];
 
+  useEffect(() => {
+    console.log('UserGroupsLayout Mounted');
+
+    return () => {
+      console.log('UserGroupsLayout Unmounted');
+    };
+  }, []);
+
   return (
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Groups"
       canAdd={loggedInUser.is_admin}
-      hideSidebar={isEditingGroupMembers}>
+      hideSidebar={false}>
       {groupList?.httpRequestStatus === 'success' ? (
         groupListSorted.map(group => (
           <SidebarItem
