@@ -6,7 +6,7 @@ import {UserRole} from '~/constant/users';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
-const UsersPage: FC = () => {
+const UsersLayout: FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
@@ -69,4 +69,4 @@ const UsersPage: FC = () => {
   );
 };
 
-export default UsersPage;
+export default UsersLayout;
