@@ -6,18 +6,17 @@ export const URLS = {
       all: '/auth/users',
       single: '/auth/users/{user_id}',
       login: '/auth/users/login',
-      refreshToken: '/auth/users/refresh_token',
       changePassword: '/auth/users/{user_id}/change_password',
       groups: '/auth/users/{user_id}/groups',
+      token: {
+        verifyToken: '/auth/users/token/verify_token',
+        refreshToken: '/auth/users/token/refresh_token',
+      },
       accesses: {
-        networks:
-          '/auth/users/{user_id}/accesses/networks',
-        regions:
-          '/auth/users/{user_id}/accesses/regions',
-        stations:
-          '/auth/users/{user_id}/accesses/stations',
-        links:
-          '/auth/users/{user_id}/accesses/links',
+        networks: '/auth/users/{user_id}/accesses/networks',
+        regions: '/auth/users/{user_id}/accesses/regions',
+        stations: '/auth/users/{user_id}/accesses/stations',
+        links: '/auth/users/{user_id}/accesses/links',
       },
     },
     groups: {
