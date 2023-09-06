@@ -7,7 +7,7 @@ type PropsType = {
   name: string;
   to: string;
   className?: string;
-  items?: Array<{label: string; to?: string; handelSelf?: boolean}>;
+  items?: Array<{label: string; to?: string; handleSelf?: boolean}>;
   onClick?: (label: string) => void;
   icon?: IconType;
 };
@@ -22,7 +22,7 @@ const NavItems: FC<PropsType> = ({
   const menu = (
     <div className="flex flex-col first:[&_a]:rounded-tl-md first:[&_a]:rounded-tr-md last:[&_a]:rounded-bl-md last:[&_a]:rounded-br-md">
       {items?.map(item =>
-        item.to && !item.handelSelf ? (
+        item.to && !item.handleSelf ? (
           <NavLink
             to={item.to}
             key={item.label}
@@ -53,7 +53,7 @@ const NavItems: FC<PropsType> = ({
         <IoChevronDown className="close ml-2" />
         <IoChevronUp className="open ml-2 hidden" />
       </Link>
-      <ul className="absolute  top-full z-10 z-[999] hidden w-fit -translate-y-4 rounded-md bg-white">
+      <ul className="absolute top-full z-[999] hidden w-fit -translate-y-4 rounded-md bg-white">
         {!items || !items.length ? (
           <span className="break-keep p-4 text-black">Not set any item</span>
         ) : (

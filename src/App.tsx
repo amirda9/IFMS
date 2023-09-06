@@ -8,7 +8,6 @@ import 'leaflet/dist/leaflet.css';
 import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
 
-
 function App() {
   const auth = useAppSelector(
     state =>
@@ -91,10 +90,50 @@ function App() {
             </Route>
           </Route>
 
+          <Route path="/config">
+            <Route
+              path="system-settings"
+              Component={pages.SystemSettingsLayout}>
+              <Route path="optical-route" Component={pages.OpticalRoutePage} />
+              <Route path="system" Component={pages.SystemPage} />
+              <Route
+                path="threshold-settings"
+                Component={pages.ThresholdSettingsPage}
+              />
+              <Route
+                path="monitoring-test"
+                Component={pages.MonitoringTestPage}
+              />
+              <Route
+                path="proactive-maintenance-test"
+                Component={pages.ProactiveMaintenanceTestPage}
+              />
+            </Route>
+            <Route path="alarm-types" Component={pages.AlarmTypesLayout}>
+              <Route path=":alarmId" Component={pages.SingleAlarmTypeLayout}>
+                <Route index Component={pages.AlarmTypeDetailsPage} />
+                <Route
+                  path="definition"
+                  Component={pages.AlarmTypeDefinitionPage}
+                />
+                <Route path="content" Component={pages.AlarmTypeContentPage} />
+                <Route
+                  path="alert-sending"
+                  Component={pages.AlarmTypeAlertPage}
+                />
+                <Route
+                  path="automatic-events"
+                  Component={pages.AlarmTypeEventPage}
+                />
+                <Route path="access" Component={pages.AlarmTypeAccessPage} />
+              </Route>
+            </Route>
+          </Route>
+
           <Route path="/users" Component={pages.UsersLayout}>
             <Route path="register" Component={pages.UserRegisterPage} />
             <Route path=":userId" Component={pages.SingleUserLayout}>
-              <Route index Component={pages.UserDetailPage} />
+              <Route index Component={pages.UserDetailsPage} />
               <Route path="access" Component={pages.UserAccessPage} />
               <Route path="groups" Component={pages.UserGroupsPage} />
               <Route path="sessions" Component={pages.UserSessionsPage} />
@@ -108,16 +147,15 @@ function App() {
           <Route path="/user-groups" Component={pages.UserGroupsLayout}>
             <Route path="create" Component={pages.CreateGroupPage} />
             <Route path=":groupId" Component={pages.SingleGroupLayout}>
-              <Route index Component={pages.GroupDetailPage} />
+              <Route index Component={pages.GroupDetailsPage} />
               <Route path="members" Component={pages.GroupMembersPage} />
             </Route>
           </Route>
 
-          <Route path='/map' Component={pages.MapPage} />
+          <Route path="/map" Component={pages.MapPage} />
 
           <Route path="*" Component={ErrorPage404} />
         </Route>
-
       </Routes>
     </Router>
   );

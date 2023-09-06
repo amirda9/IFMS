@@ -1,6 +1,6 @@
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
-import {SimpleBtn, Table} from '~/components';
+import {Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 
 const columns = {
@@ -40,11 +40,6 @@ const UserGroupsPage: FC = () => {
             loading={groupsQuery.state?.httpRequestStatus === 'loading'}
           />
         )}
-      </div>
-      <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn link to="../../">
-          Cancel
-        </SimpleBtn>
       </div>
     </>
   );

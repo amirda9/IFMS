@@ -27,7 +27,7 @@ const MainLayout: FC = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <nav className="flex h-20 flex-row items-center bg-p px-4 ">
         <h2 className="mr-16 font-s text-2xl text-white">ARIO-IFMS</h2>
         {navbarItems.map(item => (
@@ -46,12 +46,12 @@ const MainLayout: FC = () => {
           icon={IoPersonOutline}
           items={[
             {label: 'Profile', to: '/profile'},
-            {label: 'Logout', handelSelf: true},
+            {label: 'Logout', handleSelf: true},
           ]}
           onClick={handleLogout}
         />
       </nav>
-      <div className="flex h-full flex-row bg-b">
+      <div className="flex min-h-[90vh] flex-row bg-b">
         <Outlet />
       </div>
       <div className="h-6 bg-p">footer</div>

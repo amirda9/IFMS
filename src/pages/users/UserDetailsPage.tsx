@@ -25,7 +25,7 @@ const initialValues: UserDetailFormType = {
   station_id: '',
 };
 
-const UsersDetailPage: FC = () => {
+const UsersDetailsPage: FC = () => {
   const {userId} = useParams();
 
   const userRole = useAppSelector(state => state.http.verifyToken?.data?.role);
@@ -44,7 +44,7 @@ const UsersDetailPage: FC = () => {
       userDetail: state.http.userDetail,
       userDetailUpdate: state.http.userDetailUpdate,
       allRegions: state.http.allRegions,
-      regionStationList: state.http.regionStationList,
+      allStations: state.http.allStations,
     }),
     initialRequests: request => {
       request('allRegions', undefined);
@@ -100,10 +100,11 @@ const UsersDetailPage: FC = () => {
         setRegionOptions(regionsToSet);
       }
 
-      // Setting the station list from the fetched data
-      if (state.regionStationList?.httpRequestStatus === 'success') {
-        const stationsToSet: StationOptionType[] =
-          state.regionStationList.data!.map(item => ({
+      // Setting the station list from the fetched and then filtered data
+      if (state.allStations?.httpRequestStatus === 'success') {
+        const stationsToSet: StationOptionType[] = state.allStations
+          .data!.filter(item => item.region_id === formik.values.region_id)
+          .map(item => ({
             label: item.name,
             payload: item,
           }));
@@ -159,9 +160,7 @@ const UsersDetailPage: FC = () => {
 
   useEffect(() => {
     if (formik.values.region_id) {
-      request('regionStationList', {
-        params: {region_id: formik.values.region_id},
-      });
+      request('allStations', undefined);
     }
   }, [formik.values.region_id]);
 
@@ -250,41 +249,39 @@ const UsersDetailPage: FC = () => {
               )}
             </Description>
 
-            <div className="flex flex-col gap-y-5">
-              <Description label="Region">
-                {userRole === UserRole.SUPER_USER ? (
-                  <ControlledSelect
-                    options={regionOptions}
-                    onChange={regionId => {
-                      formik.setFieldValue('region_id', regionId);
-                    }}
-                    setValueProp={option => option.payload?.id || ''}
-                    value={formik.values.region_id || ''}
-                    className="min-w-[19rem]"
-                  />
-                ) : (
-                  <span>{userDetail?.data?.region?.name}</span>
-                )}
-              </Description>
+            <Description label="Region" className="mb-5">
+              {userRole === UserRole.SUPER_USER ? (
+                <ControlledSelect
+                  options={regionOptions}
+                  onChange={regionId => {
+                    formik.setFieldValue('region_id', regionId);
+                  }}
+                  setValueProp={option => option.payload?.id || ''}
+                  value={formik.values.region_id || ''}
+                  className="min-w-[19rem]"
+                />
+              ) : (
+                <span>{userDetail?.data?.region?.name}</span>
+              )}
+            </Description>
 
-              <Description label="Station">
-                {userRole === UserRole.SUPER_USER ? (
-                  <ControlledSelect
-                    options={stationOptions}
-                    onChange={stationId => {
-                      formik.setFieldValue('station_id', stationId);
-                    }}
-                    setValueProp={option => option.payload?.id || ''}
-                    value={formik.values.station_id || ''}
-                    className="min-w-[19rem]"
-                  />
-                ) : (
-                  <span>{userDetail?.data?.station?.name}</span>
-                )}
-              </Description>
-            </div>
+            <Description label="Station" className="mb-5">
+              {userRole === UserRole.SUPER_USER ? (
+                <ControlledSelect
+                  options={stationOptions}
+                  onChange={stationId => {
+                    formik.setFieldValue('station_id', stationId);
+                  }}
+                  setValueProp={option => option.payload?.id || ''}
+                  value={formik.values.station_id || ''}
+                  className="min-w-[19rem]"
+                />
+              ) : (
+                <span>{userDetail?.data?.station?.name}</span>
+              )}
+            </Description>
 
-            <div className="mt-5 flex w-full justify-between">
+            <div className="flex w-full justify-between">
               {userDetail?.data?.time_created && (
                 <Description label="Created">
                   {dayjs(userDetail.data.time_created).format(
@@ -316,4 +313,4 @@ const UsersDetailPage: FC = () => {
   );
 };
 
-export default UsersDetailPage;
+export default UsersDetailsPage;

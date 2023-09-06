@@ -58,6 +58,12 @@ const UserGroupsLayout: FC = () => {
     setDeleteConfirmationOpen(false);
   };
 
+  const groupListSorted = groupList?.data
+    ? [...groupList.data].sort((a, b) =>
+        a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase() ? 1 : -1,
+      )
+    : [];
+
   return (
     <SidebarLayout
       searchOnChange={() => {}}
@@ -65,7 +71,7 @@ const UserGroupsLayout: FC = () => {
       canAdd
       hideSidebar={isEditingGroupMembers}>
       {groupList?.httpRequestStatus === 'success' ? (
-        groupList.data!.map(group => (
+        groupListSorted.map(group => (
           <SidebarItem
             name={group.name}
             to={group.id}

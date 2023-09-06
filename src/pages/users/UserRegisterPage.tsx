@@ -1,5 +1,5 @@
 import {Form, FormikProvider, useFormik} from 'formik';
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 import * as Yup from 'yup';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
@@ -44,10 +44,14 @@ const UserRegisterPage: FC = () => {
       allRegions: state.http.allRegions,
       allStations: state.http.allStations,
     }),
+    initialRequests: request => {
+      request('allRegions', undefined);
+    },
     onUpdate: (lastState, state) => {
       if (lastState.userRegister?.httpRequestStatus === 'loading') {
         if (state.userRegister?.httpRequestStatus === 'success') {
           toast('User was registered successfully', {type: 'success'});
+          request("userList", undefined);
         } else if (state.userRegister?.httpRequestStatus === 'error') {
           if (state.userRegister.error?.status === 422) {
           } else {
@@ -58,6 +62,30 @@ const UserRegisterPage: FC = () => {
             );
           }
         }
+      }
+
+      // Setting the region list from the fetched data
+      if (state.allRegions?.httpRequestStatus === 'success') {
+        const regionsToSet: RegionOptionType[] = state.allRegions.data!.map(
+          item => ({
+            label: item.name,
+            payload: item,
+          }),
+        );
+        regionsToSet.unshift({label: 'None', payload: null});
+        setRegionOptions(regionsToSet);
+      }
+
+      // Setting the station list from the fetched and filtered data
+      if (state.allStations?.httpRequestStatus === 'success') {
+        const stationsToSet: StationOptionType[] = state.allStations.data!.map(
+          item => ({
+            label: item.name,
+            payload: item,
+          }),
+        );
+        stationsToSet.unshift({label: 'None', payload: null});
+        setStationOptions(stationsToSet);
       }
     },
   });
@@ -76,13 +104,11 @@ const UserRegisterPage: FC = () => {
     mobile: Yup.string(),
     address: Yup.string(),
     comment: Yup.string(),
-    region: Yup.string(),
-    station: Yup.string(),
+    region_id: Yup.string(),
+    station_id: Yup.string(),
   });
 
   const handleSaveUserDetailClick = (values: FormType) => {
-    console.log('values :>> ', values);
-
     request('userRegister', {
       data: {
         username: values.username,
@@ -94,8 +120,8 @@ const UserRegisterPage: FC = () => {
         mobile: values.mobile,
         address: values.address,
         comment: values.comment,
-        region_id: null,
-        station_id: null,
+        region_id: values.region_id,
+        station_id: values.station_id,
       },
     });
   };
@@ -105,6 +131,12 @@ const UserRegisterPage: FC = () => {
     validationSchema,
     onSubmit: handleSaveUserDetailClick,
   });
+
+  useEffect(() => {
+    if (formik.values.region_id) {
+      request('allStations', undefined);
+    }
+  }, [formik.values.region_id]);
 
   return (
     <div className="flex flex-grow flex-col gap-4">
@@ -177,31 +209,31 @@ const UserRegisterPage: FC = () => {
               <TextareaFormik name="comment" className="w-2/3" />
             </Description>
 
-            <div className="flex">
-              <Description label="Region">
+            <Description label="Region" className="mb-5">
+              <ControlledSelect
+                options={regionOptions}
+                onChange={regionId => {
+                  formik.setFieldValue('region_id', regionId);
+                }}
+                setValueProp={option => option.payload?.id || ''}
+                value={formik.values.region_id || ''}
+                className="min-w-[19rem]"
+              />
+            </Description>
+
+            {stationOptions.length > 0 && (
+              <Description label="Station" className="mb-5">
                 <ControlledSelect
-                  options={regionOptions}
-                  onChange={regionId => {
-                    formik.setFieldValue('region_id', regionId);
+                  options={stationOptions}
+                  onChange={stationId => {
+                    formik.setFieldValue('station_id', stationId);
                   }}
                   setValueProp={option => option.payload?.id || ''}
-                  value={formik.values.region_id || ''}
+                  value={formik.values.station_id || ''}
+                  className="min-w-[19rem]"
                 />
               </Description>
-
-              {stationOptions.length > 0 && (
-                <Description label="Station">
-                  <ControlledSelect
-                    options={stationOptions}
-                    onChange={stationId => {
-                      formik.setFieldValue('station_id', stationId);
-                    }}
-                    setValueProp={option => option.payload?.id || ''}
-                    value={formik.values.station_id || ''}
-                  />
-                </Description>
-              )}
-            </div>
+            )}
           </div>
           <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn
