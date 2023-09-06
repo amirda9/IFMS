@@ -53,8 +53,11 @@ const UsersLayout: FC = () => {
             }
           />
         ))
-      ) : (
+      ) : userListQuery.state &&
+        userListQuery.state.httpRequestStatus === 'loading' ? (
         <GeneralLoadingSpinner />
+      ) : (
+        <></>
       )}
 
       <ConfirmationModal

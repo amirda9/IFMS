@@ -30,7 +30,7 @@ const MainLayout: FC = () => {
 
   if (!state || state.httpRequestStatus === 'loading') {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-y-4 bg-blue-100">
+      <div className="flex h-screen flex-col items-center justify-center gap-y-4 bg-b">
         <GeneralLoadingSpinner size="h-20 w-20" />
         <span>Verifying token...</span>
       </div>
