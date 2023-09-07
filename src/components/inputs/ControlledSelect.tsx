@@ -24,7 +24,7 @@ const ControlledSelect: FC<PropsType> = ({
   return (
     <select
       className={classNames(
-        'h-8 rounded-md border border-black bg-white px-2',
+        'h-8 rounded-md border border-black bg-white px-2 disabled:cursor-not-allowed',
         className,
       )}
       {...props}

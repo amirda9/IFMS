@@ -1,6 +1,7 @@
-import {FC} from 'react';
-import {IoAddOutline} from 'react-icons/io5';
-import {Select} from '~/components';
+import {FC, Fragment} from 'react';
+import {IoAddOutline, IoTrashOutline} from 'react-icons/io5';
+import {ControlledSelect, Select} from '~/components';
+import classNames from '~/util/classNames';
 
 type Props = {
   title?: string;
@@ -15,7 +16,7 @@ type Props = {
 
 const ConditionGroup: FC<Props> = ({title, conditions}) => {
   return (
-    <div className="flex flex-col gap-y-6 bg-arioCyan px-6 py-4 rounded-lg">
+    <div className="flex flex-col gap-y-6 rounded-lg bg-arioCyan px-6 py-4">
       <div className="flex">
         <span className="flex-grow font-semibold">{title}</span>
         <span className="flex flex-row">
@@ -23,37 +24,66 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
           <span>Add</span>
         </span>
       </div>
-      <div className="grid grid-cols-7 gap-y-2">
-        <span className="col-span-2">Parameter</span>
-        <span className="col-span-1">Operator</span>
-        <span className="col-span-2">Value</span>
-        <span className="col-span-1">AND/OR</span>
-        <span className="col-span-1">Delete</span>
+      <div className="grid grid-cols-11 gap-y-2">
+        <span className="col-span-3">Parameter</span>
+        <span className="col-span-2">Operator</span>
+        <span className="col-span-3">Value</span>
+        <span className="col-span-2">AND/OR</span>
+        <span className="col-span-1 flex justify-center">Delete</span>
 
         {conditions &&
           conditions.map(cond => (
-            <>
+            <Fragment
+              key={cond.parameter + '_' + cond.operator + '_' + cond.value}>
+              {/* Parameter */}
+              <div className="col-span-3">
+                <ControlledSelect
+                  options={[{label: cond.parameter}]}
+                  onChange={() => {}}
+                  className="w-3/5 disabled:opacity-100 disabled:text-gray-400"
+                  disabled={cond.disabled}
+                  aria-disabled={cond.disabled}
+                />
+              </div>
+              {/* Operator */}
               <div className="col-span-2">
-                <Select>
-                  <option>{cond.parameter}</option>
-                </Select>
+                <ControlledSelect
+                  options={[{label: cond.operator}]}
+                  onChange={() => {}}
+                  className="w-3/5 disabled:opacity-100 disabled:text-gray-400"
+                  disabled={cond.disabled}
+                  aria-disabled={cond.disabled}
+                />
               </div>
-              <div className="col-span-1">
-                <Select>
-                  <option>{cond.operator}</option>
-                </Select>
+              {/* Value */}
+              <div className="col-span-3">
+                <ControlledSelect
+                  options={[{label: cond.value}]}
+                  onChange={() => {}}
+                  className="w-3/5 disabled:opacity-100 disabled:text-gray-400"
+                  disabled={cond.disabled}
+                  aria-disabled={cond.disabled}
+                />
               </div>
+              {/* AND / OR */}
               <div className="col-span-2">
-                <Select>
-                  <option>{cond.value}</option>
-                </Select>
+                <ControlledSelect
+                  options={[{label: cond.andOr}]}
+                  onChange={() => {}}
+                  className="w-3/5 disabled:opacity-100 disabled:text-gray-400"
+                  disabled={cond.disabled}
+                  aria-disabled={cond.disabled}
+                />
               </div>
-              <div className="col-span-1">
-                <Select>
-                  <option>{cond.andOr}</option>
-                </Select>
+              {/* Delete */}
+              <div className="col-span-1 flex justify-center">
+                <IoTrashOutline
+                  size={24}
+                  aria-disabled={cond.disabled}
+                  className="text-red-500 active:text-red-300"
+                />
               </div>
-            </>
+            </Fragment>
           ))}
       </div>
     </div>
