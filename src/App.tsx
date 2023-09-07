@@ -133,6 +133,12 @@ function App() {
                 <Route path="access" Component={pages.AlarmTypeAccessPage} />
               </Route>
             </Route>
+            <Route path="remote-test-units" Component={pages.RtuLayout}>
+              <Route path=":rtuId" Component={pages.SingleRtuLayout}>
+                <Route index Component={pages.RtuDetailsPage} />
+                <Route path="ports" Component={pages.RtuPortsPage} />
+              </Route>
+            </Route>
           </Route>
 
           <Route path="/users" Component={pages.UsersLayout}>
