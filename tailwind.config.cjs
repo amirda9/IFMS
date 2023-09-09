@@ -15,7 +15,8 @@ module.exports = {
         goodGray: "#D9D9D9",
         gray96: "#969696",
         arioCyan: "#C0E7F2",
-        gis:"#C0E7F2",
+        success: "#ADE2BC",
+        gis: "#C0E7F2",
       },
       fontFamily: {
         s: ["Sansation"]
