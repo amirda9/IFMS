@@ -1,3 +1,4 @@
 export * from './system-settings';
 export * from './alarm-types';
-export * from "./rtu";
+export * from './optical-routes';
+export * from './rtu';

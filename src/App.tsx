@@ -133,6 +133,22 @@ function App() {
                 <Route path="access" Component={pages.AlarmTypeAccessPage} />
               </Route>
             </Route>
+            <Route path="optical-routes" Component={pages.OpticalRoutesLayout}>
+              <Route
+                path=":opticalRouteId"
+                Component={pages.SingleOpticalRouteLayout}>
+                <Route index Component={pages.OpticalRouteDetailsPage} />
+                <Route path="route" Component={pages.OpticalRouteRoutePage} />
+                <Route
+                  path="test-setup"
+                  Component={pages.OpticalRouteTestSetupPage}
+                />
+                <Route
+                  path="test-history"
+                  Component={pages.OpticalRouteTestHistoryPage}
+                />
+              </Route>
+            </Route>
             <Route path="remote-test-units" Component={pages.RtuLayout}>
               <Route path=":rtuId" Component={pages.SingleRtuLayout}>
                 <Route index Component={pages.RtuDetailsPage} />
