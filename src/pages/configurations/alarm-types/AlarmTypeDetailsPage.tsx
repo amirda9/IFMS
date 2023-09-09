@@ -23,7 +23,7 @@ const AlarmTypeDetailsPage: FC = () => {
     <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex w-2/3 flex-col">
+          <div className="flex w-2/3 flex-col gap-y-4">
             <Description label="Name" className="flex-grow">
               <InputFormik name="name" wrapperClassName="w-full" />
             </Description>
