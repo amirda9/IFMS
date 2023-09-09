@@ -142,7 +142,7 @@ const UserRegisterPage: FC = () => {
     <div className="flex flex-grow flex-col gap-4">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="Username" items="start">
               <InputFormik
                 name="username"
@@ -209,7 +209,7 @@ const UserRegisterPage: FC = () => {
               <TextareaFormik name="comment" className="w-2/3" />
             </Description>
 
-            <Description label="Region" className="mb-5">
+            <Description label="Region">
               <ControlledSelect
                 options={regionOptions}
                 onChange={regionId => {
@@ -222,7 +222,7 @@ const UserRegisterPage: FC = () => {
             </Description>
 
             {stationOptions.length > 0 && (
-              <Description label="Station" className="mb-5">
+              <Description label="Station">
                 <ControlledSelect
                   options={stationOptions}
                   onChange={stationId => {

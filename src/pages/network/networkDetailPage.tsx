@@ -60,7 +60,7 @@ const NetworkDetailPage = () => {
         }}
         validationSchema={networkSchema}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
@@ -74,7 +74,7 @@ const NetworkDetailPage = () => {
               <TextareaFormik name="description" className="w-2/3" />
             </Description>
 
-            <Description label="Created" className="mb-4">
+            <Description label="Created">
               {dayjs(detail.data!.time_created).format('YYYY-MM-DD HH:mm:ss')}
             </Description>
 

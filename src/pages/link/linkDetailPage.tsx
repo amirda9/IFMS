@@ -1,4 +1,3 @@
-import React from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {FormLayout} from '~/layout';
@@ -6,7 +5,7 @@ import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import dayjs from 'dayjs';
 import * as Yup from 'yup';
-import SelectFormik from '~/container/formik/selectFormik';
+import {SelectFormik} from '~/container';
 
 const linkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter link name'),
@@ -38,7 +37,7 @@ const LinkDetailPage = () => {
         onSubmit={values => {}}
         validationSchema={linkSchema}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
@@ -52,16 +51,13 @@ const LinkDetailPage = () => {
               <TextareaFormik name="description" className="w-2/3" />
             </Description>
 
-            <Description label="Source" labelClassName="mt-2" items="start">
+            <Description label="Source" items="center">
               <SelectFormik name="source" className="w-1/5 disabled:bg-white">
                 <option>Station2</option>
               </SelectFormik>
             </Description>
 
-            <Description
-              label="Destination"
-              labelClassName="mt-2"
-              items="start">
+            <Description label="Destination" items="center">
               <SelectFormik
                 name="destination"
                 className="w-1/5 disabled:bg-white">
@@ -69,21 +65,21 @@ const LinkDetailPage = () => {
               </SelectFormik>
             </Description>
 
-            <Description label="Type" labelClassName="mt-2" items="start">
+            <Description label="Type" items="center">
               <SelectFormik name="type" className="w-1/5 disabled:bg-white">
                 <option>Cable</option>
               </SelectFormik>
             </Description>
 
-            <Description label="Region" items="start" className="mb-4">
+            <Description label="Region" items="start">
               Region 2
             </Description>
 
-            <Description label="Owner" items="start" className="mb-4">
+            <Description label="Owner" items="start">
               Admin
             </Description>
 
-            <Description label="Created" className="mb-4">
+            <Description label="Created">
               {dayjs().format('YYYY-MM-DD HH:mm:ss')}
             </Description>
 

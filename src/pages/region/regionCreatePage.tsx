@@ -63,7 +63,7 @@ const RegionDetailPage = () => {
         }}
         validationSchema={regionSchema}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" wrapperClassName='w-2/3' className="disabled:bg-white" />
             </Description>

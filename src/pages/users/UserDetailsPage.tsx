@@ -168,9 +168,9 @@ const UsersDetailsPage: FC = () => {
     <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex w-2/3 flex-col">
+          <div className="flex w-2/3 flex-col gap-y-4">
             <Description label="ID" items="start">
-              <span className="mb-4">{userId}</span>
+              <span>{userId}</span>
             </Description>
 
             <Description label="Username" items="start">
@@ -181,9 +181,7 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span className="mb-5">
-                  {userDetail?.data?.username || 'N/A'}
-                </span>
+                <span>{userDetail?.data?.username || 'N/A'}</span>
               )}
             </Description>
 
@@ -195,7 +193,7 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span className="mb-5">{userDetail?.data?.name || 'N/A'}</span>
+                <span>{userDetail?.data?.name || 'N/A'}</span>
               )}
             </Description>
 
@@ -207,9 +205,7 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span className="mb-5">
-                  {userDetail?.data?.telephone || 'N/A'}
-                </span>
+                <span>{userDetail?.data?.telephone || 'N/A'}</span>
               )}
             </Description>
 
@@ -221,9 +217,7 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span className="mb-5">
-                  {userDetail?.data?.mobile || 'N/A'}
-                </span>
+                <span>{userDetail?.data?.mobile || 'N/A'}</span>
               )}
             </Description>
 
@@ -235,7 +229,7 @@ const UsersDetailsPage: FC = () => {
                   className="disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
               ) : (
-                <span className="mb-5">{userDetail?.data?.email || 'N/A'}</span>
+                <span>{userDetail?.data?.email || 'N/A'}</span>
               )}
             </Description>
 
@@ -243,9 +237,7 @@ const UsersDetailsPage: FC = () => {
               {userRole === UserRole.SUPER_USER ? (
                 <TextareaFormik name="address" className="w-full" />
               ) : (
-                <span className="mb-5">
-                  {userDetail?.data?.address || 'N/A'}
-                </span>
+                <span>{userDetail?.data?.address || 'N/A'}</span>
               )}
             </Description>
 
@@ -253,13 +245,11 @@ const UsersDetailsPage: FC = () => {
               {userRole === UserRole.SUPER_USER ? (
                 <TextareaFormik name="comment" className="w-full" />
               ) : (
-                <span className="mb-5">
-                  {userDetail?.data?.comment || 'N/A'}
-                </span>
+                <span>{userDetail?.data?.comment || 'N/A'}</span>
               )}
             </Description>
 
-            <Description label="Region" className="mb-5">
+            <Description label="Region">
               {userRole === UserRole.SUPER_USER ? (
                 <ControlledSelect
                   options={regionOptions}
@@ -275,7 +265,7 @@ const UsersDetailsPage: FC = () => {
               )}
             </Description>
 
-            <Description label="Station" className="mb-5">
+            <Description label="Station">
               {userRole === UserRole.SUPER_USER ? (
                 <ControlledSelect
                   options={stationOptions}

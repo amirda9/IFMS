@@ -60,8 +60,8 @@ const RegionDetailPage = () => {
         }}
         validationSchema={regionSchema}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
-            <Description label="Name" labelClassName="mt-2" items="start">
+          <div className="flex flex-col gap-y-4">
+            <Description label="Name" items="start">
               <InputFormik
                 name="name"
                 wrapperClassName="w-2/3"
@@ -74,11 +74,11 @@ const RegionDetailPage = () => {
               <TextareaFormik name="description" className="w-2/3" />
             </Description>
 
-            <Description label="Owner" items="start" className="mb-4">
+            <Description label="Owner" items="start">
               {state.detail?.data?.current_version.owner.username}
             </Description>
 
-            <Description label="Created" className="mb-4">
+            <Description label="Created">
               {dayjs(state.detail?.data?.time_created).format(
                 'YYYY-MM-DD HH:mm:ss',
               )}
