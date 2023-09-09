@@ -3,7 +3,7 @@ import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {SimpleBtn, Table} from '~/components';
 
 const columns = {
-  name: {label: 'Name', size: 'w-[20%]'},
+  name: {label: 'Name', size: 'w-[20%]', sort: true},
   type: {label: 'Type', size: 'w-[15%]'},
   wavelength: {label: 'Wavelength', size: 'w-[15%]'},
   rtu: {label: 'RTU', size: 'w-[20%]'},
@@ -45,7 +45,7 @@ const items = [
 const OpticalRouteTestSetupPage: FC = () => {
   return (
     <div className="flex flex-grow flex-col">
-      <div className="flex pr-16 flex-grow flex-col gap-y-4">
+      <div className="flex flex-grow flex-col gap-y-4 pr-16">
         <Table
           cols={columns}
           items={items}
