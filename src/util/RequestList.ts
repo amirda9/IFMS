@@ -24,6 +24,7 @@ type RequestKeys =
   | 'userRegister'
   | 'userDetail'
   | 'userDetailUpdate'
+  | 'deleteUserSession'
   | 'userGroupsList'
   | 'networkAccessUpdate'
   | 'networkUpdateAdmin'
@@ -99,6 +100,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   userDetailUpdate: {
     url: api.BASE_URL + api.URLS.auth.users.single,
     method: 'put',
+    auth: true,
+  },
+  deleteUserSession: {
+    url: api.BASE_URL + api.URLS.auth.users.singleSession,
+    method: 'delete',
     auth: true,
   },
   userGroupsList: {
@@ -353,6 +359,9 @@ export type RequestListTypes = {
     };
     data: T.UserDetailFormType;
   };
+  deleteUserSession: {
+    params: {session_id: string};
+  };
   userGroupsList: {
     params: {
       user_id: string;
@@ -515,6 +524,7 @@ export type ResponseListType = {
   userRegister: T.UserDetailType[];
   userDetail: T.UserDetailType;
   userDetailUpdate: {id: string; username: string; role: string; email: string};
+  deleteUserSession: string | null;
   userGroupsList: {id: string; name: string}[];
   networkCreate: T.NetworkType & {network_id: string};
   networkList: T.NetworkType[];
