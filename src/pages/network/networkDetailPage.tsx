@@ -1,14 +1,13 @@
-import React from 'react';
 import {Description, SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
-import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import {Request} from '~/hooks/useHttpRequest';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
+import {getPrettyDateTime} from '~/util/time';
 
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
@@ -75,11 +74,11 @@ const NetworkDetailPage = () => {
             </Description>
 
             <Description label="Created" className="mb-4">
-              {dayjs(detail.data!.time_created).format('YYYY-MM-DD HH:mm:ss')}
+              {getPrettyDateTime(detail.data!.time_created)}
             </Description>
 
             <Description label="Last Modified">
-              {dayjs(detail.data!.time_updated).format('YYYY-MM-DD HH:mm:ss')}
+              {getPrettyDateTime(detail.data!.time_updated)}
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">

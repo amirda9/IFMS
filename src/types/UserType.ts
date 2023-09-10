@@ -34,6 +34,7 @@ export type UserDetailType = {
   comment: string | null;
   time_created: string; // In ISO 8601 format
   time_updated?: string; // In ISO 8601 format
+  sessions: SessionType[];
 };
 
 export type UserDetailFormType = {
@@ -46,4 +47,12 @@ export type UserDetailFormType = {
   comment: string | null;
   region_id: string | null;
   station_id: string | null;
+};
+
+export type SessionType = {
+  id: string;
+  ip_address: string;
+  start_date: string;
+  last_access: string;
+  state: string;
 };

@@ -1,12 +1,11 @@
-import React from 'react';
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
-import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
+import {getPrettyDateTime} from '~/util/time';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -88,11 +87,11 @@ const StationDetailPage = () => {
             </Description>
 
             <Description label="Created" className="mb-4">
-              {dayjs().format('YYYY-MM-DD HH:mm:ss')}
+              {getPrettyDateTime()}
             </Description>
 
             <Description label="Last Modified">
-              {dayjs().format('YYYY-MM-DD HH:mm:ss')}
+              {getPrettyDateTime()}
             </Description>
           </div>
         </Form>

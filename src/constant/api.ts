@@ -18,6 +18,7 @@ export const URLS = {
         stations: '/auth/users/{user_id}/accesses/stations',
         links: '/auth/users/{user_id}/accesses/links',
       },
+      singleSession: '/auth/users/sessions/{session_id}',
     },
     groups: {
       all: '/auth/groups',
