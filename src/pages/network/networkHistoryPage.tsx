@@ -1,9 +1,8 @@
-import React from 'react';
 import {IoClose, IoReturnUpBack} from 'react-icons/io5';
 import {useNavigate} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import dayjs from 'dayjs';
+import {getPrettyDateTime} from '~/util/time';
 
 const NetworkHistoryPage = () => {
   const navigate = useNavigate();
@@ -37,9 +36,7 @@ const NetworkHistoryPage = () => {
               {detail!.data!.versions.map((version, index) => (
                 <tr>
                   <td>{index + 1}</td>
-                  <td>
-                    {dayjs(version.time_created).format('YYYY-MM-DD HH:mm:ss')}
-                  </td>
+                  <td>{getPrettyDateTime(version.time_created)}</td>
                   <td>Anonymous User</td>
                   <td>
                     <SimpleBtn className="!my-0 !px-5 !py-0">

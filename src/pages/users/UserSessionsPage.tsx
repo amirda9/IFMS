@@ -8,6 +8,7 @@ import {UserRole} from '~/constant/users';
 import {toast} from 'react-toastify';
 import {IoTrashOutline} from 'react-icons/io5';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
+import {getPrettyDateTime} from '~/util/time';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -58,8 +59,8 @@ const UserSessionsPage: FC = () => {
             id: ses.id,
             index: i + 1,
             ipAddress: ses.ip_address,
-            startDate: ses.start_date,
-            lastAccess: ses.last_access,
+            startDate: getPrettyDateTime(ses.start_date),
+            lastAccess: getPrettyDateTime(ses.last_access),
             state: ses.state,
             terminate: (
               <IoTrashOutline
