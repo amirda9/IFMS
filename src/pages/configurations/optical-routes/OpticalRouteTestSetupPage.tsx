@@ -1,5 +1,6 @@
 import {FC} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
+import {Link, Outlet} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
 
 const columns = {
@@ -52,7 +53,11 @@ const OpticalRouteTestSetupPage: FC = () => {
           dynamicColumns={['details', 'delete']}
           renderDynamicColumn={({key}) => {
             if (key === 'details')
-              return <IoOpenOutline size={22} className="mx-auto" />;
+              return (
+                <Link to="test-id-goes-here">
+                  <IoOpenOutline size={22} className="mx-auto" />
+                </Link>
+              );
             else if (key === 'delete')
               return (
                 <IoTrashOutline className="mx-auto text-red-500" size={22} />
@@ -66,6 +71,9 @@ const OpticalRouteTestSetupPage: FC = () => {
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
+
+      {/* Details Modal */}
+      <Outlet />
     </div>
   );
 };

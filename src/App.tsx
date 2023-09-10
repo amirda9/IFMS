@@ -141,8 +141,23 @@ function App() {
                 <Route path="route" Component={pages.OpticalRouteRoutePage} />
                 <Route
                   path="test-setup"
-                  Component={pages.OpticalRouteTestSetupPage}
-                />
+                  Component={pages.OpticalRouteTestSetupPage}>
+                  <Route path=":testId" Component={pages.TestSetupDetailsModal}>
+                    <Route index Component={() => <span>parameters</span>} />
+                    <Route
+                      path="learning"
+                      Component={() => <span>learning</span>}
+                    />
+                    <Route
+                      path="test-program"
+                      Component={() => <span>test-program</span>}
+                    />
+                    <Route
+                      path="status"
+                      Component={() => <span>status</span>}
+                    />
+                  </Route>
+                </Route>
                 <Route
                   path="test-history"
                   Component={pages.OpticalRouteTestHistoryPage}
