@@ -59,7 +59,7 @@ const NetworkDetailPage = () => {
         }}
         validationSchema={networkSchema}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"

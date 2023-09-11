@@ -34,7 +34,7 @@ const NetworkCreatePage = () => {
           request('networkCreate', {data: values});
         }}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="Name" items="start" labelClassName="mt-2">
               <InputFormik name="name" wrapperClassName="w-2/3" />
             </Description>

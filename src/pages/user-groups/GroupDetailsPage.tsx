@@ -63,7 +63,7 @@ const GroupDetailsPage: FC = () => {
 
   return (
     <form className="flex flex-grow flex-col justify-between">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-y-4">
         {groupDetail?.data ? (
           <>
             <Description label="Name">

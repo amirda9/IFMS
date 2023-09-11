@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {FormikProps, useField} from 'formik';
 import {TextInput} from '~/components';
 import {IoEyeOffOutline, IoEyeOutline} from 'react-icons/io5';
+import classNames from '~/util/classNames';
 
 type InputType = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -9,14 +10,16 @@ type InputType = React.DetailedHTMLProps<
 >;
 type PropsType = Omit<InputType, 'value'> & {
   wrapperClassName?: string;
+  outerClassName?: string;
   name: string;
   hideEye?: boolean;
 };
 const InputFormik = ({
   name,
   hideEye = false,
-  wrapperClassName = "",
-  className = "",
+  wrapperClassName,
+  outerClassName,
+  className,
   ...props
 }: PropsType) => {
   const [fields, meta] = useField(name);
@@ -32,16 +35,21 @@ const InputFormik = ({
 
   return (
     <div
-      className={`flex flex-grow flex-col items-start ${
-        meta.touched && meta.error ? 'pb-1' : 'pb-5'
-      }`}>
-      <div className={`relative ${wrapperClassName}`}>
+      className={classNames(
+        'flex flex-grow flex-col items-start',
+        meta.touched && meta.error && 'pb-1',
+        outerClassName,
+      )}>
+      <div className={classNames('relative', wrapperClassName)}>
         <TextInput
           {...props}
           name={name}
-          className={`border border-solid ${
-            meta.error && meta.touched ? 'border-red-500' : ''
-          } ${className} w-full`}
+          className={classNames(
+            'border border-solid',
+            meta.error && meta.touched && 'border-red-500',
+            className,
+            'w-full',
+          )}
           value={fields.value}
           onChange={fields.onChange}
           onBlur={fields.onBlur}

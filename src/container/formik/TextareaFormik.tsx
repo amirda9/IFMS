@@ -1,24 +1,28 @@
 import React from 'react';
 import {useField} from 'formik';
 import {Textarea} from '~/components';
+import classNames from '~/util/classNames';
 
 type InputType = React.DetailedHTMLProps<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   HTMLTextAreaElement
 >;
 type PropsType = Omit<InputType, 'value'> & {name: string};
-const InputFormik = ({name, className, ...props}: PropsType) => {
+const TextareaFormik = ({name, className, ...props}: PropsType) => {
   const [fields, meta] = useField(name);
   return (
     <div
-      className={`flex flex-grow flex-col ${
-        meta.touched && meta.error ? 'pb-1' : 'pb-5'
-      }`}>
+      className={classNames(
+        'flex flex-grow flex-col',
+        meta.touched && meta.error && 'pb-1',
+      )}>
       <Textarea
         name={name}
-        className={`border border-solid ${
-          meta.error && meta.touched ? 'border-red-500' : ''
-        } ${className}`}
+        className={classNames(
+          'border border-solid',
+          meta.error && meta.touched && 'border-red-500',
+          className,
+        )}
         onBlur={fields.onBlur}
         onChange={fields.onChange}
         value={fields.value}
@@ -33,4 +37,4 @@ const InputFormik = ({name, className, ...props}: PropsType) => {
   );
 };
 
-export default InputFormik;
+export default TextareaFormik;

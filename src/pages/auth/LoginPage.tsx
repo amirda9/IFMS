@@ -42,9 +42,9 @@ const LoginPage = () => {
             Intelligent Fiber Monitoring System
           </h2>
           <div className="mb-32 bg-[#D9D9D933]">
-            <Form className="flex w-fit max-w-full flex-col pb-2.5 pl-7 pt-16">
-              <div className="flex flex-row flex-wrap justify-between xl:flex-nowrap">
-                <span className="mt-1.5 w-72 text-xl font-normal text-white">
+            <Form className="flex w-fit max-w-full flex-col pb-2.5 pl-7 pt-16 gap-y-4">
+              <div className="flex flex-row flex-wrap items-center justify-between xl:flex-nowrap">
+                <span className="w-72 text-xl font-normal text-white">
                   Username or email
                 </span>
                 <InputFormik
@@ -53,8 +53,8 @@ const LoginPage = () => {
                   className="!h-11 w-80 rounded-lg bg-[#D9D9D9] px-4 text-sm"
                 />
               </div>
-              <div className="flex flex-row flex-wrap items-start justify-between xl:flex-nowrap">
-                <span className="mt-1.5 w-72 text-xl font-normal text-white">
+              <div className="flex flex-row flex-wrap items-center justify-between xl:flex-nowrap">
+                <span className="w-72 text-xl font-normal text-white">
                   Password
                 </span>
                 <InputFormik

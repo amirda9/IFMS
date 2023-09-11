@@ -1,8 +1,8 @@
-import React, {FC, ReactNode} from 'react';
+import {FC, ReactNode} from 'react';
 import classNames from '~/util/classNames';
 
 type PropsType = {
-  label: string;
+  label: string | ReactNode;
   children: ReactNode;
   items?: 'center' | 'start' | 'end';
   className?: string;

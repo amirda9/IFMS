@@ -14,7 +14,7 @@ const SingleUserLayout: FC = () => {
   return (
     <div className="flex h-full w-full flex-col">
       {!location.state?.isEditingUserAccess && (
-        <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
+        <div className="mb-8 flex h-fit [&_*]:mx-[0.5px]">
           <TabItem to="." name="Details" />
 
           {(loggedInUser.role === UserRole.SUPER_USER ||

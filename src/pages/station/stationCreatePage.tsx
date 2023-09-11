@@ -3,12 +3,11 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
-import {InputFormik, TextareaFormik} from '~/container';
+import {InputFormik, SelectFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
-import SelectFormik from '~/container/formik/selectFormik';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -77,7 +76,7 @@ const StationDetailPage = () => {
         }}
         validationSchema={stationSchema}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" className="w-2/3 disabled:bg-white" />
             </Description>

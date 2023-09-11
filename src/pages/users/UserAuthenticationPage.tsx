@@ -73,7 +73,7 @@ const UserAuthenticationPage: FC = () => {
         onSubmit={handleFormSubmit}
         validationSchema={validationSchema}>
         <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-4">
             <Description label="New Password" items="start">
               <InputFormik
                 wrapperClassName="w-1/4"
