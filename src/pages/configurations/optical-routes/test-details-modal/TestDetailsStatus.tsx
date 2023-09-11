@@ -4,8 +4,8 @@ import {Description, SimpleBtn} from '~/components';
 
 const TestDetailsStatus: FC = () => {
   return (
-    <div className="flex flex-col gap-y-8 flex-grow">
-      <div className="flex flex-col gap-y-4 flex-grow">
+    <div className="flex flex-grow flex-col gap-y-8">
+      <div className="flex flex-grow flex-col gap-y-4">
         <Description label="Current Learning Cycle">
           <span>1</span>
         </Description>
@@ -30,14 +30,6 @@ const TestDetailsStatus: FC = () => {
         <Description label="Last Learning Count">
           <span>24</span>
         </Description>
-      </div>
-      <div className="flex gap-x-4 self-end">
-        <SimpleBtn link to="..">
-          Ok
-        </SimpleBtn>
-        <SimpleBtn link to="..">
-          Cancel
-        </SimpleBtn>
       </div>
     </div>
   );

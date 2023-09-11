@@ -45,7 +45,7 @@ const AppDialog: FC<Props> = ({
           <div className="fixed inset-0 bg-black bg-opacity-25" />
         </Transition.Child>
 
-        <div className="fixed inset-0">
+        <div className="fixed inset-0 flex flex-col justify-center">
           <div className="flex h-5/6 items-center justify-center text-center">
             <Transition.Child
               as={Fragment}
@@ -59,7 +59,6 @@ const AppDialog: FC<Props> = ({
                 <Dialog.Title
                   as="h3"
                   className={classNames(
-                    // The height in here and the bottom padding of the main section must be equal
                     'flex h-10 bg-p px-8 py-2 text-lg font-medium leading-6 text-gray-900',
                     topBarClassName,
                   )}>
@@ -74,13 +73,13 @@ const AppDialog: FC<Props> = ({
                 {/* Dialog Main */}
                 <div
                   className={classNames(
-                    'relative flex h-full flex-grow flex-col bg-b pb-10', // Bottom padding in here and the height of the top bar must be equal
+                    'relative flex h-[calc(100%-20rem)] flex-grow flex-col bg-b', // Height is 100% minus the height of the top bar
                     mainClassName,
                   )}>
                   {/* Dialog Content */}
                   <div
                     className={classNames(
-                      'overflow-auto px-8',
+                      'flex-grow overflow-auto px-8 pt-4',
                       contentClassName,
                     )}>
                     {children}
@@ -88,14 +87,8 @@ const AppDialog: FC<Props> = ({
 
                   {/* Dialog Footer */}
                   {footer && (
-                    <div className={classNames('px-8 py-4', contentClassName)}>
-                      {/* {footer} */}
-                      <p>Footer1</p>
-                      <p>Footer2</p>
-                      <p>Footer3</p>
-                      <p>Footer4</p>
-                      <p>Footer5</p>
-                      <p>Footer6</p>
+                    <div className={classNames('px-8 py-4', footerClassName)}>
+                      {footer}
                     </div>
                   )}
                 </div>

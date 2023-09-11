@@ -9,7 +9,7 @@ const TestDetailsParameters: FC = () => {
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
-        <div className="flex w-1/2 flex-grow flex-col gap-y-4">
+        <div className="flex w-1/2 flex-grow flex-col gap-y-4 pb-4">
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
@@ -322,13 +322,6 @@ const TestDetailsParameters: FC = () => {
               className="basis-96"
             />
           </Description>
-        </div>
-
-        <div className="flex gap-x-4 self-end">
-          <SimpleBtn type="submit">Save</SimpleBtn>
-          <SimpleBtn link to="..">
-            Cancel
-          </SimpleBtn>
         </div>
       </Form>
     </FormikProvider>
