@@ -9,6 +9,7 @@ type InputType = React.DetailedHTMLProps<
   HTMLInputElement
 >;
 type PropsType = Omit<InputType, 'value'> & {
+  className?: string;
   wrapperClassName?: string;
   name: string;
   hideEye?: boolean;
@@ -34,8 +35,9 @@ const InputFormik = ({
   return (
     <div
       className={classNames(
-        'flex flex-grow flex-col items-start',
+        'flex flex-grow flex-row items-start',
         meta.touched && meta.error && 'pb-1',
+        className,
       )}>
       <div className={classNames('relative', wrapperClassName)}>
         <TextInput

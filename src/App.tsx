@@ -143,7 +143,7 @@ function App() {
                   path="test-setup"
                   Component={pages.OpticalRouteTestSetupPage}>
                   <Route path=":testId" Component={pages.TestSetupDetailsModal}>
-                    <Route index Component={() => <span>parameters</span>} />
+                    <Route index Component={pages.TestDetailsParameters} />
                     <Route
                       path="learning"
                       Component={() => <span>learning</span>}

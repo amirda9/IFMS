@@ -59,7 +59,7 @@ const AppDialog: FC<Props> = ({
                 <Dialog.Title
                   as="h3"
                   className={classNames(
-                    'flex bg-p px-4 py-2 text-lg font-medium leading-6 text-gray-900',
+                    'flex bg-p px-8 py-2 text-lg font-medium leading-6 text-gray-900',
                     topBarClassName,
                   )}>
                   {title && <span className="text-white">{title}</span>}
@@ -67,7 +67,7 @@ const AppDialog: FC<Props> = ({
                 </Dialog.Title>
 
                 {/* Dialog Main */}
-                <div className={classNames('bg-b p-4', mainClassName)}>
+                <div className={classNames('bg-b px-8 py-4', mainClassName)}>
                   {/* Dialog Content */}
                   <div className={classNames(contentClassName)}>{children}</div>
 
