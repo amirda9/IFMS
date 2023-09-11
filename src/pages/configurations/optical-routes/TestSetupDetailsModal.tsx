@@ -15,7 +15,7 @@ const TestSetupDetailsModal: FC = () => {
   };
 
   return (
-    <AppDialog>
+    <AppDialog mainClassName=''>
       <div className="flex h-full w-full flex-col">
         <div className="mb-8 flex h-fit [&_*]:mx-[0.5px]">
           <TabItem to="." name="Parameters" />

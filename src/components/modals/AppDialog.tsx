@@ -55,7 +55,7 @@ const AppDialog: FC<Props> = ({
               leave="ease-in duration-200"
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95">
-              <Dialog.Panel className="w-10/12 transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="flex flex-col w-10/12 transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
                   className={classNames(
@@ -63,13 +63,19 @@ const AppDialog: FC<Props> = ({
                     topBarClassName,
                   )}>
                   {title && <span className="text-white">{title}</span>}
-                  <IoCloseOutline className="ml-auto text-white" size={24} />
+                  <IoCloseOutline onClick={handleClose} className="ml-auto text-white" size={24} />
                 </Dialog.Title>
 
                 {/* Dialog Main */}
-                <div className={classNames('bg-b px-8 py-4', mainClassName)}>
+                <div
+                  className={classNames(
+                    'flex-grow bg-b p-8',
+                    mainClassName,
+                  )}>
                   {/* Dialog Content */}
-                  <div className={classNames(contentClassName)}>{children}</div>
+                  <div className={classNames('h-full', contentClassName)}>
+                    {children}
+                  </div>
 
                   {/* Dialog Footer */}
                   {footer && (

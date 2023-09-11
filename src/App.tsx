@@ -146,16 +146,13 @@ function App() {
                     <Route index Component={pages.TestDetailsParameters} />
                     <Route
                       path="learning"
-                      Component={() => <span>learning</span>}
+                      Component={pages.TestDetailsLearning}
                     />
                     <Route
                       path="test-program"
-                      Component={() => <span>test-program</span>}
+                      Component={pages.TestDetailsTestProgram}
                     />
-                    <Route
-                      path="status"
-                      Component={() => <span>status</span>}
-                    />
+                    <Route path="status" Component={pages.TestDetailsStatus} />
                   </Route>
                 </Route>
                 <Route
