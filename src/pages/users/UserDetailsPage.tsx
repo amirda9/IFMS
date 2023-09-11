@@ -5,10 +5,10 @@ import {useParams} from 'react-router-dom';
 import {Description, ControlledSelect, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useAppSelector, useHttpRequest} from '~/hooks';
-import dayjs from 'dayjs';
 import {RegionListType, StationListType, UserDetailFormType} from '~/types';
 import {toast} from 'react-toastify';
 import {UserRole} from '~/constant/users';
+import {getPrettyDateTime} from '~/util/time';
 
 type RegionOptionType = {label: string; payload: RegionListType | null};
 type StationOptionType = {label: string; payload: StationListType | null};
@@ -284,17 +284,13 @@ const UsersDetailsPage: FC = () => {
             <div className="flex w-full justify-between">
               {userDetail?.data?.time_created && (
                 <Description label="Created">
-                  {dayjs(userDetail.data.time_created).format(
-                    'YYYY-MM-DD HH:mm:ss',
-                  )}
+                  {getPrettyDateTime(userDetail.data.time_created)}
                 </Description>
               )}
 
               {userDetail?.data?.time_updated && (
                 <Description label="Last Modified" className="self-end">
-                  {dayjs(userDetail?.data?.time_updated).format(
-                    'YYYY-MM-DD HH:mm:ss',
-                  )}
+                  {getPrettyDateTime(userDetail?.data?.time_updated)}
                 </Description>
               )}
             </div>

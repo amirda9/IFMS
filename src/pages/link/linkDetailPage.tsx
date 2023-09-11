@@ -2,10 +2,10 @@ import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
-import {InputFormik, TextareaFormik} from '~/container';
-import dayjs from 'dayjs';
+import {InputFormik, TextareaFormik} from '~/container';;
 import * as Yup from 'yup';
-import {SelectFormik} from '~/container';
+import SelectFormik from '~/container/formik/selectFormik';
+import { getPrettyDateTime } from '~/util/time';
 
 const linkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter link name'),
@@ -79,12 +79,12 @@ const LinkDetailPage = () => {
               Admin
             </Description>
 
-            <Description label="Created">
-              {dayjs().format('YYYY-MM-DD HH:mm:ss')}
+            <Description label="Created" className="mb-4">
+              {getPrettyDateTime()}
             </Description>
 
             <Description label="Last Modified">
-              {dayjs().format('YYYY-MM-DD HH:mm:ss')}
+              {getPrettyDateTime()}
             </Description>
           </div>
         </Form>

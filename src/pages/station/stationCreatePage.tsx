@@ -29,7 +29,7 @@ const StationDetailPage = () => {
         lastState.create?.httpRequestStatus === 'loading' &&
         state.create?.httpRequestStatus === 'success'
       ) {
-        request('networkStationList', {params: {network_id: networkId!}});
+        request('allStations', undefined);
         navigate('../' + state.create?.data?.station_id);
       }
     },

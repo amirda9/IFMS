@@ -24,6 +24,7 @@ type RequestKeys =
   | 'userRegister'
   | 'userDetail'
   | 'userDetailUpdate'
+  | 'deleteUserSession'
   | 'userGroupsList'
   | 'networkAccessUpdate'
   | 'networkUpdateAdmin'
@@ -39,6 +40,7 @@ type RequestKeys =
   | 'regionUpdate'
   | 'regionAccessList'
   | 'regionAccessUpdate'
+  | 'regionStationList'
   | 'allLinks'
   | 'regionLinkList'
   | 'regionAdminUpdate'
@@ -47,6 +49,7 @@ type RequestKeys =
   | 'stationDetail'
   | 'stationUpdate'
   | 'stationDelete'
+  | 'networkStationList'
   | 'stationAccessList'
   | 'stationViewerUpdate'
   | 'stationAdminUpdate'
@@ -99,6 +102,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   userDetailUpdate: {
     url: api.BASE_URL + api.URLS.auth.users.single,
     method: 'put',
+    auth: true,
+  },
+  deleteUserSession: {
+    url: api.BASE_URL + api.URLS.auth.users.singleSession,
+    method: 'delete',
     auth: true,
   },
   userGroupsList: {
@@ -201,6 +209,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     auth: true,
   },
+  regionStationList: {
+    url: api.BASE_URL + api.URLS.otdr.station.listInRegion,
+    method: 'get',
+    auth: true,
+  },
   networkUpdateAdmin: {
     url: api.BASE_URL + api.URLS.otdr.network.adminAccess,
     method: 'put',
@@ -244,6 +257,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   stationDelete: {
     url: api.BASE_URL + api.URLS.otdr.station.single,
     method: 'delete',
+    auth: true,
+  },
+  networkStationList: {
+    url: api.BASE_URL + api.URLS.otdr.station.listInNetwork,
+    method: 'get',
     auth: true,
   },
   stationAccessList: {
@@ -353,6 +371,9 @@ export type RequestListTypes = {
     };
     data: T.UserDetailFormType;
   };
+  deleteUserSession: {
+    params: {session_id: string};
+  };
   userGroupsList: {
     params: {
       user_id: string;
@@ -396,6 +417,7 @@ export type RequestListTypes = {
     params: {region_id: string};
     data: {users: string[]};
   };
+  regionStationList: {params: {region_id: string}};
   networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
   allLinks: undefined;
   regionLinkList: {params: {region_id: string}};
@@ -515,6 +537,7 @@ export type ResponseListType = {
   userRegister: T.UserDetailType[];
   userDetail: T.UserDetailType;
   userDetailUpdate: {id: string; username: string; role: string; email: string};
+  deleteUserSession: string | null;
   userGroupsList: {id: string; name: string}[];
   networkCreate: T.NetworkType & {network_id: string};
   networkList: T.NetworkType[];
@@ -535,6 +558,7 @@ export type ResponseListType = {
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};
+  regionStationList: T.StationListType[];
   networkUpdateAdmin: string;
   allLinks: T.LinkType[];
   regionLinkList: T.LinkType[];

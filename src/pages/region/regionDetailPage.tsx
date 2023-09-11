@@ -1,12 +1,11 @@
-import React from 'react';
 import {Description, SimpleBtn} from '~/components';
 import {useParams} from 'react-router-dom';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
-import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import {FormLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
+import {getPrettyDateTime} from '~/util/time';
 
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
@@ -78,16 +77,12 @@ const RegionDetailPage = () => {
               {state.detail?.data?.current_version.owner.username}
             </Description>
 
-            <Description label="Created">
-              {dayjs(state.detail?.data?.time_created).format(
-                'YYYY-MM-DD HH:mm:ss',
-              )}
+            <Description label="Created" className="mb-4">
+              {getPrettyDateTime(state.detail?.data?.time_created)}
             </Description>
 
             <Description label="Last Modified">
-              {dayjs(state.detail?.data?.time_updated).format(
-                'YYYY-MM-DD HH:mm:ss',
-              )}
+              {getPrettyDateTime(state.detail?.data?.time_updated)}
             </Description>
           </div>
           <button type="submit" id="formSubmit" hidden />

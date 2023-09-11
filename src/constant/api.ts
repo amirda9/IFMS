@@ -18,6 +18,7 @@ export const URLS = {
         stations: '/auth/users/{user_id}/accesses/stations',
         links: '/auth/users/{user_id}/accesses/links',
       },
+      singleSession: '/auth/users/sessions/{session_id}',
     },
     groups: {
       all: '/auth/groups',
@@ -44,6 +45,8 @@ export const URLS = {
     station: {
       all: '/otdr/station',
       single: '/otdr/station/{station_id}',
+      listInRegion: '/otdr/station/region/{region_id}',
+      listInNetwork: '/otdr/station/network/{network_id}',
       allAccess: '/otdr/station/{station_id}/access',
       viewersAccess: '/otdr/station/{station_id}/access/viewers',
       adminAccess: '/otdr/station/{station_id}/access/admin',
