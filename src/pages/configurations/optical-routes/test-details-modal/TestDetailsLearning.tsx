@@ -1,6 +1,5 @@
 import {FC} from 'react';
 import {Description, Select, TextInput} from '~/components';
-import {InputFormik} from '~/container';
 
 const TestDetailsLearning: FC = () => {
   return (
@@ -27,7 +26,7 @@ const TestDetailsLearning: FC = () => {
               name="start-cycle"
               type="radio"
               value="every"
-              className="mr-2"
+              className="-mr-2"
             />
             <label>Every</label>
             <TextInput defaultValue={2} className="w-16" />
@@ -57,7 +56,7 @@ const TestDetailsLearning: FC = () => {
               name="increase-target"
               type="radio"
               value="every"
-              className="mr-2"
+              className="-mr-2"
             />
             <label>Every</label>
             <TextInput defaultValue={2} className="w-16" />
