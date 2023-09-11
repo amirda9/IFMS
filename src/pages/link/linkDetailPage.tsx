@@ -4,7 +4,7 @@ import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';;
 import * as Yup from 'yup';
-import SelectFormik from '~/container/formik/selectFormik';
+import SelectFormik from '~/container/formik/SelectFormik';
 import { getPrettyDateTime } from '~/util/time';
 
 const linkSchema = Yup.object().shape({
