@@ -45,8 +45,8 @@ const AppDialog: FC<Props> = ({
           <div className="fixed inset-0 bg-black bg-opacity-25" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center text-center">
+        <div className="fixed inset-0">
+          <div className="flex h-5/6 items-center justify-center text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -55,32 +55,47 @@ const AppDialog: FC<Props> = ({
               leave="ease-in duration-200"
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95">
-              <Dialog.Panel className="flex flex-col w-10/12 transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="flex h-full w-10/12 transform flex-col overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
                   className={classNames(
-                    'flex bg-p px-8 py-2 text-lg font-medium leading-6 text-gray-900',
+                    // The height in here and the bottom padding of the main section must be equal
+                    'flex h-10 bg-p px-8 py-2 text-lg font-medium leading-6 text-gray-900',
                     topBarClassName,
                   )}>
                   {title && <span className="text-white">{title}</span>}
-                  <IoCloseOutline onClick={handleClose} className="ml-auto text-white" size={24} />
+                  <IoCloseOutline
+                    onClick={handleClose}
+                    className="ml-auto text-white"
+                    size={24}
+                  />
                 </Dialog.Title>
 
                 {/* Dialog Main */}
                 <div
                   className={classNames(
-                    'flex-grow bg-b p-8',
+                    'relative flex h-full flex-grow flex-col bg-b pb-10', // Bottom padding in here and the height of the top bar must be equal
                     mainClassName,
                   )}>
                   {/* Dialog Content */}
-                  <div className={classNames('h-full', contentClassName)}>
+                  <div
+                    className={classNames(
+                      'overflow-auto px-8',
+                      contentClassName,
+                    )}>
                     {children}
                   </div>
 
                   {/* Dialog Footer */}
                   {footer && (
-                    <div className={classNames('mt-4', contentClassName)}>
-                      {footer}
+                    <div className={classNames('px-8 py-4', contentClassName)}>
+                      {/* {footer} */}
+                      <p>Footer1</p>
+                      <p>Footer2</p>
+                      <p>Footer3</p>
+                      <p>Footer4</p>
+                      <p>Footer5</p>
+                      <p>Footer6</p>
                     </div>
                   )}
                 </div>
