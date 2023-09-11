@@ -9,16 +9,17 @@ type InputType = React.DetailedHTMLProps<
   HTMLInputElement
 >;
 type PropsType = Omit<InputType, 'value'> & {
-  className?: string;
   wrapperClassName?: string;
+  outerClassName?: string;
   name: string;
   hideEye?: boolean;
 };
 const InputFormik = ({
   name,
   hideEye = false,
-  wrapperClassName = '',
-  className = '',
+  wrapperClassName,
+  outerClassName,
+  className,
   ...props
 }: PropsType) => {
   const [fields, meta] = useField(name);
@@ -35,9 +36,9 @@ const InputFormik = ({
   return (
     <div
       className={classNames(
-        'flex flex-grow flex-row items-start',
+        'flex flex-grow flex-col items-start',
         meta.touched && meta.error && 'pb-1',
-        className,
+        outerClassName,
       )}>
       <div className={classNames('relative', wrapperClassName)}>
         <TextInput

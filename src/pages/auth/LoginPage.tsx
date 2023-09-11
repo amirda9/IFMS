@@ -42,7 +42,7 @@ const LoginPage = () => {
             Intelligent Fiber Monitoring System
           </h2>
           <div className="mb-32 bg-[#D9D9D933]">
-            <Form className="flex w-fit max-w-full flex-col pb-2.5 pl-7 pt-16">
+            <Form className="flex w-fit max-w-full flex-col pb-2.5 pl-7 pt-16 gap-y-4">
               <div className="flex flex-row flex-wrap items-center justify-between xl:flex-nowrap">
                 <span className="w-72 text-xl font-normal text-white">
                   Username or email
