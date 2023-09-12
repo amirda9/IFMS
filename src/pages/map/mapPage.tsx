@@ -113,11 +113,34 @@ const MapPage = () => {
               A pretty CSS3 popup. <br /> Easily customizable.
             </Popup>
           </Marker>
-
+          <Marker position={[51.517, -0.01]} icon={MapServerIcon}>
+            <Popup>
+              A pretty CSS3 popup. <br /> Easily customizable.
+            </Popup>
+          </Marker>
+          <Marker position={[51.519, -0.025]} icon={MapServerIcon}>
+            <Popup>
+              A pretty CSS3 popup. <br /> Easily customizable.
+            </Popup>
+          </Marker>
           <Polyline
             positions={[
               [51.505, -0.09],
               [51.51, -0.1],
+            ]}
+            color="red"
+          />
+           <Polyline
+            positions={[
+              [51.505, -0.09],
+              [51.519, -0.025],
+            ]}
+            color="red"
+          />
+           <Polyline
+            positions={[
+              [51.505, -0.09],
+              [51.517, -0.01],
             ]}
             color="red"
           />
