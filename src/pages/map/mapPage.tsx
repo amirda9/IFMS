@@ -30,9 +30,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
   const [zoomstate, setZoomstate] = useState(13);
   const map = useMap();
   useEffect(() => {
-    if (zoomstate != 0) {
-      map.setZoom(zoomstate);
-    }
+    map.setZoom(zoomstate);
   }, [zoomstate]);
   return (
     <div
@@ -130,14 +128,14 @@ const MapPage = () => {
             ]}
             color="red"
           />
-           <Polyline
+          <Polyline
             positions={[
               [51.505, -0.09],
               [51.519, -0.025],
             ]}
             color="red"
           />
-           <Polyline
+          <Polyline
             positions={[
               [51.505, -0.09],
               [51.517, -0.01],
