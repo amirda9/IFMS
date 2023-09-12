@@ -7,7 +7,10 @@
   src:url('../assets/fonts/Sansation-Bold.ttf') format('truetype');
   font-weight: bold;
 }
-
+.leaflet-container {
+  width: 100wh; 
+  height: 100vh;
+}
 @font-face {
   font-family: 'Inter';
   src:url('../assets/fonts/inter/Inter-Thin.ttf') format('truetype');
