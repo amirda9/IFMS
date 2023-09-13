@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Select from 'react-select';
 import Selectbox from './../../components/selectbox/selectbox';
 import Checkbox from './../../components/checkbox/checkbox';
+import './kk.css';
 import {
   MapContainer,
   Marker,
@@ -9,8 +10,9 @@ import {
   Popup,
   TileLayer,
   useMap,
+  Tooltip,
 } from 'react-leaflet';
-import {MapServerIcon,NoRed,NoYellow,NoOrange} from '~/components';
+import {MapServerIcon, NoRed, NoYellow, NoOrange} from '~/components';
 
 import {IoMenu} from 'react-icons/io5';
 import serverIcon from '~/assets/icons/severIcon.png';
@@ -64,28 +66,9 @@ const MapPage = () => {
   const [fullscreen, setfullscreen] = useState(false);
   const [leftbarstate, setLeftbarstate] = useState(false);
   const [switchstatus, setSwitchstatus] = useState(false);
-  const [selectOptions, setSelectoptions] = useState(null);
-  const handleChange = (e: any) => {
-    console.log(e, 'eee');
-  };
+
   return (
     <div className="relative flex  w-full flex-row">
-      {/* ------- left bar ------------ left bar --------- */}
-      {/* <div
-        className={`flex h-full ${
-          fullscreen ? 'w-[0px]' : 'w-12'
-        } flex-col items-center gap-y-5 bg-white py-3`}>
-        <button type="button" className="active:opacity-50">
-          <IoMenu className="h-8 w-8" />
-        </button>
-        <img src={serverIcon} className="h-6 w-6" />
-        <img src={noYellow} className="h-7 w-7" />
-        <img src={noOrange} className="h-7 w-7" />
-        <img src={noRed} className="h-7 w-7" />
-      </div> */}
-
-      {/* ------- left bar ------------ left bar --------- */}
-
       <div
         className={`relative w-full ${
           fullscreen
@@ -240,40 +223,121 @@ const MapPage = () => {
           )}
 
           <Marker position={[51.505, -0.09]} icon={MapServerIcon}>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
           </Marker>
           <Marker position={[51.517, -0.01]} icon={MapServerIcon}>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
           </Marker>
           <Marker position={[51.519, -0.025]} icon={MapServerIcon}>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
           </Marker>
-
-
 
           <Marker position={[51.519, -0.045]} icon={NoYellow}>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
           </Marker>
 
-
           <Marker position={[51.519, -0.085]} icon={NoRed}>
-            <Popup className='bg-[red]'>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
           </Marker>
 
           <Marker position={[51.519, -0.0155]} icon={NoOrange}>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
           </Marker>
 
           <Polyline
@@ -288,8 +352,25 @@ const MapPage = () => {
               [51.505, -0.09],
               [51.519, -0.025],
             ]}
-            color="red"
-          />
+            color="red">
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
+          </Polyline>
           <Polyline
             positions={[
               [51.505, -0.09],
