@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Select from 'react-select';
 import Selectbox from './../../components/selectbox/selectbox';
+import Checkbox from './../../components/checkbox/checkbox';
 import {
   MapContainer,
   Marker,
@@ -18,6 +19,7 @@ import {MdZoomInMap} from 'react-icons/md';
 import noOrange from '~/assets/icons/noOrange.png';
 import pluse from '~/assets/images/plus.svg';
 import zoomout from '~/assets/images/zoomout.svg';
+import groupserverIcon from '~/assets/images/groupserverIcon.svg';
 import noRed from '~/assets/icons/noRed.png';
 import noYellow from '~/assets/icons/noYellow.png';
 const options = [
@@ -60,6 +62,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
 const MapPage = () => {
   const [fullscreen, setfullscreen] = useState(false);
   const [leftbarstate, setLeftbarstate] = useState(false);
+  const [switchstatus, setSwitchstatus] = useState(false);
   const [selectOptions, setSelectoptions] = useState(null);
   const handleChange = (e: any) => {
     console.log(e, 'eee');
@@ -92,7 +95,7 @@ const MapPage = () => {
           <div
             className={` to-0 absolute left-0 z-[1000] h-[100vh] bg-[#E7EFF7] ${
               leftbarstate ? 'w-[330px]' : 'w-12'
-            } flex flex-col overflow-hidden px-[10px] box-border`}>
+            } box-border flex flex-col overflow-hidden px-[10px]`}>
             {leftbarstate ? (
               <div className="mb-[40px] mt-[10px] flex w-full flex-row items-center justify-between">
                 <span className="text-[24px] font-bold leading-[29.05px] text-[#636363]">
@@ -114,7 +117,7 @@ const MapPage = () => {
             )}
 
             {leftbarstate ? (
-              <div className="flex-row mb-[25px] flex w-full items-center justify-between">
+              <div className="mb-[25px] flex w-full flex-row items-center justify-between">
                 <span className="text-[20px] font-light leading-[25.2px] text-[black]">
                   Region
                 </span>
@@ -122,15 +125,62 @@ const MapPage = () => {
                   onclickItem={() => console.log('gghjgh')}
                   options={options}
                   borderColor={'black'}
-                  classname={'w-[219px] mr-[9px]'}
+                  classname={'w-[219px] mr-[9px] bg-[#B3BDF2]'}
                 />
               </div>
             ) : null}
+            <div className="mb-8 flex w-full flex-row items-center justify-between">
+              <img src={serverIcon} className="ml-[3px] h-6 w-6" />
 
-            <img src={serverIcon} className="mb-4 ml-[3px] h-6 w-6" />
-            <img src={noYellow} className="mb-4 h-7 w-7" />
-            <img src={noOrange} className="mb-4 h-7 w-7" />
-            <img src={noRed} className="mb-4 h-7 w-7" />
+              {leftbarstate ? (
+                <>
+                  <div
+                    className={`flex flex-row ${
+                      switchstatus ? 'justify-start' : 'justify-end'
+                    } h-[20px] w-[59px] rounded-[10px] bg-[#ffffff]`}>
+                    <button
+                      onClick={() => setSwitchstatus(!switchstatus)}
+                      className="h-[20px] w-[34px] rounded-[10px] bg-[#B3BDF2]"></button>
+                  </div>
+                  <img
+                    src={groupserverIcon}
+                    className="mr-[13px] h-[60px] w-[90px]"
+                  />
+                </>
+              ) : null}
+            </div>
+            <div className="mb-6 flex w-full flex-row items-center">
+              <img src={noYellow} className="h-7 w-7" />
+              <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                Low Severity
+              </span>
+              <Checkbox
+                onclick={(e: boolean) => console.log(e, 'wweee')}
+                classname={'ml-[118px]'}
+              />
+            </div>
+
+            <div className="mb-6 flex w-full flex-row items-center">
+              <img src={noOrange} className="h-7 w-7" />
+              <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                Low Severity
+              </span>
+              <Checkbox
+                onclick={(e: boolean) => console.log(e, 'wweee')}
+                classname={'ml-[118px]'}
+              />
+            </div>
+
+            <div className="mb-6 flex w-full flex-row items-center">
+              <img src={noRed} className="h-7 w-7" />
+              <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                Low Severity
+              </span>
+              <Checkbox
+                onclick={(e: boolean) => console.log(e, 'wweee')}
+                classname={'ml-[118px]'}
+              />
+            </div>
           </div>
         )}
 
