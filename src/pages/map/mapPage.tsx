@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import Select from 'react-select';
+import Selectbox from './../../components/selectbox/selectbox';
 import {
   MapContainer,
   Marker,
@@ -11,13 +13,18 @@ import {MapServerIcon} from '~/components';
 import {IoMenu} from 'react-icons/io5';
 import serverIcon from '~/assets/icons/severIcon.png';
 import {BsArrowsFullscreen} from 'react-icons/bs';
+import {IoMdClose} from 'react-icons/io';
 import {MdZoomInMap} from 'react-icons/md';
 import noOrange from '~/assets/icons/noOrange.png';
 import pluse from '~/assets/images/plus.svg';
 import zoomout from '~/assets/images/zoomout.svg';
 import noRed from '~/assets/icons/noRed.png';
 import noYellow from '~/assets/icons/noYellow.png';
-
+const options = [
+  {value: 'chocolate', label: 'Chocolate'},
+  {value: 'strawberry', label: 'Strawberry'},
+  {value: 'vanilla', label: 'Vanilla'},
+];
 /* ------ types ----------- */
 
 type fullscreen = {
@@ -33,10 +40,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
     map.setZoom(zoomstate);
   }, [zoomstate]);
   return (
-    <div
-      className={`absolute  ${
-        fullscreen ? 'right-[26px] top-[17px]' : 'right-[75px] top-[10px]'
-      }  z-[1000] h-auto w-auto`}>
+    <div className={`absolute right-[26px] top-[17px] z-[1000] h-auto w-auto`}>
       <img
         onClick={() => setZoomstate(zoomstate + 1)}
         src={pluse}
@@ -55,10 +59,15 @@ function ZoomComponent({fullscreen}: fullscreen) {
 
 const MapPage = () => {
   const [fullscreen, setfullscreen] = useState(false);
+  const [leftbarstate, setLeftbarstate] = useState(false);
+  const [selectOptions, setSelectoptions] = useState(null);
+  const handleChange = (e: any) => {
+    console.log(e, 'eee');
+  };
   return (
     <div className="relative flex  w-full flex-row">
-      {/* ------- right bar ------------ right bar --------- */}
-      <div
+      {/* ------- left bar ------------ left bar --------- */}
+      {/* <div
         className={`flex h-full ${
           fullscreen ? 'w-[0px]' : 'w-12'
         } flex-col items-center gap-y-5 bg-white py-3`}>
@@ -69,8 +78,9 @@ const MapPage = () => {
         <img src={noYellow} className="h-7 w-7" />
         <img src={noOrange} className="h-7 w-7" />
         <img src={noRed} className="h-7 w-7" />
-      </div>
-      {/* ------- right bar ------------ right bar --------- */}
+      </div> */}
+
+      {/* ------- left bar ------------ left bar --------- */}
 
       <div
         className={`relative w-full ${
@@ -78,6 +88,52 @@ const MapPage = () => {
             ? 'mt-[-90px] h-[calc(100vh-10px)]'
             : 'h-[calc(100vh-90px)]'
         } overflow-hidden`}>
+        {fullscreen ? null : (
+          <div
+            className={` to-0 absolute left-0 z-[1000] h-[100vh] bg-[#E7EFF7] ${
+              leftbarstate ? 'w-[330px]' : 'w-12'
+            } flex flex-col overflow-hidden px-[10px] box-border`}>
+            {leftbarstate ? (
+              <div className="mb-[40px] mt-[10px] flex w-full flex-row items-center justify-between">
+                <span className="text-[24px] font-bold leading-[29.05px] text-[#636363]">
+                  Map View
+                </span>
+                <IoMdClose
+                  onClick={() => setLeftbarstate(false)}
+                  color={'#636363'}
+                  className="h-[18px] w-[19px] cursor-pointer"
+                />
+              </div>
+            ) : (
+              <button
+                onClick={() => setLeftbarstate(true)}
+                type="button"
+                className="mb-4  active:opacity-50">
+                <IoMenu className="h-8 w-8" />
+              </button>
+            )}
+
+            {leftbarstate ? (
+              <div className="flex-row mb-[25px] flex w-full items-center justify-between">
+                <span className="text-[20px] font-light leading-[25.2px] text-[black]">
+                  Region
+                </span>
+                <Selectbox
+                  onclickItem={() => console.log('gghjgh')}
+                  options={options}
+                  borderColor={'black'}
+                  classname={'w-[219px] mr-[9px]'}
+                />
+              </div>
+            ) : null}
+
+            <img src={serverIcon} className="mb-4 ml-[3px] h-6 w-6" />
+            <img src={noYellow} className="mb-4 h-7 w-7" />
+            <img src={noOrange} className="mb-4 h-7 w-7" />
+            <img src={noRed} className="mb-4 h-7 w-7" />
+          </div>
+        )}
+
         <MapContainer
           center={[51.505, -0.09]}
           zoom={13}
@@ -102,7 +158,7 @@ const MapPage = () => {
           ) : (
             <BsArrowsFullscreen
               onClick={() => setfullscreen(true)}
-              className="absolute right-[75px] top-[102px] z-[1000]  h-[38.1px] w-[40px]"
+              className="absolute right-[25px] top-[108px] z-[1000]  h-[38.1px] w-[40px]"
             />
           )}
 
