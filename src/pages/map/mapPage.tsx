@@ -10,7 +10,8 @@ import {
   TileLayer,
   useMap,
 } from 'react-leaflet';
-import {MapServerIcon} from '~/components';
+import {MapServerIcon,NoRed,NoYellow,NoOrange} from '~/components';
+
 import {IoMenu} from 'react-icons/io5';
 import serverIcon from '~/assets/icons/severIcon.png';
 import {BsArrowsFullscreen} from 'react-icons/bs';
@@ -196,13 +197,17 @@ const MapPage = () => {
             </div>
 
             <div className="ml-[-10px] h-[1px] w-[330px] bg-[#ffffff]"></div>
-            <button className="mt-[30px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
-              Add Station
-            </button>
+            {leftbarstate ? (
+              <>
+                <button className="mt-[30px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
+                  Add Station
+                </button>
 
-            <button className="from-9% mt-[30px] h-[40px]  w-[290px] rounded-[10px] bg-gradient-to-b from-[#B3BDF2] to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
-              Add Link
-            </button>
+                <button className="from-9% mt-[30px] h-[40px]  w-[290px] rounded-[10px] bg-gradient-to-b from-[#B3BDF2] to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
+                  Add Link
+                </button>
+              </>
+            ) : null}
           </div>
         )}
 
@@ -249,6 +254,28 @@ const MapPage = () => {
               A pretty CSS3 popup. <br /> Easily customizable.
             </Popup>
           </Marker>
+
+
+
+          <Marker position={[51.519, -0.045]} icon={NoYellow}>
+            <Popup>
+              A pretty CSS3 popup. <br /> Easily customizable.
+            </Popup>
+          </Marker>
+
+
+          <Marker position={[51.519, -0.085]} icon={NoRed}>
+            <Popup className='bg-[red]'>
+              A pretty CSS3 popup. <br /> Easily customizable.
+            </Popup>
+          </Marker>
+
+          <Marker position={[51.519, -0.0155]} icon={NoOrange}>
+            <Popup>
+              A pretty CSS3 popup. <br /> Easily customizable.
+            </Popup>
+          </Marker>
+
           <Polyline
             positions={[
               [51.505, -0.09],
