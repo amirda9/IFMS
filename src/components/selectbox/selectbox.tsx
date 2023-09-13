@@ -151,7 +151,7 @@ function Selectbox({
         )}
       </div>
       <div
-        className={`min-w-full w-fit absolute right-0 transition-all duration-200 bg-[${bgcolor}] text-[black]  rounded-[5px] md:rounded-[8px]  top-[41px] md:top-[51px] z-50 flex flex-col  border-[1px] shadow-md border-solid border-black  ${
+        className={`min-w-full w-fit absolute right-0 transition-all duration-200 bg-[${bgcolor}] text-[black]  rounded-[5px] md:rounded-[8px]  top-[41px] md:top-[51px] z-50 flex flex-col  border-[1px] shadow-md border-solid border-none  ${
           openitems ? "max-h-[210px]" : "max-h-0"
         } ${openitems ? "overflow-auto" : "overflow-hidden"} ${
           openitems ? "border-[1px]" : "border-0"

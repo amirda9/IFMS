@@ -129,13 +129,13 @@ const MapPage = () => {
                 />
               </div>
             ) : null}
-            <div className="mb-8 flex w-full flex-row items-center justify-between">
+            <div className="mb-8 flex w-full flex-row items-center">
               <img src={serverIcon} className="ml-[3px] h-6 w-6" />
 
               {leftbarstate ? (
                 <>
                   <div
-                    className={`flex flex-row ${
+                    className={`ml-[70px] flex flex-row ${
                       switchstatus ? 'justify-start' : 'justify-end'
                     } h-[20px] w-[59px] rounded-[10px] bg-[#ffffff]`}>
                     <button
@@ -144,43 +144,65 @@ const MapPage = () => {
                   </div>
                   <img
                     src={groupserverIcon}
-                    className="mr-[13px] h-[60px] w-[90px]"
+                    className="ml-[50px] h-[60px] w-[90px]"
                   />
                 </>
               ) : null}
             </div>
             <div className="mb-6 flex w-full flex-row items-center">
               <img src={noYellow} className="h-7 w-7" />
-              <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                Low Severity
-              </span>
-              <Checkbox
-                onclick={(e: boolean) => console.log(e, 'wweee')}
-                classname={'ml-[118px]'}
-              />
+
+              {leftbarstate ? (
+                <>
+                  <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                    Low Severity
+                  </span>
+                  <Checkbox
+                    onclick={(e: boolean) => console.log(e, 'wweee')}
+                    classname={'ml-[118px]'}
+                  />
+                </>
+              ) : null}
             </div>
 
             <div className="mb-6 flex w-full flex-row items-center">
               <img src={noOrange} className="h-7 w-7" />
-              <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                Low Severity
-              </span>
-              <Checkbox
-                onclick={(e: boolean) => console.log(e, 'wweee')}
-                classname={'ml-[118px]'}
-              />
+              {leftbarstate ? (
+                <>
+                  <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                    Low Severity
+                  </span>
+                  <Checkbox
+                    onclick={(e: boolean) => console.log(e, 'wweee')}
+                    classname={'ml-[118px]'}
+                  />
+                </>
+              ) : null}
             </div>
 
             <div className="mb-6 flex w-full flex-row items-center">
               <img src={noRed} className="h-7 w-7" />
-              <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                Low Severity
-              </span>
-              <Checkbox
-                onclick={(e: boolean) => console.log(e, 'wweee')}
-                classname={'ml-[118px]'}
-              />
+              {leftbarstate ? (
+                <>
+                  <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                    Low Severity
+                  </span>
+                  <Checkbox
+                    onclick={(e: boolean) => console.log(e, 'wweee')}
+                    classname={'ml-[118px]'}
+                  />
+                </>
+              ) : null}
             </div>
+
+            <div className="ml-[-10px] h-[1px] w-[330px] bg-[#ffffff]"></div>
+            <button className="mt-[30px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
+              Add Station
+            </button>
+
+            <button className="from-9% mt-[30px] h-[40px]  w-[290px] rounded-[10px] bg-gradient-to-b from-[#B3BDF2] to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
+              Add Link
+            </button>
           </div>
         )}
 
