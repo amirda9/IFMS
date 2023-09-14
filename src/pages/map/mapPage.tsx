@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Select from 'react-select';
 import Selectbox from './../../components/selectbox/selectbox';
 import Checkbox from './../../components/checkbox/checkbox';
+import RightbarStation from './../../components/mapcomponents/rightbarStation';
 import './kk.css';
 import {
   MapContainer,
@@ -45,7 +46,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
     map.setZoom(zoomstate);
   }, [zoomstate]);
   return (
-    <div className={`absolute right-[26px] top-[17px] z-[1000] h-auto w-auto`}>
+    <div className={`absolute right-[26px] top-[17px] z-[400] h-auto w-auto`}>
       <img
         onClick={() => setZoomstate(zoomstate + 1)}
         src={pluse}
@@ -77,7 +78,7 @@ const MapPage = () => {
         } overflow-hidden`}>
         {fullscreen ? null : (
           <div
-            className={` to-0 absolute left-0 z-[1000] h-[100vh] bg-[#E7EFF7] ${
+            className={` to-0 absolute left-0 z-[500] h-[100vh] bg-[#E7EFF7] ${
               leftbarstate ? 'w-[330px]' : 'w-12'
             } box-border flex flex-col overflow-hidden px-[10px]`}>
             {leftbarstate ? (
@@ -194,6 +195,7 @@ const MapPage = () => {
           </div>
         )}
 
+        <RightbarStation />
         <MapContainer
           center={[51.505, -0.09]}
           zoom={13}
@@ -213,12 +215,12 @@ const MapPage = () => {
             <MdZoomInMap
               onClick={() => setfullscreen(false)}
               size={46}
-              className={`absolute right-[23px] top-[104px] z-[1000]`}
+              className={`absolute right-[23px] top-[104px] z-[400]`}
             />
           ) : (
             <BsArrowsFullscreen
               onClick={() => setfullscreen(true)}
-              className="absolute right-[25px] top-[108px] z-[1000]  h-[38.1px] w-[40px]"
+              className="absolute right-[25px] top-[108px] z-[400]  h-[38.1px] w-[40px]"
             />
           )}
 
