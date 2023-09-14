@@ -236,7 +236,7 @@ const MapPage = () => {
 
           <Marker
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('station');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -267,7 +267,7 @@ const MapPage = () => {
           </Marker>
           <Marker
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('station');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -298,7 +298,7 @@ const MapPage = () => {
           </Marker>
           <Marker
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('station');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -330,7 +330,7 @@ const MapPage = () => {
 
           <Marker
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('alarm');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -362,7 +362,7 @@ const MapPage = () => {
 
           <Marker
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('alarm');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -394,7 +394,7 @@ const MapPage = () => {
 
           <Marker
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('alarm');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -426,7 +426,7 @@ const MapPage = () => {
 
           <Polyline
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('link');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -460,7 +460,7 @@ const MapPage = () => {
           </Polyline>
           <Polyline
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('link');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
@@ -494,7 +494,7 @@ const MapPage = () => {
           </Polyline>
           <Polyline
             eventHandlers={{
-              mouseover: e => {
+              click: e => {
                 setRightbarState('link');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
