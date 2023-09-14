@@ -3,7 +3,8 @@ import Select from 'react-select';
 import Selectbox from './../../components/selectbox/selectbox';
 import Checkbox from './../../components/checkbox/checkbox';
 import RightbarStation from './../../components/mapcomponents/rightbarStation';
-import './kk.css';
+import RightbarLink from './../../components/mapcomponents/rightbarLink';
+
 import {
   MapContainer,
   Marker,
@@ -26,6 +27,7 @@ import zoomout from '~/assets/images/zoomout.svg';
 import groupserverIcon from '~/assets/images/groupserverIcon.svg';
 import noRed from '~/assets/icons/noRed.png';
 import noYellow from '~/assets/icons/noYellow.png';
+import RightbarAlarm from '~/components/mapcomponents/rightbarAlarm';
 const options = [
   {value: 'chocolate', label: 'Chocolate'},
   {value: 'strawberry', label: 'Strawberry'},
@@ -67,6 +69,7 @@ const MapPage = () => {
   const [fullscreen, setfullscreen] = useState(false);
   const [leftbarstate, setLeftbarstate] = useState(false);
   const [switchstatus, setSwitchstatus] = useState(false);
+  const [rightbarstate, setRightbarState] = useState('');
 
   return (
     <div className="relative flex  w-full flex-row">
@@ -195,7 +198,14 @@ const MapPage = () => {
           </div>
         )}
 
-        <RightbarStation />
+        {rightbarstate == 'station' ? (
+          <RightbarStation />
+        ) : rightbarstate == 'link' ? (
+          <RightbarLink />
+        ) : rightbarstate == 'alarm' ? (
+          <RightbarAlarm />
+        ) : null}
+
         <MapContainer
           center={[51.505, -0.09]}
           zoom={13}
@@ -224,7 +234,19 @@ const MapPage = () => {
             />
           )}
 
-          <Marker position={[51.505, -0.09]} icon={MapServerIcon}>
+          <Marker
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('station');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
+            position={[51.505, -0.09]}
+            icon={MapServerIcon}>
             <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
@@ -243,7 +265,19 @@ const MapPage = () => {
               </div>
             </Tooltip>
           </Marker>
-          <Marker position={[51.517, -0.01]} icon={MapServerIcon}>
+          <Marker
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('station');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
+            position={[51.517, -0.01]}
+            icon={MapServerIcon}>
             <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
@@ -262,7 +296,19 @@ const MapPage = () => {
               </div>
             </Tooltip>
           </Marker>
-          <Marker position={[51.519, -0.025]} icon={MapServerIcon}>
+          <Marker
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('station');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
+            position={[51.519, -0.025]}
+            icon={MapServerIcon}>
             <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
@@ -282,7 +328,19 @@ const MapPage = () => {
             </Tooltip>
           </Marker>
 
-          <Marker position={[51.519, -0.045]} icon={NoYellow}>
+          <Marker
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('alarm');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
+            position={[51.519, -0.045]}
+            icon={NoYellow}>
             <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
@@ -302,7 +360,19 @@ const MapPage = () => {
             </Tooltip>
           </Marker>
 
-          <Marker position={[51.519, -0.085]} icon={NoRed}>
+          <Marker
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('alarm');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
+            position={[51.519, -0.085]}
+            icon={NoRed}>
             <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
@@ -322,7 +392,19 @@ const MapPage = () => {
             </Tooltip>
           </Marker>
 
-          <Marker position={[51.519, -0.0155]} icon={NoOrange}>
+          <Marker
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('alarm');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
+            position={[51.519, -0.0155]}
+            icon={NoOrange}>
             <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
@@ -343,13 +425,50 @@ const MapPage = () => {
           </Marker>
 
           <Polyline
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('link');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
             positions={[
               [51.505, -0.09],
               [51.51, -0.1],
             ]}
-            color="red"
-          />
+            color="red">
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
+          </Polyline>
           <Polyline
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('link');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
             positions={[
               [51.505, -0.09],
               [51.519, -0.025],
@@ -374,12 +493,39 @@ const MapPage = () => {
             </Tooltip>
           </Polyline>
           <Polyline
+            eventHandlers={{
+              mouseover: e => {
+                setRightbarState('link');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseout: e => {
+                setRightbarState('');
+                console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+            }}
             positions={[
               [51.505, -0.09],
               [51.517, -0.01],
             ]}
-            color="red"
-          />
+            color="red">
+            <Tooltip
+              opacity={1}
+              className="h-[150px] w-[215px]"
+              direction="top"
+              offset={[0, -25]}>
+              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                  dfwd
+                </span>
+              </div>
+            </Tooltip>
+          </Polyline>
         </MapContainer>
       </div>
     </div>
