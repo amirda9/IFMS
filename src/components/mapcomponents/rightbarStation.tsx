@@ -3,6 +3,7 @@ import noRed from '~/assets/icons/noRed.png';
 import noOrange from '~/assets/icons/noOrange.png';
 import noYellow from '~/assets/icons/noYellow.png';
 function RightbarStation() {
+  
   return (
     <div
       className={` to-0 absolute right-0 z-[500] box-border flex h-[100vh]

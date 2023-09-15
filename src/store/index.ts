@@ -1,5 +1,6 @@
 import {configureStore, Middleware} from '@reduxjs/toolkit';
-import {httpReducer} from './slices';
+import {httpReducer} from './slices/http.slice';
+import changetyperstate from './slices/networkslice';
 import createSagaMiddleware from 'redux-saga';
 import {AppSaga} from './saga';
 
@@ -11,6 +12,7 @@ middlewares.push(sagaMiddleware);
 export const store = configureStore({
   reducer: {
     http: httpReducer,
+    network:changetyperstate
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),

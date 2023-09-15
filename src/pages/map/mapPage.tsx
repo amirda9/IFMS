@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {createRef, useEffect, useRef, useState} from 'react';
 import Select from 'react-select';
 import Selectbox from './../../components/selectbox/selectbox';
 import Checkbox from './../../components/checkbox/checkbox';
 import RightbarStation from './../../components/mapcomponents/rightbarStation';
 import RightbarLink from './../../components/mapcomponents/rightbarLink';
+import {useMapEvents} from 'react-leaflet';
 
 import {
   MapContainer,
@@ -28,6 +29,7 @@ import groupserverIcon from '~/assets/images/groupserverIcon.svg';
 import noRed from '~/assets/icons/noRed.png';
 import noYellow from '~/assets/icons/noYellow.png';
 import RightbarAlarm from '~/components/mapcomponents/rightbarAlarm';
+import {useDetectClickOutside} from 'react-detect-click-outside';
 const options = [
   {value: 'chocolate', label: 'Chocolate'},
   {value: 'strawberry', label: 'Strawberry'},
@@ -71,6 +73,16 @@ const MapPage = () => {
   const [switchstatus, setSwitchstatus] = useState(false);
   const [rightbarstate, setRightbarState] = useState('');
 
+  const MapClickAlert = () => {
+    useMapEvents({
+      click(e) {
+        if (rightbarstate != '') {
+          setRightbarState('');
+        }
+      },
+    });
+    return null;
+  };
   return (
     <div className="relative flex  w-full flex-row">
       <div
@@ -240,10 +252,11 @@ const MapPage = () => {
                 setRightbarState('station');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
-              mouseout: e => {
-                setRightbarState('');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
+
+              // mouseout: e => {
+              //   setRightbarState('');
+              //   console.log(e.target.options.data); // will print 'FooBar' in console
+              // },
             }}
             position={[51.505, -0.09]}
             icon={MapServerIcon}>
@@ -271,10 +284,6 @@ const MapPage = () => {
                 setRightbarState('station');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
-              mouseout: e => {
-                setRightbarState('');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
             }}
             position={[51.517, -0.01]}
             icon={MapServerIcon}>
@@ -300,10 +309,6 @@ const MapPage = () => {
             eventHandlers={{
               click: e => {
                 setRightbarState('station');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-              mouseout: e => {
-                setRightbarState('');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
             }}
@@ -334,10 +339,6 @@ const MapPage = () => {
                 setRightbarState('alarm');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
-              mouseout: e => {
-                setRightbarState('');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
             }}
             position={[51.519, -0.045]}
             icon={NoYellow}>
@@ -364,10 +365,6 @@ const MapPage = () => {
             eventHandlers={{
               click: e => {
                 setRightbarState('alarm');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-              mouseout: e => {
-                setRightbarState('');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
             }}
@@ -398,10 +395,6 @@ const MapPage = () => {
                 setRightbarState('alarm');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
-              mouseout: e => {
-                setRightbarState('');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
             }}
             position={[51.519, -0.0155]}
             icon={NoOrange}>
@@ -430,10 +423,6 @@ const MapPage = () => {
                 setRightbarState('link');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
-              mouseout: e => {
-                setRightbarState('');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
             }}
             positions={[
               [51.505, -0.09],
@@ -458,14 +447,11 @@ const MapPage = () => {
               </div>
             </Tooltip>
           </Polyline>
+          <MapClickAlert />
           <Polyline
             eventHandlers={{
               click: e => {
                 setRightbarState('link');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-              mouseout: e => {
-                setRightbarState('');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
             }}
@@ -496,10 +482,6 @@ const MapPage = () => {
             eventHandlers={{
               click: e => {
                 setRightbarState('link');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-              mouseout: e => {
-                setRightbarState('');
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
             }}

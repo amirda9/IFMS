@@ -1,8 +1,12 @@
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
+
+
 import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
-import {InputFormik, TextareaFormik} from '~/container';;
+import {InputFormik, TextareaFormik} from '~/container';
+import { useDispatch, useSelector } from "react-redux";
+import { settypestate } from "./../../store/slices/networkslice";
 import * as Yup from 'yup';
 import SelectFormik from '~/container/formik/SelectFormik';
 import { getPrettyDateTime } from '~/util/time';
@@ -15,6 +19,8 @@ const linkSchema = Yup.object().shape({
   type: Yup.string().required('Please select type'),
 });
 const LinkDetailPage = () => {
+  const {type} = useSelector((state: any) => state.network);
+  const dispatch = useDispatch();
   const params = useParams<{linkId: string}>();
   const buttons = (
     <>
@@ -66,9 +72,12 @@ const LinkDetailPage = () => {
             </Description>
 
             <Description label="Type" items="center">
-              <SelectFormik name="type" className="w-1/5 disabled:bg-white">
+              <SelectFormik defaultValue={type}  onChange={(e)=>dispatch(settypestate(e.target.value))
+              } name="type" className="w-1/5 disabled:bg-white">
                 <option>Cable</option>
+                <option>duct</option>
               </SelectFormik>
+         
             </Description>
 
             <Description label="Region" items="start">

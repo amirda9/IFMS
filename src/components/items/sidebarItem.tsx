@@ -18,7 +18,7 @@ const SidebarItem: FC<PropsType> = ({
   className,
 }) => {
   return (
-    <div className={'my-1 flex flex-row ' + className}>
+    <div  className={'my-1 flex flex-row ' + className}>
       <NavLink
         to={to}
         className={({isActive}) =>

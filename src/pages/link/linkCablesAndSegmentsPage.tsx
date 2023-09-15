@@ -2,9 +2,68 @@ import React, {Fragment, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
 import {FormLayout} from '~/layout';
+import {BsPlusLg} from 'react-icons/bs';
 
 const LinkCablesAndSegmentsPage = () => {
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [mousePosition, setMousePosition] = React.useState({x: null, y: null});
+  const [parentcabl, setParentcable] = useState<
+    {id: number; slicecabl: number[]}[]
+  >([
+    {id: 1, slicecabl: []},
+    {id: 2, slicecabl: []},
+  ]);
+  console.log(parentcabl, 'parentcablparentcabl');
+
+  React.useEffect(() => {
+    const updateMousePosition = (ev: any) => {
+      setMousePosition({x: ev.clientX, y: ev.clientY});
+    };
+
+    window.addEventListener('mousemove', updateMousePosition);
+
+    return () => {
+      window.removeEventListener('mousemove', updateMousePosition);
+    };
+  }, []);
+
+  const addcable = () => {
+    const beforadddata = [...parentcabl];
+    beforadddata.push({
+      id: Math.floor(Math.random() * 10004141000 + 1),
+      slicecabl: [],
+    });
+    setParentcable(beforadddata);
+  };
+
+  const addcabledata = (id: number) => {
+    const beforadddata = [...parentcabl];
+    const findcable = beforadddata.findIndex(data => data.id == id);
+    console.log(findcable, 'findcable');
+
+    beforadddata[findcable].slicecabl.push(
+      Math.floor(Math.random() * 10004141000 + 1),
+    );
+
+    setParentcable(beforadddata);
+  };
+
+  const deletecable = (id: number) => {
+    const beforadddata = [...parentcabl];
+    const findcable = beforadddata.findIndex(data => data.id == id);
+    beforadddata.splice(findcable, 1);
+    setParentcable(beforadddata);
+  };
+
+  const deletecabledata = (cableid: number, cabledataid: number) => {
+    const beforadddata = [...parentcabl];
+    const findcable = beforadddata.findIndex(data => data.id == cableid);
+    const find = beforadddata[findcable].slicecabl.findIndex(
+      data => data == cabledataid,
+    );
+    beforadddata[findcable].slicecabl.splice(find, 1);
+    setParentcable(beforadddata);
+  };
   const buttons = (
     <>
       <SimpleBtn type="submit">Save</SimpleBtn>
@@ -13,11 +72,38 @@ const LinkCablesAndSegmentsPage = () => {
   );
   return (
     <FormLayout buttons={buttons}>
-      {[...new Array(2)].map((_, index) => {
-        const Chevron = open[index] ? IoChevronUp : IoChevronDown;
-        return (
-          <div className="my-6 w-9/12 rounded-md bg-gis p-4" key={index}>
-            <div className="flex flex-row items-center justify-between">
+      <div className="relative min-h-full  w-full">
+        {mousePosition.y && mousePosition.y > 180 ? (
+          <div
+            style={{
+              top: `${
+                parentcabl.length > 0
+                  ? mousePosition.y && mousePosition.y - 205
+                  : mousePosition.y && mousePosition.y - 187
+              }px`,
+              zIndex: 0,
+            }}
+            className={`absolute z-10 ml-[-30px] flex h-[30px] w-[calc(75%+20px)] flex-row items-center  justify-between`}>
+            <button
+              onClick={() => addcable()}
+              className="mr-[3px] h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[15px] bg-[#32C65D]">
+              <BsPlusLg
+                color="white"
+                size={35}
+                className="ml-[-2.5px] mt-[-2.5px]"
+              />
+            </button>
+            <div className="w-full  border-t-[2px] border-dashed  border-[#32C65D]"></div>
+          </div>
+        ) : null}
+
+        {parentcabl.map((data: any, index: number) => (
+          <div
+            style={{zIndex: 20}}
+            className="relative z-40 my-8 w-9/12  rounded-md bg-gis p-4"
+            key={index}>
+            <div className="absolute left-[-30px] top-0 h-full w-[30px] bg-b"></div>
+            <div className="z-40 flex flex-row items-center justify-between">
               <div className="flex flex-row">
                 <span className="w-14"> {index + 1}</span>
                 <Description
@@ -35,24 +121,52 @@ const LinkCablesAndSegmentsPage = () => {
               </div>
               <div className="flex flex-row items-center gap-x-12">
                 <IoTrashOutline
+                  onClick={() => deletecable(data.id)}
                   size={24}
                   className="cursor-pointer  text-red-500 active:text-red-300"
                 />
-                <Chevron
-                  size={48}
-                  className="cursor-pointer active:opacity-50"
-                  onClick={() => {
-                    if (open[index]) {
-                      setOpen({...open, [index]: false});
-                    } else {
-                      setOpen({...open, [index]: true});
-                    }
-                  }}
-                />
+                {open[index] ? (
+                  <IoChevronUp
+                    size={48}
+                    className="cursor-pointer active:opacity-50"
+                    onClick={() => {
+                      if (open[index]) {
+                        setOpen({...open, [index]: false});
+                      } else {
+                        setOpen({...open, [index]: true});
+                      }
+                    }}
+                  />
+                ) : (
+                  <IoChevronDown
+                    size={48}
+                    className="cursor-pointer active:opacity-50"
+                    onClick={() => {
+                      if (open[index]) {
+                        setOpen({...open, [index]: false});
+                      } else {
+                        setOpen({...open, [index]: true});
+                      }
+                    }}
+                  />
+                )}
               </div>
             </div>
             {open[index] ? (
               <Fragment>
+                <div
+                  className={`flex  h-[30px] flex-row items-center justify-between opacity-0 hover:opacity-100`}>
+                  <button
+                    onClick={() => addcabledata(data.id)}
+                    className="mr-[3px] h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[15px] bg-[#32C65D]">
+                    <BsPlusLg
+                      color="white"
+                      size={35}
+                      className="ml-[-2.5px] mt-[-2.5px]"
+                    />
+                  </button>
+                  <div className="w-full  border-t-[2px] border-dashed  border-[#32C65D]"></div>
+                </div>
                 <div className="flex-grow-1 mt-8 flex flex-row justify-between ">
                   <div className="flex w-full flex-row">
                     <span className="w-1/5 text-center">Start (km)</span>
@@ -69,51 +183,69 @@ const LinkCablesAndSegmentsPage = () => {
                     <span className="w-12" />
                   </div>
                 </div>
-                {[...new Array(index ? 1 : 4)].map((_, index) => (
-                  <div
-                    className="flex-grow-1 flex flex-row justify-between  pt-4"
-                    key={index}>
-                    <div className="flex w-full flex-row">
-                      <div className=" flex w-1/5 justify-center">
-                        <TextInput className="w-28" type="number" />
+                {data.slicecabl.map((dataa: any, index: number) => (
+                  <>
+                    <div
+                      className="flex-grow-1 flex flex-row justify-between "
+                      key={index}>
+                      <div className="flex w-full flex-row">
+                        <div className="flex w-1/5 justify-center">
+                          <TextInput className="w-28" type="number" />
+                        </div>
+                        <div className="flex w-1/5 justify-center">
+                          <TextInput className="w-28" type="number" />
+                        </div>
+                        <div className="flex w-1/5 justify-center">
+                          <TextInput className="w-28" type="number" />
+                        </div>
+                        <div className="flex w-1/5 justify-center">
+                          <TextInput className="w-28" type="number" />
+                        </div>
+                        <div className="flex w-1/5 justify-center">
+                          <Select className="w-28" placeholder="select">
+                            <option value="" className="hidden">
+                              Select
+                            </option>
+                            <option value={undefined} className="hidden">
+                              Select
+                            </option>
+                            <option value="NZ-DSF">NZ-DSF</option>
+                            <option value="DSF">DSF</option>
+                            <option value="SMF">SMF</option>
+                          </Select>
+                        </div>
                       </div>
-                      <div className=" flex w-1/5 justify-center">
-                        <TextInput className="w-28" type="number" />
-                      </div>
-                      <div className=" flex w-1/5 justify-center">
-                        <TextInput className="w-28" type="number" />
-                      </div>
-                      <div className=" flex w-1/5 justify-center">
-                        <TextInput className="w-28" type="number" />
-                      </div>
-                      <div className=" flex w-1/5 justify-center">
-                        <Select className="w-28" placeholder="select">
-                          <option value="" className="hidden">
-                            Select
-                          </option>
-                          <option value={undefined} className="hidden">
-                            Select
-                          </option>
-                          <option value="NZ-DSF">NZ-DSF</option>
-                          <option value="DSF">DSF</option>
-                          <option value="SMF">SMF</option>
-                        </Select>
+                      <div className="flex flex-row gap-x-12">
+                        <IoTrashOutline
+                          onClick={() => deletecabledata(data.id, dataa.id)}
+                          size={24}
+                          // text-red-500
+                          className="cursor-pointer  text-red-500   active:text-red-300"
+                        />
+                        <span className="w-12" />
                       </div>
                     </div>
-                    <div className="flex flex-row gap-x-12">
-                      <IoTrashOutline
-                        size={24}
-                        className="cursor-pointer  text-red-500  active:text-red-300"
-                      />
-                      <span className="w-12" />
+
+                    <div
+                      className={`ml-[calc(5%-56px)] flex h-[30px] flex-row items-center justify-between opacity-0 hover:opacity-100 xl:ml-[calc(6%-56px)]`}>
+                      <button
+                        onClick={() => addcabledata(data.id)}
+                        className="mr-[3px] h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[15px] bg-[#32C65D]">
+                        <BsPlusLg
+                          color="white"
+                          size={35}
+                          className="ml-[-2.5px] mt-[-2.5px]"
+                        />
+                      </button>
+                      <div className="w-full  border-t-[2px] border-dashed  border-[#32C65D]"></div>
                     </div>
-                  </div>
+                  </>
                 ))}
               </Fragment>
             ) : null}
           </div>
-        );
-      })}
+        ))}
+      </div>
     </FormLayout>
   );
 };
