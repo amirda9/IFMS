@@ -122,6 +122,7 @@ const LinkCablesAndSegmentsPage = () => {
               </div>
               <div className="flex flex-row items-center gap-x-12">
                 <IoTrashOutline
+                  onClick={() => deletecable(data.id)}
                   size={24}
                   className="cursor-pointer  text-red-500 active:text-red-300"
                 />
@@ -153,7 +154,7 @@ const LinkCablesAndSegmentsPage = () => {
                     <span className="w-12" />
                   </div>
                 </div>
-                {data.slicecabl.map((dataa: any, index: number) => (
+                {[1,1].map((dataa: any, index: number) => (
                   <div className="flex flex-row justify-between" key={index}>
                     <div className="mt-4 flex w-3/5 flex-row">
                       <div className=" flex w-3/5 justify-center">
@@ -172,7 +173,19 @@ const LinkCablesAndSegmentsPage = () => {
                     </div>
                   </div>
                 ))}
-
+  <div
+                      className={`ml-[calc(5%-56px)] flex h-[30px] flex-row items-center justify-between opacity-0 hover:opacity-100 xl:ml-[calc(6%-56px)]`}>
+                      <button
+                        onClick={() => addcabledata(data.id)}
+                        className="mr-[3px] h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[15px] bg-[#32C65D]">
+                        <BsPlusLg
+                          color="white"
+                          size={35}
+                          className="ml-[-2.5px] mt-[-2.5px]"
+                        />
+                      </button>
+                      <div className="w-full  border-t-[2px] border-dashed  border-[#32C65D]"></div>
+                    </div>
                 {/*duct section */}
                 <div className="flex-grow-1 mt-8 flex flex-row justify-between">
                   <div className="flex w-full flex-row">
@@ -191,7 +204,8 @@ const LinkCablesAndSegmentsPage = () => {
                   </div>
                 </div>
 
-                {[...new Array(index ? 1 : 4)].map((_, index) => (
+                {data.slicecabl.map((dataa: any, index: number) => (
+                  <>
                   <div
                     className="flex-grow-1 relative z-40 flex flex-row justify-between  pt-4"
                     key={index}>
@@ -224,12 +238,28 @@ const LinkCablesAndSegmentsPage = () => {
                     </div>
                     <div className="flex flex-row gap-x-12">
                       <IoTrashOutline
+                        onClick={() => deletecabledata(data.id, dataa.id)}
                         size={24}
                         className="cursor-pointer  text-red-500  active:text-red-300"
                       />
                       <span className="w-12" />
                     </div>
                   </div>
+                  <div
+                      className={`ml-[calc(5%-56px)] flex h-[30px] flex-row items-center justify-between opacity-0 hover:opacity-100 xl:ml-[calc(6%-56px)]`}>
+                      <button
+                        onClick={() => addcabledata(data.id)}
+                        className="mr-[3px] h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[15px] bg-[#32C65D]">
+                        <BsPlusLg
+                          color="white"
+                          size={35}
+                          className="ml-[-2.5px] mt-[-2.5px]"
+                        />
+                      </button>
+                      <div className="w-full  border-t-[2px] border-dashed  border-[#32C65D]"></div>
+                    </div>
+                  </>
+                  
                 ))}
               </Fragment>
             ) : null}
