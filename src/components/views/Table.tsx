@@ -1,6 +1,7 @@
 import {ReactNode} from 'react';
 import GeneralLoadingSpinner from '../loading/GeneralLoadingSpinner';
 import classNames from '~/util/classNames';
+import { BsChevronDown } from 'react-icons/bs';
 
 export type ColType = {label: string; size?: string; sort?: boolean};
 
@@ -52,10 +53,16 @@ const Table = <
         col.size,
         bordered
           ? 'border-b border-r border-gray96 last:border-r-0'
-          : 'border-r last:border-0',
-        'bg-blueLight py-1 font-normal',
+          : 'border-r border-[#969696] border-[1px] border-t-[0px] last:border-r-[0px] first:border-l-[0px]',
+        'bg-blueLight py-1 font-normal border-[#969696] border-[1px] relative border-t-[0px]',
       )}>
       {col.label}
+      {col.label == "User"?
+          <BsChevronDown className='absolute right-[5px] top-[8px]' />
+    :
+null
+    }
+ 
     </th>
   );
 
@@ -75,8 +82,11 @@ const Table = <
           {dynamicColumns?.includes(key as DC)
             ? renderDynamicColumn?.({key: key as DC, value: row, index})
             : row[key as Exclude<C, DC>]}
+           
         </td>
+    
       ))}
+         
     </tr>
   );
 
