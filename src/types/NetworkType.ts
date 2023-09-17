@@ -5,6 +5,7 @@ export type NetworkType = {
 };
 
 export type NetworkDetailType = {
+  [x: string]: any;
   id: string;
   name: string;
   version_id: string;
