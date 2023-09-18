@@ -42,9 +42,9 @@ const NetworkAccessPage = () => {
   });
 
   const buttons = (
-    <div className='mt-[25px]'>
+    <div className='mt-[25px] w-auto'>
        <SimpleBtn
-      className='w-[149px] h-[40px]'
+      className='w-[149px] h-[40px] mt-[25px]'
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
           const admin = viewers!.data!.users.find(
