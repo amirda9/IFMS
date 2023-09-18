@@ -42,8 +42,9 @@ const NetworkAccessPage = () => {
   });
 
   const buttons = (
-    <>
-      <SimpleBtn
+    <div className='mt-[25px]'>
+       <SimpleBtn
+      className='w-[149px] h-[40px]'
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
           const admin = viewers!.data!.users.find(
@@ -66,10 +67,11 @@ const NetworkAccessPage = () => {
         }}>
         OK
       </SimpleBtn>
-      <SimpleBtn link to="./../access">
-        Cancel
+      <SimpleBtn className='py-[12px] px-14 ml-2 ' to="./../access" link>
+        <span>Cancel</span>
+      
       </SimpleBtn>
-    </>
+    </div>
   );
 
   return (

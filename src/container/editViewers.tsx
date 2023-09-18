@@ -155,11 +155,12 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           }
           cols={columns}
           items={userList.filter(user => !state.values.includes(user.id))}
-          containerClassName="w-[44%] h-full"
+          containerClassName="w-[44%] h-[775px]"
           dynamicColumns={['select', 'index']}
           renderDynamicColumn={renderDynamicColumn('left')}
         />
       )}
+    
       <DoubleSideButtonGroup
         onClickRightButton={() => {
           setState({
@@ -177,6 +178,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           setState({...state, selectRight: [], values});
         }}
       />
+     
       <Table
         loading={
           (groups?.httpRequestStatus !== 'success' && state.group) ||
@@ -184,7 +186,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
         }
         cols={columns}
         items={userList.filter(user => state.values.includes(user.id))}
-        containerClassName="w-[44%] h-full"
+        containerClassName="w-[44%] h-[775px]"
         dynamicColumns={['select', 'index']}
         renderDynamicColumn={renderDynamicColumn('right')}
       />
