@@ -16,8 +16,7 @@ const networkSchema = Yup.object().shape({
   description: Yup.string().required('Please enter network description'),
 });
 const NetworkDetailPage = () => {
-
-  
+ 
   const params = useParams<{networkId: string}>();
   const [dataa, setdataa] = useState(0);
   const navigate = useNavigate();

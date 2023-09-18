@@ -1,4 +1,5 @@
 import React from 'react';
+import {useSelector} from 'react-redux';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 
 const columns = {
@@ -16,6 +17,8 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const StationAccessPage = () => {
+  const {stationDetail} = useSelector((state: any) => state.http);
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
@@ -32,9 +35,12 @@ const StationAccessPage = () => {
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn link to="../edit-access">
-          Edit Station Viewer(s)
-        </SimpleBtn>
+        {stationDetail?.data?.access == 'ADMIN' ? (
+          <SimpleBtn link to="../edit-access">
+            Edit Station Viewer(s)
+          </SimpleBtn>
+        ) : null}
+
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
