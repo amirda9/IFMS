@@ -160,7 +160,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           renderDynamicColumn={renderDynamicColumn('left')}
         />
       )}
-    
+
       <DoubleSideButtonGroup
         onClickRightButton={() => {
           setState({
@@ -178,7 +178,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           setState({...state, selectRight: [], values});
         }}
       />
-     
+
       <Table
         loading={
           (groups?.httpRequestStatus !== 'success' && state.group) ||
