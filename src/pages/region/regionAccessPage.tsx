@@ -4,6 +4,7 @@ import {useParams} from 'react-router-dom';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {FormLayout} from '~/layout';
+import {useSelector} from 'react-redux';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -13,6 +14,8 @@ const columns = {
 };
 
 const RegionAccessPage = () => {
+  const {regionDetail} = useSelector((state: any) => state.http);
+
   const params = useParams<{regionId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -99,9 +102,12 @@ const RegionAccessPage = () => {
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
   const buttons = (
     <>
-      <SimpleBtn link to="../edit-access">
-        Edit Region Viewer(s)
-      </SimpleBtn>
+      {regionDetail.data.access == 'ADMIN' ? (
+        <SimpleBtn link to="../edit-access">
+          Edit Region Viewer(s)
+        </SimpleBtn>
+      ) : null}
+
       <SimpleBtn
         onClick={saveAdmin}
         disabled={update?.httpRequestStatus === 'loading'}>

@@ -15,6 +15,7 @@ export type NetworkDetailType = {
     id: string;
     network_id: string;
     owner_id: string;
+    name:string;
     description: string;
     time_created: string;
   }>;

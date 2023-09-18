@@ -388,7 +388,7 @@ export type RequestListTypes = {
   networkList: undefined;
   networkDetail: {params: {networkId: string}};
   networkDelete: {params: {networkId: string}};
-  networkUpdate: {params: {networkId: string}; data: {description: string}};
+  networkUpdate: {params: {networkId: string}; data: { name: string;description: string}};
   networkAccessList: {params: {network_id: string}};
   networkAccessUpdate: {
     params: {network_id: string};

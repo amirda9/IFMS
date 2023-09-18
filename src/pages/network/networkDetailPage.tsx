@@ -3,18 +3,21 @@ import {useHttpRequest} from '~/hooks';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
+import {useSelector} from 'react-redux';
 import * as Yup from 'yup';
 import {Request} from '~/hooks/useHttpRequest';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
+
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
   description: Yup.string().required('Please enter network description'),
 });
 const NetworkDetailPage = () => {
+
+  
   const params = useParams<{networkId: string}>();
   const [dataa, setdataa] = useState(0);
   const navigate = useNavigate();
@@ -28,6 +31,8 @@ const NetworkDetailPage = () => {
     state: {detail, update},
     request,
   } = useHttpRequest({
+
+    
     selector: state => ({
       detail: state.http.networkDetail,
       update: state.http.networkUpdate,
@@ -43,12 +48,13 @@ const NetworkDetailPage = () => {
     },
   });
 
+    // console.log(update, 'lklklk')
+    console.log(detail, 'ppp');
   // update?.data.id
 
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
     return <>loading</>;
-  console.log(update, 'lklklk');
-  console.log(detail, 'ppp');
+
   // name:detail?.data?.current_version.id == update?.data?.id ?update?.request?.data.name:
   // name:detail!.data!.versions.find(
   //   version => version.id === update?.data?.id
@@ -58,9 +64,8 @@ const NetworkDetailPage = () => {
       <Formik
         enableReinitialize
         initialValues={{
-          name: detail!.data!.name,
-
-          // detail!.data!.name,
+          name:detail!.data!.name,
+       
           description:
             detail!.data!.versions.find(
               version => version.id === detail!.data!.current_version.id,
@@ -70,7 +75,7 @@ const NetworkDetailPage = () => {
           console.log(values, 'valuesvalues');
 
           request('networkUpdate', {
-            data: values,
+            data:values,
             params: {networkId: params.networkId!},
           });
         }}

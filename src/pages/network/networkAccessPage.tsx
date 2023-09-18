@@ -6,7 +6,7 @@ import {useParams} from 'react-router-dom';
 import {FormLayout} from '~/layout';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
-
+import {useSelector} from 'react-redux';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -15,6 +15,8 @@ const columns = {
 };
 
 const NetworkAccessPage = () => {
+  const {networkDetail} = useSelector((state: any) => state.http);
+  console.log(networkDetail.data.access, 'fffrrtttt');
   const params = useParams<{networkId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -31,6 +33,10 @@ const NetworkAccessPage = () => {
       request('userList', undefined);
     },
   });
+  console.log(viewers, 'viewers');
+  console.log(users, 'users');
+  console.log(update, 'update');
+
   const saveAdmin = () => {
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
@@ -94,9 +100,12 @@ const NetworkAccessPage = () => {
 
   const buttons = (
     <>
-      <SimpleBtn link to="../edit-access">
-        Edit Network Viewer(s)
-      </SimpleBtn>
+      {networkDetail.data.access == 'ADMIN' ? (
+        <SimpleBtn link to="../edit-access">
+          Edit Network Viewer(s)
+        </SimpleBtn>
+      ) : null}
+
       <SimpleBtn
         onClick={() => {
           Cookies.set(networkExplored, params.networkId!);
