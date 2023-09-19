@@ -77,7 +77,7 @@ const RegionDetailPage = () => {
               {state.detail?.data?.current_version.owner.username}
             </Description>
 
-            <Description label="Created" className="mb-4">
+            <Description label="Created">
               {getPrettyDateTime(state.detail?.data?.time_created)}
             </Description>
 

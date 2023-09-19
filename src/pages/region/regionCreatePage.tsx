@@ -57,7 +57,7 @@ const RegionDetailPage = () => {
         }}
         onSubmit={values => {
           request('regionCreate', {
-            params: {network_id: networkId!},
+            params: {network_id : networkId!},
             data: {name: values.name, description: values.description},
           });
         }}
