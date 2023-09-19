@@ -10,13 +10,16 @@ const StationsPage = () => {
   const {
     state: {stations},
   } = useHttpRequest({
-    selector: state => ({stations: state.http.networkStationList}),
+    selector: state => ({stations: state.http.allStations}),
     initialRequests: request => {
       if (networkId) {
         request('allStations', undefined);
       }
     },
   });
+
+  console.log(stations,'stations');
+  
   return (
     <SidebarLayout
       searchOnChange={() => {}}
