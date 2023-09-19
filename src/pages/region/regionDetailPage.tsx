@@ -69,7 +69,7 @@ const RegionDetailPage = () => {
               />
             </Description>
 
-            <Description label="Comments" items="start">
+            <Description label="Comment" items="start">
               <TextareaFormik name="description" className="w-2/3" />
             </Description>
 

@@ -83,10 +83,7 @@ const NetworkAccessPage = () => {
             ))}
           </Select>
         </Description>
-        <Description
-          label="Network Viewer(s)"
-          items="start"
-          className="h-full">
+        <Description label="Network Viewer(s)" items="start" className="h-full">
           <Table
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
@@ -100,11 +97,11 @@ const NetworkAccessPage = () => {
 
   const buttons = (
     <>
-      {/* {networkDetail.data.access == 'ADMIN' ? ( */}
+      {networkDetail.data.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Network Viewer(s)
         </SimpleBtn>
-      {/* ) : null}  */}
+      ) : null}
 
       <SimpleBtn
         onClick={() => {
