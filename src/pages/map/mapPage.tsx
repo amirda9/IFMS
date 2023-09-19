@@ -83,13 +83,13 @@ const MapPage = () => {
     return null;
   };
   return (
-    <div className="relative flex  w-full flex-row">
+    <div className="relative flex  w-full h-auto flex-row">
       <div
-        className={`relative w-full ${
+        className={`relative w-full bg-[red] ${
           fullscreen
             ? 'mt-[-90px] h-[calc(100vh-10px)]'
             : 'h-[calc(100vh-90px)]'
-        } overflow-hidden`}>
+        } `}>
         {fullscreen ? null : (
           <div
             className={` to-0 absolute left-0 z-[500] h-[100vh] bg-[#E7EFF7] ${

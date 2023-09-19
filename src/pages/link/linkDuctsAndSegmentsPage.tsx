@@ -69,7 +69,7 @@ const LinkCablesAndSegmentsPage = () => {
   const setcableId = (id: number, x: string) => {
     let beforadddata = JSON.parse(JSON.stringify(parentcabl));
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
-    beforadddata[findcable].cableId = Number(x);
+    beforadddata[findcable].cableId = x;
     setParentcable(beforadddata);
   };
 
@@ -314,6 +314,7 @@ const LinkCablesAndSegmentsPage = () => {
                         labelClassName="w-fit pr-2"
                         className="flex-grow-0 pr-14">
                         <TextInput
+                        type='text'
                           value={data.cableId}
                           onChange={e => setcableId(data.id, e.target.value)}
                           className="w-full"
