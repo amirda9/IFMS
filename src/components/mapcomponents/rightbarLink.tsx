@@ -7,9 +7,10 @@ function RightbarLink() {
     <div
       className={` to-0 absolute right-0 z-[500] box-border flex h-[100vh]
     w-[330px] flex-col overflow-hidden bg-[#E7EFF7] px-[20px]`}>
-      <span className="mb-[40px] mt-[15px] text-[24px] font-bold leading-[29.05px] text-[#636363]">
+      <div className='relative w-full h-full'>
+      <div className="mb-[40px] mt-[15px] text-[24px] font-bold leading-[29.05px] text-[#636363]">
       Link6
-      </span>
+      </div>
       <div className="flex w-auto flex-row items-center">
         <span className="text-[20px] font-light leading-[25.2px] text-[black]">
           Region
@@ -28,9 +29,9 @@ function RightbarLink() {
         </span>
       </div>
       
-      <span className="mb-[15px] mt-[15px] text-[20px] font-light leading-[25.2px] text-[black]">
+      <div className="mb-[15px] mt-[15px] text-[20px] font-light leading-[25.2px] text-[black]">
         Alarms
-      </span>
+      </div>
 
       <div className="flex w-auto flex-row items-center">
         <span className="text-[20px] font-light leading-[25.2px] text-[black]">
@@ -58,9 +59,10 @@ function RightbarLink() {
           0
         </span>
       </div>
-      <button className="mt-[460px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black] mx-auto">
+      <button className="absolute  z-[510] bottom-[110px] 2xl:bottom-[120px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black] mx-auto">
         Edit Station
       </button>
+      </div>
     </div>
   );
 }

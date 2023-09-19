@@ -83,7 +83,7 @@ const MapPage = () => {
     return null;
   };
   return (
-    <div className="relative flex  w-full h-auto flex-row">
+    <div className="relative flex  w-full bg-[red]  overflow-y-hidden overflow-x-hidden flex-row">
       <div
         className={`relative w-full bg-[red] ${
           fullscreen
@@ -220,7 +220,7 @@ const MapPage = () => {
         <MapContainer
           center={[51.505, -0.09]}
           zoom={13}
-          scrollWheelZoom={false}
+          scrollWheelZoom={true}
           zoomControl={false}
           className={`h-full w-full`}>
           <TileLayer
@@ -448,6 +448,7 @@ const MapPage = () => {
           </Polyline>
           <MapClickAlert />
           <Polyline
+      
             eventHandlers={{
               click: e => {
                 setRightbarState('link');
@@ -478,6 +479,7 @@ const MapPage = () => {
             </Tooltip>
           </Polyline>
           <Polyline
+      
             eventHandlers={{
               click: e => {
                 setRightbarState('link');
