@@ -54,7 +54,7 @@ const Table = <
         bordered
           ? 'border-b border-r border-gray96 last:border-r-0'
           : 'border-r border-[#969696] border-[1px] border-t-[0px] last:border-r-[0px] first:border-l-[0px]',
-        'bg-blueLight py-1 font-normal border-[#969696] border-[1px] relative border-t-[0px]',
+        'bg-blueLight py-1 font-normal text-sm border-[#969696] border-[1px] relative border-t-[0px]',
       )}>
       {col.label}
       {col.label == "User"?
