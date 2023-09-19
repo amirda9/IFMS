@@ -94,7 +94,7 @@ const NetworkDetailPage = () => {
               <TextareaFormik name="description" className="w-2/3" />
             </Description>
 
-            <Description label="Created" className="mb-4">
+            <Description label="Created">
               {getPrettyDateTime(detail.data!.time_created)}
             </Description>
 

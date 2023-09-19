@@ -86,7 +86,7 @@ const StationDetailPage = () => {
               Admin
             </Description>
 
-            <Description label="Created" className="mb-4">
+            <Description label="Created">
               {getPrettyDateTime()}
             </Description>
 
