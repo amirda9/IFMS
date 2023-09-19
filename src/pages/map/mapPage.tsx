@@ -1,5 +1,4 @@
 import React, {createRef, useEffect, useRef, useState} from 'react';
-import Select from 'react-select';
 import Selectbox from './../../components/selectbox/selectbox';
 import Checkbox from './../../components/checkbox/checkbox';
 import RightbarStation from './../../components/mapcomponents/rightbarStation';
