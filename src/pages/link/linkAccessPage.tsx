@@ -24,8 +24,8 @@ const LinkAccessPage = () => {
             <option>ahmad kazemi</option>
           </Select>
         </Description>
-        <Description label="Link Viewers(s)" items="start" className="h-full">
-          <Table cols={columns} items={dummy} containerClassName="w-3/5" />
+        <Description label="Link Viewer(s)" items="start" className="h-full">
+          <Table cols={columns} items={dummy} containerClassName="w-3/5 mt-[-5px]" />
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
