@@ -30,7 +30,7 @@ const LinkAccessPage = () => {
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
         <SimpleBtn link to="../edit-access">
-          Edit Station Viewer(s)
+        Edit Link Viewer(s)
         </SimpleBtn>
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
