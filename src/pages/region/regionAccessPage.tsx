@@ -89,12 +89,12 @@ const RegionAccessPage = () => {
             ))}
           </Select>
         </Description>
-        <Description label="Region Viewers(s)" items="start" className="h-full">
+        <Description label="Region Viewer(s)" items="start" className="h-full">
           <Table
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
             items={items}
-            containerClassName="w-3/5"
+            containerClassName="w-3/5 mt-[-6px]"
           />
         </Description>
       </>
@@ -102,7 +102,7 @@ const RegionAccessPage = () => {
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
   const buttons = (
     <>
-      {regionDetail.data.access == 'ADMIN' ? (
+      {regionDetail?.data?.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Region Viewer(s)
         </SimpleBtn>
