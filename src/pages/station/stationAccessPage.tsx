@@ -28,10 +28,10 @@ const StationAccessPage = () => {
           </Select>
         </Description>
         <Description
-          label="Station Viewers(s)"
+          label="Station Viewer(s)"
           items="start"
           className="h-full">
-          <Table cols={columns} items={dummy} containerClassName="w-3/5" />
+          <Table cols={columns} items={dummy} containerClassName="w-3/5 mt-[-6px]" />
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
