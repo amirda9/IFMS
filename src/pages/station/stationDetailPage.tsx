@@ -8,6 +8,7 @@ import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {Request} from '~/hooks/useHttpRequest';
 import {useEffect, useState} from 'react';
+import { useSelector } from 'react-redux';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
   description: Yup.string().required('Please enter station comment'),
@@ -15,6 +16,8 @@ const stationSchema = Yup.object().shape({
   longitude: Yup.string().required('Please enter longitude'),
 });
 const StationDetailPage = () => {
+  const {stationDetail} = useSelector((state: any) => state.http);
+  console.log(stationDetail,'stationDetail');
   const params = useParams<{stationId: string}>();
   const initialRequests = (request: Request) => {
     request('stationDetail', {params: {station_id: params.stationId!}});
@@ -164,12 +167,14 @@ const StationDetailPage = () => {
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
+            {stationDetail?.data?.access == 'ADMIN' ?
             <SimpleBtn
               type="submit"
               disabled={state?.detail?.httpRequestStatus === 'loading'}
               >
               Save
             </SimpleBtn>
+            :null}
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>

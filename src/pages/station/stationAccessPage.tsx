@@ -1,6 +1,9 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
+import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
+import {useHttpRequest} from '~/hooks';
+import {AccessEnum} from '~/types';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -17,8 +20,39 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const StationAccessPage = () => {
+  const params = useParams<{stationId: string}>();
   const {stationDetail} = useSelector((state: any) => state.http);
-
+  console.log(stationDetail, 'stationDetail');
+  const {
+    request,
+    state: {viewers},
+  } = useHttpRequest({
+    selector: state => ({
+      viewers: state.http.stationAccessList,
+    }),
+    initialRequests: request => {
+      request('stationAccessList', {params: {station_id: params.stationId!}});
+      // request('userList', undefined);
+    },
+  });
+  console.log(viewers, 'viewersvviewers');
+  // const items = (viewers?.data?.users || [])
+  // .filter(value => value.access !== AccessEnum.admin)
+  // .map((value, index) => ({
+  //   index: (index + 1).toString(),
+  //   user: value.user.username,
+  //   station: value.user.station?.name || '-',
+  //   region: value.user.region?.name || '-',
+  // }));
+  // const admin = viewers?.data?.users.find(
+  // viewer => viewer.access === AccessEnum.admin,
+  // );
+  // const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
+  // const userList =
+  // users?.httpRequestStatus === 'success' ? [...users.data!] : [];
+  // if (!ifUserExist && admin) {
+  // userList.push({...admin.user});
+  // }
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
@@ -27,11 +61,12 @@ const StationAccessPage = () => {
             <option>ahmad kazemi</option>
           </Select>
         </Description>
-        <Description
-          label="Station Viewer(s)"
-          items="start"
-          className="h-full">
-          <Table cols={columns} items={dummy} containerClassName="w-3/5 mt-[-6px]" />
+        <Description label="Station Viewer(s)" items="start" className="h-full">
+          <Table
+            cols={columns}
+            items={dummy}
+            containerClassName="w-3/5 mt-[-6px]"
+          />
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
@@ -40,8 +75,9 @@ const StationAccessPage = () => {
             Edit Station Viewer(s)
           </SimpleBtn>
         ) : null}
-
-        <SimpleBtn>Save</SimpleBtn>
+        {stationDetail?.data?.access == 'ADMIN' ? (
+          <SimpleBtn>Save</SimpleBtn>
+        ) : null}
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>

@@ -8,6 +8,7 @@ import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
+import { useSelector } from 'react-redux';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -17,7 +18,8 @@ const stationSchema = Yup.object().shape({
   // region: Yup.string().required('Please select region'),
 });
 const StationDetailPage = () => {
-  const reff=useRef(null)
+  const {stationDetail} = useSelector((state: any) => state.http);
+console.log(stationDetail,'stationDetail');
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const {state, request} = useHttpRequest({
@@ -140,12 +142,14 @@ const StationDetailPage = () => {
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
+            {stationDetail?.data?.access == 'ADMIN' ?
             <SimpleBtn
               type="submit"
               disabled={state?.create?.httpRequestStatus === 'loading'}
               >
               Save
             </SimpleBtn>
+            :null}
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>
