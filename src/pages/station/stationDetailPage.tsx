@@ -1,12 +1,13 @@
-import {useParams} from 'react-router-dom';
+import {Outlet, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {FormLayout} from '~/layout';
-import {Form, Formik} from 'formik';
+import {Field, Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
-
+import {Request} from '~/hooks/useHttpRequest';
+import {useEffect, useState} from 'react';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
   description: Yup.string().required('Please enter station comment'),
@@ -15,20 +16,35 @@ const stationSchema = Yup.object().shape({
 });
 const StationDetailPage = () => {
   const params = useParams<{stationId: string}>();
+  const initialRequests = (request: Request) => {
+    request('stationDetail', {params: {station_id: params.stationId!}});
+  };
   const {state, request} = useHttpRequest({
-    selector: state => ({detail: state.http.stationDetail}),
-    initialRequests: request => {
-      request('stationDetail', {params: {station_id: params.stationId!}});
+    selector: state => ({
+      detail: state.http.stationDetail,
+      update: state.http.stationUpdate,
+    }),
+    // initialRequests: request => {
+    //   request('stationDetail', {params: {station_id:params.stationId!}});
+    // },
+    initialRequests,
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        initialRequests(request);
+      }
     },
   });
 
-  console.log(state,'state');
-  
+  console.log(state?.detail?.data, 'stateuuuu');
+
   const buttons = (
     <>
       <SimpleBtn
         type="submit"
-        disabled={state.detail?.httpRequestStatus === 'loading'}>
+        disabled={state?.detail?.httpRequestStatus === 'loading'}>
         Save
       </SimpleBtn>
       <SimpleBtn link to="../">
@@ -37,16 +53,53 @@ const StationDetailPage = () => {
     </>
   );
   return (
-    <FormLayout buttons={buttons}>
+ 
+  
       <Formik
+       enableReinitialize
         initialValues={{
-          name: `Station ${params.stationId}`,
+          // name: `Station ${params.stationId}`,
+          name: `${state?.detail?.data?.name}`,
           description:
-            'In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the',
-          latitude: 0,
-          longitude: 0,
+            state?.detail?.data?.versions?.find(
+              version =>
+                version.id === state?.detail?.data?.current_version?.id,
+            )?.description || '',
+          latitude:
+            state?.detail?.data?.versions?.find(
+              version =>
+                version.id === state?.detail?.data?.current_version?.id,
+            )?.latitude || '',
+          longitude:
+            state?.detail?.data?.versions?.find(
+              version =>
+                version.id === state?.detail?.data?.current_version?.id,
+            )?.longitude || '',
+          region: state?.detail?.data?.region?.name,
+          owner:
+            state?.detail?.data?.versions?.find(
+              version =>
+                version.id === state?.detail?.data?.current_version?.id,
+            )?.owner?.username || '',
+          created:
+            state?.detail?.data?.versions?.find(
+              version =>
+                version.id === state?.detail?.data?.current_version?.id,
+            )?.time_created || '',
         }}
-        onSubmit={values => {}}
+        onSubmit={values => {
+          console.log(values, 'valuesvalues');
+
+          request('stationUpdate', {
+            data: {
+              longitude:  Number(values.longitude),
+              latitude:  Number(values.latitude),
+              description:values.description,
+              model: 'cables',
+            },
+            params: {station_id : params.stationId!},
+          });
+        }}
         validationSchema={stationSchema}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col gap-y-4">
@@ -82,24 +135,50 @@ const StationDetailPage = () => {
             </Description>
 
             <Description label="Region" items="start">
-              Region 2
+              <Field name="region">
+                {({field}: any) => <div className="w-1/4">{field.value}</div>}
+              </Field>
             </Description>
 
             <Description label="Owner" items="start">
-              Admin
+              <Field name="owner">
+                {({field}: any) => <div className="w-1/4">{field.value}</div>}
+              </Field>
             </Description>
 
             <Description label="Created">
-              {getPrettyDateTime()}
+              <Field name="created">
+                {({field}: any) => (
+                  <div className="w-1/4"> {getPrettyDateTime(field.value)}</div>
+                )}
+              </Field>
             </Description>
 
             <Description label="Last Modified">
               {getPrettyDateTime()}
             </Description>
           </div>
+          <div className="flex flex-row  gap-x-4 self-end">
+            {/* <SimpleBtn
+              onClick={() => {}}>
+              Explore
+            </SimpleBtn>
+            <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
+            <SimpleBtn
+              type="submit"
+              disabled={state?.detail?.httpRequestStatus === 'loading'}
+              >
+              Save
+            </SimpleBtn>
+            <SimpleBtn link to="../">
+              Cancel
+            </SimpleBtn>
+          </div>
         </Form>
       </Formik>
-    </FormLayout>
+
+ 
+
   );
 };
 

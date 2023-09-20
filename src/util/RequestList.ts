@@ -246,7 +246,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   stationDetail: {
     url: api.BASE_URL + api.URLS.otdr.station.single,
-    method: 'post',
+    method: 'get',
     auth: true,
   },
   stationUpdate: {

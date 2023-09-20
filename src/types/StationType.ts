@@ -20,10 +20,12 @@ export type StationCreateType = {
 };
 
 export type StationType = {
+  current_version: any;
   id: string;
   name: string;
   network_id: string;
   version_id: string;
+  region:{id:string,name:string};
   owner_id: string;
   versions: Array<{
     id: string;
