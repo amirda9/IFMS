@@ -23,6 +23,10 @@ const NetworkDetailPage = () => {
   const initialRequests = (request: Request) => {
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
+  console.log (typeof(params.networkId) ,'params')
+  useEffect(()=>{
+    Cookies.set('networkExplored', params.networkId!)
+  },[])
   // useEffect(()=>{
   //   setdataa(dataa+1)
   // },[])
@@ -31,6 +35,7 @@ const NetworkDetailPage = () => {
     request,
   } = useHttpRequest({
 
+  
     
     selector: state => ({
       detail: state.http.networkDetail,
@@ -104,9 +109,7 @@ const NetworkDetailPage = () => {
           </div>
           <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn
-              onClick={() => {
-                Cookies.set(networkExplored, params.networkId!);
-              }}>
+              onClick={() => Cookies.set('networkExplored', params.networkId!)}>
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>

@@ -26,6 +26,9 @@ const NetworksPage: FC = () => {
       }
     },
   });
+
+  console.log(list,'list');
+  
   return (
     <SidebarLayout searchOnChange={() => {}} createTitle="Networks" canAdd>
       {list?.data?.map(value => (

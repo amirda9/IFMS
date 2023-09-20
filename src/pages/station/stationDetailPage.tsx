@@ -21,6 +21,9 @@ const StationDetailPage = () => {
       request('stationDetail', {params: {station_id: params.stationId!}});
     },
   });
+
+  console.log(state,'state');
+  
   const buttons = (
     <>
       <SimpleBtn
