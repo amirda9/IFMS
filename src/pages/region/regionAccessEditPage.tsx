@@ -9,8 +9,8 @@ import {AccessEnum} from '~/types';
 import { useSelector } from 'react-redux';
 
 const RegionAccessPage = () => {
-  const {networkDetail} = useSelector((state: any) => state.http);
-  console.log(networkDetail.data.access, 'fffrrtttt');
+  const {regionDetail} = useSelector((state: any) => state.http);
+  console.log(regionDetail?.data?.access, 'fffrrtttt');
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{regionId: string}>();
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const RegionAccessPage = () => {
 
   const buttons = (
     <>
-        {networkDetail.data.access == 'ADMIN' ? (
+        {regionDetail?.data?.access == 'ADMIN' ? (
       <SimpleBtn
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {

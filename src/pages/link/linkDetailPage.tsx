@@ -1,15 +1,14 @@
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 
-
 import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
-import { useDispatch, useSelector } from "react-redux";
-import { settypestate } from "./../../store/slices/networkslice";
+import {useDispatch, useSelector} from 'react-redux';
+import {settypestate} from './../../store/slices/networkslice';
 import * as Yup from 'yup';
 import SelectFormik from '~/container/formik/SelectFormik';
-import { getPrettyDateTime } from '~/util/time';
+import {getPrettyDateTime} from '~/util/time';
 
 const linkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter link name'),
@@ -19,14 +18,18 @@ const linkSchema = Yup.object().shape({
   type: Yup.string().required('Please select type'),
 });
 const LinkDetailPage = () => {
+  const {linkDetail} = useSelector((state: any) => state.http);
+  console.log(linkDetail?.data?.access, 'fffrrtttt');
   const {type} = useSelector((state: any) => state.network);
   const dispatch = useDispatch();
   const params = useParams<{linkId: string}>();
   const buttons = (
     <>
-      <SimpleBtn type="submit" disabled={true}>
-        Save
-      </SimpleBtn>
+      {linkDetail?.data?.access == 'ADMIN' ? (
+        <SimpleBtn type="submit" disabled={true}>
+          Save
+        </SimpleBtn>
+      ) : null}
       <SimpleBtn>Cancel</SimpleBtn>
     </>
   );
@@ -58,7 +61,9 @@ const LinkDetailPage = () => {
             </Description>
 
             <Description label="Source" items="center">
-              <SelectFormik name="source" className="w-1/5 disabled:bg-white text-sm">
+              <SelectFormik
+                name="source"
+                className="w-1/5 text-sm disabled:bg-white">
                 <option>Station2</option>
               </SelectFormik>
             </Description>
@@ -66,18 +71,20 @@ const LinkDetailPage = () => {
             <Description label="Destination" items="center">
               <SelectFormik
                 name="destination"
-                className="w-1/5 disabled:bg-white text-sm">
+                className="w-1/5 text-sm disabled:bg-white">
                 <option>Station1</option>
               </SelectFormik>
             </Description>
 
             <Description label="Type" items="center">
-              <SelectFormik defaultValue={type}  onChange={(e)=>dispatch(settypestate(e.target.value))
-              } name="type" className="w-1/5 disabled:bg-white text-sm">
+              <SelectFormik
+                defaultValue={type}
+                onChange={e => dispatch(settypestate(e.target.value))}
+                name="type"
+                className="w-1/5 text-sm disabled:bg-white">
                 <option>Cable</option>
                 <option>duct</option>
               </SelectFormik>
-         
             </Description>
 
             <Description label="Region" items="start">
@@ -88,9 +95,7 @@ const LinkDetailPage = () => {
               Admin
             </Description>
 
-            <Description label="Created">
-              {getPrettyDateTime()}
-            </Description>
+            <Description label="Created">{getPrettyDateTime()}</Description>
 
             <Description label="Last Modified">
               {getPrettyDateTime()}
