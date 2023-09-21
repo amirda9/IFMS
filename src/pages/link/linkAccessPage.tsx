@@ -1,4 +1,5 @@
 import React from 'react';
+import {useSelector} from 'react-redux';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 
 const columns = {
@@ -16,6 +17,8 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const LinkAccessPage = () => {
+  const {linkDetail} = useSelector((state: any) => state.http);
+  console.log(linkDetail?.data?.access, 'fffrrtttt');
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
@@ -25,13 +28,19 @@ const LinkAccessPage = () => {
           </Select>
         </Description>
         <Description label="Link Viewer(s)" items="start" className="h-full">
-          <Table cols={columns} items={dummy} containerClassName="w-3/5 mt-[-5px]" />
+          <Table
+            cols={columns}
+            items={dummy}
+            containerClassName="w-3/5 mt-[-5px]"
+          />
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn link to="../edit-access">
-        Edit Link Viewer(s)
-        </SimpleBtn>
+        {linkDetail?.data?.access == 'ADMIN' ? (
+          <SimpleBtn link to="../edit-access">
+            Edit Link Viewer(s)
+          </SimpleBtn>
+        ) : null}
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
