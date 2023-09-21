@@ -47,18 +47,18 @@ const LinkDetailPage = () => {
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-2/3 text-sm"
                 className="disabled:bg-white"
                 disabled
               />
             </Description>
 
             <Description label="Comment" items="start">
-              <TextareaFormik name="description" className="w-2/3" />
+              <TextareaFormik name="description" className="w-2/3 text-sm" />
             </Description>
 
             <Description label="Source" items="center">
-              <SelectFormik name="source" className="w-1/5 disabled:bg-white">
+              <SelectFormik name="source" className="w-1/5 disabled:bg-white text-sm">
                 <option>Station2</option>
               </SelectFormik>
             </Description>
@@ -66,14 +66,14 @@ const LinkDetailPage = () => {
             <Description label="Destination" items="center">
               <SelectFormik
                 name="destination"
-                className="w-1/5 disabled:bg-white">
+                className="w-1/5 disabled:bg-white text-sm">
                 <option>Station1</option>
               </SelectFormik>
             </Description>
 
             <Description label="Type" items="center">
               <SelectFormik defaultValue={type}  onChange={(e)=>dispatch(settypestate(e.target.value))
-              } name="type" className="w-1/5 disabled:bg-white">
+              } name="type" className="w-1/5 disabled:bg-white text-sm">
                 <option>Cable</option>
                 <option>duct</option>
               </SelectFormik>
