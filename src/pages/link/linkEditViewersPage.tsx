@@ -6,8 +6,11 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
+import { useSelector } from 'react-redux';
 
 const RegionAccessPage = () => {
+  const {linkDetail} = useSelector((state: any) => state.http);
+  console.log(linkDetail?.data?.access, 'fffrrtttt');
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{linkId: string}>();
   const navigate = useNavigate();
@@ -43,30 +46,32 @@ const RegionAccessPage = () => {
 
   const buttons = (
     <>
-      <SimpleBtn
-        disabled={update?.httpRequestStatus === 'loading'}
-        onClick={() => {
-          const admin = viewers!.data!.users.find(
-            value => value?.access === AccessEnum.admin,
-          );
-          const viewerList = editor.current!.values;
+      {linkDetail?.data?.access == 'ADMIN' ? (
+        <SimpleBtn
+          disabled={update?.httpRequestStatus === 'loading'}
+          onClick={() => {
+            const admin = viewers!.data!.users.find(
+              value => value?.access === AccessEnum.admin,
+            );
+            const viewerList = editor.current!.values;
 
-          if (admin) {
-            const index = viewerList.indexOf(admin.user.id);
-            if (index !== -1 && index !== null) {
-              viewerList.splice(index, 1);
+            if (admin) {
+              const index = viewerList.indexOf(admin.user.id);
+              if (index !== -1 && index !== null) {
+                viewerList.splice(index, 1);
+              }
             }
-          }
 
-          const users = viewerList.map(value => value);
+            const users = viewerList.map(value => value);
 
-          request('regionAccessUpdate', {
-            params: {region_id: params.linkId!},
-            data: {users},
-          });
-        }}>
-        OK
-      </SimpleBtn>
+            request('regionAccessUpdate', {
+              params: {region_id: params.linkId!},
+              data: {users},
+            });
+          }}>
+          OK
+        </SimpleBtn>
+      ) : null}
       <SimpleBtn link to="../">
         Cancel
       </SimpleBtn>

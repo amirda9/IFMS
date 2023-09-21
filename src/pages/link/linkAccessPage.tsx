@@ -40,7 +40,7 @@ const LinkAccessPage = () => {
           <SimpleBtn link to="../edit-access">
             Edit Link Viewer(s)
           </SimpleBtn>
-        ) : null}
+         ) : null} 
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
