@@ -6,8 +6,12 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
+import {log} from 'console';
+import {useSelector} from 'react-redux';
 
 const NetworkAccessPage = () => {
+  const {networkDetail} = useSelector((state: any) => state.http);
+  console.log(networkDetail.data.access, 'fffrrtttt');
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{networkId: string}>();
   const navigate = useNavigate();
@@ -28,7 +32,7 @@ const NetworkAccessPage = () => {
         viewers?.httpRequestStatus === 'success'
       ) {
         editor.current?.setValues(
-          viewers.data!.users.map(viewer => viewer.user.id),
+          viewers?.data!.users.map(viewer => viewer.user.id),
         );
       }
       if (
@@ -41,35 +45,38 @@ const NetworkAccessPage = () => {
     },
   });
 
+  console.log(viewers, 'viewers');
+
   const buttons = (
-    <div className='mt-[25px] w-auto'>
-       <SimpleBtn
-      className='w-[149px] h-[40px] mt-[25px]'
-        disabled={update?.httpRequestStatus === 'loading'}
-        onClick={() => {
-          const admin = viewers!.data!.users.find(
-            value => value.access === AccessEnum.admin,
-          );
-          const viewerList = editor.current!.values;
+    <div className="mt-[25px] w-auto">
+      {networkDetail.data.access == 'ADMIN' ? (
+        <SimpleBtn
+          className="mt-[25px] h-[40px] w-[149px]"
+          disabled={update?.httpRequestStatus === 'loading'}
+          onClick={() => {
+            const admin = viewers?.data?.users?.find(
+              value => value.access === AccessEnum.admin,
+            );
+            const viewerList = editor.current!.values;
 
-          if (admin) {
-            const index = viewerList.indexOf(admin.user.id);
-            if (index !== -1 && index !== null) {
-              viewerList.splice(index, 1);
+            if (admin) {
+              const index = viewerList.indexOf(admin.user.id);
+              if (index !== -1 && index !== null) {
+                viewerList.splice(index, 1);
+              }
             }
-          }
-          const users = viewerList.map(value => value);
+            const users = viewerList.map(value => value);
 
-          request('networkAccessUpdate', {
-            params: {network_id: params.networkId!},
-            data: {users},
-          });
-        }}>
-        OK
-      </SimpleBtn>
-      <SimpleBtn className='py-[12px] px-14 ml-2 ' to="./../access" link>
+            request('networkAccessUpdate', {
+              params: {network_id: params.networkId!},
+              data: {users},
+            });
+          }}>
+          OK
+        </SimpleBtn>
+      ) : null}
+      <SimpleBtn className="ml-2 px-14 py-[12px] " to="./../access" link>
         <span>Cancel</span>
-      
       </SimpleBtn>
     </div>
   );

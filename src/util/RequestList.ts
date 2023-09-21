@@ -580,7 +580,7 @@ export type ResponseListType = {
   stationAccessUpdate: {count: number};
   stationDelete: {count: number};
   networkStationList: T.StationListType[];
-  stationAccessList: T.AccessListType;
+  stationAccessList:{users:T.AccessListType[];} 
   stationViewerUpdate: {count: number};
   stationAdminUpdate: string;
   userNetworkAccesses: T.NetworkAccessType[];
