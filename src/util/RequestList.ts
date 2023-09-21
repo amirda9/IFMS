@@ -48,6 +48,7 @@ type RequestKeys =
   | 'stationCreate'
   | 'stationDetail'
   | 'stationUpdate'
+  | 'stationAccessUpdate'
   | 'stationDelete'
   | 'networkStationList'
   | 'stationAccessList'
@@ -206,6 +207,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   regionAccessUpdate: {
     url: api.BASE_URL + api.URLS.otdr.region.viewersAccess,
+    method: 'post',
+    auth: true,
+  },
+  stationAccessUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.station.viewersAccess,
     method: 'post',
     auth: true,
   },
@@ -434,6 +440,10 @@ export type RequestListTypes = {
       description: string;
     };
   };
+  stationAccessUpdate: {
+    params: {station_id: string};
+    data: {users: string[]};
+  };
   stationDelete: {
     params: {station_id: string};
   };
@@ -567,6 +577,7 @@ export type ResponseListType = {
   stationCreate: T.StationCreateType & {station_id: string};
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
+  stationAccessUpdate: {count: number};
   stationDelete: {count: number};
   networkStationList: T.StationListType[];
   stationAccessList: T.AccessListType;

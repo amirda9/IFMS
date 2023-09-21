@@ -47,7 +47,7 @@ const RegionAccessPage = () => {
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
           const admin = viewers!.data!.users.find(
-            value => value.access === AccessEnum.admin,
+            value => value?.access === AccessEnum.admin,
           );
           const viewerList = editor.current!.values;
 

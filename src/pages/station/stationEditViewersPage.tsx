@@ -7,6 +7,7 @@ import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 
+
 const RegionAccessPage = () => {
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{stationId: string}>();
@@ -16,11 +17,11 @@ const RegionAccessPage = () => {
     state: {viewers, update},
   } = useHttpRequest({
     selector: state => ({
-      viewers: state.http.regionAccessList,
-      update: state.http.regionAccessUpdate,
+      viewers: state.http.stationAccessList,
+      update: state.http.stationAccessUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.stationId!}});
+      request('stationAccessList', {params: {station_id: params.stationId!}});
     },
     onUpdate: lastState => {
       if (
@@ -35,11 +36,13 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('regionAccessList', {params: {region_id: params.stationId!}});
+        request('stationAccessList', {params: {station_id: params.stationId!}});
         navigate('../access', {replace: true, relative: 'path'});
       }
     },
   });
+
+console.log(viewers,'viewers');
 
   const buttons = (
     <>
@@ -47,12 +50,12 @@ const RegionAccessPage = () => {
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
           const admin = viewers!.data!.users.find(
-            value => value.access === AccessEnum.admin,
+            value => value?.access === AccessEnum.admin,
           );
           const viewerList = editor.current!.values;
 
           if (admin) {
-            const index = viewerList.indexOf(admin.user.id);
+            const index = viewerList.indexOf(admin?.user.id);
             if (index !== -1 && index !== null) {
               viewerList.splice(index, 1);
             }
@@ -60,8 +63,8 @@ const RegionAccessPage = () => {
 
           const users = viewerList.map(value => value);
 
-          request('regionAccessUpdate', {
-            params: {region_id: params.stationId!},
+          request('stationAccessUpdate', {
+            params: {station_id: params.stationId!},
             data: {users},
           });
         }}>

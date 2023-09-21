@@ -25,7 +25,7 @@ const StationAccessPage = () => {
   console.log(stationDetail, 'stationDetail');
   const {
     request,
-    state: {viewers,users},
+    state: {viewers, users},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.stationAccessList,
@@ -38,24 +38,24 @@ const StationAccessPage = () => {
   });
   console.log(viewers, 'viewersvviewers');
   const items = (viewers?.data?.users || [])
-  .filter(value => value.access !== AccessEnum.admin)
-  .map((value, index) => ({
-    index: (index + 1).toString(),
-    user: value.user.username,
-    station: value.user.station?.name || '-',
-    region: value.user.region?.name || '-',
-  }));
+    .filter(value => value.access !== AccessEnum.admin)
+    .map((value, index) => ({
+      index: (index + 1).toString(),
+      user: value.user.username,
+      station: value.user.station?.name || '-',
+      region: value.user.region?.name || '-',
+    }));
   const admin = viewers?.data?.users.find(
-  viewer => viewer.access === AccessEnum.admin,
+    viewer => viewer.access === AccessEnum.admin,
   );
   const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
   const userList =
-  users?.httpRequestStatus === 'success' ? [...users.data!] : [];
+    users?.httpRequestStatus === 'success' ? [...users.data!] : [];
   if (!ifUserExist && admin) {
-  userList.push({...admin.user});
+    userList.push({...admin.user});
   }
-  console.log(items,'items');
-  
+  console.log(items, 'items');
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
