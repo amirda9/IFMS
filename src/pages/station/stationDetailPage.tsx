@@ -136,20 +136,20 @@ const StationDetailPage = () => {
 
             <Description label="Region" items="start">
               <Field name="region">
-                {({field}: any) => <div className="w-1/4">{field.value}</div>}
+                {({field}: any) => <div className="w-1/4 text-sm">{field.value}</div>}
               </Field>
             </Description>
 
             <Description label="Owner" items="start">
               <Field name="owner">
-                {({field}: any) => <div className="w-1/4">{field.value}</div>}
+                {({field}: any) => <div className="w-1/4 text-sm">{field.value}</div>}
               </Field>
             </Description>
 
             <Description label="Created">
               <Field name="created">
                 {({field}: any) => (
-                  <div className="w-1/4"> {getPrettyDateTime(field.value)}</div>
+                  <div className="w-1/4 text-sm"> {getPrettyDateTime(field.value)}</div>
                 )}
               </Field>
             </Description>
