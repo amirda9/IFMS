@@ -25,10 +25,11 @@ const StationAccessPage = () => {
   console.log(stationDetail, 'stationDetail');
   const {
     request,
-    state: {viewers},
+    state: {viewers,users},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.stationAccessList,
+      users: state.http.userList,
     }),
     initialRequests: request => {
       request('stationAccessList', {params: {station_id: params.stationId!}});
@@ -36,23 +37,25 @@ const StationAccessPage = () => {
     },
   });
   console.log(viewers, 'viewersvviewers');
-  // const items = (viewers?.data?.users || [])
-  // .filter(value => value.access !== AccessEnum.admin)
-  // .map((value, index) => ({
-  //   index: (index + 1).toString(),
-  //   user: value.user.username,
-  //   station: value.user.station?.name || '-',
-  //   region: value.user.region?.name || '-',
-  // }));
-  // const admin = viewers?.data?.users.find(
-  // viewer => viewer.access === AccessEnum.admin,
-  // );
-  // const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
-  // const userList =
-  // users?.httpRequestStatus === 'success' ? [...users.data!] : [];
-  // if (!ifUserExist && admin) {
-  // userList.push({...admin.user});
-  // }
+  const items = (viewers?.data?.users || [])
+  .filter(value => value.access !== AccessEnum.admin)
+  .map((value, index) => ({
+    index: (index + 1).toString(),
+    user: value.user.username,
+    station: value.user.station?.name || '-',
+    region: value.user.region?.name || '-',
+  }));
+  const admin = viewers?.data?.users.find(
+  viewer => viewer.access === AccessEnum.admin,
+  );
+  const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
+  const userList =
+  users?.httpRequestStatus === 'success' ? [...users.data!] : [];
+  if (!ifUserExist && admin) {
+  userList.push({...admin.user});
+  }
+  console.log(items,'items');
+  
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
@@ -64,7 +67,7 @@ const StationAccessPage = () => {
         <Description label="Station Viewer(s)" items="start" className="h-full">
           <Table
             cols={columns}
-            items={dummy}
+            items={items}
             containerClassName="w-3/5 mt-[-6px]"
           />
         </Description>

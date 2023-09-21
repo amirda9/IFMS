@@ -47,6 +47,8 @@ const NetworkAccessPage = () => {
     });
   };
 
+
+
   const body = useMemo(() => {
     const items = (viewers?.data?.users || [])
       .filter(value => value.access !== AccessEnum.admin)
