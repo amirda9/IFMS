@@ -2,11 +2,16 @@ import React from 'react';
 import {SimpleBtn, TextInput} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
 import {FormLayout} from '~/layout';
+import {useSelector} from 'react-redux';
 
 const LinkPointsPage = () => {
+  const {linkDetail} = useSelector((state: any) => state.http);
+  console.log(linkDetail?.data?.access, 'fffrrtttt');
   const buttons = (
     <>
-      <SimpleBtn type="submit">Save</SimpleBtn>
+      {linkDetail?.data?.access == 'ADMIN' ? (
+        <SimpleBtn type="submit">Save</SimpleBtn>
+      ) : null}
       <SimpleBtn>Cancel</SimpleBtn>
     </>
   );
