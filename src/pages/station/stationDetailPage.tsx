@@ -80,10 +80,7 @@ const StationDetailPage = () => {
             )?.longitude || '',
           region: state?.detail?.data?.region?.name,
           owner:
-            state?.detail?.data?.versions?.find(
-              version =>
-                version.id === state?.detail?.data?.current_version?.id,
-            )?.owner?.username || '',
+            state?.detail?.data?.current_version.owner?.username || '',
           created:
             state?.detail?.data?.versions?.find(
               version =>
