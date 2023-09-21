@@ -6,8 +6,11 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
+import { useSelector } from 'react-redux';
 
 const RegionAccessPage = () => {
+  const {networkDetail} = useSelector((state: any) => state.http);
+  console.log(networkDetail.data.access, 'fffrrtttt');
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{regionId: string}>();
   const navigate = useNavigate();
@@ -27,6 +30,7 @@ const RegionAccessPage = () => {
 
   const buttons = (
     <>
+        {networkDetail.data.access == 'ADMIN' ? (
       <SimpleBtn
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
@@ -50,7 +54,7 @@ const RegionAccessPage = () => {
           });
         }}>
         OK
-      </SimpleBtn>
+      </SimpleBtn>):null}
       <SimpleBtn link to="../">
         Cancel
       </SimpleBtn>

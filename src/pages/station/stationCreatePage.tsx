@@ -84,7 +84,7 @@ console.log(stationDetail,'stationDetail');
               description: values.description,
               longitude: values.longitude,
               latitude: values.latitude,
-              // region_id: values.region,
+              region_id:"",
               model: 'cables',
               network_id: networkId!,
             },
