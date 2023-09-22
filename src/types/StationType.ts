@@ -15,7 +15,7 @@ export type StationCreateType = {
   longitude: number;
   latitude: number;
   network_id: string;
-  region_id: string;
+  // region_id: string;
   description: string;
 };
 

@@ -84,7 +84,7 @@ console.log(stationDetail,'stationDetail');
               description: values.description,
               longitude: values.longitude,
               latitude: values.latitude,
-              region_id:"",
+              // region_id:"",
               model: 'cables',
               network_id: networkId!,
             },
@@ -142,14 +142,14 @@ console.log(stationDetail,'stationDetail');
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
-            {stationDetail?.data?.access == 'ADMIN' ?
+            {/* {stationDetail?.data?.access == 'ADMIN' ? */}
             <SimpleBtn
               type="submit"
               disabled={state?.create?.httpRequestStatus === 'loading'}
               >
               Save
             </SimpleBtn>
-            :null}
+            {/* :null} */}
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>

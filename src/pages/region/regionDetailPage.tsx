@@ -63,14 +63,14 @@ const RegionDetailPage = () => {
             <Description label="Name" items="start">
               <InputFormik
                 name="name"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-2/3 text-sm"
                 className="disabled:bg-white"
                 disabled
               />
             </Description>
 
             <Description label="Comment" items="start">
-              <TextareaFormik name="description" className="w-2/3" />
+              <TextareaFormik name="description" className="w-2/3 text-sm" />
             </Description>
 
             <Description label="Owner" items="start">

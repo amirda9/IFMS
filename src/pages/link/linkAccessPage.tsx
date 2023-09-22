@@ -23,11 +23,14 @@ const LinkAccessPage = () => {
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
         <Description label="Link Admin" className="mb-4">
-          <Select className="w-80">
+          <Select className="w-80 text-sm">
             <option>ahmad kazemi</option>
           </Select>
         </Description>
-        <Description label="Link Viewer(s)" items="start" className="h-full">
+        <Description
+          label="Link Viewer(s)"
+          items="start"
+          className="h-full text-sm">
           <Table
             cols={columns}
             items={dummy}
@@ -40,7 +43,7 @@ const LinkAccessPage = () => {
           <SimpleBtn link to="../edit-access">
             Edit Link Viewer(s)
           </SimpleBtn>
-         ) : null} 
+        ) : null}
         <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

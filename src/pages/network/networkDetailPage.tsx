@@ -89,14 +89,14 @@ const NetworkDetailPage = () => {
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik
                 name="name"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-2/3 text-sm"
                 className=""
                 // disabled
               />
             </Description>
 
             <Description label="Comment" items="start">
-              <TextareaFormik name="description" className="w-2/3" />
+              <TextareaFormik name="description" className="w-2/3 text-sm" />
             </Description>
 
             <Description label="Created">

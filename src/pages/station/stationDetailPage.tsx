@@ -8,7 +8,7 @@ import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {Request} from '~/hooks/useHttpRequest';
 import {useEffect, useState} from 'react';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
   description: Yup.string().required('Please enter station comment'),
@@ -17,7 +17,7 @@ const stationSchema = Yup.object().shape({
 });
 const StationDetailPage = () => {
   const {stationDetail} = useSelector((state: any) => state.http);
-  console.log(stationDetail,'stationDetail');
+  console.log(stationDetail, 'stationDetail');
   const params = useParams<{stationId: string}>();
   const initialRequests = (request: Request) => {
     request('stationDetail', {params: {station_id: params.stationId!}});
@@ -56,131 +56,125 @@ const StationDetailPage = () => {
     </>
   );
   return (
- 
-  
-      <Formik
-       enableReinitialize
-        initialValues={{
-          // name: `Station ${params.stationId}`,
-          name: `${state?.detail?.data?.name}`,
-          description:
-            state?.detail?.data?.versions?.find(
-              version =>
-                version.id === state?.detail?.data?.current_version?.id,
-            )?.description || '',
-          latitude:
-            state?.detail?.data?.versions?.find(
-              version =>
-                version.id === state?.detail?.data?.current_version?.id,
-            )?.latitude || '',
-          longitude:
-            state?.detail?.data?.versions?.find(
-              version =>
-                version.id === state?.detail?.data?.current_version?.id,
-            )?.longitude || '',
-          region: state?.detail?.data?.region?.name,
-          owner:
-            state?.detail?.data?.current_version.owner?.username || '',
-          created:
-            state?.detail?.data?.versions?.find(
-              version =>
-                version.id === state?.detail?.data?.current_version?.id,
-            )?.time_created || '',
-        }}
-        onSubmit={values => {
-          console.log(values, 'valuesvalues');
+    <Formik
+      enableReinitialize
+      initialValues={{
+        // name: `Station ${params.stationId}`,
+        name: `${state?.detail?.data?.name}`,
+        description:
+          state?.detail?.data?.versions?.find(
+            version => version.id === state?.detail?.data?.current_version?.id,
+          )?.description || '',
+        latitude:
+          state?.detail?.data?.versions?.find(
+            version => version.id === state?.detail?.data?.current_version?.id,
+          )?.latitude || '',
+        longitude:
+          state?.detail?.data?.versions?.find(
+            version => version.id === state?.detail?.data?.current_version?.id,
+          )?.longitude || '',
+        region: state?.detail?.data?.region?.name,
+        owner: state?.detail?.data?.current_version.owner?.username || '',
+        created:
+          state?.detail?.data?.versions?.find(
+            version => version.id === state?.detail?.data?.current_version?.id,
+          )?.time_created || '',
+      }}
+      onSubmit={values => {
+        console.log(values, 'valuesvalues');
 
-          request('stationUpdate', {
-            data: {
-              longitude:  Number(values.longitude),
-              latitude:  Number(values.latitude),
-              description:values.description,
-              model: 'cables',
-            },
-            params: {station_id : params.stationId!},
-          });
-        }}
-        validationSchema={stationSchema}>
-        <Form className="flex h-full flex-col justify-between">
-          <div className="flex flex-col gap-y-4">
-            <Description label="Name" items="start">
-              <InputFormik
-                name="name"
-                wrapperClassName="w-2/3"
-                className="disabled:bg-white"
-                disabled
-              />
-            </Description>
+        request('stationUpdate', {
+          data: {
+            longitude: Number(values.longitude),
+            latitude: Number(values.latitude),
+            description: values.description,
+            model: 'cables',
+          },
+          params: {station_id: params.stationId!},
+        });
+      }}
+      validationSchema={stationSchema}>
+      <Form className="flex h-full flex-col justify-between">
+        <div className="flex flex-col gap-y-4">
+          <Description label="Name" items="start">
+            <InputFormik
+              name="name"
+              wrapperClassName="w-2/3"
+              className="text-sm disabled:bg-white"
+              disabled
+            />
+          </Description>
 
-            <Description label="Comment" items="start">
-              <TextareaFormik name="description" className="w-2/3" />
-            </Description>
+          <Description label="Comment" items="start">
+            <TextareaFormik name="description" className="w-2/3 text-sm" />
+          </Description>
 
-            <Description label="Latitude" items="start">
-              <InputFormik
-                type="number"
-                name="latitude"
-                wrapperClassName="w-1/4"
-                className="disabled:bg-white"
-              />
-            </Description>
+          <Description label="Latitude" items="start">
+            <InputFormik
+              type="number"
+              name="latitude"
+              wrapperClassName="w-1/4"
+              className="text-sm disabled:bg-white"
+            />
+          </Description>
 
-            <Description label="Longitude" items="start">
-              <InputFormik
-                type="number"
-                name="longitude"
-                wrapperClassName="w-1/4"
-                className="disabled:bg-white"
-              />
-            </Description>
+          <Description label="Longitude" items="start">
+            <InputFormik
+              type="number"
+              name="longitude"
+              wrapperClassName="w-1/4"
+              className="text-sm disabled:bg-white"
+            />
+          </Description>
 
-            <Description label="Region" items="start">
-              <Field name="region">
-                {({field}: any) => <div className="w-1/4 text-sm">{field.value}</div>}
-              </Field>
-            </Description>
+          <Description label="Region" items="start">
+            <Field name="region">
+              {({field}: any) => (
+                <div className="w-1/4 text-sm">{field.value}</div>
+              )}
+            </Field>
+          </Description>
 
-            <Description label="Owner" items="start">
-              <Field name="owner">
-                {({field}: any) => <div className="w-1/4 text-sm">{field.value}</div>}
-              </Field>
-            </Description>
+          <Description label="Owner" items="start">
+            <Field name="owner">
+              {({field}: any) => (
+                <div className="w-1/4 text-sm">{field.value}</div>
+              )}
+            </Field>
+          </Description>
 
-            <Description label="Created">
-              <Field name="created">
-                {({field}: any) => (
-                  <div className="w-1/4 text-sm"> {getPrettyDateTime(field.value)}</div>
-                )}
-              </Field>
-            </Description>
+          <Description label="Created">
+            <Field name="created">
+              {({field}: any) => (
+                <div className="w-1/4 text-sm">
+                  {' '}
+                  {getPrettyDateTime(field.value)}
+                </div>
+              )}
+            </Field>
+          </Description>
 
-            <Description label="Last Modified">
-              {getPrettyDateTime()}
-            </Description>
-          </div>
-          <div className="flex flex-row  gap-x-4 self-end">
-            {/* <SimpleBtn
+          <Description label="Last Modified">{getPrettyDateTime()}</Description>
+        </div>
+        <div className="flex flex-row  gap-x-4 self-end">
+          {/* <SimpleBtn
               onClick={() => {}}>
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
-            {stationDetail?.data?.access == 'ADMIN' ?
+          {stationDetail?.data?.access == 'ADMIN' ? (
             <SimpleBtn
               type="submit"
-              disabled={state?.detail?.httpRequestStatus === 'loading'}
-              >
+              disabled={state?.detail?.httpRequestStatus === 'loading'}>
               Save
             </SimpleBtn>
-            :null}
-            <SimpleBtn link to="../">
-              Cancel
-            </SimpleBtn>
-          </div>
-        </Form>
-      </Formik>
-
- 
-
+          ) : null}
+          <SimpleBtn link to="../">
+            Cancel
+          </SimpleBtn>
+        </div>
+      </Form>
+    </Formik>
   );
 };
 
