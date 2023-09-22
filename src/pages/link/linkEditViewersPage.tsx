@@ -6,7 +6,7 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 const RegionAccessPage = () => {
   const {linkDetail} = useSelector((state: any) => state.http);
@@ -19,11 +19,11 @@ const RegionAccessPage = () => {
     state: {viewers, update},
   } = useHttpRequest({
     selector: state => ({
-      viewers: state.http.regionAccessList,
-      update: state.http.regionAccessUpdate,
+      viewers: state.http.linkAccessList,
+      update: state.http.linkAccessUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.linkId!}});
+      request('linkAccessList', {params: {link_id: params.linkId!}});
     },
     onUpdate: lastState => {
       if (
@@ -38,7 +38,7 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('regionAccessList', {params: {region_id: params.linkId!}});
+        request('linkAccessList', {params: {link_id: params.linkId!}});
         navigate('../access', {replace: true, relative: 'path'});
       }
     },
@@ -64,8 +64,8 @@ const RegionAccessPage = () => {
 
             const users = viewerList.map(value => value);
 
-            request('regionAccessUpdate', {
-              params: {region_id: params.linkId!},
+            request('linkAccessUpdate', {
+              params: {link_id: params.linkId!},
               data: {users},
             });
           }}>

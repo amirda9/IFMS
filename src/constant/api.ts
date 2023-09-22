@@ -56,6 +56,8 @@ export const URLS = {
       listInRegion: '/otdr/link/region/{region_id}',
       create: '/otdr/link/',
       single: '/otdr/link/{link_id}',
+      allAccess: '/otdr/link/{link_id}/access',
+      viewersAccess: '/otdr/link/{link_id}/access/viewers',
     },
   },
 };

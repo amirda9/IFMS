@@ -33,10 +33,11 @@ const StationAccessPage = () => {
     }),
     initialRequests: request => {
       request('stationAccessList', {params: {station_id: params.stationId!}});
-      // request('userList', undefined);
+     request('userList', undefined);
     },
   });
   console.log(viewers, 'viewersvviewers');
+  console.log(users, 'users');
   const items = (viewers?.data?.users || [])
     .filter(value => value.access !== AccessEnum.admin)
     .map((value, index) => ({

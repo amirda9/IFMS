@@ -52,9 +52,11 @@ type RequestKeys =
   | 'stationDetail'
   | 'stationUpdate'
   | 'stationAccessUpdate'
+  | 'linkAccessUpdate'
   | 'stationDelete'
   | 'networkStationList'
   | 'stationAccessList'
+  | 'linkAccessList'
   | 'stationViewerUpdate'
   | 'stationAdminUpdate'
   | 'userNetworkAccesses'
@@ -240,9 +242,19 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  linkAccessUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.link.viewersAccess,
+    method: 'post',
+    auth: true,
+  },
   linkUpdate: {
     url: api.BASE_URL + api.URLS.otdr.link.single,
     method: 'put',
+    auth: true,
+  },
+  linkAccessList: {
+    url: api.BASE_URL + api.URLS.otdr.link.allAccess,
+    method: 'get',
     auth: true,
   },
   regionLinkList: {
@@ -462,6 +474,13 @@ export type RequestListTypes = {
       type: string;
     };
   };
+  linkAccessUpdate: {
+    params: {link_id: string};
+    data: {users: string[]};
+  };
+  linkAccessList: {
+    params: {link_id: string};
+  };
   linkDelete: {params: {link_id: string}};
   linkDetail: {params: {link_id: string}};
   linkUpdate: {
@@ -630,6 +649,8 @@ export type ResponseListType = {
   linkCreate: T.LinkCreateType;
   regionDetail: T.RegionType;
   linkDetail: T.LinkType;
+  linkAccessList: {users: T.AccessListType[]};
+  linkAccessUpdate: {count: number};
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};

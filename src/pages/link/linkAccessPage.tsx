@@ -1,6 +1,9 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
+import { useHttpRequest } from '~/hooks';
+import { AccessEnum } from '~/types';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -17,6 +20,41 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const LinkAccessPage = () => {
+  const params = useParams<{linkId: string}>();
+  const {
+    request,
+    state: {viewers, users},
+  } = useHttpRequest({
+    selector: state => ({
+      viewers: state.http.linkAccessList,
+      users: state.http.userList,
+    }),
+    initialRequests: request => {
+      request('linkAccessList', {params: {link_id: params.linkId!}});
+      request('userList', undefined);
+    },
+  });
+  const items = (viewers?.data?.users || [])
+  .filter(value => value.access !== AccessEnum.admin)
+  .map((value, index) => ({
+    index: (index + 1).toString(),
+    user: value.user.username,
+    station: value.user.station?.name || '-',
+    region: value.user.region?.name || '-',
+  }));
+const admin = viewers?.data?.users.find(
+  viewer => viewer.access === AccessEnum.admin,
+);
+const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
+const userList =
+  users?.httpRequestStatus === 'success' ? [...users.data!] : [];
+if (!ifUserExist && admin) {
+  userList.push({...admin.user});
+}
+  console.log(viewers,'viewers');
+  console.log(users,'users');
+  console.log(items,'items');
+  
   const {linkDetail} = useSelector((state: any) => state.http);
   console.log(linkDetail?.data?.access, 'fffrrtttt');
   return (
@@ -33,7 +71,7 @@ const LinkAccessPage = () => {
           className="h-full text-sm">
           <Table
             cols={columns}
-            items={dummy}
+            items={items}
             containerClassName="w-3/5 mt-[-5px]"
           />
         </Description>
