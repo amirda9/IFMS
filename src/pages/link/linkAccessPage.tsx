@@ -39,7 +39,7 @@ const LinkAccessPage = () => {
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        {linkDetail?.data?.access == 'ADMIN' ? (
+        {linkDetail?.data?.access.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-access">
             Edit Link Viewer(s)
           </SimpleBtn>

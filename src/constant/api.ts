@@ -54,7 +54,7 @@ export const URLS = {
     link: {
       all: '/otdr/link',
       listInRegion: '/otdr/link/region/{region_id}',
-      create: '/otdr/link',
+      create: '/otdr/link/',
       single: '/otdr/link/{link_id}',
     },
   },

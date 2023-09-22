@@ -97,7 +97,7 @@ const NetworkAccessPage = () => {
 
   const buttons = (
     <>
-      {networkDetail.data.access == 'ADMIN' ? (
+      {networkDetail.data.access.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Network Viewer(s)
         </SimpleBtn>

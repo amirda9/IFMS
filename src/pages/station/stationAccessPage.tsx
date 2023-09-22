@@ -73,7 +73,7 @@ const StationAccessPage = () => {
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        {stationDetail?.data?.access == 'ADMIN' ? (
+        {stationDetail?.data?.access.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-access">
             Edit Station Viewer(s)
           </SimpleBtn>
