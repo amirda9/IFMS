@@ -36,6 +36,9 @@ type RequestKeys =
   | 'allRegions'
   | 'regionList'
   | 'regionCreate'
+  | 'linkCreate'
+  | 'linkDetail'
+  | 'linkUpdate'
   | 'regionDetail'
   | 'regionUpdate'
   | 'regionAccessList'
@@ -62,7 +65,8 @@ type RequestKeys =
   | 'updateUserRegionAccesses'
   | 'updateUserStationAccesses'
   | 'updateUserLinkAccesses'
-  | 'regionDelete';
+  | 'regionDelete'
+  | 'linkDelete';
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -140,6 +144,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+
   networkAccessList: {
     url: api.BASE_URL + api.URLS.otdr.network.allAccess,
     method: 'get',
@@ -228,6 +233,16 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   allLinks: {
     url: api.BASE_URL + api.URLS.otdr.link.all,
     method: 'get',
+    auth: true,
+  },
+  linkDetail: {
+    url: api.BASE_URL + api.URLS.otdr.link.single,
+    method: 'get',
+    auth: true,
+  },
+  linkUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.link.single,
+    method: 'put',
     auth: true,
   },
   regionLinkList: {
@@ -330,6 +345,16 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'delete',
     auth: true,
   },
+  linkDelete: {
+    url: api.BASE_URL + api.URLS.otdr.link.single,
+    method: 'delete',
+    auth: true,
+  },
+  linkCreate: {
+    url: api.BASE_URL + api.URLS.otdr.link.create,
+    method: 'post',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -394,7 +419,10 @@ export type RequestListTypes = {
   networkList: undefined;
   networkDetail: {params: {networkId: string}};
   networkDelete: {params: {networkId: string}};
-  networkUpdate: {params: {networkId: string}; data: { name: string;description: string}};
+  networkUpdate: {
+    params: {networkId: string};
+    data: {name: string; description: string};
+  };
   networkAccessList: {params: {network_id: string}};
   networkAccessUpdate: {
     params: {network_id: string};
@@ -415,6 +443,41 @@ export type RequestListTypes = {
   regionCreate: {
     params: {network_id: string};
     data: {name: string; description: string};
+  };
+  linkList: undefined;
+  linkCreate: {
+    data: {
+      name: string;
+      network_id: string;
+      source_id: string;
+      destination_id: string;
+      link_points: [
+        {
+          latitude: number;
+          longitude: number;
+        },
+      ];
+      // region_id: string;
+      description: string;
+      type: string;
+    };
+  };
+  linkDelete: {params: {link_id: string}};
+  linkDetail: {params: {link_id: string}};
+  linkUpdate: {
+    params: {link_id: string};
+    data: {
+      description: string;
+      link_points: [
+        {
+          latitude: number;
+          longitude: number;
+        },
+      ];
+      source_id: string;
+      destination_id: string;
+      type: string;
+    };
   };
   regionDetail: {params: {region_id: string}};
   regionUpdate: {params: {region_id: string}; data: {description: string}};
@@ -564,7 +627,9 @@ export type ResponseListType = {
   allRegions: T.RegionListType[];
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};
+  linkCreate: T.LinkCreateType;
   regionDetail: T.RegionType;
+  linkDetail: T.LinkType;
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};
@@ -580,7 +645,7 @@ export type ResponseListType = {
   stationAccessUpdate: {count: number};
   stationDelete: {count: number};
   networkStationList: T.StationListType[];
-  stationAccessList:{users:T.AccessListType[];} 
+  stationAccessList: {users: T.AccessListType[]};
   stationViewerUpdate: {count: number};
   stationAdminUpdate: string;
   userNetworkAccesses: T.NetworkAccessType[];
@@ -592,4 +657,5 @@ export type ResponseListType = {
   updateUserStationAccesses: string | null;
   updateUserLinkAccesses: string | null;
   regionDelete: {count: number};
+  linkDelete: {count: number};
 };

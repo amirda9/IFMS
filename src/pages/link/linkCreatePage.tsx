@@ -1,6 +1,8 @@
 import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
-import {Request} from '~/hooks/useHttpRequest';
+import {useNavigate} from 'react-router-dom';
+import {networkExplored} from '~/constant';
+import Cookies from 'js-cookie';
 import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
@@ -18,65 +20,78 @@ const linkSchema = Yup.object().shape({
   destination: Yup.string().required('Please select destination'),
   type: Yup.string().required('Please select type'),
 });
-const LinkDetailPage = () => {
+const LinkCreatePage = () => {
+  const networkId = Cookies.get(networkExplored);
+  const navigate = useNavigate();
   const {linkDetail} = useSelector((state: any) => state.http);
   console.log(linkDetail?.data?.access, 'fffrrtttt');
   const {type} = useSelector((state: any) => state.network);
   const dispatch = useDispatch();
   const params = useParams<{linkId: string}>();
-  console.log(params.linkId, 'params');
-
-
-
-  // const initialRequests = (request) => {
-  //   request('linkDetail', {params: {link_Id:params.linkId!}});
-  //   // request('networkDetail', {params: {networkId:'hkjhjk'}});
-  // };
 
   const {
-    state,
+    state: {create},
     request,
   } = useHttpRequest({
-    selector: state => ({
-      detail: state.http.linkDetail,
-      // update: state.http.linkUpdate,
-    }),
-    initialRequests: request => {
-      request('linkDetail', {params: {link_id: params.linkId!}});
-    },
-    
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.update?.httpRequestStatus === 'loading' &&
-    //     state.update!.httpRequestStatus === 'success'
-    //   ) {
-    //     initialRequests(request);
-    //   }
-    // },
+    selector: state => ({create: state.http.linkCreate}),
   });
-  // console.log(update, 'lklklk')
-  console.log(state, 'pgggpp');
+
+  // const buttons = (
+  //   <>
+  //     {/* {linkDetail?.data?.access == 'ADMIN' ? ( */}
+  //       <SimpleBtn type="submit" >
+  //         Save
+  //       </SimpleBtn>
+  //     {/* ) : null} */}
+  //     <SimpleBtn>Cancel</SimpleBtn>
+  //   </>
+  // );
   const buttons = (
     <>
-      {linkDetail?.data?.access == 'ADMIN' ? (
-        <SimpleBtn type="submit" disabled={true}>
-          Save
-        </SimpleBtn>
-      ) : null}
-      <SimpleBtn>Cancel</SimpleBtn>
+      <SimpleBtn
+        onClick={() => {
+          document.getElementById('formSubmit')?.click();
+        }}
+        disabled={create?.httpRequestStatus === 'loading'}>
+        Save
+      </SimpleBtn>
+      <SimpleBtn link to="../">
+        Cancel
+      </SimpleBtn>
     </>
   );
   return (
     <FormLayout buttons={buttons}>
       <Formik
         initialValues={{
-          name: `Link ${params.linkId}`,
+          name: `Link name`,
           description:
             'In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the',
           latitude: 0,
           longitude: 0,
+          destination: '',
+          source: '',
+          type: 'cable',
         }}
-        onSubmit={values => {}}
+        onSubmit={values => {
+          request('linkCreate', {
+            data: {
+             name:values.name,
+             network_id:networkId!,
+             source_id:values.source,
+             destination_id:values.destination,
+             link_points: [
+               {
+                 latitude: 0,
+                 longitude: 0
+               }
+             ],
+             // region_id:"",
+             description:values.description,
+             type:values.type
+           }
+          });
+        }}
         validationSchema={linkSchema}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col gap-y-4">
@@ -85,7 +100,7 @@ const LinkDetailPage = () => {
                 name="name"
                 wrapperClassName="w-2/3 text-sm"
                 className="disabled:bg-white"
-                disabled
+                // disabled
               />
             </Description>
 
@@ -97,7 +112,8 @@ const LinkDetailPage = () => {
               <SelectFormik
                 name="source"
                 className="w-1/5 text-sm disabled:bg-white">
-                <option>Station2</option>
+                <option>source1</option>
+                <option>source1</option>
               </SelectFormik>
             </Description>
 
@@ -105,7 +121,8 @@ const LinkDetailPage = () => {
               <SelectFormik
                 name="destination"
                 className="w-1/5 text-sm disabled:bg-white">
-                <option>Station1</option>
+                <option>destination1</option>
+                <option>destination2</option>
               </SelectFormik>
             </Description>
 
@@ -119,25 +136,12 @@ const LinkDetailPage = () => {
                 <option>duct</option>
               </SelectFormik>
             </Description>
-
-            <Description label="Region" items="start">
-              Region 2
-            </Description>
-
-            <Description label="Owner" items="start">
-              Admin
-            </Description>
-
-            <Description label="Created">{getPrettyDateTime()}</Description>
-
-            <Description label="Last Modified">
-              {getPrettyDateTime()}
-            </Description>
           </div>
+          <button type="submit" id="formSubmit" hidden />
         </Form>
       </Formik>
     </FormLayout>
   );
 };
 
-export default LinkDetailPage;
+export default LinkCreatePage;
