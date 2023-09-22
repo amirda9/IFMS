@@ -5,9 +5,12 @@ import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
+import { useSelector } from 'react-redux';
 
 const RegionsPage = () => {
   const networkId = Cookies.get(networkExplored);
+  const {regionDetail} = useSelector((state: any) => state.http);
+
   const [regionID, setRegionId] = useState<string | null>(null);
   const {
     state: {regions},
@@ -50,7 +53,7 @@ const RegionsPage = () => {
       <SidebarLayout
         searchOnChange={() => {}}
         createTitle="Regions"
-        canAdd={!!networkId}>
+        canAdd={regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false}>
         {regions?.data?.map(region => (
           <SidebarItem
             name={region.name}

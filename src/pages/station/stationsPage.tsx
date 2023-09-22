@@ -4,8 +4,11 @@ import {SidebarLayout} from '~/layout';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {useHttpRequest} from '~/hooks';
+import { useSelector } from 'react-redux';
 
 const StationsPage = () => {
+  const {stationDetail} = useSelector((state: any) => state.http);
+  console.log(stationDetail, 'stationDetail');
   const networkId = Cookies.get(networkExplored);
   const {
     state: {stations},
@@ -24,7 +27,7 @@ const StationsPage = () => {
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Stations"
-      canAdd={!!networkId}>
+      canAdd={stationDetail?.data?.access.access == 'ADMIN'?!!networkId:false}>
       {stations?.data?.map(value => (
         <SidebarItem name={value.name} to={value.id} key={value.id} />
       ))}
