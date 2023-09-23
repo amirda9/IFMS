@@ -30,10 +30,15 @@ const LinkCreatePage = () => {
   const params = useParams<{linkId: string}>();
 
   const {
-    state: {create},
+    state: {create,allLinks},
     request,
   } = useHttpRequest({
-    selector: state => ({create: state.http.linkCreate}),
+    selector: state => ({create: state.http.linkCreate,allLinks: state.http.allLinks}),
+    initialRequests: request => {
+      if (networkId) {
+        request('allStations', undefined);
+      }
+    },
     onUpdate: lastState => {
       if (
         lastState.create?.httpRequestStatus === 'loading' &&
@@ -45,8 +50,10 @@ const LinkCreatePage = () => {
     },
   });
 
-  console.log(create,'createuuuuuuu');
-  
+  console.log(create, 'createuuuuuuu');
+
+  console.log(allLinks, 'allLinks');
+
   // const buttons = (
   //   <>
   //     {/* {linkDetail?.data?.access == 'ADMIN' ? ( */}
@@ -87,20 +94,24 @@ const LinkCreatePage = () => {
         onSubmit={values => {
           request('linkCreate', {
             data: {
-             name:values.name,
-             network_id:networkId!,
-             source_id:values.source,
-             destination_id:values.destination,
-             link_points: [
-               {
-                 latitude: 0,
-                 longitude: 0
-               }
-             ],
-             // region_id:"",
-             description:values.description,
-             type:values.type
-           }
+              name: values.name,
+              network_id: networkId!,
+              source_id: values.source,
+              destination_id: values.destination,
+              link_points: [
+                {
+                  latitude: 1,
+                  longitude: 1,
+                },
+                {
+                  latitude: 0,
+                  longitude: 0,
+                },
+              ],
+              // region_id:"",
+              description: values.description,
+              type: values.type,
+            },
           });
         }}
         validationSchema={linkSchema}>

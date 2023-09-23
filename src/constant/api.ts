@@ -58,6 +58,7 @@ export const URLS = {
       single: '/otdr/link/{link_id}',
       allAccess: '/otdr/link/{link_id}/access',
       viewersAccess: '/otdr/link/{link_id}/access/viewers',
+      updatecableandduct:'/otdr/link/{link_id}/cables_and_ducts',
     },
   },
 };

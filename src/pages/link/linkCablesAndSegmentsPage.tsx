@@ -1,8 +1,12 @@
 import React, {Fragment, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
+import {networkExplored} from '~/constant';
+import Cookies from 'js-cookie';
 import {FormLayout} from '~/layout';
 import {BsPlusLg} from 'react-icons/bs';
+import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
+import {useParams} from 'react-router-dom';
 
 type Iprops = {
   classname: string;
@@ -24,9 +28,10 @@ const Addbox = ({classname, onclick}: Iprops) => {
 };
 // *******************************
 const LinkCablesAndSegmentsPage = () => {
+  const networkId = Cookies.get(networkExplored);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
-
+  const params = useParams<{linkId: string}>();
   // const [parentcabl.cables, setParentcable] = useState<
   //   {
   //     id: number;
@@ -45,79 +50,121 @@ const LinkCablesAndSegmentsPage = () => {
 
   //   }[]
   // >([]);
+
+
+
   
-  const [parentcabl, setParentcable] = useState<
-  {
-    cables: 
-      {
-        id: number;
-        cableId:string;
-        number_of_cores: number;
-        segments: [
-          {
-            id: number;
-            start: number;
-            length: number;
-            offset: number;
-            loss: number;
-            fiber_type: string;
-          },
-        ];
-  
-      }[]
-    
+  const [parentcabl, setParentcable] = useState<{
+    cables: {
+      id: number;
+      cableId: string;
+      number_of_cores: number;
+      segments: [
+        {
+          id: number;
+          start: number;
+          length: number;
+          offset: number;
+          loss: number;
+          fiber_type: string;
+        },
+      ];
+    }[];
+    ducts:
+      | {
+          id: string;
+          mini_ducts: [
+            {
+              id: string;
+              number_of_fibers: number;
+            },
+          ];
+          segments: [
+            {
+              start: number;
+              length: number;
+              offset: number;
+              loss: number;
+              fiber_type: string;
+            },
+          ];
+        }[]
+      | [];
   }>();
 
+  // const initialRequests = (request: Request) => {
+  //   request('networkDetail', {params: {networkId: params.networkId!}});
+  // };
+  const {
+    state,
+    request,
+  } = useHttpRequest({
+    selector: state => ({
+      detail: state.http.linkDetail,
+      stations: state.http.allStations
+      // update: state.http.linkUpdate,
+    }),
+    initialRequests: request => {
+      request('linkDetail', {params: {link_id: params.linkId!}});
+      if (networkId) {
+        request('allStations', undefined);
+      }
+    },
+    
+    // onUpdate: (lastState, state) => {
+    //   if (
+    //     lastState.update?.httpRequestStatus === 'loading' &&
+    //     state.update!.httpRequestStatus === 'success'
+    //   ) {
+    //     initialRequests(request);
+    //   }
+    // },
+  });
 
+  console.log(state.detail,'detaildetail44');
+  console.log(state.stations,'stationsstationsstations');
+  
+  const savecables = () => {
+    
+    let dataa: any = [];
+    let newcable:any = [];
+    let beforadddata = JSON.parse(JSON.stringify(parentcabl));
+    for (let i = 0; i < beforadddata?.cables?.length!; i++) {
+      newcable.push({
+        id: beforadddata.cables[i].cableId,
+        number_of_cores: beforadddata.cables[i].number_of_cores,
+        segments: beforadddata?.cables[i].segments,
+      });
+      for(let j=0;j<beforadddata?.ducts[i].segments.length;j++){
+        delete beforadddata?.ducts[i].segments[j].id
+      }
+    }
+    // dataa.push({cables: newcable, ducts: beforadddata.ducts});
+    console.log(dataa,'datacc');
+    
+      request('linkupdatecables', {
+        params: {link_id: params.linkId!},
+        data:{cables: newcable, ducts: beforadddata.ducts},
+      });
 
+  };
+  // console.log(parentcabl, 'parentcabl');
 
-
-
-  // {
-  //   "cables": [
-  //     {
-  //       "id": "string",
-  //       "number_of_cores": 0,
-  //       "segments": [
-  //         {
-  //           "start": 0,
-  //           "length": 0,
-  //           "offset": 0,
-  //           "loss": 0,
-  //           "fiber_type": "NZ-DSF"
-  //         }
-  //       ]
-  //     }
-  //   ],
-
-  // }
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // **********************************************************
   let timer: string | number | NodeJS.Timeout | undefined;
 
   const setcores = (id: number, x: string) => {
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
     beforadddata[findcable].number_of_cores = Number(x);
-    setParentcable(beforadddata);
+    setParentcable({cables: beforadddata, ducts: []});
   };
 
   const setcableId = (id: number, x: string) => {
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
     beforadddata[findcable].cableId = x;
-    setParentcable(beforadddata);
+    setParentcable({cables: beforadddata, ducts: []});
   };
 
   const setcableslicecabsegment = (
@@ -133,7 +180,7 @@ const LinkCablesAndSegmentsPage = () => {
     );
     beforadddata[findcable].segments[findcableslicecabl][name] =
       name == 'fiber_type' ? x : Number(x);
-    setParentcable(beforadddata);
+    setParentcable({cables: beforadddata, ducts: []});
   };
 
   React.useEffect(() => {
@@ -146,10 +193,16 @@ const LinkCablesAndSegmentsPage = () => {
     };
   }, []);
 
-  console.log(parentcabl?.cables, 'uuuuuuuuuuuuuuu');
+  // console.log(parentcabl?.cables, 'uuuuuuuuuuuuuuu');
 
   const addcable = (index: number) => {
-    let beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
+    let beforadddata;
+    if (!parentcabl?.cables) {
+      beforadddata = [];
+    } else {
+      beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
+    }
+
     let newArray = beforadddata.map(function (item: any) {
       if (index != parentcabl?.cables.length && item.id >= index + 1) {
         item.id = item.id + 1;
@@ -158,6 +211,7 @@ const LinkCablesAndSegmentsPage = () => {
         return item;
       }
     });
+
     newArray.push({
       id: index + 1,
       cableId: '',
@@ -166,10 +220,12 @@ const LinkCablesAndSegmentsPage = () => {
       ],
       number_of_cores: 0,
     });
+
     const sortarray = newArray.sort((a: any, b: any) => {
       return a.id - b.id;
     });
-    setParentcable(sortarray);
+
+    setParentcable({cables: sortarray, ducts: []});
   };
 
   const addcabledata = (id: number, index: number) => {
@@ -200,7 +256,7 @@ const LinkCablesAndSegmentsPage = () => {
     });
     console.log(sortarray, 'sortarray');
     beforadddata[findcable].segments = sortarray;
-    setParentcable(beforadddata);
+    setParentcable({cables: beforadddata, ducts: []});
   };
 
   const deletecable = (id: number) => {
@@ -208,21 +264,21 @@ const LinkCablesAndSegmentsPage = () => {
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
 
     beforadddata.splice(findcable, 1);
-    const data:{
+    const data: {
       id: number;
-      cableId:string;
+      cableId: string;
       number_of_cores: number;
       segments: [
-          {
-              id: number;
-              start: number;
-              length: number;
-              offset: number;
-              loss: number;
-              fiber_type: string;
-          }
+        {
+          id: number;
+          start: number;
+          length: number;
+          offset: number;
+          loss: number;
+          fiber_type: string;
+        },
       ];
-  }[] = [];
+    }[] = [];
     for (let i = 0; i < beforadddata.length; i++) {
       data.push({
         id: i + 1,
@@ -231,7 +287,7 @@ const LinkCablesAndSegmentsPage = () => {
         cableId: beforadddata[i].cableId,
       });
     }
-    setParentcable({cables:data});
+    setParentcable({cables: data, ducts: []});
   };
 
   const deletecabledata = (cableid: number, cabledataid: number) => {
@@ -263,7 +319,7 @@ const LinkCablesAndSegmentsPage = () => {
 
     beforadddata[findcable].segments = data;
 
-    setParentcable(beforadddata);
+    setParentcable({cables: beforadddata, ducts: []});
   };
 
   const buttons = (
@@ -275,14 +331,14 @@ const LinkCablesAndSegmentsPage = () => {
 
   return (
     // <FormLayout buttons={buttons}>
-    <div className="relative min-h-[calc(100%-90px)] w-full  pb-[50px]">
-
+    <div className="relative  min-h-[calc(100%-80px)] w-full">
+      {parentcabl?.cables || mousePosition.y < 160? null : (
         <div
           style={{
             top: `${
-              parentcabl?.cables.length == 0
+              parentcabl?.cables?.length == 0
                 ? mousePosition.y - 180
-                : mousePosition.y - 210
+                : mousePosition.y - 180
             }px`,
           }}
           className={`absolute z-10 ml-[-30px] flex h-[30px] w-[calc(75%+20px)] flex-row items-center  justify-between`}>
@@ -297,10 +353,10 @@ const LinkCablesAndSegmentsPage = () => {
           </button>
           <div className="w-full  border-t-[2px] border-dashed  border-[#32C65D]"></div>
         </div>
-   
+      )}
 
       <div className="relative z-50 w-full bg-b">
-        {parentcabl?.cables.map((data: any, index: number) => (
+        {parentcabl?.cables?.map((data: any, index: number) => (
           <div key={data.id} className="relative z-50 w-full bg-b">
             <div
               style={{zIndex: 20}}
@@ -390,7 +446,7 @@ const LinkCablesAndSegmentsPage = () => {
                       <span className="w-12" />
                     </div>
                   </div>
-                  {data.segments.map((dataa: any, index: number) => (
+                  {data?.segments?.map((dataa: any, index: number) => (
                     <div className="w-full" key={index}>
                       <div
                         className="flex-grow-1 flex flex-row justify-between "
@@ -520,13 +576,12 @@ const LinkCablesAndSegmentsPage = () => {
           </div>
         ))}
       </div>
+      <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
+        <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
 
-      <div className="absolute bottom-[0px] right-[20px] mr-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>
-
     // </FormLayout>
   );
 };

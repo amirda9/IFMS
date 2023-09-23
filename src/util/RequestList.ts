@@ -28,6 +28,7 @@ type RequestKeys =
   | 'userGroupsList'
   | 'networkAccessUpdate'
   | 'networkUpdateAdmin'
+  | 'linkupdatecables'
   | 'groupList'
   | 'groupDetail'
   | 'createGroup'
@@ -240,6 +241,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   linkDetail: {
     url: api.BASE_URL + api.URLS.otdr.link.single,
     method: 'get',
+    auth: true,
+  },
+  linkupdatecables: {
+    url: api.BASE_URL + api.URLS.otdr.link.updatecableandduct,
+    method: 'put',
     auth: true,
   },
   linkAccessUpdate: {
@@ -463,12 +469,11 @@ export type RequestListTypes = {
       network_id: string;
       source_id: string;
       destination_id: string;
-      link_points: [
+      link_points: 
         {
           latitude: number;
           longitude: number;
-        },
-      ];
+        }[];
       // region_id: string;
       description: string;
       type: string;
@@ -498,6 +503,42 @@ export type RequestListTypes = {
       type: string;
     };
   };
+  linkupdatecables: {data: {
+    cables: {
+      id: number;
+      cableId: string;
+      number_of_cores: number;
+      segments: [
+        {
+          id: number;
+          start: number;
+          length: number;
+          offset: number;
+          loss: number;
+          fiber_type: string;
+        },
+      ];
+    }[] | [];
+    ducts: {
+          id: string;
+          mini_ducts: [
+            {
+              id: string;
+              number_of_fibers: number;
+            },
+          ];
+          segments: [
+            {
+              start: number;
+              length: number;
+              offset: number;
+              loss: number;
+              fiber_type: string;
+            },
+          ];
+        }[]
+      | [];
+  }; params: {link_id: string}};
   regionDetail: {params: {region_id: string}};
   regionUpdate: {params: {region_id: string}; data: {description: string}};
   regionAccessList: {params: {region_id: string}};
@@ -650,6 +691,7 @@ export type ResponseListType = {
   regionDetail: T.RegionType;
   linkDetail: T.LinksType;
   linkUpdate:T.LinksType;
+  linkupdatecables:string;
   linkAccessList: {users: T.AccessListType[]};
   linkAccessUpdate: {count: number};
   regionUpdate: T.RegionType;
