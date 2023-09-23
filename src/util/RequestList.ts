@@ -456,7 +456,7 @@ export type RequestListTypes = {
     params: {network_id: string};
     data: {name: string; description: string};
   };
-  linkList: undefined;
+  // linkList: undefined;
   linkCreate: {
     data: {
       name: string;
@@ -648,7 +648,8 @@ export type ResponseListType = {
   regionCreate: T.RegionListType & {region_id: string};
   linkCreate: T.LinkCreateType;
   regionDetail: T.RegionType;
-  linkDetail: T.LinkType;
+  linkDetail: T.LinksType;
+  linkUpdate:T.LinksType;
   linkAccessList: {users: T.AccessListType[]};
   linkAccessUpdate: {count: number};
   regionUpdate: T.RegionType;
@@ -656,8 +657,8 @@ export type ResponseListType = {
   regionAccessUpdate: {count: number};
   regionStationList: T.StationListType[];
   networkUpdateAdmin: string;
-  allLinks: T.LinkType[];
-  regionLinkList: T.LinkType[];
+  allLinks: T.LinksType[];
+  regionLinkList: T.LinksType[];
   regionAdminUpdate: string;
   allStations: T.StationListType[];
   stationCreate: T.StationCreateType & {station_id: string};

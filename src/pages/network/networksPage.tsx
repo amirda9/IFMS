@@ -6,7 +6,7 @@ import {SidebarLayout} from '~/layout';
 
 const NetworksPage: FC = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
-  console.log(networkDetail.data.access, 'fffrrtttt');
+  console.log(networkDetail?.data?.access, 'fffrrtttt');
   const {
     request,
     state: {list, deleteRequest},
@@ -33,7 +33,7 @@ const NetworksPage: FC = () => {
   console.log(list,'list');
   
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Networks" canAdd={networkDetail.data.access.access == 'ADMIN'?true:false}>
+    <SidebarLayout searchOnChange={() => {}} createTitle="Networks" canAdd={networkDetail?.data?.access?.access == 'ADMIN'?true:false}>
       {list?.data?.map(value => (
         <SidebarItem
           name={value.name}

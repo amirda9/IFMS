@@ -27,7 +27,7 @@ export type LinkCreateType = {
 };
 
 
-export type LinkType = {
+export type LinksType = {
   id: string,
   name: string,
   network_id: string,
