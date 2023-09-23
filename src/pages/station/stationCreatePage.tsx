@@ -40,6 +40,8 @@ console.log(stationDetail,'stationDetail');
       request('regionList', {params: {network_id: networkId!}});
     },
   });
+  console.log(state.create,'create');
+  
   // const buttons = (
   //   <>
   //     <SimpleBtn

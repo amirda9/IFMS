@@ -34,8 +34,19 @@ const LinkCreatePage = () => {
     request,
   } = useHttpRequest({
     selector: state => ({create: state.http.linkCreate}),
+    onUpdate: lastState => {
+      if (
+        lastState.create?.httpRequestStatus === 'loading' &&
+        create?.httpRequestStatus === 'success'
+      ) {
+        request('allLinks', undefined);
+        // navigate('../' + create?.data?.link_id);
+      }
+    },
   });
 
+  console.log(create,'createuuuuuuu');
+  
   // const buttons = (
   //   <>
   //     {/* {linkDetail?.data?.access == 'ADMIN' ? ( */}
