@@ -6,12 +6,16 @@ import * as Yup from 'yup';
 import {FormLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
+import {useSelector} from 'react-redux';
 
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
   description: Yup.string().required('Please enter region comment'),
 });
 const RegionDetailPage = () => {
+  const {regionDetail} = useSelector((state: any) => state.http);
+  console.log(regionDetail.data.access.access, 'regionDetailregionDetail');
+
   const params = useParams<{regionId: string}>();
   const {state, request} = useHttpRequest({
     selector: state => ({
@@ -30,16 +34,21 @@ const RegionDetailPage = () => {
       }
     },
   });
+  console.log(state.detail, 'detaildetaildetail');
+
   const buttons = (
     <>
-      <SimpleBtn
-        type="submit"
-        disabled={state.update?.httpRequestStatus === 'loading'}
-        onClick={() => {
-          document.getElementById('formSubmit')?.click();
-        }}>
-        Save
-      </SimpleBtn>
+      {regionDetail.data.access.access == 'ADMIN' ? (
+        <SimpleBtn
+          type="submit"
+          disabled={state.update?.httpRequestStatus === 'loading'}
+          onClick={() => {
+            document.getElementById('formSubmit')?.click();
+          }}>
+          Save
+        </SimpleBtn>
+      ) : null}
+
       <SimpleBtn>Cancel</SimpleBtn>
     </>
   );

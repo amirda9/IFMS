@@ -16,17 +16,21 @@ const networkSchema = Yup.object().shape({
   description: Yup.string().required('Please enter network description'),
 });
 const NetworkDetailPage = () => {
- 
+  const {networkDetail} = useSelector((state: any) => state.http);
+  console.log(
+    networkDetail.data.access.access,
+    'networkDetailnetworkDetailnetworkDetail',
+  );
   const params = useParams<{networkId: string}>();
   const [dataa, setdataa] = useState(0);
   const navigate = useNavigate();
   const initialRequests = (request: Request) => {
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
-  console.log (typeof(params.networkId) ,'params')
-  useEffect(()=>{
-    Cookies.set('networkExplored', params.networkId!)
-  },[])
+  console.log(typeof params.networkId, 'params');
+  useEffect(() => {
+    Cookies.set('networkExplored', params.networkId!);
+  }, []);
   // useEffect(()=>{
   //   setdataa(dataa+1)
   // },[])
@@ -34,9 +38,6 @@ const NetworkDetailPage = () => {
     state: {detail, update},
     request,
   } = useHttpRequest({
-
-  
-    
     selector: state => ({
       detail: state.http.networkDetail,
       update: state.http.networkUpdate,
@@ -52,8 +53,8 @@ const NetworkDetailPage = () => {
     },
   });
 
-    // console.log(update, 'lklklk')
-    console.log(detail, 'ppp');
+  // console.log(update, 'lklklk')
+  console.log(detail, 'ppp');
   // update?.data.id
 
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
@@ -68,8 +69,8 @@ const NetworkDetailPage = () => {
       <Formik
         enableReinitialize
         initialValues={{
-          name:detail!.data!.name,
-       
+          name: detail!.data!.name,
+
           description:
             detail!.data!.versions.find(
               version => version.id === detail!.data!.current_version.id,
@@ -79,7 +80,7 @@ const NetworkDetailPage = () => {
           console.log(values, 'valuesvalues');
 
           request('networkUpdate', {
-            data:values,
+            data: values,
             params: {networkId: params.networkId!},
           });
         }}
@@ -113,11 +114,14 @@ const NetworkDetailPage = () => {
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
-            <SimpleBtn
-              type="submit"
-              disabled={update?.httpRequestStatus === 'loading'}>
-              Save
-            </SimpleBtn>
+            {networkDetail.data.access.access == 'ADMIN' ? (
+              <SimpleBtn
+                type="submit"
+                disabled={update?.httpRequestStatus === 'loading'}>
+                Save
+              </SimpleBtn>
+            ) : null}
+
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>
