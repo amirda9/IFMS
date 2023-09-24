@@ -124,7 +124,7 @@ const MapPage = () => {
                   onclickItem={() => console.log('gghjgh')}
                   options={options}
                   borderColor={'black'}
-                  classname={'w-[219px] mr-[9px] bg-[#B3BDF2]'}
+                  classname={'w-[219px] mr-[9px] bg-[#B3BDF2] h-[40px] rounded-[8px]'}
                 />
               </div>
             ) : null}
