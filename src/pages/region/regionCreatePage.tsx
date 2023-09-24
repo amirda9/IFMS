@@ -16,8 +16,6 @@ const regionSchema = Yup.object().shape({
 const RegionDetailPage = () => {
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
-console.log(networkId,'networkId');
-
   const {
     state: {create},
     request,

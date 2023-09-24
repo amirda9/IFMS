@@ -53,7 +53,8 @@ const RegionsPage = () => {
       <SidebarLayout
         searchOnChange={() => {}}
         createTitle="Regions"
-        canAdd={regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false}>
+        // regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false
+        canAdd={true}>
         {regions?.data?.map(region => (
           <SidebarItem
             name={region.name}

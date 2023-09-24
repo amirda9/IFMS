@@ -15,6 +15,10 @@ import {getPrettyDateTime} from '~/util/time';
 import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
 
+const typeoptions = [
+  {value: 'cable', label: 'Cable'},
+  {value: 'duct', label: 'duct'},
+];
 const linkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter link name'),
   description: Yup.string().required('Please enter link comment'),
@@ -49,7 +53,12 @@ const LinkCreatePage = () => {
       }
     },
   });
-
+  const [name, setName] = useState('');
+  const [comment, setComment] = useState('');
+  const [types, setType] = useState('');
+  const [typeerror, setTypeerror] = useState('');
+  const [nameerror, setNameerror] = useState('');
+  const [commenerror, setCommmenerror] = useState('');
   const [selectedstations, setSelectedstations] = useState([]);
   const [allsource, setAllsource] = useState<{value: string; label: string}[]>(
     [],
@@ -86,9 +95,7 @@ const LinkCreatePage = () => {
     setAlldestination(destinationedata);
   };
 
-  
   const changedestination = (id: string) => {
-
     setDestinationid(id);
     const data = JSON.parse(JSON.stringify(selectedstations));
     const destinationedata = data?.filter((data: any) => data.value != id);
@@ -96,19 +103,6 @@ const LinkCreatePage = () => {
     setDestinationerror('');
   };
 
-
-  // console.log(allLinks, 'allLinks');
-
-  // const buttons = (
-  //   <>
-  //     {/* {linkDetail?.data?.access == 'ADMIN' ? ( */}
-  //       <SimpleBtn type="submit" >
-  //         Save
-  //       </SimpleBtn>
-  //     {/* ) : null} */}
-  //     <SimpleBtn>Cancel</SimpleBtn>
-  //   </>
-  // );
   const buttons = (
     <>
       <SimpleBtn
@@ -125,140 +119,164 @@ const LinkCreatePage = () => {
   );
   console.log(destenationerror, 'ddddddddddddddd');
 
-  return (
-    <Formik
-      enableReinitialize
-      initialValues={{
-        name: `Link name`,
-        description:
-          'In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the',
-        latitude: 0,
-        longitude: 0,
-        destination: destinationid,
-        source: source,
-        type: 'cable',
-      }}
-
-      onSubmit={values => {
-        if (values.source.length == 0) {
-          setSourcerror('Please select source');
-        }else if(values.destination.length == 0) {
-          setDestinationerror('Please select destination');
-        } else {
-
-          request('linkCreate', {
-            data: {
-              name: values.name,
-              network_id: networkId!,
-              source_id: source,
-              destination_id: destinationid,
-              link_points: [
-                {
-                  latitude: 1,
-                  longitude: 1,
-                },
-                {
-                  latitude: 0,
-                  longitude: 0,
-                },
-              ],
-              // region_id:"",
-              description: values.description,
-              type: values.type,
+  const createlink = () => {
+    if (name.length < 1) {
+      setNameerror('Please enter link name');
+    } else if (comment.length < 1) {
+      setNameerror('');
+      setCommmenerror('Please enter link comment');
+    } else if (source.length == 0) {
+      setNameerror('');
+      setCommmenerror('');
+      setTypeerror('');
+      setSourcerror('Please select source');
+    } else if (destinationid.length == 0) {
+      setNameerror('');
+      setCommmenerror('');
+      setTypeerror('');
+      setSourcerror('');
+      setDestinationerror('Please select destination');
+    } else if (types.length < 1) {
+      setNameerror('');
+      setCommmenerror('');
+      setTypeerror('Please select type');
+    } else {
+      setNameerror('');
+      setCommmenerror('');
+      setTypeerror('');
+      setSourcerror('');
+      setDestinationerror('');
+      request('linkCreate', {
+        data: {
+          name: name,
+          network_id: networkId!,
+          source_id: source,
+          destination_id: destinationid,
+          link_points: [
+            {
+              latitude: 1,
+              longitude: 1,
             },
-          });
-        }
-      }}
+            {
+              latitude: 0,
+              longitude: 0,
+            },
+          ],
+          // region_id:"",
+          description: comment,
+          type: types,
+        },
+      });
+    }
+  };
 
-      
-      validationSchema={linkSchema}>
-      <Form className="relative flex h-full min-h-[calc(100%-80px)] w-full flex-col justify-between">
-        <div className="flex flex-col gap-y-4">
-          <Description label="Name" labelClassName="mt-2" items="start">
-            <InputFormik
-              name="name"
-              wrapperClassName="w-2/3 text-sm"
-              className="disabled:bg-white"
-              // disabled
-            />
-          </Description>
+  return (
+    <div className="min-h-[calc(100%-80px) relative flex w-full flex-col">
+      <div className="relative flex w-[70%] flex-row items-center justify-between">
+        <div className="w-[130px] text-sm text-black">Name</div>
+        <input
+        
+          onChange={(e: any) => {
+            setName(e.target.value), setNameerror('');
+          }}
+          className="px-2 h-[40px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000]"
+        />
+        {nameerror.length > 0 ? (
+          <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">
+            {nameerror}
+          </div>
+        ) : null}
+      </div>
 
-          <Description label="Comment" items="start">
-            <TextareaFormik name="description" className="w-2/3 text-sm" />
-          </Description>
+      <div className="relative mt-[20px] flex w-[70%] flex-row items-center justify-between">
+        <div className="w-[130px] text-sm text-black">Comment</div>
+        <textarea
+          onChange={(e: any) => {
+            setComment(e.target.value), setCommmenerror('');
+          }}
+          className="px-2 h-[100px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000]"
+        />
+        {commenerror.length > 0 ? (
+          <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">
+            {commenerror}
+          </div>
+        ) : null}
+      </div>
 
-          <Description label="Source" items="center">
-            <div className="flex  w-1/5 flex-col">
-              <Selectbox
-                defaultvalue="select"
-                onclickItem={(e: {value: string; lable: string}) =>
-                  changesource(e.value)
-                }
-                options={allsource}
-                borderColor={'black'}
-                classname={
-                  'w-[82.5%] text-sm text-black bg-[#B3BDF2] h-[32px] md:rounded-[5px]'
-                }
-              />
-              {soueceerror.length > 0 ? (
-                <div className="text-xs text-red-500">{soueceerror}</div>
-              ) : null}
-            </div>
-
-            {/* <SelectFormik
-                name="source"
-                onChange={e => setSource(e.target.id)}
-                className="w-1/5 text-sm disabled:bg-white">
-                {allstations?.data?.map((data:any) => (
-                  <option key={data?.id}>{data?.id}</option>
-                ))}
-
-              </SelectFormik> */}
-          </Description>
-
-          <Description label="Destination" items="center">
-            <div className="flex  w-1/5 flex-col">
-              <Selectbox
-                defaultvalue="select"
-                onclickItem={(e: {value: string; lable: string}) =>
-                  changedestination(e.value)
-                }
-                options={alldestinaton}
-                borderColor={'black'}
-                classname={
-                  'w-[82.5%] text-sm text-black bg-[#B3BDF2] h-[32px] md:rounded-[5px]'
-                }
-              />
-              {destenationerror.length > 0 ? (
-                <div className="text-xs text-red-500">{destenationerror}</div>
-              ) : null}
-            </div>
-
-            {/* <SelectFormik
-                name="destination"
-                className="w-1/5 text-sm disabled:bg-white">
-                <option>gg</option>
-              </SelectFormik> */}
-          </Description>
-
-          <Description label="Type" items="center">
-            <SelectFormik
-              defaultValue={type}
-              onChange={e => dispatch(settypestate(e.target.value))}
-              name="type"
-              className="w-1/5 text-sm disabled:bg-white">
-              <option>Cable</option>
-              <option>duct</option>
-            </SelectFormik>
-          </Description>
+      <div className="relative mt-[20px] flex w-[430px] flex-row items-center justify-between ">
+        <div className="w-[130px] text-sm text-black">Source</div>
+        <div className="flex w-[268px]  flex-col">
+          <Selectbox
+            defaultvalue="select"
+            onclickItem={(e: {value: string; lable: string}) =>
+              changesource(e.value)
+            }
+            options={allsource}
+            borderColor={'black'}
+            classname={
+              'w-full text-sm text-black bg-[#B3BDF2] h-[32px] md:rounded-[5px]'
+            }
+          />
         </div>
-        <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
-          <SimpleBtn type="submit">Save</SimpleBtn>
+        {soueceerror.length > 0 ? (
+          <div className="absolute bottom-[-15px] left-[160px] z-[10] text-xs text-red-500">
+            {soueceerror}
+          </div>
+        ) : null}
+      </div>
 
-          <SimpleBtn>Cancel</SimpleBtn>
+      <div className="relative mt-[20px] flex w-[430px] flex-row items-center justify-between ">
+        <div className="w-[130px] text-sm text-black">Destination</div>
+        <div className="rlative flex w-[268px]  flex-col">
+          <Selectbox
+            defaultvalue="select"
+            onclickItem={(e: {value: string; lable: string}) =>
+              changedestination(e.value)
+            }
+            options={alldestinaton}
+            borderColor={'black'}
+            classname={
+              'w-full text-sm text-black bg-[#B3BDF2] h-[32px] md:rounded-[5px]'
+            }
+          />
         </div>
-      </Form>
-    </Formik>
+        {destenationerror.length > 0 ? (
+          <div className="absolute bottom-[-15px] left-[160px] z-[10] text-xs text-red-500">
+            {destenationerror}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="relative mt-[20px] flex w-[430px] flex-row items-center justify-between ">
+        <div className="w-[130px] text-sm text-black">Type</div>
+        <div className="rlative flex w-[268px]  flex-col">
+          <Selectbox
+            defaultvalue="select"
+            onclickItem={(e: {value: string; lable: string}) => {
+              setType(e.value);
+              setTypeerror('');
+            }}
+            options={typeoptions}
+            borderColor={'black'}
+            classname={
+              'w-full text-sm text-black bg-[#B3BDF2] h-[32px] md:rounded-[5px]'
+            }
+          />
+        </div>
+        {typeerror.length > 0 ? (
+          <div className="absolute bottom-[-15px] left-[160px] z-[50] text-xs text-red-500">
+            {typeerror}
+          </div>
+        ) : null}
+      </div>
+      <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
+        <SimpleBtn onClick={createlink} type="button">
+          Save
+        </SimpleBtn>
+
+        <SimpleBtn>Cancel</SimpleBtn>
+      </div>
+    </div>
   );
 };
 
