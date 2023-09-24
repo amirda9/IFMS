@@ -28,7 +28,7 @@ const StationsPage = () => {
       searchOnChange={() => {}}
       createTitle="Stations"
       // stationDetail?.data?.access.access == 'ADMIN'?!!networkId:false
-      canAdd={stationDetail?.data?.access.access == 'ADMIN'?!!networkId:false}>
+      canAdd={true}>
       {stations?.data?.map(value => (
         <SidebarItem name={value.name} to={value.id} key={value.id} />
       ))}

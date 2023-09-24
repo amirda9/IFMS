@@ -109,7 +109,7 @@ function Selectbox({
           ref={wrapperRef}
           onFocus={onfocusinputt}
           onClick={() => setOpenitems(!openitems)}
-          className={`Content  h-full w-[95%] bg-[${bgcolor}]  border-none  focus:outline-none`}
+          className={`Content placeholder-[#000000] h-full w-[95%] bg-[${bgcolor}] text-[#000000] border-none  focus:outline-none`}
         />
       ) : (
         <>

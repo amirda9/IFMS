@@ -93,7 +93,8 @@ console.log(stationDetail,'stationDetail');
           });
         }}
         validationSchema={stationSchema}>
-        <Form className="flex h-full flex-grow relative min-h-[calc(100%-80px)] flex-col justify-between ">
+        <Form className="w-full">
+          <div className='flex flex-grow relative min-h-[calc(100vh-140px)] flex-col justify-between '>
           <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" className="w-2/3 disabled:bg-white" />
@@ -138,7 +139,7 @@ console.log(stationDetail,'stationDetail');
               </SelectFormik>
             </Description> */}
           </div>
-          <div className="flex flex-row  gap-x-4 self-end absolute bottom-[70px] right-0">
+          <div className="flex flex-row  gap-x-4 self-end absolute bottom-[0px] right-0">
             {/* <SimpleBtn
               onClick={() => {}}>
               Explore
@@ -155,6 +156,7 @@ console.log(stationDetail,'stationDetail');
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>
+          </div>
           </div>
           {/* <button ref={reff} type="submit" id="formSubmit" hidden /> */}
         </Form>

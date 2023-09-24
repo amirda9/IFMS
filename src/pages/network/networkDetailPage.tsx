@@ -18,7 +18,7 @@ const networkSchema = Yup.object().shape({
 const NetworkDetailPage = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
   console.log(
-    networkDetail.data.access.access,
+    networkDetail?.data?.access?.access,
     'networkDetailnetworkDetailnetworkDetail',
   );
   const params = useParams<{networkId: string}>();

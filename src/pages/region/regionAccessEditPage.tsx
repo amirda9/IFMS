@@ -28,9 +28,14 @@ const RegionAccessPage = () => {
   
   });
 
+console.log(viewers,'viewers');
+console.log(update,'update');
+
+
   const buttons = (
     <>
-        {regionDetail?.data?.access == 'ADMIN' ? (
+  
+        {/* {regionDetail?.data?.access == 'ADMIN' ? ( */}
       <SimpleBtn
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
@@ -54,7 +59,8 @@ const RegionAccessPage = () => {
           });
         }}>
         OK
-      </SimpleBtn>):null}
+      </SimpleBtn>
+      {/* ):null} */}
       <SimpleBtn link to="../">
         Cancel
       </SimpleBtn>

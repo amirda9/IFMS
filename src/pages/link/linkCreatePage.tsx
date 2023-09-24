@@ -30,12 +30,12 @@ const LinkCreatePage = () => {
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const {
-    state: {create, allLinks, stations},
+    state: {create, stations},
     request,
   } = useHttpRequest({
     selector: state => ({
       create: state.http.linkCreate,
-      allLinks: state.http.allLinks,
+      // allLinks: state.http.allLinks,
       stations: state.http.allStations,
     }),
     initialRequests: request => {
@@ -43,16 +43,18 @@ const LinkCreatePage = () => {
         request('allStations', undefined);
       }
     },
-    onUpdate: lastState => {
-      if (
-        lastState.create?.httpRequestStatus === 'loading' &&
-        create?.httpRequestStatus === 'success'
-      ) {
-        request('allLinks', undefined);
-        // navigate('../' + create?.data?.link_id);
-      }
-    },
+    // onUpdate: lastState => {
+    //   if (
+    //     lastState.create?.httpRequestStatus === 'loading' &&
+    //     create?.httpRequestStatus === 'success'
+    //   ) {
+    //     request('allLinks', undefined);
+    //     // navigate('../' + create?.data?.link_id);
+    //   }
+    // },
   });
+
+  const {allStations} = useSelector((state: any) => state.http);
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [types, setType] = useState('');
@@ -73,11 +75,12 @@ const LinkCreatePage = () => {
   const {type} = useSelector((state: any) => state.network);
   const dispatch = useDispatch();
   const params = useParams<{linkId: string}>();
+console.log(stations,'stations');
 
   useEffect(() => {
     let data: any = [];
-    if (stations) {
-      const all = JSON.parse(JSON.stringify(stations?.data));
+    if (allStations) {
+      let all = allStations?.data || [];
       for (let i = 0; i < all.length; i++) {
         data.push({value: all[i].id, label: all[i].name});
       }
@@ -85,7 +88,7 @@ const LinkCreatePage = () => {
       setAlldestination(data);
       setSelectedstations(data);
     }
-  }, []);
+  }, [stations]);
 
   const changesource = (id: string) => {
     setSourcerror('');
@@ -102,6 +105,9 @@ const LinkCreatePage = () => {
     setAllsource(destinationedata);
     setDestinationerror('');
   };
+
+// console.log(allLinks,'allLinksallLinksallLinks');
+
 
   const buttons = (
     <>
@@ -171,11 +177,10 @@ const LinkCreatePage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100%-80px) relative flex w-full flex-col">
+    <div className="min-h-[calc(100%-80px)] relative flex w-full flex-col">
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
-        
           onChange={(e: any) => {
             setName(e.target.value), setNameerror('');
           }}

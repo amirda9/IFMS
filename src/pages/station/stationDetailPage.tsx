@@ -94,7 +94,8 @@ const StationDetailPage = () => {
         });
       }}
       validationSchema={stationSchema}>
-      <Form className="flex h-full flex-col justify-between">
+      <Form className="w-full">
+        <div className='flex min-h-[calc(100vh-200px)] flex-col justify-between relative' >
         <div className="flex flex-col gap-y-4">
           <Description label="Name" items="start">
             <InputFormik
@@ -156,7 +157,7 @@ const StationDetailPage = () => {
 
           <Description label="Last Modified">{getPrettyDateTime()}</Description>
         </div>
-        <div className="flex flex-row  gap-x-4 self-end">
+        <div className="flex absolute flex-row bottom-0 right-0  gap-x-4 self-end">
           {/* <SimpleBtn
               onClick={() => {}}>
               Explore
@@ -172,6 +173,7 @@ const StationDetailPage = () => {
           <SimpleBtn link to="../">
             Cancel
           </SimpleBtn>
+        </div>
         </div>
       </Form>
     </Formik>

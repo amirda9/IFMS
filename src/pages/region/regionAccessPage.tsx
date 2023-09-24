@@ -102,11 +102,11 @@ const RegionAccessPage = () => {
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
   const buttons = (
     <>
-      {regionDetail?.data?.access.access == 'ADMIN' ? (
+      {/* {regionDetail?.data?.access.access == 'ADMIN' ? ( */}
         <SimpleBtn link to="../edit-access">
           Edit Region Viewer(s)
         </SimpleBtn>
-      ) : null}
+      {/* ) : null} */}
 
       <SimpleBtn
         onClick={saveAdmin}

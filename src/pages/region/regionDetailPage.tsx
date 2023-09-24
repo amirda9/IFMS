@@ -14,7 +14,7 @@ const regionSchema = Yup.object().shape({
 });
 const RegionDetailPage = () => {
   const {regionDetail} = useSelector((state: any) => state.http);
-  console.log(regionDetail.data.access.access, 'regionDetailregionDetail');
+  console.log(regionDetail?.data?.access?.access, 'regionDetailregionDetail');
 
   const params = useParams<{regionId: string}>();
   const {state, request} = useHttpRequest({
@@ -38,7 +38,7 @@ const RegionDetailPage = () => {
 
   const buttons = (
     <>
-      {regionDetail.data.access.access == 'ADMIN' ? (
+      {regionDetail?.data?.access?.access == 'ADMIN' ? (
         <SimpleBtn
           type="submit"
           disabled={state.update?.httpRequestStatus === 'loading'}
