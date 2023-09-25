@@ -32,25 +32,6 @@ const LinkCablesAndSegmentsPage = () => {
   const params = useParams<{linkId: string}>();
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
-  // const [parentcabl.ducts, setParentcable] = useState<
-  //   {
-  //     id: number;
-  //     cableId: '';
-  //     slicecabl: [
-  //       {
-  //         id: number;
-  //         start: number;
-  //         length: number;
-  //         Offse: number;
-  //         loss: number;
-  //         Fibertype: string;
-  //       },
-  //     ];
-  //     miniduct: {id: number; miniductid: number; number_of_fibers: string}[];
-  //     number_of_cores: number;
-  //   }[]
-  // >([]);
-
   const [parentcabl, setParentcable] = useState<{
     cables:
       | {
@@ -120,7 +101,7 @@ const LinkCablesAndSegmentsPage = () => {
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.ducts));
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
     beforadddata[findcable].cableId = x;
-    setParentcable({cables: [], ducts: beforadddata});
+    setParentcable({cables:parentcabl?.cables || [], ducts: beforadddata});
   };
 
   const setcableslicecabsegment = (
@@ -136,7 +117,7 @@ const LinkCablesAndSegmentsPage = () => {
     );
     beforadddata[findcable].segments[findcableslicecabl][name] =
       name == 'fiber_type' ? x : Number(x);
-    setParentcable({cables: [], ducts: beforadddata});
+    setParentcable({cables:parentcabl?.cables || [], ducts: beforadddata});
   };
 
   const setcableminiduct = (
@@ -152,7 +133,7 @@ const LinkCablesAndSegmentsPage = () => {
     );
     beforadddata[findcable].mini_ducts[findcableslicecabl][name] =
       name == 'miniductid' ? x : Number(x);
-    setParentcable({cables: [], ducts: beforadddata});
+    setParentcable({cables:parentcabl?.cables || [], ducts: beforadddata});
   };
 
   const addcable = (index: number) => {
@@ -183,7 +164,7 @@ const LinkCablesAndSegmentsPage = () => {
     const sortarray = newArray.sort((a: any, b: any) => {
       return a.id - b.id;
     });
-    setParentcable({cables: [], ducts: sortarray});
+    setParentcable({cables:parentcabl?.cables || [], ducts: sortarray});
   };
 
   const addcabledata = (id: number, index: number) => {
@@ -264,7 +245,7 @@ const LinkCablesAndSegmentsPage = () => {
 
     beforadddata[findcable].segments = data;
 
-    setParentcable({cables: [], ducts: beforadddata});
+    setParentcable({cables:parentcabl?.cables || [], ducts: beforadddata});
   };
 
   const deletefibredata = (cableid: number, fibreid: number) => {
@@ -272,15 +253,8 @@ const LinkCablesAndSegmentsPage = () => {
   
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.ducts));
     const findcable = beforadddata.findIndex((data: any) => data.id == cableid);
-    console.log(beforadddata[findcable].mini_ducts,'findcable');
-    
     let beforslicecabl = beforadddata[findcable].mini_ducts;
-    console.log(beforslicecabl,'beforslicecabluuuu');
     let filterbeforslicecabl=beforadddata[findcable].mini_ducts.filter((data:any)=> data.id != fibreid)
-console.log(filterbeforslicecabl,'filterbeforslicecabl');
-
-    //  beforslicecabl.splice(fibreid - 1, 1);
-   console.log(beforslicecabl,'beforslicecab2');
     let data: {
       id: number;
       miniductid: number;
@@ -326,7 +300,7 @@ console.log(filterbeforslicecabl,'filterbeforslicecabl');
     });
     // console.log(sortarray, 'sortarray');
     beforadddata[findcable].mini_ducts = sortarray;
-    setParentcable({cables: [], ducts: beforadddata});
+    setParentcable({cables:parentcabl?.cables || [], ducts: beforadddata});
   };
 
   const {state, request} = useHttpRequest({
@@ -359,14 +333,11 @@ console.log(filterbeforslicecabl,'filterbeforslicecabl');
     for (let i = 0; i < beforadddata?.ducts?.length!; i++) {
       newcable.push({
         id: beforadddata.ducts[i].cableId,
-        // number_of_cores: beforadddata.ducts[i].number_of_cores,
         segments: beforadddata?.ducts[i].segments,
         mini_ducts: beforadddata?.ducts[i].mini_ducts,
       });
     }
-    // for (let j = 0; j < newcable?.segments?.length; j++) {
-    //   delete newcable[j].segments[j].id;
-    // }
+
     for (let k = 0; k < newcable.length; k++) {
       for (let j = 0; j < newcable[k].mini_ducts.length; j++) {
         newcable[k].mini_ducts[j].id = newcable[k].mini_ducts[j].miniductid;
@@ -376,15 +347,6 @@ console.log(filterbeforslicecabl,'filterbeforslicecabl');
         delete newcable[k].segments[t].id;
       }
     }
-console.log(newcable,'newcable');
-
-    // for (let h = 0; h < newcable.length; h++) {
-    //   for (let t = 0; t < newcable[h].segments.length; t++) {
-    //     delete newcable[h].segments[t].id;
-    //   }
-    // }
-    // console.log(newcable, 'newcable');
-
     request('linkupdatecables', {
       params: {link_id: params.linkId!},
       data: {cables: beforadddata.cables, ducts: newcable},
@@ -425,28 +387,11 @@ console.log(newcable,'newcable');
         allducts[i].segments[j] = {...allducts[i]?.segments[j], id: Number(j)};
       }
     }
-
-    // for(let i=0;i<Cables?.length;i++){
-    //   allcables[i].cableId = allcables[i]?.id;
-    //   allcables[i].id =Number(i)+1;
-    //   allcables[i].number_of_cores =allcables[i]?.number_of_cores;
-    //   for(let j=0;j<allcables[i]?.segments?.length;j++){
-    //     allcables[i].segments[j]={...allcables[i]?.segments[j],id:Number(j)}
-    //   }
-
-    // }
     setParentcable({cables: allcables, ducts: allducts});
   }, [state?.detail]);
 
-  console.log(parentcabl, 'parentcabl');
 
-  // console.log(state.stations, 'stationsstationsstations');
-  const buttons = (
-    <>
-      <SimpleBtn type="submit">Save</SimpleBtn>
-      <SimpleBtn>Cancel</SimpleBtn>
-    </>
-  );
+
   return (
     // <FormLayout buttons={buttons}>
     <div className="relative  min-h-[calc(100%-80px)]  w-full pb-14">

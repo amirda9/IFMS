@@ -209,7 +209,7 @@ const LinkCablesAndSegmentsPage = () => {
       return a.id - b.id;
     });
 
-    setParentcable({cables: sortarray, ducts: []});
+    setParentcable({cables: sortarray, ducts:parentcabl?.ducts || []});
   };
 
   const addcabledata = (id: number, index: number) => {
@@ -240,7 +240,7 @@ const LinkCablesAndSegmentsPage = () => {
     });
     console.log(sortarray, 'sortarray');
     beforadddata[findcable].segments = sortarray;
-    setParentcable({cables: beforadddata, ducts: []});
+    setParentcable({cables: beforadddata, ducts:parentcabl?.ducts || []});
   };
 
   const deletecable = (id: number) => {
@@ -271,7 +271,7 @@ const LinkCablesAndSegmentsPage = () => {
         cableId: beforadddata[i].cableId,
       });
     }
-    setParentcable({cables: data, ducts: []});
+    setParentcable({cables: data, ducts:parentcabl?.ducts || []});
   };
 
   const deletecabledata = (cableid: number, cabledataid: number) => {
@@ -303,7 +303,7 @@ const LinkCablesAndSegmentsPage = () => {
 
     beforadddata[findcable].segments = data;
 
-    setParentcable({cables: beforadddata, ducts: []});
+    setParentcable({cables: beforadddata, ducts:parentcabl?.ducts || []});
   };
 
   return (
