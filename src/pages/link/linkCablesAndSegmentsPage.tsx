@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
 import {networkExplored} from '~/constant';
@@ -32,28 +32,9 @@ const LinkCablesAndSegmentsPage = () => {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const params = useParams<{linkId: string}>();
-  // const [parentcabl.cables, setParentcable] = useState<
-  //   {
-  //     id: number;
-  //     cableId: '';
-  //     number_of_cores: 0;
-  //     segments: [
-  //       {
-  //         id: number;
-  //         start: number;
-  //         length: number;
-  //         offset: number;
-  //         loss: number;
-  //         fiber_type: string;
-  //       },
-  //     ];
-
-  //   }[]
-  // >([]);
 
 
 
-  
   const [parentcabl, setParentcable] = useState<{
     cables: {
       id: number;
@@ -70,8 +51,7 @@ const LinkCablesAndSegmentsPage = () => {
         },
       ];
     }[];
-    ducts:
-      | {
+    ducts:{
           id: string;
           mini_ducts: [
             {
@@ -91,6 +71,9 @@ const LinkCablesAndSegmentsPage = () => {
         }[]
       | [];
   }>();
+
+
+
 
   // const initialRequests = (request: Request) => {
   //   request('networkDetail', {params: {networkId: params.networkId!}});
@@ -121,10 +104,32 @@ const LinkCablesAndSegmentsPage = () => {
     // },
   });
 
-  console.log(state.detail,'detaildetail44');
-  console.log(state.stations,'stationsstationsstations');
+useEffect(()=>{
+  console.log(state?.detail?.data?.data,'detaildetail44');
+  const Cables=state?.detail?.data?.data?.cables || []
+  const Ducts=state?.detail?.data?.data?.ducts || []
+  let allcables=JSON.parse(JSON.stringify(Cables))
+
+  for(let i=0;i<Cables?.length;i++){
+    allcables[i].cableId = allcables[i]?.id;
+    allcables[i].id =Number(i)+1;
+    allcables[i].number_of_cores =allcables[i]?.number_of_cores;
+    for(let j=0;j<allcables[i]?.segments?.length;j++){
+      allcables[i].segments[j]={...allcables[i]?.segments[j],id:Number(j)}
+    }
+
+  }
+setParentcable({cables:allcables,ducts:Ducts})
+ 
+},[state?.detail])
+
+console.log(parentcabl,'uuu');
+
+
+  // console.log(state.stations,'stationsstationsstations');
   
   const savecables = () => {
+    console.log(parentcabl,'parentcablparentcablparentcabl');
     
     let dataa: any = [];
     let newcable:any = [];
@@ -133,9 +138,9 @@ const LinkCablesAndSegmentsPage = () => {
       newcable.push({
         id: beforadddata.cables[i].cableId,
         number_of_cores: beforadddata.cables[i].number_of_cores,
-        segments: beforadddata?.cables[i].segments,
+        segments: beforadddata?.cables[i]?.segments,
       });
-      for(let j=0;j<beforadddata?.ducts[i].segments.length;j++){
+      for(let j=0;j<beforadddata?.ducts[i]?.segments?.length;j++){
         delete beforadddata?.ducts[i].segments[j].id
       }
     }
@@ -332,7 +337,7 @@ const LinkCablesAndSegmentsPage = () => {
   return (
     // <FormLayout buttons={buttons}>
     <div className="relative  min-h-[calc(100%-80px)] w-full">
-      {parentcabl?.cables || mousePosition.y < 160? null : (
+      {parentcabl?.cables && parentcabl?.cables?.length >0 || mousePosition.y < 160? null : (
         <div
           style={{
             top: `${
@@ -447,7 +452,9 @@ const LinkCablesAndSegmentsPage = () => {
                     </div>
                   </div>
                   {data?.segments?.map((dataa: any, index: number) => (
+
                     <div className="w-full" key={index}>
+        
                       <div
                         className="flex-grow-1 flex flex-row justify-between "
                         key={index}>
@@ -499,7 +506,7 @@ const LinkCablesAndSegmentsPage = () => {
                           </div>
                           <div className="flex w-1/5 justify-center">
                             <TextInput
-                              value={data.loss}
+                              value={dataa.loss}
                               onChange={e =>
                                 setcableslicecabsegment(
                                   data.id,
@@ -512,6 +519,8 @@ const LinkCablesAndSegmentsPage = () => {
                               type="number"
                             />
                           </div>
+                          
+                          
                           <div className="flex w-1/5 justify-center">
                             <Select
                               value={data.loss}
@@ -524,12 +533,14 @@ const LinkCablesAndSegmentsPage = () => {
                                 )
                               }
                               className="w-28"
-                              placeholder="select">
+                              // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
+                              
+                              >
                               <option value="" className="hidden">
-                                Select
+                              {dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
                               </option>
                               <option value={undefined} className="hidden">
-                                Select
+                              {dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
                               </option>
                               <option value="NZ-DSF">NZ-DSF</option>
                               <option value="DSF">DSF</option>
