@@ -492,12 +492,12 @@ export type RequestListTypes = {
     params: {link_id: string};
     data: {
       description: string;
-      link_points: [
+      link_points:
         {
           latitude: number;
           longitude: number;
-        },
-      ];
+        }[],
+      
       source_id: string;
       destination_id: string;
       type: string;
