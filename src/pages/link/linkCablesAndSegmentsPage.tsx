@@ -33,8 +33,6 @@ const LinkCablesAndSegmentsPage = () => {
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const params = useParams<{linkId: string}>();
 
-
-
   const [parentcabl, setParentcable] = useState<{
     cables: {
       id: number;
@@ -51,7 +49,8 @@ const LinkCablesAndSegmentsPage = () => {
         },
       ];
     }[];
-    ducts:{
+    ducts:
+      | {
           id: string;
           mini_ducts: [
             {
@@ -73,19 +72,10 @@ const LinkCablesAndSegmentsPage = () => {
   }>();
 
 
-
-
-  // const initialRequests = (request: Request) => {
-  //   request('networkDetail', {params: {networkId: params.networkId!}});
-  // };
-  const {
-    state,
-    request,
-  } = useHttpRequest({
+  const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.linkDetail,
-      stations: state.http.allStations
-      // update: state.http.linkUpdate,
+      stations: state.http.allStations,
     }),
     initialRequests: request => {
       request('linkDetail', {params: {link_id: params.linkId!}});
@@ -93,7 +83,7 @@ const LinkCablesAndSegmentsPage = () => {
         request('allStations', undefined);
       }
     },
-    
+
     // onUpdate: (lastState, state) => {
     //   if (
     //     lastState.update?.httpRequestStatus === 'loading' &&
@@ -104,35 +94,29 @@ const LinkCablesAndSegmentsPage = () => {
     // },
   });
 
-useEffect(()=>{
-  console.log(state?.detail?.data?.data,'detaildetail44');
-  const Cables=state?.detail?.data?.data?.cables || []
-  const Ducts=state?.detail?.data?.data?.ducts || []
-  let allcables=JSON.parse(JSON.stringify(Cables))
+  useEffect(() => {
+    console.log(state?.detail?.data?.data, 'detaildetail44');
+    const Cables = state?.detail?.data?.data?.cables || [];
+    const Ducts = state?.detail?.data?.data?.ducts || [];
+    let allcables = JSON.parse(JSON.stringify(Cables));
 
-  for(let i=0;i<Cables?.length;i++){
-    allcables[i].cableId = allcables[i]?.id;
-    allcables[i].id =Number(i)+1;
-    allcables[i].number_of_cores =allcables[i]?.number_of_cores;
-    for(let j=0;j<allcables[i]?.segments?.length;j++){
-      allcables[i].segments[j]={...allcables[i]?.segments[j],id:Number(j)}
+    for (let i = 0; i < Cables?.length; i++) {
+      allcables[i].cableId = allcables[i]?.id;
+      allcables[i].id = Number(i) + 1;
+      allcables[i].number_of_cores = allcables[i]?.number_of_cores;
+      for (let j = 0; j < allcables[i]?.segments?.length; j++) {
+        allcables[i].segments[j] = {
+          ...allcables[i]?.segments[j],
+          id: Number(j),
+        };
+      }
     }
+    setParentcable({cables: allcables, ducts: Ducts});
+  }, [state?.detail]);
 
-  }
-setParentcable({cables:allcables,ducts:Ducts})
- 
-},[state?.detail])
-
-console.log(parentcabl,'uuu');
-
-
-  // console.log(state.stations,'stationsstationsstations');
-  
   const savecables = () => {
-    console.log(parentcabl,'parentcablparentcablparentcabl');
-    
     let dataa: any = [];
-    let newcable:any = [];
+    let newcable: any = [];
     let beforadddata = JSON.parse(JSON.stringify(parentcabl));
     for (let i = 0; i < beforadddata?.cables?.length!; i++) {
       newcable.push({
@@ -140,20 +124,16 @@ console.log(parentcabl,'uuu');
         number_of_cores: beforadddata.cables[i].number_of_cores,
         segments: beforadddata?.cables[i]?.segments,
       });
-      for(let j=0;j<beforadddata?.ducts[i]?.segments?.length;j++){
-        delete beforadddata?.ducts[i].segments[j].id
+      for (let j = 0; j < beforadddata?.ducts[i]?.segments?.length; j++) {
+        delete beforadddata?.ducts[i].segments[j].id;
       }
     }
-    // dataa.push({cables: newcable, ducts: beforadddata.ducts});
-    console.log(dataa,'datacc');
-    
-      request('linkupdatecables', {
-        params: {link_id: params.linkId!},
-        data:{cables: newcable, ducts: beforadddata.ducts},
-      });
 
+    request('linkupdatecables', {
+      params: {link_id: params.linkId!},
+      data: {cables: newcable, ducts: beforadddata.ducts},
+    });
   };
-  // console.log(parentcabl, 'parentcabl');
 
   // **********************************************************
   let timer: string | number | NodeJS.Timeout | undefined;
@@ -198,7 +178,6 @@ console.log(parentcabl,'uuu');
     };
   }, []);
 
-  // console.log(parentcabl?.cables, 'uuuuuuuuuuuuuuu');
 
   const addcable = (index: number) => {
     let beforadddata;
@@ -327,17 +306,10 @@ console.log(parentcabl,'uuu');
     setParentcable({cables: beforadddata, ducts: []});
   };
 
-  const buttons = (
-    <>
-      <SimpleBtn type="submit">Save</SimpleBtn>
-      <SimpleBtn>Cancel</SimpleBtn>
-    </>
-  );
-
   return (
-    // <FormLayout buttons={buttons}>
     <div className="relative  min-h-[calc(100%-80px)] w-full">
-      {parentcabl?.cables && parentcabl?.cables?.length >0 || mousePosition.y < 160? null : (
+      {(parentcabl?.cables && parentcabl?.cables?.length > 0) ||
+      mousePosition.y < 160 ? null : (
         <div
           style={{
             top: `${
@@ -452,9 +424,7 @@ console.log(parentcabl,'uuu');
                     </div>
                   </div>
                   {data?.segments?.map((dataa: any, index: number) => (
-
                     <div className="w-full" key={index}>
-        
                       <div
                         className="flex-grow-1 flex flex-row justify-between "
                         key={index}>
@@ -519,8 +489,7 @@ console.log(parentcabl,'uuu');
                               type="number"
                             />
                           </div>
-                          
-                          
+
                           <div className="flex w-1/5 justify-center">
                             <Select
                               value={data.loss}
@@ -534,13 +503,16 @@ console.log(parentcabl,'uuu');
                               }
                               className="w-28"
                               // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
-                              
-                              >
+                            >
                               <option value="" className="hidden">
-                              {dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
+                                {dataa?.fiber_type?.length > 0
+                                  ? dataa.fiber_type
+                                  : 'select'}
                               </option>
                               <option value={undefined} className="hidden">
-                              {dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
+                                {dataa?.fiber_type?.length > 0
+                                  ? dataa.fiber_type
+                                  : 'select'}
                               </option>
                               <option value="NZ-DSF">NZ-DSF</option>
                               <option value="DSF">DSF</option>
@@ -593,7 +565,6 @@ console.log(parentcabl,'uuu');
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>
-    // </FormLayout>
   );
 };
 

@@ -6,7 +6,8 @@ import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {useEffect, useState} from 'react';
-import { useSelector } from 'react-redux';
+import {settypestate} from './../../store/slices/networkslice';
+import { useDispatch, useSelector } from 'react-redux';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
@@ -15,6 +16,7 @@ const typeoptions = [
 
 // *********************************************************************
 const LinkDetailPage = () => {
+  const dispatch = useDispatch();
   const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
   const {state, request} = useHttpRequest({
@@ -259,9 +261,10 @@ const LinkDetailPage = () => {
         <div className="rlative flex w-[268px]  flex-col">
           <Selectbox
             placeholder={defauttype}
-            onclickItem={(e: {value: string; lable: string}) => {
+            onclickItem={(e: {value: string; label: string}) => {
               setType(e.value);
               setTypeerror('');
+            dispatch(settypestate(e.label))
             }}
             options={typeoptions}
             borderColor={'black'}
