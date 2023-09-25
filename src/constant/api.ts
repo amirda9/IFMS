@@ -50,6 +50,7 @@ export const URLS = {
       allAccess: '/otdr/station/{station_id}/access',
       viewersAccess: '/otdr/station/{station_id}/access/viewers',
       adminAccess: '/otdr/station/{station_id}/access/admin',
+      Addadmin:'/otdr/station/{station_id}/access/admin'
     },
     link: {
       all: '/otdr/link',
@@ -59,6 +60,7 @@ export const URLS = {
       allAccess: '/otdr/link/{link_id}/access',
       viewersAccess: '/otdr/link/{link_id}/access/viewers',
       updatecableandduct:'/otdr/link/{link_id}/cables_and_ducts',
+      Addadmin:'/otdr/link/{link_id}/access/admin'
     },
   },
 };

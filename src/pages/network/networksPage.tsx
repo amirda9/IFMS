@@ -1,10 +1,21 @@
 import React, {FC} from 'react';
 import { useSelector } from 'react-redux';
+import { log } from 'util';
 import {SidebarItem} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
 const NetworksPage: FC = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const getrole= fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+    headers: {
+      Authorization:`Bearer ${accesstoken}`,
+      Accept: 'application.json',
+      'Content-Type': 'application/json'},
+  })
+console.log(login,'login');
+
   const {networkDetail} = useSelector((state: any) => state.http);
   console.log(networkDetail?.data?.access, 'fffrrtttt');
   const {

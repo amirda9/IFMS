@@ -58,6 +58,8 @@ type RequestKeys =
   | 'networkStationList'
   | 'stationAccessList'
   | 'linkAccessList'
+  | 'linkAddadmin'
+  | 'stationAddadmin'
   | 'stationViewerUpdate'
   | 'stationAdminUpdate'
   | 'userNetworkAccesses'
@@ -263,6 +265,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  linkAddadmin: {
+    url: api.BASE_URL + api.URLS.otdr.link.Addadmin,
+    method: 'put',
+    auth: true,
+  },
   regionLinkList: {
     url: api.BASE_URL + api.URLS.otdr.link.listInRegion,
     method: 'get',
@@ -286,6 +293,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   stationDetail: {
     url: api.BASE_URL + api.URLS.otdr.station.single,
     method: 'get',
+    auth: true,
+  },
+  stationAddadmin: {
+    url: api.BASE_URL + api.URLS.otdr.station.Addadmin,
+    method: 'put',
     auth: true,
   },
   stationUpdate: {
@@ -486,6 +498,12 @@ export type RequestListTypes = {
   linkAccessList: {
     params: {link_id: string};
   };
+  linkAddadmin:{
+    params: {link_id: string};
+    data:{
+      user_id:string
+    }
+  }
   linkDelete: {params: {link_id: string}};
   linkDetail: {params: {link_id: string}};
   linkUpdate: {
@@ -580,6 +598,12 @@ export type RequestListTypes = {
     params: {station_id: string};
     data: {users: string};
   };
+  stationAddadmin:{
+    params: {station_id: string};
+    data:{
+      user_id:string
+    }
+  }
   stationAdminUpdate: {
     params: {station_id: string};
     data: {user_id: string};
@@ -693,6 +717,7 @@ export type ResponseListType = {
   linkUpdate:T.LinksType;
   linkupdatecables:string;
   linkAccessList: {users: T.AccessListType[]};
+  linkAddadmin: string;
   linkAccessUpdate: {count: number};
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
@@ -704,6 +729,7 @@ export type ResponseListType = {
   regionAdminUpdate: string;
   allStations: T.StationListType[];
   stationCreate: T.StationCreateType & {station_id: string};
+  stationAddadmin: string;
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
   stationAccessUpdate: {count: number};

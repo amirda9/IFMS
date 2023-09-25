@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {useSelector} from 'react-redux';
-import { useParams } from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
-import { useHttpRequest } from '~/hooks';
-import { AccessEnum } from '~/types';
+import {useHttpRequest} from '~/hooks';
+import {AccessEnum} from '~/types';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -20,6 +20,7 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const LinkAccessPage = () => {
+  const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const params = useParams<{linkId: string}>();
   const {
     request,
@@ -35,34 +36,61 @@ const LinkAccessPage = () => {
     },
   });
   const items = (viewers?.data?.users || [])
-  .filter(value => value.access !== AccessEnum.admin)
-  .map((value, index) => ({
-    index: (index + 1).toString(),
-    user: value.user.username,
-    station: value.user.station?.name || '-',
-    region: value.user.region?.name || '-',
-  }));
-const admin = viewers?.data?.users.find(
-  viewer => viewer.access === AccessEnum.admin,
-);
-const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
-const userList =
-  users?.httpRequestStatus === 'success' ? [...users.data!] : [];
-if (!ifUserExist && admin) {
-  userList.push({...admin.user});
-}
-  console.log(viewers,'viewers');
-  console.log(users,'users');
-  console.log(items,'items');
+    .filter(value => value.access !== AccessEnum.admin)
+    .map((value, index) => ({
+      index: (index + 1).toString(),
+      user: value.user.username,
+      station: value.user.station?.name || '-',
+      region: value.user.region?.name || '-',
+    }));
+  const admin = viewers?.data?.users.find(
+    viewer => viewer.access === AccessEnum.admin,
+  );
+  const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
+  const userList =
+    users?.httpRequestStatus === 'success' ? [...users.data!] : [];
+  if (!ifUserExist && admin) {
+    userList.push({...admin.user});
+  }
+  console.log(viewers, 'viewers');
+  console.log(users, 'users');
+  console.log(items, 'items');
 
   const {linkDetail} = useSelector((state: any) => state.http);
+  const saveAdmin = () => {
+    const viewerWithoutAdmin =
+      viewers?.data?.users
+        .filter(viewer => viewer.access !== AccessEnum.admin)
+        .map(viewer => ({
+          user_id: viewer.user.id,
+          access_types: AccessEnum.viewer,
+        })) || [];
+    const admin = viewers?.data?.users.find(
+      viewer => viewer.access === AccessEnum.admin,
+    );
+    viewerWithoutAdmin.push({
+      user_id: userAdmin || admin!.user.id,
+      access_types: AccessEnum.admin,
+    });
+    request('linkAddadmin', {
+      params: {link_id: params.linkId!},
+      data: {user_id: userAdmin || admin!.user.id!},
+    });
+  };
+
   console.log(linkDetail?.data?.access, 'fffrrtttt');
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
         <Description label="Link Admin" className="mb-4">
-          <Select className="w-80 text-sm">
-            <option>ahmad kazemi</option>
+          <Select
+            onChange={e => setUserAdmin(e.target.value)}
+            className="w-80 text-sm">
+            {userList.map(user => (
+              <option onClick={() => alert('kk')} value={user.id} key={user.id}>
+                {user.username}
+              </option>
+            ))}
           </Select>
         </Description>
         <Description
@@ -82,7 +110,7 @@ if (!ifUserExist && admin) {
             Edit Link Viewer(s)
           </SimpleBtn>
         ) : null}
-        <SimpleBtn>Save</SimpleBtn>
+        <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>

@@ -71,15 +71,25 @@ const RegionAccessPage = () => {
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
+    // const Addadmin = (id: string) => {
+    //   request('regionAddadmin', {
+    //     data: {user_id: id},
+    //     params: {region_id: params.regionId!},
+     
+    //   });
+    // };
+
     return (
       <>
         <Description label="Region Admin" className="mb-4">
           <Select
             className="w-80"
             value={userAdmin || admin?.user.id}
+            // onChange={e => Addadmin(e.target.value)}
             onChange={event => {
               setUserAdmin(event.target.value);
-            }}>
+            }}
+            >
             <option value="" className="hidden" />
             <option value={undefined} className="hidden" />
             {userList.map(user => (

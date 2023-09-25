@@ -25,7 +25,23 @@ const RegionAccessPage = () => {
     initialRequests: request => {
       request('regionAccessList', {params: {region_id: params.regionId!}});
     },
-  
+    onUpdate: lastState => {
+      if (
+        lastState.viewers?.httpRequestStatus === 'loading' &&
+        viewers?.httpRequestStatus === 'success'
+      ) {
+        editor.current?.setValues(
+          viewers.data!.users.map(viewer => viewer.user.id),
+        );
+      }
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        update?.httpRequestStatus === 'success'
+      ) {
+        request('regionAccessList', {params: {region_id: params.regionId!}});
+        navigate('../access', {replace: true, relative: 'path'});
+      }
+    },
   });
 
 console.log(viewers,'viewers');

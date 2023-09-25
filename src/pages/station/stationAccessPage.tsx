@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
@@ -21,6 +21,7 @@ const dummy = [
 ];
 const StationAccessPage = () => {
   const params = useParams<{stationId: string}>();
+  const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {stationDetail} = useSelector((state: any) => state.http);
   console.log(stationDetail, 'stationDetail');
   const {
@@ -57,12 +58,37 @@ const StationAccessPage = () => {
   }
   console.log(items, 'items');
 
+  const saveAdmin = () => {
+    const viewerWithoutAdmin =
+      viewers?.data?.users
+        .filter(viewer => viewer.access !== AccessEnum.admin)
+        .map(viewer => ({
+          user_id: viewer.user.id,
+          access_types: AccessEnum.viewer,
+        })) || [];
+    const admin = viewers?.data?.users.find(
+      viewer => viewer.access === AccessEnum.admin,
+    );
+    viewerWithoutAdmin.push({
+      user_id: userAdmin || admin!.user.id,
+      access_types: AccessEnum.admin,
+    });
+    request('stationAddadmin', {
+      params: {station_id: params.stationId!},
+      data: {user_id: userAdmin || admin!.user.id!},
+    });
+  };
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
         <Description label="Station Admin" className="mb-4">
-          <Select className="w-80">
-            <option>ahmad kazemi</option>
+          <Select onChange={e => setUserAdmin(e.target.value)} className="w-80">
+          {userList.map(user => (
+              <option value={user.id} key={user.id}>
+                {user.username}
+              </option>
+            ))}
           </Select>
         </Description>
         <Description label="Station Viewer(s)" items="start" className="h-full">
@@ -80,7 +106,7 @@ const StationAccessPage = () => {
           </SimpleBtn>
         ) : null}
         {stationDetail?.data?.access == 'ADMIN' ? (
-          <SimpleBtn>Save</SimpleBtn>
+          <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
