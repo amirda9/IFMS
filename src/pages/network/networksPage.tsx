@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import { useSelector } from 'react-redux';
 import { log } from 'util';
 import {SidebarItem} from '~/components';
@@ -8,16 +8,22 @@ import {SidebarLayout} from '~/layout';
 const NetworksPage: FC = () => {
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
-  const getrole= fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
-    headers: {
-      Authorization:`Bearer ${accesstoken}`,
-      Accept: 'application.json',
-      'Content-Type': 'application/json'},
-  })
-console.log(login,'login');
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
 
-  const {networkDetail} = useSelector((state: any) => state.http);
-  console.log(networkDetail?.data?.access, 'fffrrtttt');
+
   const {
     request,
     state: {list, deleteRequest},
@@ -41,10 +47,10 @@ console.log(login,'login');
     },
   });
 
-  console.log(list,'list');
+
   
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Networks" canAdd={networkDetail?.data?.access?.access == 'ADMIN'?true:false}>
+    <SidebarLayout searchOnChange={() => {}} createTitle="Networks" canAdd={userrole == 'superuser'?true:false}>
       {list?.data?.map(value => (
         <SidebarItem
           name={value.name}
