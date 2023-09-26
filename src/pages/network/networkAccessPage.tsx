@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
@@ -15,6 +15,22 @@ const columns = {
 };
 
 const NetworkAccessPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const {networkDetail} = useSelector((state: any) => state.http);
   console.log(networkDetail.data.access, 'fffrrtttt');
   const params = useParams<{networkId: string}>();
@@ -97,7 +113,7 @@ const NetworkAccessPage = () => {
 
   const buttons = (
     <>
-      {networkDetail.data.access.access == 'ADMIN' ? (
+      {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Network Viewer(s)
         </SimpleBtn>
@@ -112,11 +128,14 @@ const NetworkAccessPage = () => {
       <SimpleBtn link to="../history">
         History
       </SimpleBtn>
-      <SimpleBtn
-        onClick={saveAdmin}
-        disabled={update?.httpRequestStatus === 'loading'}>
-        Save
-      </SimpleBtn>
+      {userrole == 'superuser'?
+          <SimpleBtn
+          onClick={saveAdmin}
+          disabled={update?.httpRequestStatus === 'loading'}>
+          Save
+        </SimpleBtn>
+      :null}
+  
       <SimpleBtn link to="../">
         Cancel
       </SimpleBtn>
