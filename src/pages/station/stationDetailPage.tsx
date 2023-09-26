@@ -9,6 +9,7 @@ import {getPrettyDateTime} from '~/util/time';
 import {Request} from '~/hooks/useHttpRequest';
 import {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
+import {BASE_URL} from './../../constant'
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
   description: Yup.string().required('Please enter station comment'),
@@ -20,7 +21,7 @@ const StationDetailPage = () => {
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
   const getrole=async()=>{
-    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
       headers: {
         Authorization:`Bearer ${accesstoken}`,
         Accept: 'application.json',
@@ -32,6 +33,8 @@ const StationDetailPage = () => {
 useEffect(()=>{
   getrole()
 },[])
+console.log(BASE_URL,'u');
+
   const {stationDetail} = useSelector((state: any) => state.http);
   console.log(stationDetail, 'stationDetail');
   const params = useParams<{stationId: string}>();

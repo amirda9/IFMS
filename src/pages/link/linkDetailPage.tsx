@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {useEffect, useState} from 'react';
 import {settypestate} from './../../store/slices/networkslice';
+import {BASE_URL} from './../../constant'
 import { useDispatch, useSelector } from 'react-redux';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
@@ -16,6 +17,22 @@ const typeoptions = [
 
 // *********************************************************************
 const LinkDetailPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const dispatch = useDispatch();
   const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
@@ -294,7 +311,7 @@ const LinkDetailPage = () => {
       </Description>
 
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end ">
-      {state?.detail?.data?.access?.access == 'ADMIN'?
+      {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN'?
    <SimpleBtn onClick={updatelink} type="button">
    Save
  </SimpleBtn>

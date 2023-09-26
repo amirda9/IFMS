@@ -10,7 +10,7 @@ import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
-
+import {BASE_URL} from './../../constant'
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
   description: Yup.string().required('Please enter network description'),
@@ -20,7 +20,7 @@ const NetworkDetailPage = () => {
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
   const getrole=async()=>{
-    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
       headers: {
         Authorization:`Bearer ${accesstoken}`,
         Accept: 'application.json',
