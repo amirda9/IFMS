@@ -101,7 +101,9 @@ useEffect(()=>{
     <div className="flex h-[calc(100%-290px)] relative flex-col justify-between">
       <div className="h-5/6">
         <Description label="Station Admin" className="mb-4">
-          <Select onChange={e => setUserAdmin(e.target.value)} className="w-80">
+          <Select 
+          value={userAdmin || admin?.user.id}
+          disabled={userrole == 'superuser' || stationDetail?.data?.access.role  == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN'?false:true} onChange={e => setUserAdmin(e.target.value)} className="w-80">
           {userList.map(user => (
               <option value={user.id} key={user.id}>
                 {user.username}
@@ -118,12 +120,12 @@ useEffect(()=>{
         </Description>
       </div>
       <div className="mr-4 absolue bottom-[20px] right-0 flex flex-row gap-x-4 self-end">
-        {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
+        {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-access">
             Edit Station Viewer(s)
           </SimpleBtn>
         ) : null}
-        {userrole == 'superuser' || stationDetail?.data?.access.role  == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
+        {userrole == 'superuser' || stationDetail?.data?.access.access  == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN'  ? (
           <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn>Cancel</SimpleBtn>

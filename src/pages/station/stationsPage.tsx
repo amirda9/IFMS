@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import {BASE_URL} from './../../constant'
 const StationsPage = () => {
 
-  const {stationDetail} = useSelector((state: any) => state.http);
+  const {stationDetail,networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
@@ -38,14 +38,14 @@ useEffect(()=>{
     },
   });
 
-  console.log(stations,'stations');
-  console.log(networkstations,'networkstations');
+  console.log(networkDetail.data.access.access,'stations🥵');
+  // console.log(networkstations,'networkstations');
   
   return (
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Stations"
-      canAdd={userrole == 'superuser'?true:false}>
+      canAdd={userrole == 'superuser' || networkDetail.data.access.access =="ADMIN"?true:false}>
       {stations?.data?.map(value => (
         <SidebarItem name={value.name} to={value.id} key={value.id} />
       ))}
