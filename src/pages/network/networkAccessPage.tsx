@@ -128,7 +128,7 @@ useEffect(()=>{
       <SimpleBtn link to="../history">
         History
       </SimpleBtn>
-      {userrole == 'superuser'?
+      {userrole == 'superuser' || networkDetail.data.access.role == "superuser"?
           <SimpleBtn
           onClick={saveAdmin}
           disabled={update?.httpRequestStatus === 'loading'}>
