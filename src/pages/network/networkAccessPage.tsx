@@ -5,7 +5,7 @@ import {AccessEnum} from '~/types';
 import {useParams} from 'react-router-dom';
 import {FormLayout} from '~/layout';
 import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
+import {BASE_URL, networkExplored} from '~/constant';
 import {useSelector} from 'react-redux';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -19,7 +19,7 @@ const NetworkAccessPage = () => {
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
   const getrole=async()=>{
-    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
       headers: {
         Authorization:`Bearer ${accesstoken}`,
         Accept: 'application.json',
