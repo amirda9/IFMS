@@ -33,7 +33,7 @@ const StationAccessPage = () => {
         'Content-Type': 'application/json'},
     }).then(res =>res.json())
     setuserrole(role.role)
-  console.log(role,'getrole');
+  // console.log(role,'getrole');
   }
 useEffect(()=>{
   getrole()
@@ -41,7 +41,7 @@ useEffect(()=>{
   const params = useParams<{stationId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {stationDetail} = useSelector((state: any) => state.http);
-  console.log(stationDetail, 'stationDetail');
+  console.log(stationDetail.data.access, '🥰');
   const {
     request,
     state: {viewers, users},
@@ -55,8 +55,8 @@ useEffect(()=>{
      request('userList', undefined);
     },
   });
-  console.log(viewers, 'viewersvviewers');
-  console.log(users, 'users');
+  // console.log(viewers, 'viewersvviewers');
+  // console.log(users, 'users');
   const items = (viewers?.data?.users || [])
     .filter(value => value.access !== AccessEnum.admin)
     .map((value, index) => ({
@@ -74,7 +74,7 @@ useEffect(()=>{
   if (!ifUserExist && admin) {
     userList.push({...admin.user});
   }
-  console.log(items, 'items');
+  // console.log(items, 'items');
 
   const saveAdmin = () => {
     const viewerWithoutAdmin =

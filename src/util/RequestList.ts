@@ -49,6 +49,7 @@ type RequestKeys =
   | 'regionLinkList'
   | 'regionAdminUpdate'
   | 'allStations'
+  | 'networkstations'
   | 'stationCreate'
   | 'stationDetail'
   | 'stationUpdate'
@@ -282,6 +283,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   allStations: {
     url: api.BASE_URL + api.URLS.otdr.station.all,
+    method: 'get',
+    auth: true,
+  },
+  networkstations: {
+    url: api.BASE_URL + api.URLS.otdr.station.networkstations,
     method: 'get',
     auth: true,
   },
@@ -569,7 +575,8 @@ export type RequestListTypes = {
   allLinks: undefined;
   regionLinkList: {params: {region_id: string}};
   regionAdminUpdate: {params: {region_id: string}; data: {user_id: string}};
-  allStations: undefined;
+  allStations:undefined;
+  networkstations:{params: {network_id: string}};
   stationCreate: {data: T.StationCreateType};
   stationDetail: {params: {station_id: string}};
   stationUpdate: {
@@ -728,6 +735,7 @@ export type ResponseListType = {
   regionLinkList: T.LinksType[];
   regionAdminUpdate: string;
   allStations: T.StationListType[];
+  networkstations: T.networkstationslistType[];
   stationCreate: T.StationCreateType & {station_id: string};
   stationAddadmin: string;
   stationDetail: T.StationType;

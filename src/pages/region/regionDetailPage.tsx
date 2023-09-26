@@ -16,7 +16,7 @@ const regionSchema = Yup.object().shape({
 const RegionDetailPage = () => {
   const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
 
-  console.log(regionDetail?.data?.access?.access, 'regionDetailregionDetail');
+  // console.log(regionDetail?.data?.access?.access, 'regionDetailregionDetail');
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
@@ -28,7 +28,7 @@ const RegionDetailPage = () => {
         'Content-Type': 'application/json'},
     }).then(res =>res.json())
     setuserrole(role.role)
-  console.log(role,'getrole');
+  // console.log(role,'getrole');
   }
 useEffect(()=>{
   getrole()
@@ -51,7 +51,7 @@ useEffect(()=>{
       }
     },
   });
-  console.log(state.detail, 'detaildetaildetail');
+  // console.log(state.detail, 'detaildetaildetail');
 
   const buttons = (
     <>

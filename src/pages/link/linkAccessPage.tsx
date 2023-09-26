@@ -34,7 +34,6 @@ const LinkAccessPage = () => {
       },
     }).then(res => res.json());
     setuserrole(role.role);
-    console.log(role, 'getrole');
   };
   useEffect(() => {
     getrole();
@@ -71,9 +70,9 @@ const LinkAccessPage = () => {
   if (!ifUserExist && admin) {
     userList.push({...admin.user});
   }
-  console.log(viewers, 'viewers');
-  console.log(users, 'users');
-  console.log(items, 'items');
+  // console.log(viewers, 'viewers');
+  // console.log(users, 'users');
+  // console.log(items, 'items');
 
   const {linkDetail} = useSelector((state: any) => state.http);
   const saveAdmin = () => {
@@ -97,7 +96,7 @@ const LinkAccessPage = () => {
     });
   };
 
-  console.log(linkDetail?.data?.access, 'fffrrtttt');
+  console.log(linkDetail?.data?.access, '👨');
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">

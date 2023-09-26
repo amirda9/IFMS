@@ -26,13 +26,13 @@ const NetworkAccessPage = () => {
         'Content-Type': 'application/json'},
     }).then(res =>res.json())
     setuserrole(role.role)
-  console.log(role,'getrole');
+
   }
 useEffect(()=>{
   getrole()
 },[])
   const {networkDetail} = useSelector((state: any) => state.http);
-  console.log(networkDetail.data.access, 'fffrrtttt');
+  console.log(networkDetail.data.access, '😋');
   const params = useParams<{networkId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -49,9 +49,9 @@ useEffect(()=>{
       request('userList', undefined);
     },
   });
-  console.log(viewers, 'viewers');
-  console.log(users, 'users');
-  console.log(update, 'update');
+  // console.log(viewers, 'viewers');
+  // console.log(users, 'users');
+  // console.log(update, 'update');
 
   const saveAdmin = () => {
     const admin = viewers?.data?.users.find(
@@ -81,10 +81,13 @@ useEffect(()=>{
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
+    console.log(viewers,'viewers');
+    
     return (
       <>
         <Description label="Network Admin" className="mb-4">
           <Select
+          disabled={userrole == 'superuser' || networkDetail.data.access.role == "superuser"?false:true}
             className="w-80"
             value={userAdmin || admin?.user.id}
             onChange={event => {
@@ -128,7 +131,7 @@ useEffect(()=>{
       <SimpleBtn link to="../history">
         History
       </SimpleBtn>
-      {userrole == 'superuser' || networkDetail.data.access.role == "superuser"?
+      {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN'?
           <SimpleBtn
           onClick={saveAdmin}
           disabled={update?.httpRequestStatus === 'loading'}>

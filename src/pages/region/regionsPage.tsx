@@ -21,7 +21,6 @@ const RegionsPage = () => {
         'Content-Type': 'application/json'},
     }).then(res =>res.json())
     setuserrole(role.role)
-  console.log(role,'getrole');
   }
 useEffect(()=>{
   getrole()

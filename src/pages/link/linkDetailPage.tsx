@@ -29,7 +29,7 @@ const LinkDetailPage = () => {
       },
     }).then(res => res.json());
     setuserrole(role.role);
-    console.log(role, 'getrole');
+
   };
   useEffect(() => {
     getrole();
@@ -119,7 +119,7 @@ const LinkDetailPage = () => {
     }
   }, [state.detail]);
 
-  console.log(defaultdestinationname, 'v');
+
 
   const changesource = (id: string) => {
     setSourcerror('');

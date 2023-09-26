@@ -51,7 +51,8 @@ export const URLS = {
       allAccess: '/otdr/station/{station_id}/access',
       viewersAccess: '/otdr/station/{station_id}/access/viewers',
       adminAccess: '/otdr/station/{station_id}/access/admin',
-      Addadmin:'/otdr/station/{station_id}/access/admin'
+      Addadmin:'/otdr/station/{station_id}/access/admin',
+      networkstations:'/otdr/station/network/{network_id}'
     },
     link: {
       all: '/otdr/link',

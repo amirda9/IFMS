@@ -28,7 +28,6 @@ const RegionAccessPage = () => {
       },
     }).then(res => res.json());
     setuserrole(role.role);
-    console.log(role, 'getrole');
   };
   useEffect(() => {
     getrole();
@@ -95,6 +94,7 @@ const RegionAccessPage = () => {
 
     //   });
     // };
+console.log(networkDetail?.data?.access,'😃');
 
     return (
       <>
@@ -134,7 +134,7 @@ const RegionAccessPage = () => {
           Edit Region Viewer(s)
         </SimpleBtn>
       ) : null}
-      {userrole == 'superuser' || networkDetail?.data?.access?.role == 'ADMIN' ||
+      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
       regionDetail?.data?.access.role == 'superuser' ? (
         <SimpleBtn
           onClick={saveAdmin}

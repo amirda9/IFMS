@@ -7,6 +7,7 @@ import {useHttpRequest} from '~/hooks';
 import { useSelector } from 'react-redux';
 import {BASE_URL} from './../../constant'
 const StationsPage = () => {
+
   const {stationDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
@@ -26,17 +27,19 @@ useEffect(()=>{
 },[])
   const networkId = Cookies.get(networkExplored);
   const {
-    state: {stations},
+    state: {stations,networkstations},
   } = useHttpRequest({
-    selector: state => ({stations: state.http.allStations}),
+    selector: state => ({stations: state.http.allStations,networkstations:state.http.networkstations}),
     initialRequests: request => {
       if (networkId) {
         request('allStations', undefined);
+        request('networkstations', {params:{network_id:networkId}});
       }
     },
   });
 
   console.log(stations,'stations');
+  console.log(networkstations,'networkstations');
   
   return (
     <SidebarLayout

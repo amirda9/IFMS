@@ -9,6 +9,15 @@ export type StationListType = {
   region_id: string;
 };
 
+export type networkstationslistType = {
+    id: string,
+    name: string,
+    network_id: string,
+    time_created:string,
+    time_updated:string,
+    region_id:string
+};
+
 export type StationCreateType = {
   name: string;
   model: string;
