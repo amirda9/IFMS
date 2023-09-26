@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
+import { BASE_URL } from '~/constant';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 
@@ -20,6 +21,22 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const StationAccessPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const params = useParams<{stationId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {stationDetail} = useSelector((state: any) => state.http);
@@ -80,7 +97,7 @@ const StationAccessPage = () => {
   };
 
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex h-[calc(100%-290px)] relative flex-col justify-between">
       <div className="h-5/6">
         <Description label="Station Admin" className="mb-4">
           <Select onChange={e => setUserAdmin(e.target.value)} className="w-80">
@@ -99,13 +116,13 @@ const StationAccessPage = () => {
           />
         </Description>
       </div>
-      <div className="mr-4 flex flex-row gap-x-4 self-end">
-        {stationDetail?.data?.access.access == 'ADMIN' ? (
+      <div className="mr-4 absolue bottom-[20px] right-0 flex flex-row gap-x-4 self-end">
+        {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-access">
             Edit Station Viewer(s)
           </SimpleBtn>
         ) : null}
-        {stationDetail?.data?.access == 'ADMIN' ? (
+        {userrole == 'superuser' || stationDetail?.data?.access.role  == 'superuser' ? (
           <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn>Cancel</SimpleBtn>

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
+import {BASE_URL} from '~/constant';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 
@@ -20,6 +21,23 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const LinkAccessPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+    console.log(role, 'getrole');
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const params = useParams<{linkId: string}>();
   const {
@@ -105,12 +123,17 @@ const LinkAccessPage = () => {
         </Description>
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        {linkDetail?.data?.access.access == 'ADMIN' ? (
+        {userrole == 'superuser' ||
+        linkDetail?.data?.access.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-access">
             Edit Link Viewer(s)
           </SimpleBtn>
         ) : null}
-        <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
+        {userrole == 'superuser' ||
+        linkDetail?.data?.access.role == 'superuser' ? (
+          <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
+        ) : null}
+
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>

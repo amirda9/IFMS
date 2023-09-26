@@ -1,10 +1,11 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 import {useParams} from 'react-router-dom';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {FormLayout} from '~/layout';
 import {useSelector} from 'react-redux';
+import {BASE_URL} from '~/constant';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -15,7 +16,23 @@ const columns = {
 
 const RegionAccessPage = () => {
   const {regionDetail} = useSelector((state: any) => state.http);
-
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+    console.log(role, 'getrole');
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const params = useParams<{regionId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -75,7 +92,7 @@ const RegionAccessPage = () => {
     //   request('regionAddadmin', {
     //     data: {user_id: id},
     //     params: {region_id: params.regionId!},
-     
+
     //   });
     // };
 
@@ -88,8 +105,7 @@ const RegionAccessPage = () => {
             // onChange={e => Addadmin(e.target.value)}
             onChange={event => {
               setUserAdmin(event.target.value);
-            }}
-            >
+            }}>
             <option value="" className="hidden" />
             <option value={undefined} className="hidden" />
             {userList.map(user => (
@@ -112,17 +128,21 @@ const RegionAccessPage = () => {
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
   const buttons = (
     <>
-      {/* {regionDetail?.data?.access.access == 'ADMIN' ? ( */}
+      {userrole == 'superuser' ||
+      regionDetail?.data?.access.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Region Viewer(s)
         </SimpleBtn>
-      {/* ) : null} */}
+      ) : null}
+      {userrole == 'superuser' ||
+      regionDetail?.data?.access.role == 'superuser' ? (
+        <SimpleBtn
+          onClick={saveAdmin}
+          disabled={update?.httpRequestStatus === 'loading'}>
+          Save
+        </SimpleBtn>
+      ) : null}
 
-      <SimpleBtn
-        onClick={saveAdmin}
-        disabled={update?.httpRequestStatus === 'loading'}>
-        Save
-      </SimpleBtn>
       <SimpleBtn link to="../">
         Cancel
       </SimpleBtn>
