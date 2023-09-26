@@ -16,6 +16,22 @@ const stationSchema = Yup.object().shape({
   longitude: Yup.string().required('Please enter longitude'),
 });
 const StationDetailPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const {stationDetail} = useSelector((state: any) => state.http);
   console.log(stationDetail, 'stationDetail');
   const params = useParams<{stationId: string}>();
@@ -41,20 +57,6 @@ const StationDetailPage = () => {
     },
   });
 
-  console.log(state?.detail?.data, 'stateuuuu');
-
-  const buttons = (
-    <>
-      <SimpleBtn
-        type="submit"
-        disabled={state?.detail?.httpRequestStatus === 'loading'}>
-        Save
-      </SimpleBtn>
-      <SimpleBtn link to="../">
-        Cancel
-      </SimpleBtn>
-    </>
-  );
   return (
     <Formik
       enableReinitialize
@@ -165,7 +167,7 @@ const StationDetailPage = () => {
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
-            {stationDetail?.data?.access.access == 'ADMIN' ? (
+            {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"
                 disabled={state?.detail?.httpRequestStatus === 'loading'}>
