@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarLayout } from "~/layout";
 import { SidebarItem } from "~/components";
 import Cookies from 'js-cookie';
@@ -7,6 +7,22 @@ import { useHttpRequest } from '~/hooks';
 const LinksPage = () => {
   const [linkID, setLinkId] = useState<string | null>(null);
   const networkId = Cookies.get(networkExplored);
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const {
     state: {links},
     request,
@@ -33,7 +49,7 @@ const LinksPage = () => {
   console.log(links,'linkslinks');
   
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Links" canAdd>
+    <SidebarLayout searchOnChange={() => {}} createTitle="Links" canAdd={userrole == 'superuser'?true:false}>
       {links?.data?.map((value, index) => (
         <SidebarItem
           name={`${value.name}`}
