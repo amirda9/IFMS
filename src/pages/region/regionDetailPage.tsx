@@ -7,6 +7,7 @@ import {FormLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {useSelector} from 'react-redux';
+import { useEffect, useState } from 'react';
 
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
@@ -15,7 +16,22 @@ const regionSchema = Yup.object().shape({
 const RegionDetailPage = () => {
   const {regionDetail} = useSelector((state: any) => state.http);
   console.log(regionDetail?.data?.access?.access, 'regionDetailregionDetail');
-
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const params = useParams<{regionId: string}>();
   const {state, request} = useHttpRequest({
     selector: state => ({
@@ -38,7 +54,7 @@ const RegionDetailPage = () => {
 
   const buttons = (
     <>
-      {regionDetail?.data?.access?.access == 'ADMIN' ? (
+      {userrole == 'superuser' || regionDetail?.data?.access?.access == 'ADMIN' ? (
         <SimpleBtn
           type="submit"
           disabled={state.update?.httpRequestStatus === 'loading'}
