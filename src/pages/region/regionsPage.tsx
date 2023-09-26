@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import {BASE_URL} from './../../constant'
 const RegionsPage = () => {
   const networkId = Cookies.get(networkExplored);
-  const {regionDetail} = useSelector((state: any) => state.http);
+  const {networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
@@ -25,6 +25,8 @@ const RegionsPage = () => {
 useEffect(()=>{
   getrole()
 },[])
+console.log(networkDetail.data.access.access,'😁');
+
   const [regionID, setRegionId] = useState<string | null>(null);
   const {
     state: {regions},
@@ -68,7 +70,7 @@ useEffect(()=>{
         searchOnChange={() => {}}
         createTitle="Regions"
         // regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false
-        canAdd={userrole == 'superuser'?true:false}>
+        canAdd={userrole == 'superuser' || networkDetail.data.access.access == "ADMIN"?true:false}>
         {regions?.data?.map(region => (
           <SidebarItem
             name={region.name}

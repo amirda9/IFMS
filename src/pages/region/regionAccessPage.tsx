@@ -94,12 +94,13 @@ const RegionAccessPage = () => {
 
     //   });
     // };
-console.log(networkDetail?.data?.access,'😃');
+console.log(admin,'😃');
 
     return (
       <>
         <Description label="Region Admin" className="mb-4">
           <Select
+          disabled={userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||regionDetail?.data?.access.role == "superuser" ?false:true}
             className="w-80"
             value={userAdmin || admin?.user.id}
             // onChange={e => Addadmin(e.target.value)}
@@ -135,7 +136,7 @@ console.log(networkDetail?.data?.access,'😃');
         </SimpleBtn>
       ) : null}
       {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
-      regionDetail?.data?.access.role == 'superuser' ? (
+      regionDetail?.data?.access.access == 'ADMIN' ? (
         <SimpleBtn
           onClick={saveAdmin}
           disabled={update?.httpRequestStatus === 'loading'}>

@@ -48,8 +48,8 @@ const NetworkAccessPage = () => {
   console.log(viewers, 'viewers');
 
   const buttons = (
-    <div className="mt-[25px] w-auto">
-      {networkDetail.data.access == 'ADMIN' ? (
+    <div className="mt-[25px] w-auto ">
+
         <SimpleBtn
           className="mt-[25px] h-[40px] w-[149px]"
           disabled={update?.httpRequestStatus === 'loading'}
@@ -74,7 +74,7 @@ const NetworkAccessPage = () => {
           }}>
           OK
         </SimpleBtn>
-      ) : null}
+
       <SimpleBtn className="ml-2 px-14 py-[12px] " to="./../access" link>
         <span>Cancel</span>
       </SimpleBtn>
