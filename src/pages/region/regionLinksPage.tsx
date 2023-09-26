@@ -20,6 +20,9 @@ const RegionLinksPage = () => {
       request('regionLinkList', {params: {region_id: params.regionId!}});
     },
   });
+
+  console.log(list,'list');
+  
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
