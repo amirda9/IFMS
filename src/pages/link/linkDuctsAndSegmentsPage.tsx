@@ -1,13 +1,14 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
-import {networkExplored} from '~/constant';
+import {BASE_URL, networkExplored} from '~/constant';
 import Cookies from 'js-cookie';
 import {FormLayout} from '~/layout';
 import {BsPlusLg} from 'react-icons/bs';
 import useHttpRequest from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
 import { log } from 'console';
+import { useSelector } from 'react-redux';
 type Iprops = {
   classname: string;
   onclick: Function;
@@ -28,6 +29,24 @@ const Addbox = ({classname, onclick}: Iprops) => {
 };
 
 const LinkCablesAndSegmentsPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+    console.log(role, 'getrole');
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -693,7 +712,14 @@ const LinkCablesAndSegmentsPage = () => {
         })}
       </div>
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
+       {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ||
+        regionDetail?.data?.access?.access == 'ADMIN'?
         <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
+      
+      :
+      null
+      }
+      
 
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

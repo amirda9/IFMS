@@ -7,32 +7,33 @@ import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {useEffect, useState} from 'react';
 import {settypestate} from './../../store/slices/networkslice';
-import {BASE_URL} from './../../constant'
-import { useDispatch, useSelector } from 'react-redux';
+import {BASE_URL} from './../../constant';
+import {useDispatch, useSelector} from 'react-redux';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
 ];
 
-
 // *********************************************************************
 const LinkDetailPage = () => {
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
-  const accesstoken=JSON.parse(login || "")?.data.access_token
-  const [userrole,setuserrole]=useState<any>("")
-  const getrole=async()=>{
-    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
-        Authorization:`Bearer ${accesstoken}`,
+        Authorization: `Bearer ${accesstoken}`,
         Accept: 'application.json',
-        'Content-Type': 'application/json'},
-    }).then(res =>res.json())
-    setuserrole(role.role)
-  console.log(role,'getrole');
-  }
-useEffect(()=>{
-  getrole()
-},[])
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+    console.log(role, 'getrole');
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const dispatch = useDispatch();
   const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
@@ -164,9 +165,8 @@ useEffect(()=>{
       setSourcerror('');
       setDestinationerror('');
       request('linkUpdate', {
-        params: {link_id: params.linkId || ""},
+        params: {link_id: params.linkId || ''},
         data: {
-        
           description: comment,
           link_points: [
             {
@@ -185,14 +185,14 @@ useEffect(()=>{
       });
     }
   };
- 
-// ---------------------------------------------------------------
+
+  // ---------------------------------------------------------------
   return (
     <div className="relative flex min-h-[calc(100%-80px)] w-full flex-col">
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
-        disabled
+          disabled
           // defaultValue={state?.detail?.data?.name || ''}
           value={name}
           onChange={(e: any) => {
@@ -216,7 +216,7 @@ useEffect(()=>{
           //       version.id === state?.detail?.data?.current_version?.id,
           //   )?.description || ''
           // }
-         value={comment}
+          value={comment}
           onChange={(e: any) => {
             setComment(e.target.value), setCommmenerror('');
           }}
@@ -281,7 +281,7 @@ useEffect(()=>{
             onclickItem={(e: {value: string; label: string}) => {
               setType(e.value);
               setTypeerror('');
-            dispatch(settypestate(e.label))
+              dispatch(settypestate(e.label));
             }}
             options={typeoptions}
             borderColor={'black'}
@@ -311,13 +311,12 @@ useEffect(()=>{
       </Description>
 
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end ">
-      {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN'?
-   <SimpleBtn onClick={updatelink} type="button">
-   Save
- </SimpleBtn>
-
-:null}
-     
+        {userrole == 'superuser' ||
+        state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
+          <SimpleBtn onClick={updatelink} type="button">
+            Save
+          </SimpleBtn>
+        ) : null}
 
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

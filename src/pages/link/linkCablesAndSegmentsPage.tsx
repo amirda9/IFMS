@@ -1,12 +1,13 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
-import {networkExplored} from '~/constant';
+import {BASE_URL, networkExplored} from '~/constant';
 import Cookies from 'js-cookie';
 import {FormLayout} from '~/layout';
 import {BsPlusLg} from 'react-icons/bs';
 import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
+import {useSelector} from 'react-redux';
 
 type Iprops = {
   classname: string;
@@ -28,6 +29,24 @@ const Addbox = ({classname, onclick}: Iprops) => {
 };
 // *******************************
 const LinkCablesAndSegmentsPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+    console.log(role, 'getrole');
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const networkId = Cookies.get(networkExplored);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
@@ -70,7 +89,6 @@ const LinkCablesAndSegmentsPage = () => {
         }[]
       | [];
   }>();
-
 
   const {state, request} = useHttpRequest({
     selector: state => ({
@@ -178,7 +196,6 @@ const LinkCablesAndSegmentsPage = () => {
     };
   }, []);
 
-
   const addcable = (index: number) => {
     let beforadddata;
     if (!parentcabl?.cables) {
@@ -209,7 +226,7 @@ const LinkCablesAndSegmentsPage = () => {
       return a.id - b.id;
     });
 
-    setParentcable({cables: sortarray, ducts:parentcabl?.ducts || []});
+    setParentcable({cables: sortarray, ducts: parentcabl?.ducts || []});
   };
 
   const addcabledata = (id: number, index: number) => {
@@ -240,7 +257,7 @@ const LinkCablesAndSegmentsPage = () => {
     });
     console.log(sortarray, 'sortarray');
     beforadddata[findcable].segments = sortarray;
-    setParentcable({cables: beforadddata, ducts:parentcabl?.ducts || []});
+    setParentcable({cables: beforadddata, ducts: parentcabl?.ducts || []});
   };
 
   const deletecable = (id: number) => {
@@ -271,7 +288,7 @@ const LinkCablesAndSegmentsPage = () => {
         cableId: beforadddata[i].cableId,
       });
     }
-    setParentcable({cables: data, ducts:parentcabl?.ducts || []});
+    setParentcable({cables: data, ducts: parentcabl?.ducts || []});
   };
 
   const deletecabledata = (cableid: number, cabledataid: number) => {
@@ -303,7 +320,7 @@ const LinkCablesAndSegmentsPage = () => {
 
     beforadddata[findcable].segments = data;
 
-    setParentcable({cables: beforadddata, ducts:parentcabl?.ducts || []});
+    setParentcable({cables: beforadddata, ducts: parentcabl?.ducts || []});
   };
 
   return (
@@ -560,7 +577,10 @@ const LinkCablesAndSegmentsPage = () => {
         ))}
       </div>
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
+        {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ||
+        regionDetail?.data?.access?.access == 'ADMIN' ? (
+          <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
+        ) : null}
 
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

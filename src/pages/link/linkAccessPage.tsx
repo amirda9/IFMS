@@ -21,6 +21,7 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const LinkAccessPage = () => {
+  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -124,13 +125,13 @@ const LinkAccessPage = () => {
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
         {userrole == 'superuser' ||
-        linkDetail?.data?.access.access == 'ADMIN' ? (
+        linkDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN'? (
           <SimpleBtn link to="../edit-access">
             Edit Link Viewer(s)
           </SimpleBtn>
         ) : null}
         {userrole == 'superuser' ||
-        linkDetail?.data?.access.role == 'superuser' ? (
+        linkDetail?.data?.access.role == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN'? (
           <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
         ) : null}
 
