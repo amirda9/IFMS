@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SidebarItem} from '~/components';
 import {SidebarLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
@@ -10,7 +10,22 @@ import { useSelector } from 'react-redux';
 const RegionsPage = () => {
   const networkId = Cookies.get(networkExplored);
   const {regionDetail} = useSelector((state: any) => state.http);
-
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const [regionID, setRegionId] = useState<string | null>(null);
   const {
     state: {regions},
@@ -54,7 +69,7 @@ const RegionsPage = () => {
         searchOnChange={() => {}}
         createTitle="Regions"
         // regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false
-        canAdd={regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false}>
+        canAdd={userrole == 'superuser'?true:false}>
         {regions?.data?.map(region => (
           <SidebarItem
             name={region.name}
