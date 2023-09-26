@@ -17,6 +17,7 @@ const stationSchema = Yup.object().shape({
   longitude: Yup.string().required('Please enter longitude'),
 });
 const StationDetailPage = () => {
+  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
@@ -170,7 +171,7 @@ console.log(BASE_URL,'u');
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
-            {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' ? (
+            {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"
                 disabled={state?.detail?.httpRequestStatus === 'loading'}>

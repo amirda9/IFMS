@@ -21,6 +21,7 @@ const dummy = [
   {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
 ];
 const StationAccessPage = () => {
+  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
@@ -117,12 +118,12 @@ useEffect(()=>{
         </Description>
       </div>
       <div className="mr-4 absolue bottom-[20px] right-0 flex flex-row gap-x-4 self-end">
-        {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' ? (
+        {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-access">
             Edit Station Viewer(s)
           </SimpleBtn>
         ) : null}
-        {userrole == 'superuser' || stationDetail?.data?.access.role  == 'superuser' ? (
+        {userrole == 'superuser' || stationDetail?.data?.access.role  == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn>Cancel</SimpleBtn>
