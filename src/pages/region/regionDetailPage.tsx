@@ -14,7 +14,8 @@ const regionSchema = Yup.object().shape({
   description: Yup.string().required('Please enter region comment'),
 });
 const RegionDetailPage = () => {
-  const {regionDetail} = useSelector((state: any) => state.http);
+  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
+
   console.log(regionDetail?.data?.access?.access, 'regionDetailregionDetail');
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
@@ -54,7 +55,7 @@ useEffect(()=>{
 
   const buttons = (
     <>
-      {userrole == 'superuser' || regionDetail?.data?.access?.access == 'ADMIN' ? (
+      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
         <SimpleBtn
           type="submit"
           disabled={state.update?.httpRequestStatus === 'loading'}

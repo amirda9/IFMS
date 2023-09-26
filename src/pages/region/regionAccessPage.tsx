@@ -15,7 +15,7 @@ const columns = {
 };
 
 const RegionAccessPage = () => {
-  const {regionDetail} = useSelector((state: any) => state.http);
+  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -128,13 +128,13 @@ const RegionAccessPage = () => {
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
   const buttons = (
     <>
-      {userrole == 'superuser' ||
+      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
       regionDetail?.data?.access.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Region Viewer(s)
         </SimpleBtn>
       ) : null}
-      {userrole == 'superuser' ||
+      {userrole == 'superuser' || networkDetail?.data?.access?.role == 'ADMIN' ||
       regionDetail?.data?.access.role == 'superuser' ? (
         <SimpleBtn
           onClick={saveAdmin}
