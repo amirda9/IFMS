@@ -16,6 +16,22 @@ const networkSchema = Yup.object().shape({
   description: Yup.string().required('Please enter network description'),
 });
 const NetworkDetailPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const {networkDetail} = useSelector((state: any) => state.http);
   console.log(
     networkDetail?.data?.access?.access,
@@ -114,7 +130,7 @@ const NetworkDetailPage = () => {
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
-            {networkDetail.data.access.access == 'ADMIN' ? (
+            {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"
                 disabled={update?.httpRequestStatus === 'loading'}>
