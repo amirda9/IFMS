@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {SidebarItem} from '~/components';
 import {SidebarLayout} from '~/layout';
 import Cookies from 'js-cookie';
@@ -8,7 +8,22 @@ import { useSelector } from 'react-redux';
 
 const StationsPage = () => {
   const {stationDetail} = useSelector((state: any) => state.http);
-  console.log(stationDetail, 'stationDetail');
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch('http://37.32.27.143:8080/api/auth/users/token/verify_token',{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  console.log(role,'getrole');
+  }
+useEffect(()=>{
+  getrole()
+},[])
   const networkId = Cookies.get(networkExplored);
   const {
     state: {stations},
@@ -27,8 +42,7 @@ const StationsPage = () => {
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Stations"
-      // stationDetail?.data?.access.access == 'ADMIN'?!!networkId:false
-      canAdd={true}>
+      canAdd={userrole == 'superuser'?true:false}>
       {stations?.data?.map(value => (
         <SidebarItem name={value.name} to={value.id} key={value.id} />
       ))}
