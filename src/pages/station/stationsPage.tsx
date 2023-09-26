@@ -38,14 +38,14 @@ useEffect(()=>{
     },
   });
 
-  console.log(networkDetail.data.access.access,'stations🥵');
+
   // console.log(networkstations,'networkstations');
   
   return (
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Stations"
-      canAdd={userrole == 'superuser' || networkDetail.data.access.access =="ADMIN"?true:false}>
+      canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access =="ADMIN"?true:false}>
       {stations?.data?.map(value => (
         <SidebarItem name={value.name} to={value.id} key={value.id} />
       ))}

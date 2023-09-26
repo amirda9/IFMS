@@ -312,7 +312,7 @@ const LinkDetailPage = () => {
 
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end ">
         {userrole == 'superuser' ||
-        state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN' ? (
+        state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN'  ? (
           <SimpleBtn onClick={updatelink} type="button">
             Save
           </SimpleBtn>

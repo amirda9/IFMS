@@ -11,6 +11,7 @@ export type RegionListType = {
   time_updated: string;
 };
 export type LinkCreateType = {
+  link_id?:string;
   name: string;
   network_id: string;
   source_id: string;

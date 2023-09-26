@@ -102,6 +102,9 @@ const LinkAccessPage = () => {
       <div className="h-5/6">
         <Description label="Link Admin" className="mb-4">
           <Select
+          value={userAdmin || admin?.user.id}
+          disabled={userrole == 'superuser' ||
+          linkDetail?.data?.access.role == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN'?false:true}
             onChange={e => setUserAdmin(e.target.value)}
             className="w-80 text-sm">
             {userList.map(user => (
@@ -124,13 +127,13 @@ const LinkAccessPage = () => {
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
         {userrole == 'superuser' ||
-        linkDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN'? (
+        linkDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN'? (
           <SimpleBtn link to="../edit-access">
             Edit Link Viewer(s)
           </SimpleBtn>
         ) : null}
         {userrole == 'superuser' ||
-        linkDetail?.data?.access.role == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' || regionDetail?.data?.access?.access == 'ADMIN'? (
+        linkDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
         ) : null}
 

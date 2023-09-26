@@ -25,7 +25,7 @@ const RegionsPage = () => {
 useEffect(()=>{
   getrole()
 },[])
-console.log(networkDetail.data.access.access,'😁');
+
 
   const [regionID, setRegionId] = useState<string | null>(null);
   const {
@@ -70,7 +70,7 @@ console.log(networkDetail.data.access.access,'😁');
         searchOnChange={() => {}}
         createTitle="Regions"
         // regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false
-        canAdd={userrole == 'superuser' || networkDetail.data.access.access == "ADMIN"?true:false}>
+        canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access == "ADMIN"?true:false}>
         {regions?.data?.map(region => (
           <SidebarItem
             name={region.name}

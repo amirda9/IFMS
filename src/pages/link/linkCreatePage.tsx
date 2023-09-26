@@ -42,6 +42,17 @@ const LinkCreatePage = () => {
       if (networkId) {
         request('allStations', undefined);
       }
+
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.create?.httpRequestStatus === 'loading' &&
+        state.create?.httpRequestStatus === 'success'
+      ) {
+        request('allLinks',undefined);
+        navigate('../' + create?.data?.link_id
+        );
+      }
     },
     // onUpdate: lastState => {
     //   if (
@@ -53,6 +64,7 @@ const LinkCreatePage = () => {
     //   }
     // },
   });
+console.log(create,'create');
 
   const {allStations} = useSelector((state: any) => state.http);
   const [name, setName] = useState('');
@@ -173,6 +185,7 @@ console.log(stations,'stations');
           type: types,
         },
       });
+
     }
   };
 

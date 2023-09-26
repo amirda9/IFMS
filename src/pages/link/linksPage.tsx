@@ -5,7 +5,9 @@ import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import { useHttpRequest } from '~/hooks';
 import {BASE_URL} from './../../constant'
+import { useSelector } from 'react-redux';
 const LinksPage = () => {
+  const {stationDetail,networkDetail} = useSelector((state: any) => state.http);
   const [linkID, setLinkId] = useState<string | null>(null);
   const networkId = Cookies.get(networkExplored);
   const login = localStorage.getItem('login');
@@ -50,14 +52,14 @@ useEffect(()=>{
   console.log(links,'linkslinks');
   
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Links" canAdd={userrole == 'superuser'?true:false}>
+    <SidebarLayout searchOnChange={() => {}} createTitle="Links" canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access =="ADMIN"?true:false}>
       {links?.data?.map((value, index) => (
         <SidebarItem
           name={`${value.name}`}
           to={value.id.toString()}
           key={index}
-          onDelete={() => {
-            request('linkDelete', {params: {link_id: value.id}})
+          onDelete={userrole == 'superuser' || networkDetail?.data?.access?.access =="ADMIN"?() =>{request('linkDelete', {params: {link_id: value.id}})}: () =>{
+ 
           }}
         />
       ))}
