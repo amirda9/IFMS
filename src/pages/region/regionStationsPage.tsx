@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
+import { BASE_URL } from '~/constant';
+import { useSelector } from 'react-redux';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -11,6 +13,23 @@ const columns = {
 };
 
 const RegionStationsPage = () => {
+  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const params = useParams<{regionId: string}>();
   const {state} = useHttpRequest({
     selector: state => ({list: state.http.regionStationList}),
@@ -38,10 +57,14 @@ const RegionStationsPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
+      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
+      regionDetail?.data?.access.access == 'ADMIN' ?
         <SimpleBtn link to="/stations">
           Edit Stations List
-        </SimpleBtn>
-        <SimpleBtn>Save</SimpleBtn>
+        </SimpleBtn>:null}
+        {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
+      regionDetail?.data?.access.access == 'ADMIN' ?
+        <SimpleBtn>Save</SimpleBtn>:null}
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>
