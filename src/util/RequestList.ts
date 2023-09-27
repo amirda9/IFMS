@@ -18,6 +18,7 @@ type RequestKeys =
   | 'networkDetail'
   | 'networkCreate'
   | 'networkDelete'
+  | 'stationDelete'
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
@@ -55,7 +56,6 @@ type RequestKeys =
   | 'stationUpdate'
   | 'stationAccessUpdate'
   | 'linkAccessUpdate'
-  | 'stationDelete'
   | 'networkStationList'
   | 'stationAccessList'
   | 'linkAccessList'
@@ -221,6 +221,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     auth: true,
   },
+  stationDelete: {
+    url: api.BASE_URL + api.URLS.otdr.station.single,
+    method: 'delete',
+    auth: true,
+  },
   stationAccessUpdate: {
     url: api.BASE_URL + api.URLS.otdr.station.viewersAccess,
     method: 'post',
@@ -311,11 +316,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
-  stationDelete: {
-    url: api.BASE_URL + api.URLS.otdr.station.single,
-    method: 'delete',
-    auth: true,
-  },
+ 
   networkStationList: {
     url: api.BASE_URL + api.URLS.otdr.station.listInNetwork,
     method: 'get',

@@ -76,9 +76,9 @@ useEffect(()=>{
             name={region.name}
             to={region.id}
             key={region.id}
-            onDelete={() => {
+            onDelete={userrole == 'superuser' || networkDetail?.data?.access?.access == "ADMIN"?() => {
               setRegionId(region.id);
-            }}
+            }:()=>{}}
           />
         ))}
       </SidebarLayout>
