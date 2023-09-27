@@ -18,6 +18,8 @@ const RegionStationsPage = () => {
       request('regionStationList', {params: {region_id: params.regionId!}});
     },
   });
+  console.log(state?.list?.data,'state.list');
+  
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
@@ -26,8 +28,8 @@ const RegionStationsPage = () => {
           items={
             state.list?.data?.map(station => ({
               name: station.name,
-              latitude: '-',
-              longitude: '-',
+              latitude: station.longitude,
+              longitude:station.latitude,
             })) || []
           }
           dynamicColumns={['index']}

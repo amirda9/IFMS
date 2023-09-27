@@ -730,10 +730,10 @@ export type ResponseListType = {
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};
-  regionStationList: T.StationListType[];
+  regionStationList: T.regionstationlist[];
   networkUpdateAdmin: string;
   allLinks: T.LinksType[];
-  regionLinkList: T.LinksType[];
+  regionLinkList: T.regiolinklist[];
   regionAdminUpdate: string;
   allStations: T.StationListType[];
   networkstations: T.networkstationslistType[];

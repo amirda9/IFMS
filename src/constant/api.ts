@@ -46,7 +46,7 @@ export const URLS = {
     station: {
       all: '/otdr/station',
       single: '/otdr/station/{station_id}',
-      listInRegion: '/otdr/station/region/{region_id}',
+      listInRegion: '/otdr/region/{region_id}/stations',
       listInNetwork: '/otdr/station/network/{network_id}',
       allAccess: '/otdr/station/{station_id}/access',
       viewersAccess: '/otdr/station/{station_id}/access/viewers',
@@ -56,7 +56,7 @@ export const URLS = {
     },
     link: {
       all: '/otdr/link',
-      listInRegion: '/otdr/link/region/{region_id}',
+      listInRegion: '/otdr/region/{region_id}/links',
       create: '/otdr/link/',
       single: '/otdr/link/{link_id}',
       allAccess: '/otdr/link/{link_id}/access',

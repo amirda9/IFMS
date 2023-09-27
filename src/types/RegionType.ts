@@ -27,7 +27,14 @@ export type LinkCreateType = {
   type: string;
 };
 
-
+export type regiolinklist={
+  
+    id: string;
+    name: string;
+    source: string;
+    destination: string
+ 
+}
 export type LinksType = {
   id: string,
   name: string,

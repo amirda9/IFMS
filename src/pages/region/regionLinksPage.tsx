@@ -21,7 +21,7 @@ const RegionLinksPage = () => {
     },
   });
 
-  console.log(list,'list');
+  console.log(list?.data,'list');
   
   return (
     <div className="flex h-full flex-col justify-between">
@@ -30,9 +30,9 @@ const RegionLinksPage = () => {
           cols={columns}
           items={
             list?.data?.map(link => ({
-              name: link.name,
-              source: '-',
-              destination: '-',
+              name: link?.name,
+              source:link?.source,
+              destination:link?.destination,
             })) || []
           }
           dynamicColumns={['index']}

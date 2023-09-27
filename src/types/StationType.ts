@@ -8,7 +8,12 @@ export type StationListType = {
   time_updated: string;
   region_id: string;
 };
-
+export type regionstationlist = {
+  id: string;
+  name: string;
+  longitude:number;
+  latitude:number;
+};
 export type networkstationslistType = {
     id: string,
     name: string,
