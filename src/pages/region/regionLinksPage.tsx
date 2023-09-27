@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import {BASE_URL} from '~/constant';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -11,6 +13,23 @@ const columns = {
 };
 
 const RegionLinksPage = () => {
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const params = useParams<{regionId: string}>();
   const {
     state: {list},
@@ -21,8 +40,8 @@ const RegionLinksPage = () => {
     },
   });
 
-  console.log(list?.data,'list');
-  
+  console.log(list?.data, 'list');
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
@@ -31,8 +50,8 @@ const RegionLinksPage = () => {
           items={
             list?.data?.map(link => ({
               name: link?.name,
-              source:link?.source,
-              destination:link?.destination,
+              source: link?.source,
+              destination: link?.destination,
             })) || []
           }
           dynamicColumns={['index']}
@@ -42,10 +61,18 @@ const RegionLinksPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn link to="/links">
-          Edit Links List
-        </SimpleBtn>
-        <SimpleBtn>Save</SimpleBtn>
+        {userrole == 'superuser' ||
+        networkDetail?.data?.access?.access == 'ADMIN' ||
+        regionDetail?.data?.access.access == 'ADMIN' ? (
+          <SimpleBtn link to="/links">
+            Edit Links List
+          </SimpleBtn>
+        ) : null}
+        {userrole == 'superuser' ||
+        networkDetail?.data?.access?.access == 'ADMIN' ||
+        regionDetail?.data?.access.access == 'ADMIN' ? (
+          <SimpleBtn>Save</SimpleBtn>
+        ) : null}
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>
