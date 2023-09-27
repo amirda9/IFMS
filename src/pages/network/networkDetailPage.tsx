@@ -44,9 +44,9 @@ useEffect(()=>{
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
   console.log(typeof params.networkId, 'params');
-  useEffect(() => {
-    Cookies.set('networkExplored', params.networkId!);
-  }, []);
+  // useEffect(() => {
+  //   Cookies.set('networkExplored', params.networkId!);
+  // }, []);
   // useEffect(()=>{
   //   setdataa(dataa+1)
   // },[])
