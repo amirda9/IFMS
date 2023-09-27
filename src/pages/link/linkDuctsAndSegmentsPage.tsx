@@ -413,7 +413,7 @@ const LinkCablesAndSegmentsPage = () => {
 
   return (
     // <FormLayout buttons={buttons}>
-    <div className="relative  min-h-[calc(100%-80px)]  w-full pb-14">
+    <div className="relative  min-h-[calc(100%-260px)]  w-full pb-14">
       {(parentcabl?.ducts && parentcabl?.ducts?.length > 0) ||
       mousePosition.y < 16 ? null : (
         <div
@@ -712,8 +712,7 @@ const LinkCablesAndSegmentsPage = () => {
         })}
       </div>
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
-       {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ||
-        regionDetail?.data?.access?.access == 'ADMIN'?
+       {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ?
         <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
       
       :

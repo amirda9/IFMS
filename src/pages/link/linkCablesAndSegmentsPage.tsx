@@ -324,7 +324,7 @@ const LinkCablesAndSegmentsPage = () => {
   };
 
   return (
-    <div className="relative  min-h-[calc(100%-80px)] w-full">
+    <div className="relative  min-h-[calc(100%-250px)] w-full">
       {(parentcabl?.cables && parentcabl?.cables?.length > 0) ||
       mousePosition.y < 160 ? null : (
         <div
@@ -577,8 +577,7 @@ const LinkCablesAndSegmentsPage = () => {
         ))}
       </div>
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
-        {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ||
-        regionDetail?.data?.access?.access == 'ADMIN' ? (
+        {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN'  ? (
           <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
         ) : null}
 
