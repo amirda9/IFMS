@@ -52,6 +52,7 @@ useEffect(()=>{
   // console.log(viewers, 'viewers');
   // console.log(users, 'users');
   // console.log(update, 'update');
+console.log(viewers,'viewersviewers');
 
   const saveAdmin = () => {
     const admin = viewers?.data?.users.find(

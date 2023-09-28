@@ -32,6 +32,7 @@ export const URLS = {
       allAccess: '/otdr/network/{network_id}/access',
       viewersAccess: '/otdr/network/{network_id}/access/viewers',
       adminAccess: '/otdr/network/{network_id}/access/admin',
+      deleteShapefile:'/otdr/network/shapefile/{shapefile_id}',
     },
     region: {
       all: '/otdr/region',

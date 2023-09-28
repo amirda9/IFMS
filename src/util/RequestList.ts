@@ -28,6 +28,7 @@ type RequestKeys =
   | 'deleteUserSession'
   | 'userGroupsList'
   | 'networkAccessUpdate'
+  | 'deleteShapefile'
   | 'networkUpdateAdmin'
   | 'linkupdatecables'
   | 'groupList'
@@ -159,6 +160,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   networkAccessUpdate: {
     url: api.BASE_URL + api.URLS.otdr.network.viewersAccess,
     method: 'post',
+    auth: true,
+  },
+  deleteShapefile: {
+    url: api.BASE_URL + api.URLS.otdr.network.deleteShapefile,
+    method: 'delete',
     auth: true,
   },
   groupList: {
@@ -465,6 +471,10 @@ export type RequestListTypes = {
     params: {network_id: string};
     data: {users: string[]};
   };
+  deleteShapefile: {
+    params: {shapefile_id: string};
+
+  };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
   createGroup: {data: {name: string; users: string[]}};
@@ -711,6 +721,7 @@ export type ResponseListType = {
   networkUpdate: T.NetworkType;
   networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
+  deleteShapefile:string;
   groupList: T.GroupType[];
   groupDetail: T.GroupDetailType;
   createGroup: string | null;

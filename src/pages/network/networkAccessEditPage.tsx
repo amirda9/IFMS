@@ -67,6 +67,7 @@ const NetworkAccessPage = () => {
             }
             const users = viewerList.map(value => value);
 
+
             request('networkAccessUpdate', {
               params: {network_id: params.networkId!},
               data: {users},
