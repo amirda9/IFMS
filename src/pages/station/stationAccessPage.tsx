@@ -41,18 +41,30 @@ useEffect(()=>{
   const params = useParams<{stationId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {stationDetail} = useSelector((state: any) => state.http);
+  const {network} = useSelector((state: any) => state);
+  console.log(network?.stationviewers,'network');
   console.log(stationDetail.data.access, '🥰');
   const {
     request,
-    state: {viewers, users},
+    state: {viewers, users,update},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.stationAccessList,
       users: state.http.userList,
+      update: state.http.stationUpdate,
     }),
     initialRequests: request => {
       request('stationAccessList', {params: {station_id: params.stationId!}});
      request('userList', undefined);
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        request('stationAccessList', {params: {station_id: params.stationId!}});
+
+      }
     },
   });
   // console.log(viewers, 'viewersvviewers');
@@ -95,6 +107,10 @@ useEffect(()=>{
       params: {station_id: params.stationId!},
       data: {user_id: userAdmin || admin!.user.id!},
     });
+       request('stationAccessUpdate', {
+            params: {station_id: params.stationId!},
+            data: {users:network?.stationviewers},
+          });
   };
 
   return (

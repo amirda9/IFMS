@@ -7,8 +7,6 @@ import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 import {useDispatch, useSelector} from 'react-redux';
-import {log} from 'console';
-
 import {setnetworkviewers} from './../../store/slices/networkslice'
 import { LoginPage } from '../auth';
 const NetworkAccessPage = () => {

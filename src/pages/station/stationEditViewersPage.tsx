@@ -6,9 +6,11 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-
+import {useDispatch, useSelector} from 'react-redux';
+import {setstationviewers} from './../../store/slices/networkslice'
 
 const RegionAccessPage = () => {
+  const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{stationId: string}>();
   const navigate = useNavigate();
@@ -62,11 +64,12 @@ console.log(viewers,'viewers');
           }
 
           const users = viewerList.map(value => value);
-
-          request('stationAccessUpdate', {
-            params: {station_id: params.stationId!},
-            data: {users},
-          });
+          dispatch(setstationviewers(users)) 
+          navigate(-1)
+          // request('stationAccessUpdate', {
+          //   params: {station_id: params.stationId!},
+          //   data: {users},
+          // });
         }}>
         OK
       </SimpleBtn>
