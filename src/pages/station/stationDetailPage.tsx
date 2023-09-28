@@ -101,7 +101,7 @@ console.log(BASE_URL,'u');
       }}
       validationSchema={stationSchema}>
       <Form className="w-full">
-        <div className="relative flex min-h-[calc(100vh-200px)] flex-col justify-between">
+        <div className="relative flex min-h-[calc(-200px)] flex-col justify-between">
           <div className="flex flex-col gap-y-4">
             <Description label="Name" items="start">
               <InputFormik

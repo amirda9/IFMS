@@ -98,7 +98,7 @@ useEffect(()=>{
   };
 
   return (
-    <div className="flex h-[calc(100%-290px)] relative flex-col justify-between">
+    <div className="flex min-h-[calc(100vh-190px)] relative flex-col justify-between">
       <div className="h-5/6">
         <Description label="Station Admin" className="mb-4">
           <Select 
