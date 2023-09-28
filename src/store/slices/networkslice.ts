@@ -5,6 +5,7 @@ const initialState = {
   networkviewers:[],
   regionviewers:[],
   stationviewers:[],
+  linkviewers:[],
 } as any;
 
 const changetyperstate = createSlice({
@@ -25,9 +26,12 @@ const changetyperstate = createSlice({
   setstationviewers: (state, action) => {
     state.stationviewers = action.payload;
   },
+  setlinkviewers: (state, action) => {
+    state.linkviewers = action.payload;
+  },
 }
 });
 
-export const {settypestate,setnetworkviewers,setregionviewers,setstationviewers} = changetyperstate.actions;
+export const {settypestate,setnetworkviewers,setregionviewers,setstationviewers,setlinkviewers} = changetyperstate.actions;
 
 export default changetyperstate.reducer;

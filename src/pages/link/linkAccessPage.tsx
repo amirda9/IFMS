@@ -22,6 +22,8 @@ const dummy = [
 ];
 const LinkAccessPage = () => {
   const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
+  const {network} = useSelector((state: any) => state);
+console.log(network?.stationkviewers,'network');
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -42,15 +44,24 @@ const LinkAccessPage = () => {
   const params = useParams<{linkId: string}>();
   const {
     request,
-    state: {viewers, users},
+    state: {viewers, users,update},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.linkAccessList,
       users: state.http.userList,
+      update: state.http.linkAccessUpdate,
     }),
     initialRequests: request => {
       request('linkAccessList', {params: {link_id: params.linkId!}});
       request('userList', undefined);
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        request('linkAccessList', {params: {link_id: params.linkId!}});
+      }
     },
   });
   const items = (viewers?.data?.users || [])
@@ -94,6 +105,10 @@ const LinkAccessPage = () => {
       params: {link_id: params.linkId!},
       data: {user_id: userAdmin || admin!.user.id!},
     });
+      request('linkAccessUpdate', {
+              params: {link_id: params.linkId!},
+              data: {users:network?.linkviewers},
+            });
   };
 
   console.log(linkDetail?.data?.access, '👨');

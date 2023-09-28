@@ -57,7 +57,6 @@ console.log(network?.networkviewers,'network');
         state.update!.httpRequestStatus === 'success'
       ) {
         request('networkAccessList', {params: {network_id: params.networkId!}});
-
       }
     },
   });

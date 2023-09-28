@@ -6,13 +6,14 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-import {useSelector} from 'react-redux';
-
+import {useDispatch, useSelector} from 'react-redux';
+import {setlinkviewers} from './../../store/slices/networkslice'
 const RegionAccessPage = () => {
   const {linkDetail} = useSelector((state: any) => state.http);
   console.log(linkDetail?.data?.access, 'fffrrtttt');
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{linkId: string}>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     request,
@@ -46,7 +47,7 @@ const RegionAccessPage = () => {
 
   const buttons = (
     <>
-      {linkDetail?.data?.access == 'ADMIN' ? (
+      {/* {linkDetail?.data?.access == 'ADMIN' ? ( */}
         <SimpleBtn
           disabled={update?.httpRequestStatus === 'loading'}
           onClick={() => {
@@ -63,15 +64,16 @@ const RegionAccessPage = () => {
             }
 
             const users = viewerList.map(value => value);
-
-            request('linkAccessUpdate', {
-              params: {link_id: params.linkId!},
-              data: {users},
-            });
+            dispatch(setlinkviewers(users)) 
+            navigate(-1)
+            // request('linkAccessUpdate', {
+            //   params: {link_id: params.linkId!},
+            //   data: {users},
+            // });
           }}>
           OK
         </SimpleBtn>
-      ) : null}
+      {/* ) : null} */}
       <SimpleBtn link to="../">
         Cancel
       </SimpleBtn>
