@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
+import Vector from './../../assets/images/Vector.png'
 
 const NetworkHistoryPage = () => {
   const navigate = useNavigate();
@@ -12,14 +13,16 @@ const NetworkHistoryPage = () => {
   } = useHttpRequest({selector: state => ({detail: state.http.networkDetail})});
   return (
     <div
-      className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-[#D9D9D97d]"
+      className="absolute bottom-0 left-[-150px] right-0 top-[425px] flex items-center justify-center bg-[#D9D9D97d]"
       onClick={goBack}>
       <div className="h-fit w-1/4">
+
         <div className="flex flex-grow justify-end rounded-t-md bg-p px-2 py-1">
           <button className="active:opacity-50" onClick={goBack}>
             <IoClose size={24} className="text-white " />
           </button>
         </div>
+
         <div className="flex-grow bg-white">
           <table
             className="w-full border-collapse border border-black text-sm [&_td]:border  [&_td]:border-black [&_td]:text-center"
@@ -29,7 +32,7 @@ const NetworkHistoryPage = () => {
                 <td className="w-1/12">Index</td>
                 <td className="w-2/5">Date</td>
                 <td className="w-2/5">User</td>
-                <td className="w-1/12">Restore</td>
+                <td className="w-[100px]">Restore</td>
               </tr>
             </thead>
             <tbody>
@@ -38,10 +41,13 @@ const NetworkHistoryPage = () => {
                   <td>{index + 1}</td>
                   <td>{getPrettyDateTime(version.time_created)}</td>
                   <td>Anonymous User</td>
-                  <td>
-                    <SimpleBtn className="!my-0 !px-5 !py-0">
-                      <IoReturnUpBack size={24} />
-                    </SimpleBtn>
+                  <td className='w-[80px]'>
+                    <SimpleBtn className="!my-0 !px-5 w-[80px]  !py-1">
+   
+                
+                    <img src={Vector} className='w-[24px] z-20 h-[21px]' />
+                   
+                    </SimpleBtn>                 
                   </td>
                 </tr>
               ))}
