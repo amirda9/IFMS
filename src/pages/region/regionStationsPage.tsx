@@ -4,6 +4,7 @@ import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import { BASE_URL } from '~/constant';
 import { useSelector } from 'react-redux';
+import { BsChevronDown } from 'react-icons/bs';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -41,7 +42,8 @@ const RegionStationsPage = () => {
   
   return (
     <div className="flex h-full flex-col justify-between">
-      <div className="h-5/6">
+      <div className="relative h-5/6">
+      <BsChevronDown className='absolute  left-[30.5%] z-20  top-[8px]' />
         <Table
           cols={columns}
           items={
