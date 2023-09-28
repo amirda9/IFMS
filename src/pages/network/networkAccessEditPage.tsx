@@ -56,15 +56,17 @@ const NetworkAccessPage = () => {
           className="mt-[25px] h-[40px] w-[149px]"
           disabled={update?.httpRequestStatus === 'loading'}
           onClick={() => {
+            console.log(viewers?.data,'viewers?.data');
             const admin = viewers?.data?.users?.find(
               value => value.access === AccessEnum.admin,
             );
             const viewerList = editor.current!.values;
 
+            console.log(viewerList,'viewerList');
             if (admin) {
               const index = viewerList.indexOf(admin.user.id);
               if (index !== -1 && index !== null) {
-                viewerList.splice(index, 1);
+              viewerList.splice(index, 1);
               }
             }
             const users = viewerList.map(value => value);

@@ -12,6 +12,8 @@ type PropsType = {
   selected: Array<string | number>;
 };
 const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
+  console.log(items,'items');
+  
   const [state, setState] = useState<StateType>({
     open: false,
     selected: {},
