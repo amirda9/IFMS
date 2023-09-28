@@ -3,6 +3,7 @@ import { createSlice} from "@reduxjs/toolkit";
 const initialState = {
   type: "Cable",
   networkviewers:[],
+  regionviewers:[],
 } as any;
 
 const changetyperstate = createSlice({
@@ -16,9 +17,12 @@ const changetyperstate = createSlice({
     setnetworkviewers: (state, action) => {
       state.networkviewers = action.payload;
     },
+    setregionviewers: (state, action) => {
+      state.regionviewers = action.payload;
+    },
   },
 });
 
-export const {settypestate,setnetworkviewers} = changetyperstate.actions;
+export const {settypestate,setnetworkviewers,setregionviewers} = changetyperstate.actions;
 
 export default changetyperstate.reducer;

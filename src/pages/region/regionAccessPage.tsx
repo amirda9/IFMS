@@ -1,12 +1,11 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
-import {useParams} from 'react-router-dom';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {FormLayout} from '~/layout';
 import {useSelector} from 'react-redux';
 import {BASE_URL} from '~/constant';
-
+import {useNavigate, useParams} from 'react-router-dom';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -15,7 +14,10 @@ const columns = {
 };
 
 const RegionAccessPage = () => {
-  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
+  const navigate = useNavigate();
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const {network} = useSelector((state: any) => state);
+  console.log(network?.regionviewers, 'network');
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -47,6 +49,15 @@ const RegionAccessPage = () => {
       request('regionAccessList', {params: {region_id: params.regionId!}});
       request('userList', undefined);
     },
+    onUpdate: lastState => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        update?.httpRequestStatus === 'success'
+      ) {
+        request('regionAccessList', {params: {region_id: params.regionId!}});
+        navigate('../access', {replace: true, relative: 'path'});
+      }
+    },
   });
   const saveAdmin = () => {
     const viewerWithoutAdmin =
@@ -66,6 +77,10 @@ const RegionAccessPage = () => {
     request('regionAdminUpdate', {
       params: {region_id: params.regionId!},
       data: {user_id: userAdmin || admin!.user.id!},
+    });
+    request('regionAccessUpdate', {
+      params: {region_id: params.regionId!},
+      data: {users: network?.regionviewers},
     });
   };
 
@@ -94,13 +109,19 @@ const RegionAccessPage = () => {
 
     //   });
     // };
-console.log(admin,'😃');
+    console.log(admin, '😃');
 
     return (
       <>
         <Description label="Region Admin" className="mb-4">
           <Select
-          disabled={userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||regionDetail?.data?.access.role == "superuser" ?false:true}
+            disabled={
+              userrole == 'superuser' ||
+              networkDetail?.data?.access?.access == 'ADMIN' ||
+              regionDetail?.data?.access.role == 'superuser'
+                ? false
+                : true
+            }
             className="w-80"
             value={userAdmin || admin?.user.id}
             // onChange={e => Addadmin(e.target.value)}
@@ -129,13 +150,15 @@ console.log(admin,'😃');
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
   const buttons = (
     <>
-      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
+      {userrole == 'superuser' ||
+      networkDetail?.data?.access?.access == 'ADMIN' ||
       regionDetail?.data?.access.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Region Viewer(s)
         </SimpleBtn>
       ) : null}
-      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
+      {userrole == 'superuser' ||
+      networkDetail?.data?.access?.access == 'ADMIN' ||
       regionDetail?.data?.access.access == 'ADMIN' ? (
         <SimpleBtn
           onClick={saveAdmin}

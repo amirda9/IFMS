@@ -6,9 +6,10 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-import { useSelector } from 'react-redux';
-
+import {setregionviewers} from './../../store/slices/networkslice'
+import {useDispatch, useSelector} from 'react-redux';
 const RegionAccessPage = () => {
+  const dispatch = useDispatch();
   const {regionDetail} = useSelector((state: any) => state.http);
   console.log(regionDetail?.data?.access, 'fffrrtttt');
   const editor = useRef<EditorRefType>(null);
@@ -68,16 +69,20 @@ console.log(update,'update');
           }
 
           const users = viewerList.map(value => value);
+          dispatch(setregionviewers(users)) 
+          navigate(-1)
 
-          request('regionAccessUpdate', {
-            params: {region_id: params.regionId!},
-            data: {users},
-          });
+
+
+          // request('regionAccessUpdate', {
+          //   params: {region_id: params.regionId!},
+          //   data: {users},
+          // });
         }}>
         OK
       </SimpleBtn>
       {/* ):null} */}
-      <SimpleBtn link to="../">
+      <SimpleBtn onClick={()=>navigate(-1)}>
         Cancel
       </SimpleBtn>
     </>
