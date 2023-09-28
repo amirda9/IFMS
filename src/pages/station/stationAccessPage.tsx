@@ -51,7 +51,7 @@ useEffect(()=>{
     selector: state => ({
       viewers: state.http.stationAccessList,
       users: state.http.userList,
-      update: state.http.stationUpdate,
+      update: state.http.stationAccessUpdate,
     }),
     initialRequests: request => {
       request('stationAccessList', {params: {station_id: params.stationId!}});
