@@ -32,7 +32,7 @@ useEffect(()=>{
   getrole()
 },[])
   const {networkDetail} = useSelector((state: any) => state.http);
-  console.log(networkDetail.data.access, '😋');
+
   const params = useParams<{networkId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -88,7 +88,7 @@ console.log(viewers,'viewersviewers');
       <>
         <Description label="Network Admin" className="mb-4">
           <Select
-          disabled={userrole == 'superuser' || networkDetail.data.access.role == "superuser"?false:true}
+          disabled={userrole == 'superuser' || networkDetail?.data?.access?.role == "superuser"?false:true}
             className="w-80"
             value={userAdmin || admin?.user.id}
             onChange={event => {
@@ -117,7 +117,7 @@ console.log(viewers,'viewersviewers');
 
   const buttons = (
     <>
-      {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN' ? (
+      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ? (
         <SimpleBtn link to="../edit-access">
           Edit Network Viewer(s)
         </SimpleBtn>
@@ -132,7 +132,7 @@ console.log(viewers,'viewersviewers');
       <SimpleBtn link to="../history">
         History
       </SimpleBtn>
-      {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN'?
+      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN'?
           <SimpleBtn
           onClick={saveAdmin}
           disabled={update?.httpRequestStatus === 'loading'}>

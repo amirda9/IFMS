@@ -29,6 +29,7 @@ type RenderDynamicColumnType = {
   key: 'index' | 'select';
 };
 export type EditorRefType = {
+  parentname?:"network"
   values: string[];
   setValues: (values: string[]) => void;
   group: boolean;
@@ -163,6 +164,9 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
 
       <DoubleSideButtonGroup
         onClickRightButton={() => {
+          // if(parentname == "networkaccess"){
+
+          // }
           setState({
             ...state,
             selectLeft: [],

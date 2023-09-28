@@ -6,13 +6,17 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
+import {useDispatch, useSelector} from 'react-redux';
 import {log} from 'console';
-import {useSelector} from 'react-redux';
 
+import {setnetworkviewers} from './../../store/slices/networkslice'
+import { LoginPage } from '../auth';
 const NetworkAccessPage = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
-  console.log(networkDetail.data.access, 'fffrrtttt');
+  const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
+  console.log(editor,'editor');
+  
   const params = useParams<{networkId: string}>();
   const navigate = useNavigate();
   const {
@@ -66,8 +70,10 @@ const NetworkAccessPage = () => {
               }
             }
             const users = viewerList.map(value => value);
-
-
+            console.log(users,'usersppppp');
+            
+           dispatch(setnetworkviewers(users)) 
+            //  navigate(-1)
             request('networkAccessUpdate', {
               params: {network_id: params.networkId!},
               data: {users},
@@ -100,3 +106,5 @@ const NetworkAccessPage = () => {
 };
 
 export default NetworkAccessPage;
+
+

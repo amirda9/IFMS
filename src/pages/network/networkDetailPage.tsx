@@ -86,7 +86,6 @@ useEffect(()=>{
         enableReinitialize
         initialValues={{
           name: detail!.data!.name,
-
           description:
             detail!.data!.versions.find(
               version => version.id === detail!.data!.current_version.id,
@@ -130,7 +129,7 @@ useEffect(()=>{
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
-            {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN' ? (
+            {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"
                 disabled={update?.httpRequestStatus === 'loading'}>
