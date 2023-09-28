@@ -73,11 +73,11 @@ const NetworkAccessPage = () => {
             console.log(users,'usersppppp');
             
            dispatch(setnetworkviewers(users)) 
-            //  navigate(-1)
-            request('networkAccessUpdate', {
-              params: {network_id: params.networkId!},
-              data: {users},
-            });
+             navigate(-1)
+            // request('networkAccessUpdate', {
+            //   params: {network_id: params.networkId!},
+            //   data: {users},
+            // });
           }}>
           OK
         </SimpleBtn>

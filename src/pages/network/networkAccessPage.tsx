@@ -32,6 +32,8 @@ useEffect(()=>{
   getrole()
 },[])
   const {networkDetail} = useSelector((state: any) => state.http);
+  const {network} = useSelector((state: any) => state);
+console.log(network?.networkviewers,'network');
 
   const params = useParams<{networkId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
@@ -44,9 +46,19 @@ useEffect(()=>{
       users: state.http.userList,
       update: state.http.networkUpdateAdmin,
     }),
+
     initialRequests: request => {
       request('networkAccessList', {params: {network_id: params.networkId!}});
       request('userList', undefined);
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        request('networkAccessList', {params: {network_id: params.networkId!}});
+
+      }
     },
   });
   // console.log(viewers, 'viewers');
@@ -61,6 +73,10 @@ console.log(viewers,'viewersviewers');
     request('networkUpdateAdmin', {
       params: {network_id: params.networkId!},
       data: {user_id: userAdmin || admin!.user.id},
+    });
+    request('networkAccessUpdate', {
+      params: {network_id: params.networkId!},
+      data: {users:network?.networkviewers},
     });
   };
 
