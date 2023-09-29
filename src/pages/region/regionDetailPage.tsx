@@ -79,7 +79,7 @@ useEffect(()=>{
         }}
         onSubmit={values => {
           request('regionUpdate', {
-            data: {description: values.description},
+            data:values,
             params: {region_id: params.regionId!},
           });
         }}
@@ -91,7 +91,7 @@ useEffect(()=>{
                 name="name"
                 wrapperClassName="w-2/3 text-sm"
                 className="disabled:bg-white"
-                disabled
+          
               />
             </Description>
 
