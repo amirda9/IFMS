@@ -500,7 +500,7 @@ const LinkCablesAndSegmentsPage = () => {
                       <div className="flex w-3/5 flex-row">
                         <span className="w-3/5 text-center">Mini Duct ID</span>
                         <span className="w-2/5 text-center">
-                          number_of_fibers
+                        Number of Fibers
                         </span>
                       </div>
                       <div className="flex flex-row gap-x-12">

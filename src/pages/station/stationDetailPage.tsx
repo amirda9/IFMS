@@ -91,6 +91,7 @@ console.log(BASE_URL,'u');
 
         request('stationUpdate', {
           data: {
+            name:values.name,
             longitude: Number(values.longitude),
             latitude: Number(values.latitude),
             description: values.description,
@@ -108,7 +109,6 @@ console.log(BASE_URL,'u');
                 name="name"
                 wrapperClassName="w-2/3"
                 className="text-sm disabled:bg-white"
-                disabled
               />
             </Description>
 

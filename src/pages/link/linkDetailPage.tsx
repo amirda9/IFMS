@@ -17,6 +17,9 @@ const typeoptions = [
 // *********************************************************************
 const LinkDetailPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const {type} = useSelector((state: any) => state.network);
+  console.log(type,'typetype');
+  
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -100,11 +103,15 @@ const LinkDetailPage = () => {
         version => version.id === state?.detail?.data?.current_version?.id,
       )?.type || '',
     );
-    setdefaulttype(
-      state?.detail?.data?.versions?.find(
-        version => version.id === state?.detail?.data?.current_version?.id,
-      )?.type || '',
-    );
+    console.log(state?.detail?.data?.versions?.find(
+      version => version.id === state?.detail?.data?.current_version?.id,
+    )?.type ,'ttttttttttttttttttt');
+    
+    // setdefaulttype(
+    //   state?.detail?.data?.versions?.find(
+    //     version => version.id === state?.detail?.data?.current_version?.id,
+    //   )?.type || '',
+    // );
 
     let data: any = [];
     if (state.stations) {
@@ -267,7 +274,7 @@ const LinkDetailPage = () => {
         <div className="w-[130px] text-sm text-black">Type</div>
         <div className="rlative flex w-[268px]  flex-col">
           <Selectbox
-            placeholder={defauttype}
+            placeholder={type}
             onclickItem={(e: {value: string; label: string}) => {
               setType(e.value);
               setTypeerror('');

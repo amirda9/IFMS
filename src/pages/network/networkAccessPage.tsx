@@ -97,6 +97,16 @@ console.log(viewers,'viewersviewers');
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
+    console.log(items,'itemsitems');
+    // function compareByUser(a:any, b:any) {
+    //   //مقایسه دو رشته با توجه به زبان en-US
+    //   return a.user.localeCompare(b.user, 'en-US');
+    //   }
+    //   function compareByUser(a, b) {
+    //     //مقایسه دو رشته با توجه به زبان en-US
+    //     //منفی کردن نتیجه برای ترتیب برعکس
+    //     return -a.user.localeCompare(b.user, 'en-US');
+    //     }
     console.log(viewers,'viewers');
     
     return (
@@ -122,7 +132,7 @@ console.log(viewers,'viewersviewers');
           <Table
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
-            items={items}
+            items={items.sort()}
             containerClassName="w-3/5 mt-[-7px]"
           />
         </Description>

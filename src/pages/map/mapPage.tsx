@@ -64,14 +64,30 @@ function ZoomComponent({fullscreen}: fullscreen) {
   );
 }
 
+
 // ------------- main --------------------------- main ----------------------- main -------------------- main ----------
 
 const MapPage = () => {
+  const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [fullscreen, setfullscreen] = useState(false);
+  const [showlinktoolkit,setShowlinltoolkit]=useState(false)
   const [leftbarstate, setLeftbarstate] = useState(false);
   const [switchstatus, setSwitchstatus] = useState(false);
   const [rightbarstate, setRightbarState] = useState('');
-
+  const [yellowalarms, setyellowallarms] = useState(false);
+  const [orangealarms, setorangeallarms] = useState(false);
+  const [redalarms, setredallarms] = useState(false);
+  console.log(mousePosition,'mousePositionmousePosition');
+  
+  React.useEffect(() => {
+    const updateMousePosition = (ev: any) => {
+      setMousePosition({x: ev.clientX, y: ev.pageY});
+    };
+    window.addEventListener('mousemove', updateMousePosition);
+    return () => {
+      window.removeEventListener('mousemove', updateMousePosition);
+    };
+  }, []);
   const MapClickAlert = () => {
     useMapEvents({
       click(e) {
@@ -82,10 +98,35 @@ const MapPage = () => {
     });
     return null;
   };
+  const Linktooltip=()=>{
+    return(
+      <div   style={{
+        top: `${ mousePosition.y - 245}px`,
+        left:`${mousePosition.x - 100}px`
+      }} className={`z-[1000] absolute   h-[160px] w-[220px] flex-col bg-[#E7EFF7]`}>
+      <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+        dfwd
+      </span>
+      <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+        dfwd
+      </span>
+      <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+        dfwd
+      </span>
+    </div>
+    )
+  }
+
   return (
-    <div className="relative flex  w-full bg-[red]  overflow-y-hidden overflow-x-hidden flex-row">
+    <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
+  {showlinktoolkit?
+  <Linktooltip />
+  :null
+
+  }
+
       <div
-        className={`relative w-full bg-[red] ${
+        className={`relative w-full  ${
           fullscreen
             ? 'mt-[-90px] h-[calc(100vh-10px)]'
             : 'h-[calc(100vh-90px)]'
@@ -124,7 +165,9 @@ const MapPage = () => {
                   onclickItem={() => console.log('gghjgh')}
                   options={options}
                   borderColor={'black'}
-                  classname={'w-[219px] mr-[9px] bg-[#B3BDF2] h-[40px] rounded-[8px]'}
+                  classname={
+                    'w-[219px] mr-[9px] bg-[#B3BDF2] h-[40px] rounded-[8px]'
+                  }
                 />
               </div>
             ) : null}
@@ -157,7 +200,7 @@ const MapPage = () => {
                     Low Severity
                   </span>
                   <Checkbox
-                    onclick={(e: boolean) => console.log(e, 'wweee')}
+                    onclick={(e: boolean) => setyellowallarms(e)}
                     classname={'ml-[118px]'}
                   />
                 </>
@@ -172,7 +215,7 @@ const MapPage = () => {
                     Low Severity
                   </span>
                   <Checkbox
-                    onclick={(e: boolean) => console.log(e, 'wweee')}
+                    onclick={(e: boolean) => setorangeallarms(e)}
                     classname={'ml-[118px]'}
                   />
                 </>
@@ -187,7 +230,7 @@ const MapPage = () => {
                     Low Severity
                   </span>
                   <Checkbox
-                    onclick={(e: boolean) => console.log(e, 'wweee')}
+                    onclick={(e: boolean) => setredallarms(e)}
                     classname={'ml-[118px]'}
                   />
                 </>
@@ -332,95 +375,115 @@ const MapPage = () => {
             </Tooltip>
           </Marker>
 
-          <Marker
-            eventHandlers={{
-              click: e => {
-                setRightbarState('alarm');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-            }}
-            position={[51.519, -0.045]}
-            icon={NoYellow}>
-            <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-              </div>
-            </Tooltip>
-          </Marker>
+          {yellowalarms ? (
+            <>
+              <Marker
+                eventHandlers={{
+                  click: e => {
+                    setRightbarState('alarm');
+                    console.log(e.target.options.data); // will print 'FooBar' in console
+                  },
+                }}
+                position={[51.519, -0.045]}
+                icon={NoYellow}>
+                <Tooltip
+                  opacity={1}
+                  className="h-[150px] w-[215px]"
+                  direction="top"
+                  offset={[0, -25]}>
+                  <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                  </div>
+                </Tooltip>
+              </Marker>
+            </>
+          ) : null}
 
-          <Marker
-            eventHandlers={{
-              click: e => {
-                setRightbarState('alarm');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-            }}
-            position={[51.519, -0.085]}
-            icon={NoRed}>
-            <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-              </div>
-            </Tooltip>
-          </Marker>
+          {redalarms ? (
+            <>
+              <Marker
+                eventHandlers={{
+                  click: e => {
+                    setRightbarState('alarm');
+                    console.log(e.target.options.data); // will print 'FooBar' in console
+                  },
+                }}
+                position={[51.519, -0.085]}
+                icon={NoRed}>
+                <Tooltip
+                  opacity={1}
+                  className="h-[150px] w-[215px]"
+                  direction="top"
+                  offset={[0, -25]}>
+                  <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                  </div>
+                </Tooltip>
+              </Marker>
+            </>
+          ) : null}
 
-          <Marker
-            eventHandlers={{
-              click: e => {
-                setRightbarState('alarm');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-            }}
-            position={[51.519, -0.0155]}
-            icon={NoOrange}>
-            <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-              </div>
-            </Tooltip>
-          </Marker>
+          {orangealarms ? (
+            <>
+              <Marker
+                eventHandlers={{
+                  click: e => {
+                    setRightbarState('alarm');
+                    console.log(e.target.options.data); // will print 'FooBar' in console
+                  },
+                }}
+                position={[51.519, -0.0155]}
+                icon={NoOrange}>
+                <Tooltip
+                  opacity={1}
+                  className="h-[150px] w-[215px]"
+                  direction="top"
+                  offset={[0, -25]}>
+                  <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                    <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                      dfwd
+                    </span>
+                  </div>
+                </Tooltip>
+              </Marker>
+            </>
+          ) : null}
 
           <Polyline
             eventHandlers={{
               click: e => {
                 setRightbarState('link');
                 console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseover: e => {
+                setShowlinltoolkit(true)
+                // alert('dfdfd');
+              },
+              mouseout: e => {
+                setShowlinltoolkit(false)
+                // alert('dfdfd');
               },
             }}
             positions={[
@@ -428,12 +491,12 @@ const MapPage = () => {
               [51.51, -0.1],
             ]}
             color="red">
-            <Tooltip
+            {/* <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
               direction="top"
               offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+              <div className="z-1000  absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
                 <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
                   dfwd
                 </span>
@@ -444,15 +507,22 @@ const MapPage = () => {
                   dfwd
                 </span>
               </div>
-            </Tooltip>
+            </Tooltip> */}
           </Polyline>
           <MapClickAlert />
           <Polyline
-      
             eventHandlers={{
               click: e => {
                 setRightbarState('link');
                 console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseover: e => {
+                setShowlinltoolkit(true)
+                // alert('dfdfd');
+              },
+              mouseout: e => {
+                setShowlinltoolkit(false)
+                // alert('dfdfd');
               },
             }}
             positions={[
@@ -460,7 +530,7 @@ const MapPage = () => {
               [51.519, -0.025],
             ]}
             color="red">
-            <Tooltip
+            {/* <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
               direction="top"
@@ -476,14 +546,21 @@ const MapPage = () => {
                   dfwd
                 </span>
               </div>
-            </Tooltip>
+            </Tooltip> */}
           </Polyline>
           <Polyline
-      
             eventHandlers={{
               click: e => {
                 setRightbarState('link');
                 console.log(e.target.options.data); // will print 'FooBar' in console
+              },
+              mouseover: e => {
+                setShowlinltoolkit(true)
+                // alert('dfdfd');
+              },
+              mouseout: e => {
+                setShowlinltoolkit(false)
+                // alert('dfdfd');
               },
             }}
             positions={[
@@ -491,7 +568,7 @@ const MapPage = () => {
               [51.517, -0.01],
             ]}
             color="red">
-            <Tooltip
+            {/* <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
               direction="top"
@@ -507,7 +584,7 @@ const MapPage = () => {
                   dfwd
                 </span>
               </div>
-            </Tooltip>
+            </Tooltip> */}
           </Polyline>
         </MapContainer>
       </div>

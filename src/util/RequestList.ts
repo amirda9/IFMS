@@ -594,6 +594,7 @@ export type RequestListTypes = {
   stationUpdate: {
     params: {station_id: string};
     data: {
+      name:string;
       model: string;
       longitude: number;
       latitude: number;

@@ -107,6 +107,11 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     };
   };
 
+console.log(groups,'groupgroup');
+// const admin = groups?.data?.find(
+//   value => value.access === AccessEnum.admin,
+// );
+
   const userList =
     users?.data?.map(user => ({
       user: user.username,
@@ -115,18 +120,26 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       id: user.id,
     })) || [];
 
+     const group1=groups?.data;
+   
+
   const groupList =
     groups?.data?.map(group => {
-      const users = group.users.map(user => ({
+      
+      const users = group.users.map(user => ( {
         label: `${user.username} - ${user.station?.name || '_'}`,
         value: user.id,
       }));
+      console.log(users,'usersuu');
+      
       return {
         label: group.name,
         items: users.filter(item => !state.values.includes(item.value)),
       };
     }) || [];
-
+    console.log(state,'statestate');
+    
+    console.log(groupList,'groupList');
   return (
     <div className="flex h-full  w-full flex-row items-center justify-between mb-2">
       {state.group ? (
