@@ -38,7 +38,7 @@ const MainLayout: FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex  flex-col">
       <nav className="flex h-20 flex-row items-center bg-p px-4 ">
         <h2 className="mr-16 font-s text-2xl text-white">ARIO-IFMS</h2>
         {navbarItems.map(item => (
@@ -62,7 +62,7 @@ const MainLayout: FC = () => {
           onClick={handleLogout}
         />
       </nav>
-      <div className="flex min-h-[90vh] flex-row bg-b">
+      <div className="flex min-h-[calc(90vh-39px)] flex-row bg-b">
         <Outlet />
       </div>
       <div className="h-6 bg-p">footer</div>
