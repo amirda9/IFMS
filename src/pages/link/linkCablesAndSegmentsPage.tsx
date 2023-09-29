@@ -324,7 +324,7 @@ const LinkCablesAndSegmentsPage = () => {
   };
 
   return (
-    <div className="relative  min-h-[calc(100vh-190px)] w-full">
+    <div className="relative  min-h-[calc(100vh-220px)] w-full">
       {(parentcabl?.cables && parentcabl?.cables?.length > 0) ||
       mousePosition.y < 160 ? null : (
         <div

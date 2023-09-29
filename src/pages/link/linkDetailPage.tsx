@@ -29,7 +29,6 @@ const LinkDetailPage = () => {
       },
     }).then(res => res.json());
     setuserrole(role.role);
-
   };
   useEffect(() => {
     getrole();
@@ -119,8 +118,6 @@ const LinkDetailPage = () => {
     }
   }, [state.detail]);
 
-
-
   const changesource = (id: string) => {
     setSourcerror('');
     setSource(id);
@@ -188,7 +185,7 @@ const LinkDetailPage = () => {
 
   // ---------------------------------------------------------------
   return (
-    <div className="relative flex min-h-[calc(100%-80px)] w-full flex-col">
+    <div className="relative flex  w-full flex-col">
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
@@ -312,7 +309,8 @@ const LinkDetailPage = () => {
 
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end ">
         {userrole == 'superuser' ||
-        state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN'  ? (
+        state?.detail?.data?.access?.access == 'ADMIN' ||
+        networkDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={updatelink} type="button">
             Save
           </SimpleBtn>

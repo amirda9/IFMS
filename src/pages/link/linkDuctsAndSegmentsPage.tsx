@@ -413,7 +413,7 @@ const LinkCablesAndSegmentsPage = () => {
 
   return (
     // <FormLayout buttons={buttons}>
-    <div className="relative  min-h-[calc(100vh-190px)]  w-full pb-14">
+    <div className="relative  min-h-[calc(100vh-220px)]  w-full pb-14">
       {(parentcabl?.ducts && parentcabl?.ducts?.length > 0 ) ||
       mousePosition.y < 160 ? null : (
         <div
