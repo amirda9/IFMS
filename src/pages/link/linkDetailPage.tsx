@@ -137,27 +137,20 @@ const LinkDetailPage = () => {
   const updatelink = () => {
     if (name.length < 1) {
       setNameerror('Please enter link name');
-    } else if (comment.length < 1) {
+    }  else if (source.length == 0) {
       setNameerror('');
-      setCommmenerror('Please enter link comment');
-    } else if (source.length == 0) {
-      setNameerror('');
-      setCommmenerror('');
       setTypeerror('');
       setSourcerror('Please select source');
     } else if (destinationid.length == 0) {
       setNameerror('');
-      setCommmenerror('');
       setTypeerror('');
       setSourcerror('');
       setDestinationerror('Please select destination');
     } else if (types.length < 1) {
       setNameerror('');
-      setCommmenerror('');
       setTypeerror('Please select type');
     } else {
       setNameerror('');
-      setCommmenerror('');
       setTypeerror('');
       setSourcerror('');
       setDestinationerror('');
