@@ -11,7 +11,7 @@ import {networkExplored} from '~/constant';
 
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
-  description: Yup.string().required('Please enter region comments'),
+  // description: Yup.string().required('Please enter region comments'),
 });
 const RegionDetailPage = () => {
   const networkId = Cookies.get(networkExplored);

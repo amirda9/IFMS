@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import {BASE_URL} from './../../constant'
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
-  description: Yup.string().required('Please enter region comment'),
+  // description: Yup.string().required('Please enter region comment'),
 });
 const RegionDetailPage = () => {
   const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
