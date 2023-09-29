@@ -94,7 +94,7 @@ console.log(stationDetail,'stationDetail');
         }}
         validationSchema={stationSchema}>
         <Form className="w-full">
-          <div className='flex flex-grow relative min-h-[calc(100vh-140px)] flex-col justify-between '>
+          <div className='flex flex-grow relative min-h-[calc(100vh-160px)] flex-col justify-between '>
           <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" className="w-2/3 disabled:bg-white" />
