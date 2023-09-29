@@ -165,6 +165,7 @@ const LinkDetailPage = () => {
         params: {link_id: params.linkId || ''},
         data: {
           description: comment,
+          name:name,
           link_points: [
             {
               latitude: 1,
@@ -189,13 +190,12 @@ const LinkDetailPage = () => {
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
-          disabled
           // defaultValue={state?.detail?.data?.name || ''}
           value={name}
           onChange={(e: any) => {
             setName(e.target.value), setNameerror('');
           }}
-          className="h-[40px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 placeholder-[#000000]"
+          className="h-[40px] text-sm w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 placeholder-[#000000]"
         />
         {nameerror.length > 0 ? (
           <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">
@@ -217,7 +217,7 @@ const LinkDetailPage = () => {
           onChange={(e: any) => {
             setComment(e.target.value), setCommmenerror('');
           }}
-          className="h-[100px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 placeholder-[#000000]"
+          className="h-[100px] text-sm w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 placeholder-[#000000]"
         />
         {commenerror.length > 0 ? (
           <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">

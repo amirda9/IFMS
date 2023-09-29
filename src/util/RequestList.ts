@@ -526,6 +526,7 @@ export type RequestListTypes = {
   linkUpdate: {
     params: {link_id: string};
     data: {
+      name:string;
       description: string;
       link_points:
         {

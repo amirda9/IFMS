@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
-  description: Yup.string().required('Please enter station comment'),
+  // description: Yup.string().required('Please enter station comment'),
   latitude: Yup.string().required('Please enter latitude'),
   longitude: Yup.string().required('Please enter longitude'),
   // region: Yup.string().required('Please select region'),
