@@ -1,4 +1,4 @@
-import {ReactNode} from 'react';
+import {ReactNode, useState} from 'react';
 import GeneralLoadingSpinner from '../loading/GeneralLoadingSpinner';
 import classNames from '~/util/classNames';
 import { BsChevronDown } from 'react-icons/bs';
@@ -29,6 +29,8 @@ type PropsType<
   loading?: boolean;
   keyExtractor?: (value: Item) => string;
   bordered?: boolean;
+  tabicon?:string[];
+  onclicktitle?:Function
 };
 const Table = <
   C extends string,
@@ -37,31 +39,44 @@ const Table = <
 >({
   items,
   cols,
+  tabicon,
   dynamicColumns = [],
   renderDynamicColumn,
   containerClassName,
   loading,
   keyExtractor,
   bordered,
+  onclicktitle=()=>{}
 }: PropsType<C, DC, Item>) => {
   const headerItems = Object.entries(cols) as Array<[C, ColType]>;
+  const [sortalfabet,setSortalfabet]=useState(true)
 
   const renderHeader = ([key, col]: [C, ColType]) => (
     <th
+    onClick={()=>{onclicktitle(col.label,sortalfabet),tabicon && tabicon?.indexOf(col.label) > -1?setSortalfabet(!sortalfabet):null}}
       key={key}
       className={classNames(
         col.size,
         bordered
           ? 'border-b border-r border-gray96 last:border-r-0'
           : 'border-r border-[#969696] border-[1px] border-t-[0px] last:border-r-[0px] first:border-l-[0px]',
-        'bg-blueLight py-1 font-normal text-sm border-[#969696] border-[1px] relative border-t-[0px]',
+        'bg-blueLight py-1 cursor-pointer font-normal text-sm border-[#969696] border-[1px] relative border-t-[0px]',
       )}>
       {col.label}
-      {col.label == "User"?
-          <BsChevronDown className='absolute right-[5px] top-[8px]' />
-    :
-null
-    }
+{tabicon && tabicon?.indexOf(col.label) > -1?
+<>
+{sortalfabet?
+  <BsChevronDown  className='absolute right-[5px] top-[8px]' />
+:
+<BsChevronDown  className='absolute rotate-180 right-[5px] top-[8px]' />
+}
+
+</>
+ 
+:null
+}
+         
+
  
     </th>
   );
@@ -104,10 +119,12 @@ null
           <tr
             className={classNames(
               !bordered &&
-                '[&_td]:border-b [&_td]:border-r [&_td]:!border-goodGray',
+                '[&_td]:border-b [&_td]:border-r [&_td]:!border-goodGray relative',
             )}>
             {headerItems.map(renderHeader)}
+         
           </tr>
+     
         </thead>
         <tbody>
           {loading ? (

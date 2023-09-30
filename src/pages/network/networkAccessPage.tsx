@@ -33,8 +33,12 @@ useEffect(()=>{
 },[])
   const {networkDetail} = useSelector((state: any) => state.http);
   const {network} = useSelector((state: any) => state);
-console.log(network?.networkviewers,'network');
-
+const [itemssorted,setItemssorted]=useState< {
+  index: string;
+  user: string;
+  station: string;
+  region: string;
+}[]>([])
   const params = useParams<{networkId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -60,10 +64,7 @@ console.log(network?.networkviewers,'network');
       }
     },
   });
-  // console.log(viewers, 'viewers');
-  // console.log(users, 'users');
-  // console.log(update, 'update');
-console.log(viewers,'viewersviewers');
+
 
   const saveAdmin = () => {
     const admin = viewers?.data?.users.find(
@@ -80,6 +81,7 @@ console.log(viewers,'viewersviewers');
   };
 
   const body = useMemo(() => {
+ 
     const items = (viewers?.data?.users || [])
       .filter(value => value.access !== AccessEnum.admin)
       .map((value, index) => ({
@@ -88,6 +90,7 @@ console.log(viewers,'viewersviewers');
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
       }));
+
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
     );
@@ -97,18 +100,19 @@ console.log(viewers,'viewersviewers');
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
-    console.log(items,'itemsitems');
-    // function compareByUser(a:any, b:any) {
-    //   //مقایسه دو رشته با توجه به زبان en-US
-    //   return a.user.localeCompare(b.user, 'en-US');
-    //   }
-    //   function compareByUser(a, b) {
-    //     //مقایسه دو رشته با توجه به زبان en-US
-    //     //منفی کردن نتیجه برای ترتیب برعکس
-    //     return -a.user.localeCompare(b.user, 'en-US');
-    //     }
-    console.log(viewers,'viewers');
-    
+
+    const sortddata = (tabname: string, sortalfabet: true) => {
+      if(sortalfabet){
+        items.sort((a:any,b:any)=> -a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
+
+      }else{
+        items.sort((a:any,b:any)=> a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
+
+      }
+      setItemssorted(items)
+    };
+
+
     return (
       <>
         <Description label="Network Admin" className="mb-4">
@@ -130,15 +134,17 @@ console.log(viewers,'viewersviewers');
         </Description>
         <Description label="Network Viewer(s)" items="start" className="h-full">
           <Table
+          onclicktitle={(tabname:string,sortalfabet:true)=>sortddata(tabname,sortalfabet)}
+            tabicon={["User"]}
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
-            items={items.sort()}
+            items={itemssorted.length>0?itemssorted:items.sort((a,b)=>a.user.localeCompare(b.user, 'en-US'))}
             containerClassName="w-3/5 mt-[-7px]"
           />
         </Description>
       </>
     );
-  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
+  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin,itemssorted]);
 
   const buttons = (
     <>
