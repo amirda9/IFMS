@@ -23,7 +23,13 @@ const dummy = [
 const LinkAccessPage = () => {
   const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
   const {network} = useSelector((state: any) => state);
-console.log(network?.stationkviewers,'network');
+
+const [itemssorted,setItemssorted]=useState< {
+  index: string;
+  user: string;
+  station: string;
+  region: string;
+}[]>([])
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -81,9 +87,7 @@ console.log(network?.stationkviewers,'network');
   if (!ifUserExist && admin) {
     userList.push({...admin.user});
   }
-  // console.log(viewers, 'viewers');
-  // console.log(users, 'users');
-  // console.log(items, 'items');
+
 
   const {linkDetail} = useSelector((state: any) => state.http);
   const saveAdmin = () => {
@@ -111,7 +115,15 @@ console.log(network?.stationkviewers,'network');
             });
   };
 
-  console.log(linkDetail?.data?.access, '👨');
+  const sortddata = (tabname: string, sortalfabet: true) => {
+    if(sortalfabet){
+      items.sort((a:any,b:any)=> -a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
+    }else{
+      items.sort((a:any,b:any)=> a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
+    }
+    setItemssorted(items)
+  };
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
@@ -134,8 +146,10 @@ console.log(network?.stationkviewers,'network');
           items="start"
           className="h-full text-sm">
           <Table
+            onclicktitle={(tabname:string,sortalfabet:true)=>sortddata(tabname,sortalfabet)}
+            tabicon={"User"}
             cols={columns}
-            items={items}
+            items={itemssorted.length>0?itemssorted:items.sort((a,b)=>a.user.localeCompare(b.user, 'en-US'))}
             containerClassName="w-3/5 mt-[-5px]"
           />
         </Description>
