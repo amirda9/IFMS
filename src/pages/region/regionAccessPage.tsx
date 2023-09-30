@@ -15,9 +15,16 @@ const columns = {
 
 const RegionAccessPage = () => {
   const navigate = useNavigate();
+  const [itemssorted, setItemssorted] = useState<
+    {
+      index: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {network} = useSelector((state: any) => state);
-  console.log(network?.regionviewers, 'network');
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -93,6 +100,25 @@ const RegionAccessPage = () => {
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
       }));
+    const sortddata = (tabname: string, sortalfabet: true) => {
+      if (sortalfabet) {
+        items.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        items.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setItemssorted(items);
+    };
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
     );
@@ -102,14 +128,6 @@ const RegionAccessPage = () => {
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
-    // const Addadmin = (id: string) => {
-    //   request('regionAddadmin', {
-    //     data: {user_id: id},
-    //     params: {region_id: params.regionId!},
-
-    //   });
-    // };
-    console.log(admin, '😃');
 
     return (
       <>
@@ -139,9 +157,17 @@ const RegionAccessPage = () => {
         </Description>
         <Description label="Region Viewer(s)" items="start" className="h-full">
           <Table
+            tabicon={'User'}
+            onclicktitle={(tabname: string, sortalfabet: true) =>
+              sortddata(tabname, sortalfabet)
+            }
+            items={
+              itemssorted.length > 0
+                ? itemssorted
+                : items.sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
+            }
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
-            items={items}
             containerClassName="w-3/5 mt-[-6px]"
           />
         </Description>
