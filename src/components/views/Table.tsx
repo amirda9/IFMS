@@ -29,7 +29,7 @@ type PropsType<
   loading?: boolean;
   keyExtractor?: (value: Item) => string;
   bordered?: boolean;
-  tabicon?:string[];
+  tabicon?:string;
   onclicktitle?:Function
 };
 const Table = <
@@ -53,7 +53,7 @@ const Table = <
 
   const renderHeader = ([key, col]: [C, ColType]) => (
     <th
-    onClick={()=>{onclicktitle(col.label,sortalfabet),tabicon && tabicon?.indexOf(col.label) > -1?setSortalfabet(!sortalfabet):null}}
+    onClick={()=>{onclicktitle(col.label,sortalfabet),tabicon && tabicon == col.label?setSortalfabet(!sortalfabet):null}}
       key={key}
       className={classNames(
         col.size,
@@ -63,7 +63,7 @@ const Table = <
         'bg-blueLight py-1 cursor-pointer font-normal text-sm border-[#969696] border-[1px] relative border-t-[0px]',
       )}>
       {col.label}
-{tabicon && tabicon?.indexOf(col.label) > -1?
+{tabicon == col.label?
 <>
 {sortalfabet?
   <BsChevronDown  className='absolute right-[5px] top-[8px]' />

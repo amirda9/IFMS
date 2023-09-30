@@ -135,7 +135,7 @@ const [itemssorted,setItemssorted]=useState< {
         <Description label="Network Viewer(s)" items="start" className="h-full">
           <Table
           onclicktitle={(tabname:string,sortalfabet:true)=>sortddata(tabname,sortalfabet)}
-            tabicon={["User"]}
+            tabicon={"User"}
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
             items={itemssorted.length>0?itemssorted:items.sort((a,b)=>a.user.localeCompare(b.user, 'en-US'))}
