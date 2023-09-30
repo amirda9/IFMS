@@ -100,7 +100,12 @@ const StationAccessPage = () => {
         user: value.user.username,
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
-      }));
+      })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
+      for(let i=0;i<items.length;i++){
+        items[i].index=(i+1).toString()
+      }
+
+
     const sortddata = (tabname: string, sortalfabet: true) => {
       if (sortalfabet) {
         items.sort(
@@ -117,6 +122,9 @@ const StationAccessPage = () => {
             'en-US',
           ),
         );
+      }
+      for(let i=0;i<items.length;i++){
+        items[i].index=(i+1).toString()
       }
       setItemssorted(items);
     };
@@ -168,9 +176,7 @@ const StationAccessPage = () => {
                 items={
                   itemssorted.length > 0
                     ? itemssorted
-                    : items.sort((a, b) =>
-                        a.user.localeCompare(b.user, 'en-US'),
-                      )
+                    : items
                 }
                 containerClassName="w-3/5 mt-[-6px]"
               />
