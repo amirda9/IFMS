@@ -173,7 +173,7 @@ const RegionAccessPage = () => {
         </Description>
       </>
     );
-  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
+  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin,itemssorted]);
   const buttons = (
     <>
       {userrole == 'superuser' ||
