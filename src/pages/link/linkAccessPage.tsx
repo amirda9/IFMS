@@ -77,7 +77,10 @@ const [itemssorted,setItemssorted]=useState< {
       user: value.user.username,
       station: value.user.station?.name || '-',
       region: value.user.region?.name || '-',
-    }));
+    })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
+    for(let i=0;i<items.length;i++){
+      items[i].index=(i+1).toString()
+    }
   const admin = viewers?.data?.users.find(
     viewer => viewer.access === AccessEnum.admin,
   );
@@ -121,6 +124,9 @@ const [itemssorted,setItemssorted]=useState< {
     }else{
       items.sort((a:any,b:any)=> a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
     }
+    for(let i=0;i<items.length;i++){
+      items[i].index=(i+1).toString()
+    }
     setItemssorted(items)
   };
 
@@ -149,7 +155,7 @@ const [itemssorted,setItemssorted]=useState< {
             onclicktitle={(tabname:string,sortalfabet:true)=>sortddata(tabname,sortalfabet)}
             tabicon={"User"}
             cols={columns}
-            items={itemssorted.length>0?itemssorted:items.sort((a,b)=>a.user.localeCompare(b.user, 'en-US'))}
+            items={itemssorted.length>0?itemssorted:items}
             containerClassName="w-3/5 mt-[-5px]"
           />
         </Description>
