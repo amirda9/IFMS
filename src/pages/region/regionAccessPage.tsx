@@ -99,7 +99,11 @@ const RegionAccessPage = () => {
         user: value.user.username,
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
-      }));
+      })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
+      for(let i=0;i<items.length;i++){
+        items[i].index=(i+1).toString()
+      }
+ 
     const sortddata = (tabname: string, sortalfabet: true) => {
       if (sortalfabet) {
         items.sort(
@@ -117,6 +121,9 @@ const RegionAccessPage = () => {
           ),
         );
       }
+      for(let i=0;i<items.length;i++){
+        items[i].index=(i+1).toString()
+      }
       setItemssorted(items);
     };
     const admin = viewers?.data?.users.find(
@@ -128,7 +135,7 @@ const RegionAccessPage = () => {
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
-
+    
     return (
       <>
         <Description label="Region Admin" className="mb-4">
@@ -164,7 +171,7 @@ const RegionAccessPage = () => {
             items={
               itemssorted.length > 0
                 ? itemssorted
-                : items.sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
+                : items
             }
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
