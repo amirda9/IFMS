@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
-import { BASE_URL } from '~/constant';
+import {BASE_URL} from '~/constant';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 
@@ -12,41 +12,41 @@ const columns = {
   region: {label: 'Region', size: 'w-[30%]'},
   station: {label: 'Station', size: 'w-[30%]'},
 };
-const dummy = [
-  {index: 1, user: 'USER1', region: 'Region', station: 'Station'},
-  {index: 2, user: 'USER2', region: 'Region', station: 'Station'},
-  {index: 3, user: 'USER3', region: 'Region', station: 'Station'},
-  {index: 4, user: 'USER4', region: 'Region', station: 'Station'},
-  {index: 5, user: 'USER5', region: 'Region', station: 'Station'},
-  {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
-];
+
 const StationAccessPage = () => {
-  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
-  const accesstoken=JSON.parse(login || "")?.data.access_token
-  const [userrole,setuserrole]=useState<any>("")
-  const getrole=async()=>{
-    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [itemssorted, setItemssorted] = useState<
+    {
+      index: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
-        Authorization:`Bearer ${accesstoken}`,
+        Authorization: `Bearer ${accesstoken}`,
         Accept: 'application.json',
-        'Content-Type': 'application/json'},
-    }).then(res =>res.json())
-    setuserrole(role.role)
-  // console.log(role,'getrole');
-  }
-useEffect(()=>{
-  getrole()
-},[])
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const params = useParams<{stationId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
-  const {stationDetail} = useSelector((state: any) => state.http);
-  const {network} = useSelector((state: any) => state);
-  console.log(network?.stationviewers,'network');
-  console.log(stationDetail.data.access, '🥰');
+  const {http, network} = useSelector((state: any) => state);
+  // const {network} = useSelector((state: any) => state);
+
   const {
     request,
-    state: {viewers, users,update},
+    state: {viewers, users, update},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.stationAccessList,
@@ -55,7 +55,7 @@ useEffect(()=>{
     }),
     initialRequests: request => {
       request('stationAccessList', {params: {station_id: params.stationId!}});
-     request('userList', undefined);
+      request('userList', undefined);
     },
     onUpdate: (lastState, state) => {
       if (
@@ -63,30 +63,9 @@ useEffect(()=>{
         state.update!.httpRequestStatus === 'success'
       ) {
         request('stationAccessList', {params: {station_id: params.stationId!}});
-
       }
     },
   });
-  // console.log(viewers, 'viewersvviewers');
-  // console.log(users, 'users');
-  const items = (viewers?.data?.users || [])
-    .filter(value => value.access !== AccessEnum.admin)
-    .map((value, index) => ({
-      index: (index + 1).toString(),
-      user: value.user.username,
-      station: value.user.station?.name || '-',
-      region: value.user.region?.name || '-',
-    }));
-  const admin = viewers?.data?.users.find(
-    viewer => viewer.access === AccessEnum.admin,
-  );
-  const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
-  const userList =
-    users?.httpRequestStatus === 'success' ? [...users.data!] : [];
-  if (!ifUserExist && admin) {
-    userList.push({...admin.user});
-  }
-  // console.log(items, 'items');
 
   const saveAdmin = () => {
     const viewerWithoutAdmin =
@@ -107,47 +86,122 @@ useEffect(()=>{
       params: {station_id: params.stationId!},
       data: {user_id: userAdmin || admin!.user.id!},
     });
-       request('stationAccessUpdate', {
-            params: {station_id: params.stationId!},
-            data: {users:network?.stationviewers},
-          });
+    request('stationAccessUpdate', {
+      params: {station_id: params.stationId!},
+      data: {users: network?.stationviewers},
+    });
   };
 
-  return (
-    <div className="flex min-h-[calc(100vh-215px)] relative flex-col justify-between">
-      <div className="h-5/6">
-        <Description label="Station Admin" className="mb-4">
-          <Select 
-          value={userAdmin || admin?.user.id}
-          disabled={userrole == 'superuser' || stationDetail?.data?.access.role  == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN'?false:true} onChange={e => setUserAdmin(e.target.value)} className="w-80">
-          {userList.map(user => (
-              <option value={user.id} key={user.id}>
-                {user.username}
-              </option>
-            ))}
-          </Select>
-        </Description>
-        <Description label="Station Viewer(s)" items="start" className="h-full">
-          <Table
-            cols={columns}
-            items={items}
-            containerClassName="w-3/5 mt-[-6px]"
-          />
-        </Description>
-      </div>
-      <div className="mr-4 absolue bottom-[20px] right-0 flex flex-row gap-x-4 self-end">
-        {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ? (
-          <SimpleBtn link to="../edit-access">
-            Edit Station Viewer(s)
-          </SimpleBtn>
-        ) : null}
-        {userrole == 'superuser' || stationDetail?.data?.access.access  == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN'  ? (
-          <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
-        ) : null}
-        <SimpleBtn>Cancel</SimpleBtn>
-      </div>
-    </div>
-  );
+  const body = useMemo(() => {
+    const items = (viewers?.data?.users || [])
+      .filter(value => value.access !== AccessEnum.admin)
+      .map((value, index) => ({
+        index: (index + 1).toString(),
+        user: value.user.username,
+        station: value.user.station?.name || '-',
+        region: value.user.region?.name || '-',
+      }));
+    const sortddata = (tabname: string, sortalfabet: true) => {
+      if (sortalfabet) {
+        items.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        items.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setItemssorted(items);
+    };
+
+    const admin = viewers?.data?.users.find(
+      viewer => viewer.access === AccessEnum.admin,
+    );
+    const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
+
+    const userList =
+      users?.httpRequestStatus === 'success' ? [...users.data!] : [];
+    if (!ifUserExist && admin) {
+      userList.push({...admin.user});
+    }
+
+    return (
+      <>
+        <div className="relative flex min-h-[calc(100vh-215px)] flex-col justify-between">
+          <div className="h-5/6">
+            <Description label="Station Admin" className="mb-4">
+              <Select
+                value={userAdmin || admin?.user.id}
+                disabled={
+                  userrole == 'superuser' ||
+                  http.stationDetail?.data?.access.role == 'superuser' ||
+                  networkDetail?.data?.access?.access == 'ADMIN'
+                    ? false
+                    : true
+                }
+                onChange={e => setUserAdmin(e.target.value)}
+                className="w-80">
+                {userList.map(user => (
+                  <option value={user.id} key={user.id}>
+                    {user.username}
+                  </option>
+                ))}
+              </Select>
+            </Description>
+            <Description
+              label="Station Viewer(s)"
+              items="start"
+              className="h-full">
+              <Table
+                tabicon={'User'}
+                onclicktitle={(tabname: string, sortalfabet: true) =>
+                  sortddata(tabname, sortalfabet)
+                }
+                cols={columns}
+                items={
+                  itemssorted.length > 0
+                    ? itemssorted
+                    : items.sort((a, b) =>
+                        a.user.localeCompare(b.user, 'en-US'),
+                      )
+                }
+                containerClassName="w-3/5 mt-[-6px]"
+              />
+            </Description>
+          </div>
+          <div className="absolue bottom-[20px] right-0 mr-4 flex flex-row gap-x-4 self-end">
+            {userrole == 'superuser' ||
+            http.stationDetail?.data?.access.access == 'ADMIN' ||
+            networkDetail?.data?.access?.access == 'ADMIN' ? (
+              <SimpleBtn link to="../edit-access">
+                Edit Station Viewer(s)
+              </SimpleBtn>
+            ) : null}
+            {userrole == 'superuser' ||
+            http.stationDetail?.data?.access.access == 'ADMIN' ||
+            networkDetail?.data?.access?.access == 'ADMIN' ? (
+              <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
+            ) : null}
+            <SimpleBtn>Cancel</SimpleBtn>
+          </div>
+        </div>
+      </>
+    );
+  }, [
+    viewers?.httpRequestStatus,
+    users?.httpRequestStatus,
+    userAdmin,
+    itemssorted,
+  ]);
+
+  return <>{body}</>;
 };
 
 export default StationAccessPage;
