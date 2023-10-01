@@ -253,9 +253,6 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   //   setmount(true)
   // }, [veiwertabselected,veiwertablesorte,change]);
 
-  console.log(usersssorted, 'usersssortedusersssorted😁');
-  console.log(Users, 'Users😍');
-
   return (
     <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">
       {state.group ? (
