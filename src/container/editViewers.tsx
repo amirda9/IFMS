@@ -1,4 +1,10 @@
-import React, {FC, forwardRef, useEffect, useImperativeHandle, useState} from 'react';
+import React, {
+  FC,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
@@ -41,16 +47,29 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     selectRight: [],
     group: false,
   });
-  const [mount,setmount]=useState(false)
-  const [usertabselected,setUsertabselected]=useState("User")
-  const [usertablesorte,setUsertablesort]=useState(false)
-  const [change,setCange]=useState(false)
-  const [usersssorted,setUserssorted]=useState< {
-    id: string;
-    user: string;
-    station: string;
-    region: string;
-  }[]>([])
+  const [mount, setmount] = useState(false);
+  const [usertabselected, setUsertabselected] = useState('User');
+  const [veiwertabselected, setVeiwertabselected] = useState('User');
+  const [usertablesorte, setUsertablesort] = useState(false);
+  const [veiwertablesorte, setVeiwertablesort] = useState(false);
+  const [change, setCange] = useState(false);
+  const [usersssorted, setUserssorted] = useState<
+    {
+      id: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
+  const [veiwersssorted, setWeiverssorted] = useState<
+    {
+      id: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
+
   const {
     state: {users, groups},
     request,
@@ -116,10 +135,9 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     };
   };
 
-console.log(groups,'groupgroup');
-// const admin = groups?.data?.find(
-//   value => value.access === AccessEnum.admin,
-// );
+  // const admin = groups?.data?.find(
+  //   value => value.access === AccessEnum.admin,
+  // );
 
   const userList =
     users?.data?.map(user => ({
@@ -129,48 +147,117 @@ console.log(groups,'groupgroup');
       id: user.id,
     })) || [];
 
-     const group1=groups?.data;
-   
+  const group1 = groups?.data;
 
   const groupList =
     groups?.data?.map(group => {
-      
-      const users = group.users.map(user => ( {
+      const users = group.users.map(user => ({
         label: `${user.username} - ${user.station?.name || '_'}`,
         value: user.id,
       }));
-      console.log(users,'usersuu');
-      
+
       return {
         label: group.name,
         items: users.filter(item => !state.values.includes(item.value)),
       };
     }) || [];
-    console.log(state,'statestate');
-   
-    const Users=userList.filter(user => !state.values.includes(user.id)) || []
-    const sortdusers = (tabname: string, sortalfabet: boolean) => {
-      console.log(tabname,"tabname",sortalfabet,"sortalfabet");
-      if(sortalfabet){
-        Users.sort((a:any,b:any)=> -a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
-      }else{
-        Users.sort((a:any,b:any)=> a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
-      }
-      setUserssorted(Users)
-    };
 
-    useEffect(() => {
-      if(mount){
-        sortdusers(usertabselected,usertablesorte)
-      }else{
-        setUserssorted(Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US')));
-        setmount(true)
+  const Users = userList.filter(user => !state.values.includes(user.id)) || [];
+
+  const sortdusers = (tabname: string, sortalfabet: boolean) => {
+    if (tabname != 'Index') {
+      if (sortalfabet) {
+        Users.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        Users.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
       }
-    }, [usertabselected,usertablesorte,change]);
-    console.log(groupList,'groupList');
+      setUserssorted(Users);
+    }
+  };
+
+  useEffect(() => {
+    setUserssorted([]);
+    setWeiverssorted([]);
+    if (mount) {
+      if (usertabselected != 'Index') {
+        sortdusers(usertabselected, usertablesorte);
+        sortdveiwers(veiwertabselected, veiwertablesorte);
+      }
+    } else {
+      if (usertabselected != 'Index') {
+        setUserssorted(
+          Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US')),
+        );
+
+        setWeiverssorted(
+          veiwers.filter(user => state.values.includes(user.id)),
+        );
+      }
+    }
+    setmount(true);
+  }, [
+    usertabselected,
+    usertablesorte,
+    veiwertabselected,
+    veiwersssorted,
+    change,
+  ]);
+
+  const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
+
+  const sortdveiwers = (tabname: string, sortalfabet: boolean) => {
+    if (tabname != 'Index') {
+      if (sortalfabet) {
+        veiwers.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        veiwers.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setWeiverssorted(veiwers);
+    }
+  };
+
+  // useEffect(() => {
+
+  //   if(mount){
+  //     if(veiwertabselected != "index"){
+  //     sortdveiwers(veiwertabselected,veiwertablesorte)
+  //     }
+  //   }else{
+  //     if(veiwertabselected != "index"){
+  //     setWeiverssorted(veiwers.filter(user => state.values.includes(user.id)));
+
+  //     }
+  //   }
+  //   setmount(true)
+  // }, [veiwertabselected,veiwertablesorte,change]);
+
+  console.log(usersssorted, 'usersssortedusersssorted😁');
+  console.log(Users, 'Users😍');
 
   return (
-    <div className="flex h-full  w-full flex-row items-center justify-between mb-2">
+    <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">
       {state.group ? (
         <Table
           keyExtractor={value => value.label}
@@ -195,11 +282,12 @@ console.log(groups,'groupgroup');
             (groups?.httpRequestStatus !== 'success' && state.group) ||
             (users?.httpRequestStatus !== 'success' && !state.group)
           }
-          tabicon={"User"}
-          onclicktitle={(tabname:string,sortalfabet:boolean)=>{setUsertabselected(tabname),setUsertablesort(sortalfabet)}}
-
+          tabicon={'User'}
+          onclicktitle={(tabname: string, sortalfabet: boolean) => {
+            setUsertabselected(tabname), setUsertablesort(sortalfabet);
+          }}
           cols={columns}
-          items={usersssorted.length>0?usersssorted:userList.filter(user => !state.values.includes(user.id)) || []}
+          items={usersssorted.length > 0 ? usersssorted : Users}
           containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
           dynamicColumns={['select', 'index']}
           renderDynamicColumn={renderDynamicColumn('left')}
@@ -216,7 +304,7 @@ console.log(groups,'groupgroup');
             selectLeft: [],
             values: [...state.values, ...state.selectLeft],
           });
-          setCange(!change)
+          setCange(!change);
         }}
         onClickLeftButton={() => {
           const values = [...state.values];
@@ -225,7 +313,7 @@ console.log(groups,'groupgroup');
             values.splice(index, 1);
           });
           setState({...state, selectRight: [], values});
-          setCange(!change)
+          setCange(!change);
         }}
       />
 
@@ -234,8 +322,12 @@ console.log(groups,'groupgroup');
           (groups?.httpRequestStatus !== 'success' && state.group) ||
           (users?.httpRequestStatus !== 'success' && !state.group)
         }
+        onclicktitle={(tabname: string, sortalfabet: boolean) => {
+          setVeiwertabselected(tabname), setVeiwertablesort(sortalfabet);
+        }}
         cols={columns}
-        items={userList.filter(user => state.values.includes(user.id))}
+        tabicon={'User'}
+        items={veiwersssorted.length > 0 ? veiwersssorted : veiwers}
         containerClassName="w-[44%] h-[calc(100vh-260px)] ml-[5px]  overflow-y-auto"
         dynamicColumns={['select', 'index']}
         renderDynamicColumn={renderDynamicColumn('right')}
