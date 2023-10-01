@@ -322,6 +322,7 @@ const LinkCablesAndSegmentsPage = () => {
       offset: number;
       loss: number;
       fiber_type: string;
+      fixId:boolean
     }[] = [];
 
     for (let i = 0; i < beforslicecabl.length; i++) {
@@ -332,6 +333,7 @@ const LinkCablesAndSegmentsPage = () => {
         offset: beforslicecabl[i]?.offset,
         loss: beforslicecabl[i]?.loss,
         fiber_type: beforslicecabl[i]?.fiber_type,
+        fixId:beforslicecabl[i]?.fixId || false
       });
     }
 
