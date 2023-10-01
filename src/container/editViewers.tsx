@@ -1,4 +1,4 @@
-import React, {FC, forwardRef, useImperativeHandle, useState} from 'react';
+import React, {FC, forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
@@ -41,7 +41,16 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     selectRight: [],
     group: false,
   });
-
+  const [mount,setmount]=useState(false)
+  const [usertabselected,setUsertabselected]=useState("User")
+  const [usertablesorte,setUsertablesort]=useState(false)
+  const [change,setCange]=useState(false)
+  const [usersssorted,setUserssorted]=useState< {
+    id: string;
+    user: string;
+    station: string;
+    region: string;
+  }[]>([])
   const {
     state: {users, groups},
     request,
@@ -138,8 +147,28 @@ console.log(groups,'groupgroup');
       };
     }) || [];
     console.log(state,'statestate');
-    
+   
+    const Users=userList.filter(user => !state.values.includes(user.id)) || []
+    const sortdusers = (tabname: string, sortalfabet: boolean) => {
+      console.log(tabname,"tabname",sortalfabet,"sortalfabet");
+      if(sortalfabet){
+        Users.sort((a:any,b:any)=> -a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
+      }else{
+        Users.sort((a:any,b:any)=> a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
+      }
+      setUserssorted(Users)
+    };
+
+    useEffect(() => {
+      if(mount){
+        sortdusers(usertabselected,usertablesorte)
+      }else{
+        setUserssorted(Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US')));
+        setmount(true)
+      }
+    }, [usertabselected,usertablesorte,change]);
     console.log(groupList,'groupList');
+
   return (
     <div className="flex h-full  w-full flex-row items-center justify-between mb-2">
       {state.group ? (
@@ -166,8 +195,11 @@ console.log(groups,'groupgroup');
             (groups?.httpRequestStatus !== 'success' && state.group) ||
             (users?.httpRequestStatus !== 'success' && !state.group)
           }
+          tabicon={"User"}
+          onclicktitle={(tabname:string,sortalfabet:boolean)=>{setUsertabselected(tabname),setUsertablesort(sortalfabet)}}
+
           cols={columns}
-          items={userList.filter(user => !state.values.includes(user.id))}
+          items={usersssorted.length>0?usersssorted:userList.filter(user => !state.values.includes(user.id)) || []}
           containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
           dynamicColumns={['select', 'index']}
           renderDynamicColumn={renderDynamicColumn('left')}
@@ -184,6 +216,7 @@ console.log(groups,'groupgroup');
             selectLeft: [],
             values: [...state.values, ...state.selectLeft],
           });
+          setCange(!change)
         }}
         onClickLeftButton={() => {
           const values = [...state.values];
@@ -192,6 +225,7 @@ console.log(groups,'groupgroup');
             values.splice(index, 1);
           });
           setState({...state, selectRight: [], values});
+          setCange(!change)
         }}
       />
 
