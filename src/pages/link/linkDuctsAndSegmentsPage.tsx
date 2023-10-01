@@ -7,7 +7,7 @@ import {FormLayout} from '~/layout';
 import {BsPlusLg} from 'react-icons/bs';
 import useHttpRequest from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
-import { log } from 'console';
+
 import { useSelector } from 'react-redux';
 type Iprops = {
   classname: string;
@@ -41,7 +41,6 @@ const LinkCablesAndSegmentsPage = () => {
       },
     }).then(res => res.json());
     setuserrole(role.role);
-    console.log(role, 'getrole');
   };
   useEffect(() => {
     getrole();
@@ -87,13 +86,14 @@ const LinkCablesAndSegmentsPage = () => {
               offset: number;
               loss: number;
               fiber_type: string;
+              fixId:boolean
             },
           ];
         }[]
       | [];
   }>();
 
-  // console.log(parentcabl, 'parentcabloo');
+
 
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
@@ -109,12 +109,7 @@ const LinkCablesAndSegmentsPage = () => {
 
   // -------------------------------------------------
 
-  // const setcores = (id: number, x: string) => {
-  //   let beforadddata = JSON.parse(JSON.stringify(parentcabl?.ducts));
-  //   const findcable = beforadddata.findIndex((data: any) => data.id == id);
-  //   beforadddata[findcable].number_of_cores = Number(x);
-  //   setParentcable({cables: [], ducts: beforadddata});
-  // };
+
 
   const setcableId = (id: number, x: string) => {
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.ducts));
@@ -208,11 +203,11 @@ const LinkCablesAndSegmentsPage = () => {
       loss: 0,
       fiber_type: '',
     });
-    // console.log(newArray, 'newArray2');
+
     const sortarray = newArray.sort((a: any, b: any) => {
       return a.id - b.id;
     });
-    // console.log(sortarray, 'sortarray');
+;
     beforadddata[findcable].segments = sortarray;
     setParentcable({cables: [], ducts: beforadddata});
   };
@@ -249,6 +244,7 @@ const LinkCablesAndSegmentsPage = () => {
       offset: number;
       loss: number;
       fiber_type: string;
+      fixId:boolean
     }[] = [];
 
     for (let i = 0; i < beforslicecabl.length; i++) {
@@ -259,6 +255,7 @@ const LinkCablesAndSegmentsPage = () => {
         offset: beforslicecabl[i]?.offset,
         loss: beforslicecabl[i]?.loss,
         fiber_type: beforslicecabl[i]?.fiber_type,
+        fixId:beforslicecabl[i]?.fixId || false
       });
     }
 
@@ -268,7 +265,7 @@ const LinkCablesAndSegmentsPage = () => {
   };
 
   const deletefibredata = (cableid: number, fibreid: number) => {
-  console.log(cableid,'cableid');
+
   
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.ducts));
     const findcable = beforadddata.findIndex((data: any) => data.id == cableid);
@@ -313,11 +310,11 @@ const LinkCablesAndSegmentsPage = () => {
       miniductid: 0,
       number_of_fibers: 'string',
     });
-    // console.log(newArray, 'newArray2');
+
     const sortarray = newArray.sort((a: any, b: any) => {
       return a.id - b.id;
     });
-    // console.log(sortarray, 'sortarray');
+
     beforadddata[findcable].mini_ducts = sortarray;
     setParentcable({cables:parentcabl?.cables || [], ducts: beforadddata});
   };
@@ -344,7 +341,7 @@ const LinkCablesAndSegmentsPage = () => {
     //   }
     // },
   });
-  // console.log(state.detail,'detail');
+
   const savecables = () => {
     let dataa: any = [];
     let newcable: any = [];
@@ -403,7 +400,7 @@ const LinkCablesAndSegmentsPage = () => {
         };
       }
       for (let j = 0; j < allducts[i]?.segments?.length; j++) {
-        allducts[i].segments[j] = {...allducts[i]?.segments[j], id: Number(j)};
+        allducts[i].segments[j] = {...allducts[i]?.segments[j], id: Number(j),fixId:true};
       }
     }
     setParentcable({cables: allcables, ducts: allducts});
@@ -605,7 +602,7 @@ const LinkCablesAndSegmentsPage = () => {
                             <div className=" flex w-1/5 justify-center">
                               <TextInput
                                 value={dataa.length}
-                                onChange={e =>
+                                onChange={dataa.fixId?()=>{}:(e) =>
                                   setcableslicecabsegment(
                                     data.id,
                                     dataa.id,
