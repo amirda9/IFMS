@@ -90,9 +90,7 @@ const [itemssorted,setItemssorted]=useState< {
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
       })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
-      for(let i=0;i<items.length;i++){
-        items[i].index=(i+1).toString()
-      }
+
 
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
@@ -104,14 +102,11 @@ const [itemssorted,setItemssorted]=useState< {
       userList.push({...admin.user});
     }
 
-    const sortddata = (tabname: string, sortalfabet: true) => {
+    const sortddata = (tabname: string, sortalfabet: boolean) => {
       if(sortalfabet){
         items.sort((a:any,b:any)=> -a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
       }else{
         items.sort((a:any,b:any)=> a[tabname.toLocaleLowerCase()].localeCompare(b[tabname.toLocaleLowerCase()], 'en-US'))
-      }
-      for(let i=0;i<items.length;i++){
-        items[i].index=(i+1).toString()
       }
       setItemssorted(items)
     };
@@ -138,7 +133,9 @@ const [itemssorted,setItemssorted]=useState< {
         </Description>
         <Description label="Network Viewer(s)" items="start" className="h-full">
           <Table
-          onclicktitle={(tabname:string,sortalfabet:true)=>sortddata(tabname,sortalfabet)}
+               dynamicColumns={['index']}
+               renderDynamicColumn={data => data.index}
+          onclicktitle={(tabname:string,sortalfabet:boolean)=>sortddata(tabname,sortalfabet)}
             tabicon={"User"}
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
