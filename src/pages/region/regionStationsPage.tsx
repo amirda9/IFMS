@@ -46,13 +46,17 @@ const RegionStationsPage = () => {
     },
   });
 
-  const dataa = state?.list?.data || [];
+  const dataa = state.list?.data?.map(station => ({
+       name: station.name,
+      latitude: station.longitude,
+     longitude:station.latitude,
+    })) || []
 
   useEffect(() => {
     setItemssorted(dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
   }, []);
 
-  const sortddata = (tabname: string, sortalfabet: true) => {
+  const sortddata = (tabname: string, sortalfabet: boolean) => {
     if (sortalfabet) {
       if (tabname == 'Name') {
         dataa.sort(
@@ -86,20 +90,15 @@ const RegionStationsPage = () => {
 
     setItemssorted(dataa);
   };
-  // state.list?.data?.map(station => ({
-  //   name: station.name,
-  //   latitude: station.longitude,
-  //   longitude:station.latitude,
-  // })) || []
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
-        {/* <BsChevronDown className='absolute  left-[30.5%] z-20  top-[8px]' /> */}
         <Table
           cols={columns}
           tabicon={'Name'}
           items={itemssorted}
-          onclicktitle={(tabname: string, sortalfabet: true) =>
+          onclicktitle={(tabname: string, sortalfabet: boolean) =>
             sortddata(tabname, sortalfabet)
           }
           dynamicColumns={['index']}

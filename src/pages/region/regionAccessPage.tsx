@@ -100,11 +100,8 @@ const RegionAccessPage = () => {
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
       })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
-      for(let i=0;i<items.length;i++){
-        items[i].index=(i+1).toString()
-      }
- 
-    const sortddata = (tabname: string, sortalfabet: true) => {
+
+    const sortddata = (tabname: string, sortalfabet: boolean) => {
       if (sortalfabet) {
         items.sort(
           (a: any, b: any) =>
@@ -120,9 +117,6 @@ const RegionAccessPage = () => {
             'en-US',
           ),
         );
-      }
-      for(let i=0;i<items.length;i++){
-        items[i].index=(i+1).toString()
       }
       setItemssorted(items);
     };
@@ -149,7 +143,6 @@ const RegionAccessPage = () => {
             }
             className="w-80"
             value={userAdmin || admin?.user.id}
-            // onChange={e => Addadmin(e.target.value)}
             onChange={event => {
               setUserAdmin(event.target.value);
             }}>
@@ -164,8 +157,10 @@ const RegionAccessPage = () => {
         </Description>
         <Description label="Region Viewer(s)" items="start" className="h-full">
           <Table
+               dynamicColumns={['index']}
+               renderDynamicColumn={data => data.index}
             tabicon={'User'}
-            onclicktitle={(tabname: string, sortalfabet: true) =>
+            onclicktitle={(tabname: string, sortalfabet: boolean) =>
               sortddata(tabname, sortalfabet)
             }
             items={
