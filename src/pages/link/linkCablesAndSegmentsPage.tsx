@@ -95,6 +95,7 @@ const LinkCablesAndSegmentsPage = () => {
     selector: state => ({
       detail: state.http.linkDetail,
       stations: state.http.allStations,
+      update:state.http.linkupdatecables
     }),
     initialRequests: request => {
       request('linkDetail', {params: {link_id: params.linkId!}});
@@ -102,15 +103,14 @@ const LinkCablesAndSegmentsPage = () => {
         request('allStations', undefined);
       }
     },
-
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.update?.httpRequestStatus === 'loading' &&
-    //     state.update!.httpRequestStatus === 'success'
-    //   ) {
-    //     initialRequests(request);
-    //   }
-    // },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        request('linkDetail', {params: {link_id: params.linkId!}});
+      }
+    },
   });
 
   useEffect(() => {
