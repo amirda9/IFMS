@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
-import { BASE_URL } from '~/constant';
-import { useSelector } from 'react-redux';
-import { BsChevronDown } from 'react-icons/bs';
+import {BASE_URL} from '~/constant';
+import {useSelector} from 'react-redux';
+import {BsChevronDown} from 'react-icons/bs';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -14,10 +14,17 @@ const columns = {
 };
 
 const RegionStationsPage = () => {
-  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
+  const [itemssorted, setItemssorted] = useState<
+    {
+      name: string;
+      latitude: number;
+      longitude: number;
+    }[]
+  >([]);
   const getrole = async () => {
     const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
@@ -38,20 +45,62 @@ const RegionStationsPage = () => {
       request('regionStationList', {params: {region_id: params.regionId!}});
     },
   });
-  console.log(state?.list?.data,'state.list');
-  
+
+  const dataa = state?.list?.data || [];
+
+  useEffect(() => {
+    setItemssorted(dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
+  }, []);
+
+  const sortddata = (tabname: string, sortalfabet: true) => {
+    if (sortalfabet) {
+      if (tabname == 'Name') {
+        dataa.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        dataa.sort(
+          (a: any, b: any) =>
+            a[tabname.toLocaleLowerCase()] - b[tabname.toLocaleLowerCase()],
+        );
+      }
+    } else {
+      if (tabname == 'Name') {
+        dataa.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      } else {
+        dataa.sort(
+          (a: any, b: any) =>
+            b[tabname.toLocaleLowerCase()] - a[tabname.toLocaleLowerCase()],
+        );
+      }
+    }
+
+    setItemssorted(dataa);
+  };
+  // state.list?.data?.map(station => ({
+  //   name: station.name,
+  //   latitude: station.longitude,
+  //   longitude:station.latitude,
+  // })) || []
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
-      <BsChevronDown className='absolute  left-[30.5%] z-20  top-[8px]' />
+        {/* <BsChevronDown className='absolute  left-[30.5%] z-20  top-[8px]' /> */}
         <Table
           cols={columns}
-          items={
-            state.list?.data?.map(station => ({
-              name: station.name,
-              latitude: station.longitude,
-              longitude:station.latitude,
-            })) || []
+          tabicon={'Name'}
+          items={itemssorted}
+          onclicktitle={(tabname: string, sortalfabet: true) =>
+            sortddata(tabname, sortalfabet)
           }
           dynamicColumns={['index']}
           renderDynamicColumn={data => data.index + 1}
@@ -59,14 +108,18 @@ const RegionStationsPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-      {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
-      regionDetail?.data?.access.access == 'ADMIN' ?
-        <SimpleBtn link to="/stations">
-          Edit Stations List
-        </SimpleBtn>:null}
-        {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ||
-      regionDetail?.data?.access.access == 'ADMIN' ?
-        <SimpleBtn>Save</SimpleBtn>:null}
+        {userrole == 'superuser' ||
+        networkDetail?.data?.access?.access == 'ADMIN' ||
+        regionDetail?.data?.access.access == 'ADMIN' ? (
+          <SimpleBtn link to="/stations">
+            Edit Stations List
+          </SimpleBtn>
+        ) : null}
+        {userrole == 'superuser' ||
+        networkDetail?.data?.access?.access == 'ADMIN' ||
+        regionDetail?.data?.access.access == 'ADMIN' ? (
+          <SimpleBtn>Save</SimpleBtn>
+        ) : null}
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>
