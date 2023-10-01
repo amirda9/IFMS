@@ -65,6 +65,7 @@ const LinkCablesAndSegmentsPage = () => {
           offset: number;
           loss: number;
           fiber_type: string;
+          fixID?: Boolean;
         },
       ];
     }[];
@@ -126,6 +127,7 @@ const LinkCablesAndSegmentsPage = () => {
         allcables[i].segments[j] = {
           ...allcables[i]?.segments[j],
           id: Number(j),
+          fixId: true,
         };
       }
     }
@@ -144,6 +146,9 @@ const LinkCablesAndSegmentsPage = () => {
       });
       for (let j = 0; j < beforadddata?.ducts[i]?.segments?.length; j++) {
         delete beforadddata?.ducts[i].segments[j].id;
+        if (beforadddata?.ducts[i].segments[j].fixId) {
+          delete beforadddata?.ducts[i].segments[j].fixId;
+        }
       }
     }
 
@@ -151,6 +156,18 @@ const LinkCablesAndSegmentsPage = () => {
       params: {link_id: params.linkId!},
       data: {cables: newcable, ducts: beforadddata.ducts},
     });
+  };
+
+  const finddataindex = (x: string) => {
+    let alldatabasecabel = state?.detail?.data?.data?.cables?.findIndex(
+      data => data.id == x,
+    );
+
+    if (alldatabasecabel && alldatabasecabel > -1) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   // **********************************************************
@@ -251,11 +268,11 @@ const LinkCablesAndSegmentsPage = () => {
       loss: 0,
       fiber_type: '',
     });
-    console.log(newArray, 'newArray2');
+
     const sortarray = newArray.sort((a: any, b: any) => {
       return a.id - b.id;
     });
-    console.log(sortarray, 'sortarray');
+
     beforadddata[findcable].segments = sortarray;
     setParentcable({cables: beforadddata, ducts: parentcabl?.ducts || []});
   };
@@ -350,234 +367,246 @@ const LinkCablesAndSegmentsPage = () => {
       )}
 
       <div className="relative z-50 w-full bg-b">
-        {parentcabl?.cables?.map((data: any, index: number) => (
-          <div key={data.id} className="relative z-50 w-full bg-b">
-            <div
-              style={{zIndex: 20}}
-              className="relative z-40 my-8 w-9/12  rounded-md bg-gis p-4">
+        {parentcabl?.cables?.map((data: any, idd: number) => {
+          return (
+            <div key={data.id} className="relative z-50 w-full bg-b">
               <div
-                className={`absolute left-[-30px] top-0 z-40 ${
-                  index == parentcabl.cables.length - 1
-                    ? 'h-full'
-                    : 'h-[calc(100%+32px)]'
-                }  w-[30px] bg-b`}></div>
+                style={{zIndex: 20}}
+                className="relative z-40 my-8 w-9/12  rounded-md bg-gis p-4">
+                <div
+                  className={`absolute left-[-30px] top-0 z-40 ${
+                    idd == parentcabl.cables.length - 1
+                      ? 'h-full'
+                      : 'h-[calc(100%+32px)]'
+                  }  w-[30px] bg-b`}></div>
 
-              <div className="z-40 flex flex-row items-center justify-between">
-                <div className="flex flex-row">
-                  <span className="w-14"> {index + 1}</span>
-                  <Description
-                    label="ID:"
-                    labelClassName="w-fit pr-2"
-                    className="flex-grow-0 pr-14">
-                    <TextInput
-                      type="text"
-                      value={data.cableId}
-                      onChange={e => setcableId(data.id, e.target.value)}
-                      className="w-full"
-                    />
-                  </Description>
-
-                  <Description
-                    label="Number of Cores"
-                    labelClassName="w-fit pr-2"
-                    className="flex-grow-0 pr-14">
-                    <TextInput
-                      value={data.number_of_cores}
-                      onChange={e => setcores(data.id, e.target.value)}
-                      type="number"
-                      className="w-28 "
-                    />
-                  </Description>
-                </div>
-                <div className="flex flex-row items-center gap-x-12">
-                  <IoTrashOutline
-                    onClick={() => deletecable(data.id)}
-                    size={24}
-                    className="cursor-pointer  text-red-500 active:text-red-300"
-                  />
-                  {open[index] ? (
-                    <IoChevronUp
-                      size={48}
-                      className="cursor-pointer active:opacity-50"
-                      onClick={() => {
-                        if (open[index]) {
-                          setOpen({...open, [index]: false});
-                        } else {
-                          setOpen({...open, [index]: true});
-                        }
-                      }}
-                    />
-                  ) : (
-                    <IoChevronDown
-                      size={48}
-                      className="cursor-pointer active:opacity-50"
-                      onClick={() => {
-                        if (open[index]) {
-                          setOpen({...open, [index]: false});
-                        } else {
-                          setOpen({...open, [index]: true});
-                        }
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-              {open[index] ? (
-                <Fragment>
-                  <div className="flex-grow-1 mt-8 flex flex-row justify-between ">
-                    <div className="flex w-full flex-row">
-                      <span className="w-1/5 text-center">Start (km)</span>
-                      <span className="w-1/5 text-center">Length (km)</span>
-                      <span className="w-1/5 text-center">Offset (km)</span>
-                      <span className="w-1/5 text-center">Loss</span>
-                      <span className="w-1/5 text-center">Fiber Type</span>
-                    </div>
-                    <div className="flex flex-row gap-x-12">
-                      <IoTrashOutline
-                        size={24}
-                        className="cursor-pointer  text-red-500 opacity-0 active:text-red-300"
+                <div className="z-40 flex flex-row items-center justify-between">
+                  <div className="flex flex-row">
+                    <span className="w-14"> {idd + 1}</span>
+                    <Description
+                      label="ID:"
+                      labelClassName="w-fit pr-2"
+                      className="flex-grow-0 pr-14">
+                      <TextInput
+                        type="text"
+                        value={data.cableId}
+                        onChange={e => setcableId(data.id, e.target.value)}
+                        className="w-full"
                       />
-                      <span className="w-12" />
-                    </div>
+                    </Description>
+
+                    <Description
+                      label="Number of Cores"
+                      labelClassName="w-fit pr-2"
+                      className="flex-grow-0 pr-14">
+                      <TextInput
+                        value={data.number_of_cores}
+                        onChange={e => setcores(data.id, e.target.value)}
+                        type="number"
+                        className="w-28 "
+                      />
+                    </Description>
                   </div>
-                  {data?.segments?.map((dataa: any, index: number) => (
-                    <div className="w-full" key={index}>
-                      <div
-                        className="flex-grow-1 flex flex-row justify-between "
-                        key={index}>
-                        <div className="flex w-full flex-row">
-                          <div className="flex w-1/5 justify-center">
-                            <TextInput
-                              value={dataa.start}
-                              onChange={e =>
-                                setcableslicecabsegment(
-                                  data.id,
-                                  dataa.id,
-                                  e.target.value,
-                                  'start',
-                                )
-                              }
-                              className="w-28"
-                              type="number"
-                            />
-                          </div>
-                          <div className="flex w-1/5 justify-center">
-                            <TextInput
-                              value={dataa.length}
-                              onChange={e =>
-                                setcableslicecabsegment(
-                                  data.id,
-                                  dataa.id,
-                                  e.target.value,
-                                  'length',
-                                )
-                              }
-                              className="w-28"
-                              type="number"
-                            />
-                          </div>
-                          <div className="flex w-1/5 justify-center">
-                            <TextInput
-                              value={dataa.offset}
-                              onChange={e =>
-                                setcableslicecabsegment(
-                                  data.id,
-                                  dataa.id,
-                                  e.target.value,
-                                  'offset',
-                                )
-                              }
-                              className="w-28"
-                              type="number"
-                            />
-                          </div>
-                          <div className="flex w-1/5 justify-center">
-                            <TextInput
-                              value={dataa.loss}
-                              onChange={e =>
-                                setcableslicecabsegment(
-                                  data.id,
-                                  dataa.id,
-                                  e.target.value,
-                                  'loss',
-                                )
-                              }
-                              className="w-28"
-                              type="number"
-                            />
-                          </div>
-
-                          <div className="flex w-1/5 justify-center">
-                            <Select
-                              value={data.loss}
-                              onChange={e =>
-                                setcableslicecabsegment(
-                                  data.id,
-                                  dataa.id,
-                                  e.target.value,
-                                  'fiber_type',
-                                )
-                              }
-                              className="w-28"
-                              // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
-                            >
-                              <option value="" className="hidden">
-                                {dataa?.fiber_type?.length > 0
-                                  ? dataa.fiber_type
-                                  : 'select'}
-                              </option>
-                              <option value={undefined} className="hidden">
-                                {dataa?.fiber_type?.length > 0
-                                  ? dataa.fiber_type
-                                  : 'select'}
-                              </option>
-                              <option value="NZ-DSF">NZ-DSF</option>
-                              <option value="DSF">DSF</option>
-                              <option value="SMF">SMF</option>
-                            </Select>
-                          </div>
-                        </div>
-                        <div className="flex flex-row gap-x-12">
-                          <IoTrashOutline
-                            onClick={() => deletecabledata(data.id, dataa.id)}
-                            size={24}
-                            className="cursor-pointer  text-red-500   active:text-red-300"
-                          />
-                          <span className="w-12" />
-                        </div>
-                      </div>
-
-                      <Addbox
-                        classname={
-                          'ml-[calc(5%-56px)]  h-[30px] xl:ml-[calc(6%-56px)]'
-                        }
-                        onclick={() => addcabledata(data.id, index)}
+                  <div className="flex flex-row items-center gap-x-12">
+                    <IoTrashOutline
+                      onClick={() => deletecable(data.id)}
+                      size={24}
+                      className="cursor-pointer  text-red-500 active:text-red-300"
+                    />
+                    {open[idd] ? (
+                      <IoChevronUp
+                        size={48}
+                        className="cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          if (open[idd]) {
+                            setOpen({...open, [idd]: false});
+                          } else {
+                            setOpen({...open, [idd]: true});
+                          }
+                        }}
                       />
+                    ) : (
+                      <IoChevronDown
+                        size={48}
+                        className="cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          if (open[idd]) {
+                            setOpen({...open, [idd]: false});
+                          } else {
+                            setOpen({...open, [idd]: true});
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+                {open[idd] ? (
+                  <Fragment>
+                    <div className="flex-grow-1 mt-8 flex flex-row justify-between ">
+                      <div className="flex w-full flex-row">
+                        <span className="w-1/5 text-center">Start (km)</span>
+                        <span className="w-1/5 text-center">Length (km)</span>
+                        <span className="w-1/5 text-center">Offset (km)</span>
+                        <span className="w-1/5 text-center">Loss</span>
+                        <span className="w-1/5 text-center">Fiber Type</span>
+                      </div>
+                      <div className="flex flex-row gap-x-12">
+                        <IoTrashOutline
+                          size={24}
+                          className="cursor-pointer  text-red-500 opacity-0 active:text-red-300"
+                        />
+                        <span className="w-12" />
+                      </div>
                     </div>
-                  ))}
-                </Fragment>
-              ) : null}
-            </div>
+                    {data?.segments?.map((dataa: any, index: number) => {
+                      let finddata = finddataindex(data.cableId);
+                      return (
+                        <div className="w-full" key={index}>
+                          <div
+                            className="flex-grow-1 flex flex-row justify-between "
+                            key={index}>
+                            <div className="flex w-full flex-row">
+                              <div className="flex w-1/5 justify-center">
+                                <TextInput
+                                  value={dataa.start}
+                                  onChange={e =>
+                                    setcableslicecabsegment(
+                                      data.id,
+                                      dataa.id,
+                                      e.target.value,
+                                      'start',
+                                    )
+                                  }
+                                  className="w-28"
+                                  type="number"
+                                />
+                              </div>
+                              <div className="flex w-1/5 justify-center">
+                                <TextInput
+                                  value={dataa.length}
+                                  onChange={
+                                    dataa.fixId
+                                      ? () => {}
+                                      : e =>
+                                          setcableslicecabsegment(
+                                            data.id,
+                                            dataa.id,
+                                            e.target.value,
+                                            'length',
+                                          )
+                                  }
+                                  className="w-28"
+                                  type="number"
+                                />
+                              </div>
+                              <div className="flex w-1/5 justify-center">
+                                <TextInput
+                                  value={dataa.offset}
+                                  onChange={e =>
+                                    setcableslicecabsegment(
+                                      data.id,
+                                      dataa.id,
+                                      e.target.value,
+                                      'offset',
+                                    )
+                                  }
+                                  className="w-28"
+                                  type="number"
+                                />
+                              </div>
+                              <div className="flex w-1/5 justify-center">
+                                <TextInput
+                                  value={dataa.loss}
+                                  onChange={e =>
+                                    setcableslicecabsegment(
+                                      data.id,
+                                      dataa.id,
+                                      e.target.value,
+                                      'loss',
+                                    )
+                                  }
+                                  className="w-28"
+                                  type="number"
+                                />
+                              </div>
 
-            <Addbox
-              classname={
-                'left-[-30px] top-[-5px] absolute z-50 w-[calc(75%+30px)] mt-[-19px]  h-[20px] '
-              }
-              onclick={() => addcable(index)}
-            />
-            {parentcabl.cables.length - 1 == index ? (
+                              <div className="flex w-1/5 justify-center">
+                                <Select
+                                  value={data.loss}
+                                  onChange={e =>
+                                    setcableslicecabsegment(
+                                      data.id,
+                                      dataa.id,
+                                      e.target.value,
+                                      'fiber_type',
+                                    )
+                                  }
+                                  className="w-28"
+                                  // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
+                                >
+                                  <option value="" className="hidden">
+                                    {dataa?.fiber_type?.length > 0
+                                      ? dataa.fiber_type
+                                      : 'select'}
+                                  </option>
+                                  <option value={undefined} className="hidden">
+                                    {dataa?.fiber_type?.length > 0
+                                      ? dataa.fiber_type
+                                      : 'select'}
+                                  </option>
+                                  <option value="NZ-DSF">NZ-DSF</option>
+                                  <option value="DSF">DSF</option>
+                                  <option value="SMF">SMF</option>
+                                </Select>
+                              </div>
+                            </div>
+                            <div className="flex flex-row gap-x-12">
+                              <IoTrashOutline
+                                onClick={() =>
+                                  deletecabledata(data.id, dataa.id)
+                                }
+                                size={24}
+                                className="cursor-pointer  text-red-500   active:text-red-300"
+                              />
+                              <span className="w-12" />
+                            </div>
+                          </div>
+
+                          <Addbox
+                            classname={
+                              'ml-[calc(5%-56px)]  h-[30px] xl:ml-[calc(6%-56px)]'
+                            }
+                            onclick={() => addcabledata(data.id, index)}
+                          />
+                        </div>
+                      );
+                    })}
+                  </Fragment>
+                ) : null}
+              </div>
+
               <Addbox
                 classname={
-                  'left-[-30px] bottom-[-25px] absolute z-50 w-[calc(75%+30px)] mt-[-19px]  h-[20px] '
+                  'left-[-30px] top-[-5px] absolute z-50 w-[calc(75%+30px)] mt-[-19px]  h-[20px] '
                 }
-                onclick={() => addcable(index + 1)}
+                onclick={() => addcable(idd)}
               />
-            ) : null}
-          </div>
-        ))}
+              {parentcabl.cables.length - 1 == idd ? (
+                <Addbox
+                  classname={
+                    'left-[-30px] bottom-[-25px] absolute z-50 w-[calc(75%+30px)] mt-[-19px]  h-[20px] '
+                  }
+                  onclick={() => addcable(idd + 1)}
+                />
+              ) : null}
+            </div>
+          );
+        })}
       </div>
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
-        {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN'  ? (
+        {userrole == 'superuser' ||
+        state?.detail?.data?.access?.access == 'ADMIN' ||
+        networkDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
         ) : null}
 
