@@ -100,13 +100,10 @@ const StationAccessPage = () => {
         user: value.user.username,
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
-      })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
-      for(let i=0;i<items.length;i++){
-        items[i].index=(i+1).toString()
-      }
+      }))
+      .sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
 
-
-    const sortddata = (tabname: string, sortalfabet: true) => {
+    const sortddata = (tabname: string, sortalfabet: boolean) => {
       if (sortalfabet) {
         items.sort(
           (a: any, b: any) =>
@@ -123,9 +120,7 @@ const StationAccessPage = () => {
           ),
         );
       }
-      for(let i=0;i<items.length;i++){
-        items[i].index=(i+1).toString()
-      }
+
       setItemssorted(items);
     };
 
@@ -168,16 +163,14 @@ const StationAccessPage = () => {
               items="start"
               className="h-full">
               <Table
+                dynamicColumns={['index']}
+                renderDynamicColumn={data => data.index}
                 tabicon={'User'}
-                onclicktitle={(tabname: string, sortalfabet: true) =>
+                onclicktitle={(tabname: string, sortalfabet: boolean) =>
                   sortddata(tabname, sortalfabet)
                 }
                 cols={columns}
-                items={
-                  itemssorted.length > 0
-                    ? itemssorted
-                    : items
-                }
+                items={itemssorted.length > 0 ? itemssorted : items}
                 containerClassName="w-3/5 mt-[-6px]"
               />
             </Description>
