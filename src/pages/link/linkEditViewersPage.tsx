@@ -25,6 +25,10 @@ const RegionAccessPage = () => {
     }),
     initialRequests: request => {
       request('linkAccessList', {params: {link_id: params.linkId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
