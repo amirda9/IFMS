@@ -186,7 +186,7 @@ const LinkDetailPage = () => {
 
   // ---------------------------------------------------------------
   return (
-    <div className="relative flex  w-full flex-col">
+    <div className="relative flex h-[calc(100vh-220px)]  w-full flex-col">
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
@@ -307,7 +307,7 @@ const LinkDetailPage = () => {
         {getPrettyDateTime(state?.detail?.data?.time_updated)}
       </Description>
 
-      <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end ">
+      <div className="absolute bottom-[-10px] right-0 mr-4 flex flex-row gap-x-4 self-end ">
         {userrole == 'superuser' ||
         state?.detail?.data?.access?.access == 'ADMIN' ||
         networkDetail?.data?.access?.access == 'ADMIN' ? (
