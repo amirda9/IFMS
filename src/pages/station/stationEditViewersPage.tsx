@@ -24,6 +24,10 @@ const RegionAccessPage = () => {
     }),
     initialRequests: request => {
       request('stationAccessList', {params: {station_id: params.stationId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
