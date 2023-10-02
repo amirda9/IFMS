@@ -27,6 +27,10 @@ const NetworkAccessPage = () => {
     }),
     initialRequests: request => {
       request('networkAccessList', {params: {network_id: params.networkId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
