@@ -192,16 +192,11 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     if (mount) {
       if (usertabselected != 'Index') {
         sortdusers(usertabselected, usertablesorte);
-        sortdveiwers(veiwertabselected, veiwertablesorte);
       }
     } else {
       if (usertabselected != 'Index') {
         setUserssorted(
           Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US')),
-        );
-
-        setWeiverssorted(
-          veiwers.filter(user => state.values.includes(user.id)),
         );
       }
     }
@@ -209,12 +204,28 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   }, [
     usertabselected,
     usertablesorte,
-    veiwertabselected,
-    veiwersssorted,
     change,
   ]);
 
+useEffect(()=>{
+  setUserssorted([]);
+  setWeiverssorted([]);
+  if (mount) {
+    if (veiwertabselected != 'Index') {
+      sortdveiwers(veiwertabselected, veiwertablesorte);
+    }
+  } else {
+    if (veiwertabselected != 'Index') {
+      setWeiverssorted(
+        veiwers.filter(user => state.values.includes(user.id)),
+      );
+    }
+  }
+  setmount(true);
+},[veiwertablesorte,veiwertabselected,change])
+
   const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
+console.log(veiwers,'veiwers');
 
   const sortdveiwers = (tabname: string, sortalfabet: boolean) => {
     if (tabname != 'Index') {
