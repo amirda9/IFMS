@@ -71,12 +71,13 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   >([]);
 
   const {
-    state: {users, groups},
+    state: {users, groups,Viewers},
     request,
   } = useHttpRequest({
     selector: state => ({
       users: state.http.userList,
       groups: state.http.groupList,
+      Viewers: state.http.regionAccessList,
     }),
     initialRequests: request => {
       request('userList', undefined);
@@ -225,7 +226,19 @@ useEffect(()=>{
 },[veiwertablesorte,veiwertabselected,change])
 
   const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
-console.log(veiwers,'veiwers');
+  console.log(veiwers,'veiwers1');
+  for (let i=0;i<veiwers.length;i++){
+    const findusers=Viewers?.data?.users?.findIndex(data =>data.user.id == veiwers[i].id);
+    console.log(Viewers?.data?.users[findusers],'😘');
+    
+  if(Viewers?.data?.users[findusers].access == "ADMIN"){
+    console.log(veiwers[i].id,'id');
+    
+  veiwers.splice(i,1)
+  }
+  }
+console.log(veiwers,'veiwers2');
+console.log(Viewers,'Viewersuu');
 
   const sortdveiwers = (tabname: string, sortalfabet: boolean) => {
     if (tabname != 'Index') {
@@ -249,20 +262,7 @@ console.log(veiwers,'veiwers');
     }
   };
 
-  // useEffect(() => {
 
-  //   if(mount){
-  //     if(veiwertabselected != "index"){
-  //     sortdveiwers(veiwertabselected,veiwertablesorte)
-  //     }
-  //   }else{
-  //     if(veiwertabselected != "index"){
-  //     setWeiverssorted(veiwers.filter(user => state.values.includes(user.id)));
-
-  //     }
-  //   }
-  //   setmount(true)
-  // }, [veiwertabselected,veiwertablesorte,change]);
 
   return (
     <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">
