@@ -226,14 +226,12 @@ useEffect(()=>{
 },[veiwertablesorte,veiwertabselected,change])
 
   const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
-  console.log(veiwers,'veiwers1');
+
   for (let i=0;i<veiwers.length;i++){
-    const findusers=Viewers?.data?.users?.findIndex(data =>data.user.id == veiwers[i].id);
-    console.log(Viewers?.data?.users[findusers],'😘');
+    const findusers=Viewers?.data?.users?.findIndex(data =>data.user.id == veiwers[i].id) || 0;
     
-  if(Viewers?.data?.users[findusers].access == "ADMIN"){
+  if(Viewers?.data?.users[findusers]?.access == "ADMIN"){
     console.log(veiwers[i].id,'id');
-    
   veiwers.splice(i,1)
   }
   }
