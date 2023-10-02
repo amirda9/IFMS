@@ -20,6 +20,7 @@ type StateType = {
   selectLeft: string[];
   selectRight: string[];
   group: boolean;
+  Adminid:string
 };
 const columns = {
   select: {label: '', size: 'w-[6%]'},
@@ -39,6 +40,7 @@ export type EditorRefType = {
   setValues: (values: string[]) => void;
   group: boolean;
   setGroup: (isGroup: boolean) => void;
+  setAdminid:(values:string) => void;
 };
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   const [state, setState] = useState<StateType>({
@@ -46,7 +48,10 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     selectLeft: [],
     selectRight: [],
     group: false,
+    Adminid:""
   });
+
+  
   const [mount, setmount] = useState(false);
   const [usertabselected, setUsertabselected] = useState('User');
   const [veiwertabselected, setVeiwertabselected] = useState('User');
@@ -70,27 +75,19 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     }[]
   >([]);
 
-  const {
-    state: {users, groups,Viewers},
-    request,
-  } = useHttpRequest({
-    selector: state => ({
-      users: state.http.userList,
-      groups: state.http.groupList,
-      Viewers: state.http.regionAccessList,
-    }),
-    initialRequests: request => {
-      request('userList', undefined);
-    },
-  });
+ 
 
   useImperativeHandle(
     ref,
     () => ({
       values: state.values,
       group: state.group,
+      
       setValues: (values: string[]) => {
         setState({...state, values});
+      },
+      setAdminid:(values: string)=>{
+        setState({...state, Adminid:values});
       },
       setGroup: (isGroup: boolean) => {
         if (isGroup && !groups?.data) {
@@ -99,7 +96,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
         setState({...state, group: isGroup});
       },
     }),
-    [state.values, state.group],
+    [state.values, state.group,state.Adminid],
   );
 
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
@@ -139,7 +136,18 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   // const admin = groups?.data?.find(
   //   value => value.access === AccessEnum.admin,
   // );
-
+  const {
+    state: {users, groups},
+    request,
+  } = useHttpRequest({
+    selector: state => ({
+      users: state.http.userList,
+      groups: state.http.groupList,
+    }),
+    initialRequests: request => {
+      request('userList', undefined);
+    },
+  });
   const userList =
     users?.data?.map(user => ({
       user: user.username,
@@ -147,6 +155,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       station: user.station?.name || '-',
       id: user.id,
     })) || [];
+
 
   const group1 = groups?.data;
 
@@ -187,6 +196,41 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     }
   };
 
+
+
+  const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
+
+  for (let i=0;i<veiwers.length;i++){
+    // const findusers=state.Viewers?.findIndex(data =>data.user.id == veiwers[i].id);
+    
+  if(veiwers[i].id == state.Adminid){
+  veiwers.splice(i,1)
+  }
+  }
+
+
+  const sortdveiwers = (tabname: string, sortalfabet: boolean) => {
+    if (tabname != 'Index') {
+      if (sortalfabet) {
+        veiwers.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        veiwers.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setWeiverssorted(veiwers);
+    }
+  };
+
   useEffect(() => {
     setUserssorted([]);
     setWeiverssorted([]);
@@ -224,43 +268,6 @@ useEffect(()=>{
   }
   setmount(true);
 },[veiwertablesorte,veiwertabselected,change])
-
-  const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
-
-  for (let i=0;i<veiwers.length;i++){
-    const findusers=Viewers?.data?.users?.findIndex(data =>data.user.id == veiwers[i].id) || 0;
-    
-  if(Viewers?.data?.users[findusers]?.access == "ADMIN"){
-    console.log(veiwers[i].id,'id');
-  veiwers.splice(i,1)
-  }
-  }
-console.log(veiwers,'veiwers2');
-console.log(Viewers,'Viewersuu');
-
-  const sortdveiwers = (tabname: string, sortalfabet: boolean) => {
-    if (tabname != 'Index') {
-      if (sortalfabet) {
-        veiwers.sort(
-          (a: any, b: any) =>
-            -a[tabname.toLocaleLowerCase()].localeCompare(
-              b[tabname.toLocaleLowerCase()],
-              'en-US',
-            ),
-        );
-      } else {
-        veiwers.sort((a: any, b: any) =>
-          a[tabname.toLocaleLowerCase()].localeCompare(
-            b[tabname.toLocaleLowerCase()],
-            'en-US',
-          ),
-        );
-      }
-      setWeiverssorted(veiwers);
-    }
-  };
-
-
 
   return (
     <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">

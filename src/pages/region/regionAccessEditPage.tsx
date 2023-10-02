@@ -6,12 +6,12 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-import {setregionviewers} from './../../store/slices/networkslice'
+import {setregionviewers} from './../../store/slices/networkslice';
 import {useDispatch, useSelector} from 'react-redux';
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
   const {regionDetail} = useSelector((state: any) => state.http);
-  console.log(regionDetail?.data?.access, 'fffrrtttt');
+
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{regionId: string}>();
   const navigate = useNavigate();
@@ -25,6 +25,10 @@ const RegionAccessPage = () => {
     }),
     initialRequests: request => {
       request('regionAccessList', {params: {region_id: params.regionId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
@@ -45,14 +49,11 @@ const RegionAccessPage = () => {
     },
   });
 
-console.log(viewers,'viewers');
-console.log(update,'update');
 
 
   const buttons = (
     <>
-  
-        {/* {regionDetail?.data?.access == 'ADMIN' ? ( */}
+      {/* {regionDetail?.data?.access == 'ADMIN' ? ( */}
       <SimpleBtn
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
@@ -69,10 +70,8 @@ console.log(update,'update');
           }
 
           const users = viewerList.map(value => value);
-          dispatch(setregionviewers(users)) 
-          navigate(-1)
-
-
+          dispatch(setregionviewers(users));
+          navigate(-1);
 
           // request('regionAccessUpdate', {
           //   params: {region_id: params.regionId!},
@@ -82,9 +81,7 @@ console.log(update,'update');
         OK
       </SimpleBtn>
       {/* ):null} */}
-      <SimpleBtn onClick={()=>navigate(-1)}>
-        Cancel
-      </SimpleBtn>
+      <SimpleBtn onClick={() => navigate(-1)}>Cancel</SimpleBtn>
     </>
   );
 
