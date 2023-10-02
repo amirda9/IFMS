@@ -93,7 +93,7 @@ const NetworkAccessPage = () => {
   );
 
   return (
-    <FormLayout buttons={buttons} wrapperClassName="p-8 h-[calc(100vh-110px)]">
+    <FormLayout buttons={buttons} wrapperClassName="p-8 h-[calc(100vh-120px)]">
       <div className="mb-4 flex flex-row items-center">
         <span>Users</span>
         <Switch
