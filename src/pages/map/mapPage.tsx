@@ -79,6 +79,10 @@ const MapPage = () => {
   const [yellowalarms, setyellowallarms] = useState(false);
   const [orangealarms, setorangeallarms] = useState(false);
   const [redalarms, setredallarms] = useState(false);
+  const [regionname,setRegionname]=useState("")
+  const [selectboxregions, setSelectboxregions] = useState<
+    {value: string; label: string}[]
+  >([]);
   // console.log(mousePosition,'mousePositionmousePosition');
   const {state, request} = useHttpRequest({
     selector: state => ({
@@ -102,8 +106,24 @@ const MapPage = () => {
     // },
   });
 
-  console.log(state?.detail?.data, 'detaildetail');
+  console.log(state?.detail?.data?.regions, 'detaildetail');
   const Stations = state?.detail?.data?.stations;
+  const Regions = state?.detail?.data?.regions || [];
+  useEffect(() => {
+    setSelectboxregions([]);
+    for (let i = 0; i < Regions.length || 0; i++) {
+      setSelectboxregions(prev => [
+        ...prev,
+        {
+          value: state!.detail!.data!.regions[i].id,
+          label: state!.detail!.data!.regions[i].name,
+        },
+      ]);
+    }
+  }, []);
+
+  console.log(selectboxregions, 'selectboxregions');
+
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
       setMousePosition({x: ev.clientX, y: ev.pageY});
@@ -144,6 +164,8 @@ const MapPage = () => {
     );
   };
 
+  console.log(regionname,'regionnameregionname');
+  
   return (
     <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
       {showlinktoolkit ? <Linktooltip /> : null}
@@ -185,8 +207,8 @@ const MapPage = () => {
                   Region
                 </span>
                 <Selectbox
-                  onclickItem={() => console.log('gghjgh')}
-                  options={options}
+                  onclickItem={(e:{value:string,label:string}) => {setRegionname(e.label)}}
+                  options={selectboxregions}
                   borderColor={'black'}
                   classname={
                     'w-[219px] mr-[9px] bg-[#B3BDF2] h-[40px] rounded-[8px]'
@@ -194,6 +216,7 @@ const MapPage = () => {
                 />
               </div>
             ) : null}
+
             <div className="mb-8 flex w-full flex-row items-center">
               <img src={serverIcon} className="ml-[3px] h-6 w-6" />
 
@@ -214,6 +237,7 @@ const MapPage = () => {
                 </>
               ) : null}
             </div>
+
             <div className="mb-6 flex w-full flex-row items-center">
               <img src={noYellow} className="h-7 w-7" />
 
@@ -572,6 +596,8 @@ const MapPage = () => {
           </Polyline>
         </MapContainer>
       </div>
+
+      <div className='absolute bottom-2 text-[20px] left-16 z-[500] text-[#006BBC] font-bold'>{regionname}</div>
     </div>
   );
 };
