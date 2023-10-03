@@ -3,8 +3,10 @@ import Selectbox from './../../components/selectbox/selectbox';
 import Checkbox from './../../components/checkbox/checkbox';
 import RightbarStation from './../../components/mapcomponents/rightbarStation';
 import RightbarLink from './../../components/mapcomponents/rightbarLink';
+import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
 import {useMapEvents} from 'react-leaflet';
-
+import Cookies from 'js-cookie';
+import {networkExplored} from '~/constant';
 import {
   MapContainer,
   Marker,
@@ -68,6 +70,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
 // ------------- main --------------------------- main ----------------------- main -------------------- main ----------
 
 const MapPage = () => {
+  const networkId = Cookies.get(networkExplored);
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [fullscreen, setfullscreen] = useState(false);
   const [showlinktoolkit,setShowlinltoolkit]=useState(false)
@@ -77,8 +80,31 @@ const MapPage = () => {
   const [yellowalarms, setyellowallarms] = useState(false);
   const [orangealarms, setorangeallarms] = useState(false);
   const [redalarms, setredallarms] = useState(false);
-  console.log(mousePosition,'mousePositionmousePosition');
-  
+  // console.log(mousePosition,'mousePositionmousePosition');
+  const {state, request} = useHttpRequest({
+    selector: state => ({
+      detail: state.http.mapDetail,
+      // stations: state.http.allStations,
+      // update:state.http.linkupdatecables
+    }),
+    initialRequests: request => {
+      request('mapDetail', {params: {network_id:networkId!}});
+      // if (networkId) {
+      //   request('allStations', undefined);
+      // }
+    },
+    // onUpdate: (lastState, state) => {
+    //   if (
+    //     lastState.update?.httpRequestStatus === 'loading' &&
+    //     state.update!.httpRequestStatus === 'success'
+    //   ) {
+    //     request('linkDetail', {params: {link_id: params.linkId!}});
+    //   }
+    // },
+  });
+
+    console.log(state?.detail?.data?.stations,'detaildetail');
+    const Stations=state?.detail?.data?.stations;
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
       setMousePosition({x: ev.clientX, y: ev.pageY});
@@ -288,7 +314,9 @@ const MapPage = () => {
             />
           )}
 
-          <Marker
+{Stations?.map((data,index)=>
+  <Marker
+  key={index}
             eventHandlers={{
               click: e => {
                 setRightbarState('station');
@@ -300,80 +328,36 @@ const MapPage = () => {
               //   console.log(e.target.options.data); // will print 'FooBar' in console
               // },
             }}
-            position={[51.505, -0.09]}
+            position={[data.latitude,data.longitude]}
             icon={MapServerIcon}>
             <Tooltip
               opacity={1}
               className="h-[150px] w-[215px]"
               direction="top"
               offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
+              <div className="z-1000 absolute py-2 right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
+                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
+                {data.name}
                 </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
+                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
+                Region: Region1
                 </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
+                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
+                Latitude:{data.latitude}
                 </span>
-              </div>
-            </Tooltip>
-          </Marker>
-          <Marker
-            eventHandlers={{
-              click: e => {
-                setRightbarState('station');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-            }}
-            position={[51.517, -0.01]}
-            icon={MapServerIcon}>
-            <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
+                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
+                Longitude:{data.longitude}
                 </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
+                <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
+                RTU(s):{data.RTUs.length}
                 </span>
               </div>
             </Tooltip>
           </Marker>
-          <Marker
-            eventHandlers={{
-              click: e => {
-                setRightbarState('station');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-            }}
-            position={[51.519, -0.025]}
-            icon={MapServerIcon}>
-            <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-              </div>
-            </Tooltip>
-          </Marker>
+)}
+          
+      
+       
 
           {yellowalarms ? (
             <>

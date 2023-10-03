@@ -65,5 +65,8 @@ export const URLS = {
       updatecableandduct:'/otdr/link/{link_id}/cables_and_ducts',
       Addadmin:'/otdr/link/{link_id}/access/admin'
     },
+    map:{
+      single:'/otdr/map/{network_id}'
+    }
   },
 };
