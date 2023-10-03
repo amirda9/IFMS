@@ -1,10 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-type veiwerlists={
-    payload:string[];
-    type: string;
-}
-
+type veiwerlists = {
+  payload: string[];
+  type: string;
+};
+type linkpoints = {
+  payload: {latitude: number; longitude: number}[];
+  type: string;
+};
 const initialState = {
   type: 'Cable',
   networkviewers: [],
@@ -13,7 +16,6 @@ const initialState = {
   linkviewers: [],
 } as any;
 
-
 const changetyperstate = createSlice({
   name: 'type',
   initialState,
@@ -21,16 +23,16 @@ const changetyperstate = createSlice({
     settypestate: (state, action) => {
       state.type = action.payload;
     },
-    setnetworkviewers: (state, action:veiwerlists) => {
+    setnetworkviewers: (state, action: veiwerlists) => {
       state.networkviewers = action.payload;
     },
-    setregionviewers: (state, action:veiwerlists) => {
+    setregionviewers: (state, action: veiwerlists) => {
       state.regionviewers = action.payload;
     },
-    setstationviewers: (state, action:veiwerlists) => {
+    setstationviewers: (state, action: veiwerlists) => {
       state.stationviewers = action.payload;
     },
-    setlinkviewers: (state, action:veiwerlists) => {
+    setlinkviewers: (state, action: veiwerlists) => {
       state.linkviewers = action.payload;
     },
   },

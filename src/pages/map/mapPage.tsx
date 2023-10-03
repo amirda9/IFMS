@@ -106,7 +106,7 @@ const MapPage = () => {
     // },
   });
 
-  console.log(state?.detail?.data?.regions, 'detaildetail');
+  console.log(state?.detail?.data, 'detaildetail');
   const Stations = state?.detail?.data?.stations;
   const Regions = state?.detail?.data?.regions || [];
   useEffect(() => {
