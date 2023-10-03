@@ -66,16 +66,15 @@ function ZoomComponent({fullscreen}: fullscreen) {
   );
 }
 
-
 // ------------- main --------------------------- main ----------------------- main -------------------- main ----------
 
 const MapPage = () => {
   const networkId = Cookies.get(networkExplored);
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [fullscreen, setfullscreen] = useState(false);
-  const [showlinktoolkit,setShowlinltoolkit]=useState(false)
+  const [showlinktoolkit, setShowlinltoolkit] = useState(false);
   const [leftbarstate, setLeftbarstate] = useState(false);
-  const [switchstatus, setSwitchstatus] = useState(false);
+  const [switchstatus, setSwitchstatus] = useState(true);
   const [rightbarstate, setRightbarState] = useState('');
   const [yellowalarms, setyellowallarms] = useState(false);
   const [orangealarms, setorangeallarms] = useState(false);
@@ -88,7 +87,7 @@ const MapPage = () => {
       // update:state.http.linkupdatecables
     }),
     initialRequests: request => {
-      request('mapDetail', {params: {network_id:networkId!}});
+      request('mapDetail', {params: {network_id: networkId!}});
       // if (networkId) {
       //   request('allStations', undefined);
       // }
@@ -103,8 +102,8 @@ const MapPage = () => {
     // },
   });
 
-    console.log(state?.detail?.data?.stations,'detaildetail');
-    const Stations=state?.detail?.data?.stations;
+  console.log(state?.detail?.data, 'detaildetail');
+  const Stations = state?.detail?.data?.stations;
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
       setMousePosition({x: ev.clientX, y: ev.pageY});
@@ -124,32 +123,30 @@ const MapPage = () => {
     });
     return null;
   };
-  const Linktooltip=()=>{
-    return(
-      <div   style={{
-        top: `${ mousePosition.y - 245}px`,
-        left:`${mousePosition.x - 100}px`
-      }} className={`z-[1000] absolute   h-[160px] w-[220px] flex-col bg-[#E7EFF7]`}>
-      <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-        dfwd
-      </span>
-      <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-        dfwd
-      </span>
-      <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-        dfwd
-      </span>
-    </div>
-    )
-  }
+  const Linktooltip = () => {
+    return (
+      <div
+        style={{
+          top: `${mousePosition.y - 245}px`,
+          left: `${mousePosition.x - 100}px`,
+        }}
+        className={`absolute z-[1000]   h-[160px] w-[220px] flex-col bg-[#E7EFF7]`}>
+        <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+          dfwd
+        </span>
+        <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+          dfwd
+        </span>
+        <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+          dfwd
+        </span>
+      </div>
+    );
+  };
 
   return (
     <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
-  {showlinktoolkit?
-  <Linktooltip />
-  :null
-
-  }
+      {showlinktoolkit ? <Linktooltip /> : null}
 
       <div
         className={`relative w-full  ${
@@ -314,50 +311,53 @@ const MapPage = () => {
             />
           )}
 
-{Stations?.map((data,index)=>
-  <Marker
-  key={index}
-            eventHandlers={{
-              click: e => {
-                setRightbarState('station');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
+          {switchstatus ? (
+            <>
+              {Stations?.map((data, index) => (
+                <Marker
+                  key={index}
+                  eventHandlers={{
+                    click: e => {
+                      setRightbarState('station');
+                      console.log(e.target.options.data); // will print 'FooBar' in console
+                    },
 
-              // mouseout: e => {
-              //   setRightbarState('');
-              //   console.log(e.target.options.data); // will print 'FooBar' in console
-              // },
-            }}
-            position={[data.latitude,data.longitude]}
-            icon={MapServerIcon}>
-            <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute py-2 right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
-                {data.name}
-                </span>
-                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
-                Region: Region1
-                </span>
-                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
-                Latitude:{data.latitude}
-                </span>
-                <span className="ml-[8px] mb-[6px] text-[18px] font-light leading-[25.2px] text-[black]">
-                Longitude:{data.longitude}
-                </span>
-                <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
-                RTU(s):{data.RTUs.length}
-                </span>
-              </div>
-            </Tooltip>
-          </Marker>
-)}
-          
-      
-       
+                    // mouseout: e => {
+                    //   setRightbarState('');
+                    //   console.log(e.target.options.data); // will print 'FooBar' in console
+                    // },
+                  }}
+                  position={[data.latitude, data.longitude]}
+                  icon={MapServerIcon}>
+                  <Tooltip
+                    opacity={1}
+                    className="h-[150px] w-[215px]"
+                    direction="top"
+                    offset={[0, -25]}>
+                    <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                        {data.name}
+                      </span>
+                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                        Region: Region1
+                      </span>
+                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                        Latitude:{data.latitude}
+                      </span>
+                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                        Longitude:{data.longitude}
+                      </span>
+                      <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
+                        RTU(s):{data.RTUs.length}
+                      </span>
+                    </div>
+                  </Tooltip>
+                </Marker>
+              ))}
+            </>
+          ) : (
+            <>{state?.detail?.data?.regions.map(() => <div></div>)}</>
+          )}
 
           {yellowalarms ? (
             <>
@@ -462,11 +462,11 @@ const MapPage = () => {
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
               mouseover: e => {
-                setShowlinltoolkit(true)
+                setShowlinltoolkit(true);
                 // alert('dfdfd');
               },
               mouseout: e => {
-                setShowlinltoolkit(false)
+                setShowlinltoolkit(false);
                 // alert('dfdfd');
               },
             }}
@@ -501,11 +501,11 @@ const MapPage = () => {
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
               mouseover: e => {
-                setShowlinltoolkit(true)
+                setShowlinltoolkit(true);
                 // alert('dfdfd');
               },
               mouseout: e => {
-                setShowlinltoolkit(false)
+                setShowlinltoolkit(false);
                 // alert('dfdfd');
               },
             }}
@@ -539,11 +539,11 @@ const MapPage = () => {
                 console.log(e.target.options.data); // will print 'FooBar' in console
               },
               mouseover: e => {
-                setShowlinltoolkit(true)
+                setShowlinltoolkit(true);
                 // alert('dfdfd');
               },
               mouseout: e => {
-                setShowlinltoolkit(false)
+                setShowlinltoolkit(false);
                 // alert('dfdfd');
               },
             }}
