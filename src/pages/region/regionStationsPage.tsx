@@ -15,6 +15,7 @@ const columns = {
 
 const RegionStationsPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const {newregionstationlist} = useSelector((state: any) => state.network);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -39,18 +40,30 @@ const RegionStationsPage = () => {
     getrole();
   }, []);
   const params = useParams<{regionId: string}>();
-  const {state} = useHttpRequest({
-    selector: state => ({list: state.http.regionStationList}),
+  const {state, request} = useHttpRequest({
+    selector: state => ({
+      list: state.http.regionStationList,
+      update: state.http.updateregionStationList,
+    }),
     initialRequests: request => {
       request('regionStationList', {params: {region_id: params.regionId!}});
     },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        request('regionStationList', {params: {region_id: params.regionId!}});
+      }
+    },
   });
 
-  const dataa = state.list?.data?.map(station => ({
-       name: station.name,
+  const dataa =
+    state.list?.data?.map(station => ({
+      name: station.name,
       latitude: station.longitude,
-     longitude:station.latitude,
-    })) || []
+      longitude: station.latitude,
+    })) || [];
 
   useEffect(() => {
     setItemssorted(dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
@@ -91,6 +104,17 @@ const RegionStationsPage = () => {
     setItemssorted(dataa);
   };
 
+  const save = () => {
+    let first = state?.list?.data || [];
+    if (first.length == 0 && newregionstationlist?.length == 0) {
+    } else {
+      request('updateregionStationList', {
+        params: {region_id: params.regionId!},
+        data: {stations_id: newregionstationlist},
+      });
+    }
+  };
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
@@ -110,14 +134,14 @@ const RegionStationsPage = () => {
         {userrole == 'superuser' ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
-          <SimpleBtn link to="/stations">
+          <SimpleBtn link to="../edit-stationlist">
             Edit Stations List
           </SimpleBtn>
         ) : null}
         {userrole == 'superuser' ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
-          <SimpleBtn>Save</SimpleBtn>
+          <SimpleBtn onClick={save}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

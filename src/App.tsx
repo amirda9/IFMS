@@ -50,7 +50,10 @@ function App() {
             path="/regions/:regionId/edit-access"
             Component={pages.RegionAccessEditPage}
           />
-
+          <Route
+            path="/regions/:regionId/edit-stationlist"
+            Component={pages.RegionstationlisteditPage}
+          />
           <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>

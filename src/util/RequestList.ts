@@ -48,6 +48,7 @@ type RequestKeys =
   | 'regionAccessList'
   | 'regionAccessUpdate'
   | 'regionStationList'
+  | 'updateregionStationList'
   | 'allLinks'
   | 'regionLinkList'
   | 'regionAdminUpdate'
@@ -241,6 +242,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   regionStationList: {
     url: api.BASE_URL + api.URLS.otdr.station.listInRegion,
     method: 'get',
+    auth: true,
+  },
+  updateregionStationList: {
+    url: api.BASE_URL + api.URLS.otdr.region.updateregionStationList,
+    method: 'put',
     auth: true,
   },
   networkUpdateAdmin: {
@@ -478,7 +484,6 @@ export type RequestListTypes = {
   };
   deleteShapefile: {
     params: {shapefile_id: string};
-
   };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
@@ -503,11 +508,10 @@ export type RequestListTypes = {
       network_id: string;
       source_id: string;
       destination_id: string;
-      link_points: 
-        {
-          latitude: number;
-          longitude: number;
-        }[];
+      link_points: {
+        latitude: number;
+        longitude: number;
+      }[];
       // region_id: string;
       description: string;
       type: string;
@@ -520,67 +524,72 @@ export type RequestListTypes = {
   linkAccessList: {
     params: {link_id: string};
   };
-  linkAddadmin:{
+  linkAddadmin: {
     params: {link_id: string};
-    data:{
-      user_id:string
-    }
-  }
+    data: {
+      user_id: string;
+    };
+  };
   linkDelete: {params: {link_id: string}};
   linkDetail: {params: {link_id: string}};
 
   linkUpdate: {
     params: {link_id: string};
     data: {
-      name:string;
+      name: string;
       description: string;
-      link_points:
-        {
-          latitude: number;
-          longitude: number;
-        }[],
-      
+      link_points: {
+        latitude: number;
+        longitude: number;
+      }[];
+
       source_id: string;
       destination_id: string;
       type: string;
     };
   };
-  linkupdatecables: {data: {
-    cables: {
-      id: number;
-      cableId: string;
-      number_of_cores: number;
-      segments: [
-        {
-          id: number;
-          start: number;
-          length: number;
-          offset: number;
-          loss: number;
-          fiber_type: string;
-        },
-      ];
-    }[] | [];
-    ducts: {
-          id: string;
-          mini_ducts: [
-            {
-              id: string;
-              number_of_fibers: number;
-            },
-          ];
-          segments: [
-            {
-              start: number;
-              length: number;
-              offset: number;
-              loss: number;
-              fiber_type: string;
-            },
-          ];
-        }[]
-      | [];
-  }; params: {link_id: string}};
+  linkupdatecables: {
+    data: {
+      cables:
+        | {
+            id: number;
+            cableId: string;
+            number_of_cores: number;
+            segments: [
+              {
+                id: number;
+                start: number;
+                length: number;
+                offset: number;
+                loss: number;
+                fiber_type: string;
+              },
+            ];
+          }[]
+        | [];
+      ducts:
+        | {
+            id: string;
+            mini_ducts: [
+              {
+                id: string;
+                number_of_fibers: number;
+              },
+            ];
+            segments: [
+              {
+                start: number;
+                length: number;
+                offset: number;
+                loss: number;
+                fiber_type: string;
+              },
+            ];
+          }[]
+        | [];
+    };
+    params: {link_id: string};
+  };
 
   regionDetail: {params: {region_id: string}};
   regionUpdate: {params: {region_id: string}; data: {description: string}};
@@ -590,6 +599,12 @@ export type RequestListTypes = {
     data: {users: string[]};
   };
   regionStationList: {params: {region_id: string}};
+  updateregionStationList: {
+    params: {region_id: string};
+    data: {
+      stations_id: string[];
+    };
+  };
 
   mapDetail: {params: {network_id: string}};
 
@@ -597,14 +612,14 @@ export type RequestListTypes = {
   allLinks: undefined;
   regionLinkList: {params: {region_id: string}};
   regionAdminUpdate: {params: {region_id: string}; data: {user_id: string}};
-  allStations:undefined;
-  networkstations:{params: {network_id: string}};
+  allStations: undefined;
+  networkstations: {params: {network_id: string}};
   stationCreate: {data: T.StationCreateType};
   stationDetail: {params: {station_id: string}};
   stationUpdate: {
     params: {station_id: string};
     data: {
-      name:string;
+      name: string;
       model: string;
       longitude: number;
       latitude: number;
@@ -628,12 +643,12 @@ export type RequestListTypes = {
     params: {station_id: string};
     data: {users: string};
   };
-  stationAddadmin:{
+  stationAddadmin: {
     params: {station_id: string};
-    data:{
-      user_id:string
-    }
-  }
+    data: {
+      user_id: string;
+    };
+  };
   stationAdminUpdate: {
     params: {station_id: string};
     data: {user_id: string};
@@ -733,7 +748,7 @@ export type ResponseListType = {
   networkUpdate: T.NetworkType;
   networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
-  deleteShapefile:string;
+  deleteShapefile: string;
   groupList: T.GroupType[];
   groupDetail: T.GroupDetailType;
   createGroup: string | null;
@@ -745,8 +760,8 @@ export type ResponseListType = {
   linkCreate: T.LinkCreateType;
   regionDetail: T.RegionType;
   linkDetail: T.LinksType;
-  linkUpdate:T.LinksType;
-  linkupdatecables:string;
+  linkUpdate: T.LinksType;
+  linkupdatecables: string;
   linkAccessList: {users: T.AccessListType[]};
   linkAddadmin: string;
   linkAccessUpdate: {count: number};
@@ -755,6 +770,7 @@ export type ResponseListType = {
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};
   regionStationList: T.regionstationlist[];
+  updateregionStationList: T.regionstationlist[];
   networkUpdateAdmin: string;
   allLinks: T.LinksType[];
   regionLinkList: T.regiolinklist[];
