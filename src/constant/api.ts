@@ -44,6 +44,7 @@ export const URLS = {
       adminAccess: '/otdr/region/{region_id}/access/admin',
       listInRegion: '/otdr/region/{region_id}/links',
       updateregionStationList:'/otdr/region/{region_id}/update_stations',
+      updateregionLinkList:'/otdr/region/{region_id}/update_links',
     },
     station: {
       all: '/otdr/station',

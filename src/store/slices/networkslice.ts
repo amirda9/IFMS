@@ -14,7 +14,8 @@ const initialState = {
   regionviewers: [],
   stationviewers: [],
   linkviewers: [],
-  newregionstationlist:[]
+  newregionstationlist:[],
+  newregionlinklist:[],
 } as any;
 
 const changetyperstate = createSlice({
@@ -39,6 +40,9 @@ const changetyperstate = createSlice({
     setnewregionstationlist: (state, action: veiwerlists) => {
       state.newregionstationlist = action.payload;
     },
+    setnewregionlinklist: (state, action: veiwerlists) => {
+      state.newregionlinklist = action.payload;
+    },
   },
 });
 
@@ -48,7 +52,8 @@ export const {
   setregionviewers,
   setstationviewers,
   setlinkviewers,
-  setnewregionstationlist
+  setnewregionstationlist,
+  setnewregionlinklist
 } = changetyperstate.actions;
 
 export default changetyperstate.reducer;

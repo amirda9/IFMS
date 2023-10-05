@@ -8,3 +8,11 @@ export type LinkType = {
   time_updated: string;
   region_id: string;
 };
+
+
+export type regionlinklist = {
+  id: string,
+    name: string,
+    source: string,
+    destination: string
+};

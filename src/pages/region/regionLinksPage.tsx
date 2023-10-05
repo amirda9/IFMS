@@ -16,6 +16,7 @@ const columns = {
 
 const RegionLinksPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const {newregionlinklist} = useSelector((state: any) => state.network);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -41,7 +42,7 @@ const RegionLinksPage = () => {
   }, []);
   const params = useParams<{regionId: string}>();
   const {
-    state: {list},
+    state: {list},request
   } = useHttpRequest({
     selector: state => ({list: state.http.regionLinkList}),
     initialRequests: request => {
@@ -81,6 +82,17 @@ const RegionLinksPage = () => {
     }
     setItemssorted(items);
   };
+
+  const save=()=>{
+    let first =list?.data || [];
+    if (first.length == 0 && newregionlinklist?.length == 0) {
+    } else {
+      request('updateregionLinkList', {
+        params: {region_id: params.regionId!},
+        data: {links_id: newregionlinklist || []},
+      });
+    }
+  }
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
@@ -101,14 +113,14 @@ const RegionLinksPage = () => {
         {userrole == 'superuser' ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
-          <SimpleBtn link to="/links">
+          <SimpleBtn link to="../edit-linklist">
             Edit Links List
           </SimpleBtn>
         ) : null}
         {userrole == 'superuser' ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
-          <SimpleBtn>Save</SimpleBtn>
+          <SimpleBtn onClick={save}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
