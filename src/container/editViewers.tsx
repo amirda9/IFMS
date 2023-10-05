@@ -232,20 +232,11 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   };
 
   useEffect(() => {
-    setUserssorted([]);
-    setWeiverssorted([]);
     if (mount) {
       if (usertabselected != 'Index') {
         sortdusers(usertabselected, usertablesorte);
       }
-    } else {
-      if (usertabselected != 'Index') {
-        setUserssorted(
-          Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US')),
-        );
-      }
-    }
-    setmount(true);
+    } 
   }, [
     usertabselected,
     usertablesorte,
@@ -253,19 +244,11 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   ]);
 
 useEffect(()=>{
-  setUserssorted([]);
-  setWeiverssorted([]);
   if (mount) {
     if (veiwertabselected != 'Index') {
       sortdveiwers(veiwertabselected, veiwertablesorte);
     }
-  } else {
-    if (veiwertabselected != 'Index') {
-      setWeiverssorted(
-        veiwers.filter(user => state.values.includes(user.id)),
-      );
-    }
-  }
+  } 
   setmount(true);
 },[veiwertablesorte,veiwertabselected,change])
 
@@ -300,7 +283,7 @@ useEffect(()=>{
             setUsertabselected(tabname), setUsertablesort(sortalfabet);
           }}
           cols={columns}
-          items={usersssorted.length > 0 ? usersssorted : Users}
+          items={usersssorted.length > 0 ? usersssorted : Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US'))}
           containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
           dynamicColumns={['select', 'index']}
           renderDynamicColumn={renderDynamicColumn('left')}
