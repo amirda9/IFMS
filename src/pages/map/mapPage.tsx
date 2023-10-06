@@ -4,6 +4,9 @@ import Checkbox from './../../components/checkbox/checkbox';
 import RightbarStation from './../../components/mapcomponents/rightbarStation';
 import RightbarLink from './../../components/mapcomponents/rightbarLink';
 import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
+import yellowicon from '~/assets/icons/noYellow.png';
+import redicon from '~/assets/icons/noRed.png';
+import orangeicon from '~/assets/icons/noOrange.png';
 import {useMapEvents} from 'react-leaflet';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
@@ -16,7 +19,13 @@ import {
   useMap,
   Tooltip,
 } from 'react-leaflet';
-import {MapServerIcon, NoRed, NoYellow, NoOrange} from '~/components';
+import {
+  MapServerIcon,
+  NoRed,
+  NoYellow,
+  NoOrange,
+  MapgroupServerIcon,
+} from '~/components';
 
 import {IoMenu} from 'react-icons/io5';
 import serverIcon from '~/assets/icons/severIcon.png';
@@ -66,6 +75,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
   );
 }
 
+
 // ------------- main --------------------------- main ----------------------- main -------------------- main ----------
 
 const MapPage = () => {
@@ -79,11 +89,14 @@ const MapPage = () => {
   const [yellowalarms, setyellowallarms] = useState(false);
   const [orangealarms, setorangeallarms] = useState(false);
   const [redalarms, setredallarms] = useState(false);
-  const [regionname,setRegionname]=useState("")
+  const [regionname, setRegionname] = useState('');
+  const [selectedStation, setSelectedStation] = useState([]);
+  const [selectedLink, setSelectedLink] = useState([]);
+
   const [selectboxregions, setSelectboxregions] = useState<
     {value: string; label: string}[]
   >([]);
-  // console.log(mousePosition,'mousePositionmousePosition');
+
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.mapDetail,
@@ -106,7 +119,6 @@ const MapPage = () => {
     // },
   });
 
-  console.log(state?.detail?.data, 'detaildetail');
   const Stations = state?.detail?.data?.stations;
   const Regions = state?.detail?.data?.regions || [];
   useEffect(() => {
@@ -122,8 +134,6 @@ const MapPage = () => {
     }
   }, []);
 
-  console.log(selectboxregions, 'selectboxregions');
-
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
       setMousePosition({x: ev.clientX, y: ev.pageY});
@@ -133,6 +143,7 @@ const MapPage = () => {
       window.removeEventListener('mousemove', updateMousePosition);
     };
   }, []);
+
   const MapClickAlert = () => {
     useMapEvents({
       click(e) {
@@ -143,32 +154,41 @@ const MapPage = () => {
     });
     return null;
   };
-  const Linktooltip = () => {
+
+  const Linktooltip = ({data}: any) => {
     return (
       <div
         style={{
           top: `${mousePosition.y - 245}px`,
           left: `${mousePosition.x - 100}px`,
         }}
-        className={`absolute z-[1000]   h-[160px] w-[220px] flex-col bg-[#E7EFF7]`}>
-        <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-          dfwd
-        </span>
-        <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-          dfwd
-        </span>
-        <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-          dfwd
-        </span>
+        className={`absolute z-[1000]   h-[240px] w-[220px] flex-col bg-[#E7EFF7]`}>
+        <div className="mb-[10px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+          Source:{data?.source?.name}
+        </div>
+        <div className="mb-[10px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+          Destination:{data?.destination?.name}
+        </div>
+        <div className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+          Region: Region1
+        </div>
+  
+        <div className="ml-[8px] mt-[12px] text-[20px] font-light leading-[25.2px] text-[black]">
+          <img src={redicon} className="h-[35px] w-[35px]" />
+        </div>
+        <div className="ml-[8px] mt-[12px] text-[20px] font-light leading-[25.2px] text-[black]">
+          <img src={orangeicon} className="h-[35px] w-[35px]" />
+        </div>
+        <div className="ml-[8px] mt-[12px] text-[20px] font-light leading-[25.2px] text-[black]">
+          <img src={yellowicon} className="h-[35px] w-[35px]" />
+        </div>
       </div>
     );
   };
-
-  console.log(regionname,'regionnameregionname');
-  
+  // ******************** return ****************** return ************************** return *******************************
   return (
     <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
-      {showlinktoolkit ? <Linktooltip /> : null}
+      {showlinktoolkit ? <Linktooltip data={selectedLink} /> : null}
 
       <div
         className={`relative w-full  ${
@@ -176,6 +196,7 @@ const MapPage = () => {
             ? 'mt-[-90px] h-[calc(100vh-10px)]'
             : 'h-[calc(100vh-90px)]'
         } `}>
+        {/* ---------------left bar------------------- left bar----------------left bar-----------------*/}
         {fullscreen ? null : (
           <div
             className={` to-0 absolute left-0 z-[500] h-[100vh] bg-[#E7EFF7] ${
@@ -207,7 +228,9 @@ const MapPage = () => {
                   Region
                 </span>
                 <Selectbox
-                  onclickItem={(e:{value:string,label:string}) => {setRegionname(e.label)}}
+                  onclickItem={(e: {value: string; label: string}) => {
+                    setRegionname(e.label);
+                  }}
                   options={selectboxregions}
                   borderColor={'black'}
                   classname={
@@ -299,14 +322,16 @@ const MapPage = () => {
           </div>
         )}
 
+        {/* ---------------reightbars------------------------reightbars-------------------------reightbars--------- */}
         {rightbarstate == 'station' ? (
-          <RightbarStation />
+          <RightbarStation data={selectedStation} />
         ) : rightbarstate == 'link' ? (
-          <RightbarLink />
+          <RightbarLink data={selectedLink} />
         ) : rightbarstate == 'alarm' ? (
           <RightbarAlarm />
         ) : null}
 
+        {/* -------------------- map ---------------- map ------------------- map ----------------- map ------------- */}
         <MapContainer
           center={[51.505, -0.09]}
           zoom={13}
@@ -343,13 +368,8 @@ const MapPage = () => {
                   eventHandlers={{
                     click: e => {
                       setRightbarState('station');
-                      console.log(e.target.options.data); // will print 'FooBar' in console
+                      setSelectedStation(data);
                     },
-
-                    // mouseout: e => {
-                    //   setRightbarState('');
-                    //   console.log(e.target.options.data); // will print 'FooBar' in console
-                    // },
                   }}
                   position={[data.latitude, data.longitude]}
                   icon={MapServerIcon}>
@@ -380,7 +400,50 @@ const MapPage = () => {
               ))}
             </>
           ) : (
-            <>{state?.detail?.data?.regions.map(() => <div></div>)}</>
+            <>
+              {state?.detail?.data?.regions.map((data, index) => (
+                <Marker
+                  key={index}
+                  eventHandlers={{
+                    click: e => {
+                      setRightbarState('station');
+                      // setSelectedStation(data)
+                    },
+                  }}
+                  position={[
+                    (data.stations[0].latitude +
+                      data.stations[1].latitude +
+                      data.stations[1].latitude) /
+                      3,
+                    (data.stations[0].longitude +
+                      data.stations[1].longitude +
+                      data.stations[1].longitude) /
+                      3,
+                  ]}
+                  icon={MapgroupServerIcon}>
+                  <Tooltip
+                    opacity={1}
+                    className="h-[150px] w-[215px]"
+                    direction="top"
+                    offset={[0, -25]}>
+                    <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                      <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                        {data?.name}
+                      </span>
+                      <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                        High Severity: 0
+                      </span>
+                      <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                        Medium Severity: 1
+                      </span>
+                      <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                        Low Severity: 1
+                      </span>
+                    </div>
+                  </Tooltip>
+                </Marker>
+              ))}
+            </>
           )}
 
           {yellowalarms ? (
@@ -389,7 +452,6 @@ const MapPage = () => {
                 eventHandlers={{
                   click: e => {
                     setRightbarState('alarm');
-                    console.log(e.target.options.data); // will print 'FooBar' in console
                   },
                 }}
                 position={[51.519, -0.045]}
@@ -421,7 +483,6 @@ const MapPage = () => {
                 eventHandlers={{
                   click: e => {
                     setRightbarState('alarm');
-                    console.log(e.target.options.data); // will print 'FooBar' in console
                   },
                 }}
                 position={[51.519, -0.085]}
@@ -453,7 +514,6 @@ const MapPage = () => {
                 eventHandlers={{
                   click: e => {
                     setRightbarState('alarm');
-                    console.log(e.target.options.data); // will print 'FooBar' in console
                   },
                 }}
                 position={[51.519, -0.0155]}
@@ -479,125 +539,37 @@ const MapPage = () => {
             </>
           ) : null}
 
-          <Polyline
-            eventHandlers={{
-              click: e => {
-                setRightbarState('link');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-              mouseover: e => {
-                setShowlinltoolkit(true);
-                // alert('dfdfd');
-              },
-              mouseout: e => {
-                setShowlinltoolkit(false);
-                // alert('dfdfd');
-              },
-            }}
-            positions={[
-              [51.505, -0.09],
-              [51.51, -0.1],
-            ]}
-            color="red">
-            {/* <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000  absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-              </div>
-            </Tooltip> */}
-          </Polyline>
+          {state?.detail?.data?.links.map((data, index) => (
+            <Polyline
+              key={index}
+              eventHandlers={{
+                click: e => {
+                  setRightbarState('link');
+                  setSelectedLink(data);
+                },
+                mouseover: e => {
+                  setShowlinltoolkit(true);
+                  setSelectedLink(data);
+                },
+                mouseout: e => {
+                  setShowlinltoolkit(false);
+                  // alert('dfdfd');
+                },
+              }}
+              positions={[
+                [51.505, -0.09 + 0.1 * index],
+                [51.51, -0.1],
+              ]}
+              color="red"></Polyline>
+          ))}
+
           <MapClickAlert />
-          <Polyline
-            eventHandlers={{
-              click: e => {
-                setRightbarState('link');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-              mouseover: e => {
-                setShowlinltoolkit(true);
-                // alert('dfdfd');
-              },
-              mouseout: e => {
-                setShowlinltoolkit(false);
-                // alert('dfdfd');
-              },
-            }}
-            positions={[
-              [51.505, -0.09],
-              [51.519, -0.025],
-            ]}
-            color="red">
-            {/* <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-              </div>
-            </Tooltip> */}
-          </Polyline>
-          <Polyline
-            eventHandlers={{
-              click: e => {
-                setRightbarState('link');
-                console.log(e.target.options.data); // will print 'FooBar' in console
-              },
-              mouseover: e => {
-                setShowlinltoolkit(true);
-                // alert('dfdfd');
-              },
-              mouseout: e => {
-                setShowlinltoolkit(false);
-                // alert('dfdfd');
-              },
-            }}
-            positions={[
-              [51.505, -0.09],
-              [51.517, -0.01],
-            ]}
-            color="red">
-            {/* <Tooltip
-              opacity={1}
-              className="h-[150px] w-[215px]"
-              direction="top"
-              offset={[0, -25]}>
-              <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7]">
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-                <span className="ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                  dfwd
-                </span>
-              </div>
-            </Tooltip> */}
-          </Polyline>
         </MapContainer>
       </div>
 
-      <div className='absolute bottom-2 text-[20px] left-16 z-[500] text-[#006BBC] font-bold'>{regionname}</div>
+      <div className="absolute bottom-2 left-16 z-[500] text-[20px] font-bold text-[#006BBC]">
+        {regionname}
+      </div>
     </div>
   );
 };

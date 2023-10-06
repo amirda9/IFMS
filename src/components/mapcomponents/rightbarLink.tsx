@@ -2,14 +2,14 @@ import React, {useState} from 'react';
 import noRed from '~/assets/icons/noRed.png';
 import noOrange from '~/assets/icons/noOrange.png';
 import noYellow from '~/assets/icons/noYellow.png';
-function RightbarLink() {
+function RightbarLink({data}:any) {
   return (
     <div
       className={` to-0 absolute right-0 z-[500] box-border flex h-[100vh]
     w-[330px] flex-col overflow-hidden bg-[#E7EFF7] px-[20px]`}>
       <div className='relative w-full h-full'>
       <div className="mb-[40px] mt-[15px] text-[24px] font-bold leading-[29.05px] text-[#636363]">
-      Link6
+    {data.name}
       </div>
       <div className="flex w-auto flex-row items-center">
         <span className="text-[20px] font-light leading-[25.2px] text-[black]">
@@ -25,7 +25,7 @@ function RightbarLink() {
         Length
         </span>
         <span className="ml-[50px] text-[20px] font-light leading-[25.2px] text-[black]">
-         80km
+        {data.length}
         </span>
       </div>
       

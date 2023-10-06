@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import noRed from '~/assets/icons/noRed.png';
 import noOrange from '~/assets/icons/noOrange.png';
 import noYellow from '~/assets/icons/noYellow.png';
-function RightbarStation() {
+function RightbarStation({data}:any) {
   
   return (
     <div
@@ -10,7 +10,7 @@ function RightbarStation() {
     w-[330px] flex-col overflow-hidden bg-[#E7EFF7] px-[20px]`}>
       <div className='w-full h-full relative'>
       <div className="mb-[15px] mt-[10px] text-[20px] font-bold leading-[29.05px] text-[#636363]">
-        Station2
+       {data.name}
       </div>
       <div className="flex w-auto flex-row items-center">
         <span className="text-[18px] font-light leading-[25.2px] text-[black]">
@@ -26,7 +26,7 @@ function RightbarStation() {
           Latitude
         </span>
         <span className="ml-[40px] text-[18px] font-light leading-[25.2px] text-[black]">
-          35.4
+       {data.latitude}
         </span>
       </div>
       <div className="mt-[15px] flex w-auto flex-row items-center">
@@ -34,7 +34,7 @@ function RightbarStation() {
           Longitude
         </span>
         <span className="ml-[25px] text-[18px] font-light leading-[25.2px] text-[black]">
-          35.4
+        {data.longitude}
         </span>
       </div>
       <div className="mb-[10px] mt-[15px] text-[18px] font-light leading-[25.2px] text-[black]">
