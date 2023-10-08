@@ -579,12 +579,11 @@ const MapPage = () => {
           <MapClickAlert />
         </MapContainer>
       </div>
-{leftbarstate?null:
-<div className="absolute bottom-2 left-16 z-[500] text-[20px] font-bold text-[#006BBC]">
-{regionname}
-</div>
-}
- 
+      {leftbarstate ? null : (
+        <div className="absolute bottom-2 left-16 z-[500] text-[20px] font-bold text-[#006BBC]">
+          {regionname}
+        </div>
+      )}
     </div>
   );
 };
