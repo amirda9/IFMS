@@ -49,6 +49,8 @@ type RequestKeys =
   | 'regionAccessUpdate'
   | 'regionStationList'
   | 'updateregionStationList'
+  | 'removeregionStationList'
+  | 'addregionStationList'
   | 'updateregionLinkList'
   | 'allLinks'
   | 'regionLinkList'
@@ -247,7 +249,17 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   updateregionStationList: {
     url: api.BASE_URL + api.URLS.otdr.region.updateregionStationList,
-    method: 'put',
+    method: 'post',
+    auth: true,
+  },
+  addregionStationList: {
+    url: api.BASE_URL + api.URLS.otdr.region.addregionStationList,
+    method: 'post',
+    auth: true,
+  },
+  removeregionStationList: {
+    url: api.BASE_URL + api.URLS.otdr.region.removeregionStationList,
+    method: 'post',
     auth: true,
   },
   updateregionLinkList: {
@@ -611,6 +623,19 @@ export type RequestListTypes = {
       stations_id: string[];
     };
   };
+  addregionStationList: {
+    params: {region_id: string};
+    data: {
+      stations_id: string[];
+    };
+  };
+
+ removeregionStationList: {
+    params: {region_id: string};
+    data: {
+      stations_id: string[];
+    };
+  };
   updateregionLinkList: {
     params: {region_id: string};
     data: {
@@ -782,6 +807,8 @@ export type ResponseListType = {
   regionAccessUpdate: {count: number};
   regionStationList: T.regionstationlist[];
   updateregionStationList: T.regionstationlist[];
+ addregionStationList: T.regionstationlist[];
+  removeregionStationList: T.regionstationlist[];
   updateregionLinkList: T.regionlinklist[];
   networkUpdateAdmin: string;
   allLinks: T.allLinksType[];

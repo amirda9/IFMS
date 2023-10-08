@@ -18,6 +18,8 @@ const RegionStationsPage = () => {
   const {newregionstationlist} = useSelector((state: any) => state.network);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [appendstationsdata, setAppendstationsdata] = useState([]);
+  const [removestationsdata, setRemovetationsdata] = useState([]);
   const [userrole, setuserrole] = useState<any>('');
   const [itemssorted, setItemssorted] = useState<
     {
@@ -44,14 +46,18 @@ const RegionStationsPage = () => {
     selector: state => ({
       list: state.http.regionStationList,
       update: state.http.updateregionStationList,
+      remove: state.http.removeregionStationList,
+      add: state.http.addregionStationList,
     }),
     initialRequests: request => {
       request('regionStationList', {params: {region_id: params.regionId!}});
     },
     onUpdate: (lastState, state) => {
       if (
-        lastState.update?.httpRequestStatus === 'loading' &&
-        state.update!.httpRequestStatus === 'success'
+        (lastState.remove?.httpRequestStatus === 'loading' &&
+          state.remove!.httpRequestStatus === 'success') ||
+        (lastState.add?.httpRequestStatus === 'loading' &&
+          state.add!.httpRequestStatus === 'success')
       ) {
         request('regionStationList', {params: {region_id: params.regionId!}});
       }
@@ -65,9 +71,13 @@ const RegionStationsPage = () => {
       longitude: station.latitude,
     })) || [];
 
+
+
   useEffect(() => {
     setItemssorted(dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
-  }, []);
+  }, [request]);
+
+
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
     if (sortalfabet) {
@@ -105,12 +115,38 @@ const RegionStationsPage = () => {
   };
 
   const save = () => {
+    const appenddata = [];
+    const removedata = [];
+    const alllist = state?.list?.data || [];
+
+    for (let i = 0; i < alllist.length; i++) {
+      const find = newregionstationlist.findIndex(
+        (data: any) => data == alllist[i].id,
+      );
+      if (find < 0) {
+        removedata.push(alllist[i].id);
+      }
+    }
+
+    for (let j = 0; j < newregionstationlist.length; j++) {
+      const find = alllist.findIndex(
+        (data: any) => data.id == newregionstationlist[j],
+      );
+      if (find < 0) {
+        appenddata.push(newregionstationlist[j]);
+      }
+    }
+
     let first = state?.list?.data || [];
     if (first.length == 0 && newregionstationlist?.length == 0) {
     } else {
-      request('updateregionStationList', {
+      request('removeregionStationList', {
         params: {region_id: params.regionId!},
-        data: {stations_id: newregionstationlist},
+        data: {stations_id: removedata},
+      });
+      request('addregionStationList', {
+        params: {region_id: params.regionId!},
+        data: {stations_id: appenddata},
       });
     }
   };
