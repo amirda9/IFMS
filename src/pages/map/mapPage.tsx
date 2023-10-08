@@ -75,7 +75,6 @@ function ZoomComponent({fullscreen}: fullscreen) {
   );
 }
 
-
 // ------------- main --------------------------- main ----------------------- main -------------------- main ----------
 
 const MapPage = () => {
@@ -172,7 +171,7 @@ const MapPage = () => {
         <div className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
           Region: Region1
         </div>
-  
+
         <div className="ml-[8px] mt-[12px] text-[20px] font-light leading-[25.2px] text-[black]">
           <img src={redicon} className="h-[35px] w-[35px]" />
         </div>
@@ -185,9 +184,10 @@ const MapPage = () => {
       </div>
     );
   };
-  
-  console.log(state?.detail?.data?.links,'🤑');
-  
+
+  console.log(state?.detail?.data?.links, '🤑');
+  console.log(state?.detail?.data?.stations, '🥵');
+
   // ******************** return ****************** return ************************** return *******************************
   return (
     <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
@@ -542,29 +542,41 @@ const MapPage = () => {
             </>
           ) : null}
 
-          {state?.detail?.data?.links.map((data, index) => (
-            <Polyline
-              key={index}
-              eventHandlers={{
-                click: e => {
-                  setRightbarState('link');
-                  setSelectedLink(data);
-                },
-                mouseover: e => {
-                  setShowlinltoolkit(true);
-                  setSelectedLink(data);
-                },
-                mouseout: e => {
-                  setShowlinltoolkit(false);
-                  // alert('dfdfd');
-                },
-              }}
-              positions={[
-                [51.505, -0.09 + 0.1 * index],
-                [51.51, -0.1],
-              ]}
-              color="red"></Polyline>
-          ))}
+          {state?.detail?.data?.links.map((data, index) => {
+            let start = state?.detail?.data?.stations.find(
+              dat => dat.id == data.source.id,
+            );
+        
+            
+            let end = state?.detail?.data?.stations.find(
+              dat => dat.id == data.destination.id,
+            );
+            console.log(start,'start');
+            console.log(end,'end');
+            return (
+              <Polyline
+                key={index}
+                eventHandlers={{
+                  click: e => {
+                    setRightbarState('link');
+                    setSelectedLink(data);
+                  },
+                  mouseover: e => {
+                    setShowlinltoolkit(true);
+                    setSelectedLink(data);
+                  },
+                  mouseout: e => {
+                    setShowlinltoolkit(false);
+                    // alert('dfdfd');
+                  },
+                }}
+                positions={[
+                  [start.latitude , start.longitude],
+                  [end.latitude , end.longitude],
+                ]}
+                color="red"></Polyline>
+            );
+          })}
 
           <MapClickAlert />
         </MapContainer>
