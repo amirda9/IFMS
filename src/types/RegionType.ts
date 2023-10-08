@@ -138,6 +138,18 @@ export type LinksType = {
   }
 }
 
+export type allLinksType = {
+  id: string,
+  name: string,
+  network_id: string,
+  version_id: string,
+  time_created: string,
+  time_updated: string,
+  region_id: string,
+  destination:{id:string,name:string},
+  source:{id:string,name:string}
+}
+
 
 export type RegionType = {
   id: string;

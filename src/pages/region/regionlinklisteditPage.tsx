@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import {useNavigate, useParams} from 'react-router-dom';
 import {setnewregionlinklist} from './../../store/slices/networkslice';
 import {useDispatch} from 'react-redux';
+import { array } from 'yup';
 type UserTableType = {
   id: string;
   name: string;
@@ -53,6 +54,8 @@ const RegionlinklisteditPage = () => {
       }
     },
   });
+
+  
   const [change, setCange] = useState(false);
   const [lefttableselecttab, setLefttableselecttab] = useState('Name');
   const [reighttableselecttab, setReighttableselecttab] = useState('Name');
@@ -64,31 +67,36 @@ const RegionlinklisteditPage = () => {
   const [leftlinksorted, setLeftlinksorted] = useState<UserTableType[]>([]);
 
   const [reightlinksorted, setReightlinksorted] = useState<UserTableType[]>([]);
-
+const regionlinklist=state.regionLinkList?.data || []
   useEffect(() => {
     dispatch(setnewregionlinklist([]));
     setReightlinksorted(
-      state?.regionLinkList?.data?.sort((a, b) =>
-        a.name.localeCompare(b.name, 'en-US'),
+      state.regionLinkList?.data?.map((data: any) => ({
+        id: data?.id,
+        name: data?.name,
+        source: data?.source,
+        destination: data?.destination,
+      }))?.sort((a:any, b:any) =>
+        a?.name?.localeCompare(b?.name, 'en-US'),
       ) || [],
     );
     setLeftlinksorted(
       removeCommon(
         state?.links?.data?.map(data => ({
-          id: data.id,
-          name: data.name,
-          source: Math.floor(Math.random() * 20).toString(),
-          destination: Math.floor(Math.random() * 20).toString(),
+          id: data?.id,
+          name: data?.name,
+          source:data?.source?.name,
+          destination:data?.destination?.name,
         })),
         state?.regionLinkList?.data,
       )
         ?.map((data: any) => ({
           id: data?.id,
           name: data?.name,
-          source: data.source,
-          destination: data.destination,
+          source: data?.source,
+          destination: data?.destination,
         }))
-        ?.sort((a: any, b: any) => a.name.localeCompare(b.name, 'en-US')) || [],
+        ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) || [],
     );
   }, []);
 

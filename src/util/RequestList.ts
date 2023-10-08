@@ -784,7 +784,7 @@ export type ResponseListType = {
   updateregionStationList: T.regionstationlist[];
   updateregionLinkList: T.regionlinklist[];
   networkUpdateAdmin: string;
-  allLinks: T.LinksType[];
+  allLinks: T.allLinksType[];
   regionLinkList: T.regiolinklist[];
   regionAdminUpdate: string;
   allStations: T.StationListType[];

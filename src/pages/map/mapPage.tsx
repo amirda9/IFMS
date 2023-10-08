@@ -185,6 +185,9 @@ const MapPage = () => {
       </div>
     );
   };
+  
+  console.log(state?.detail?.data?.links,'🤑');
+  
   // ******************** return ****************** return ************************** return *******************************
   return (
     <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
