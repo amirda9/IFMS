@@ -185,8 +185,7 @@ const MapPage = () => {
     );
   };
 
-  console.log(state?.detail?.data?.links, '🤑');
-  console.log(state?.detail?.data?.stations, '🥵');
+
 
   // ******************** return ****************** return ************************** return *******************************
   return (
@@ -542,41 +541,43 @@ const MapPage = () => {
             </>
           ) : null}
 
-          {state?.detail?.data?.links.map((data, index) => {
-            let start = state?.detail?.data?.stations.find(
-              dat => dat.id == data.source.id,
-            );
-        
-            
-            let end = state?.detail?.data?.stations.find(
-              dat => dat.id == data.destination.id,
-            );
-            console.log(start,'start');
-            console.log(end,'end');
-            return (
-              <Polyline
-                key={index}
-                eventHandlers={{
-                  click: e => {
-                    setRightbarState('link');
-                    setSelectedLink(data);
-                  },
-                  mouseover: e => {
-                    setShowlinltoolkit(true);
-                    setSelectedLink(data);
-                  },
-                  mouseout: e => {
-                    setShowlinltoolkit(false);
-                    // alert('dfdfd');
-                  },
-                }}
-                positions={[
-                  [start.latitude , start.longitude],
-                  [end.latitude , end.longitude],
-                ]}
-                color="red"></Polyline>
-            );
-          })}
+          {switchstatus ? (
+            <>
+              {state?.detail?.data?.links.map((data, index) => {
+                let start = state?.detail?.data?.stations.find(
+                  dat => dat.id == data.source.id,
+                );
+
+                let end = state?.detail?.data?.stations.find(
+                  dat => dat.id == data.destination.id,
+                );
+
+                return (
+                  <Polyline
+                    key={index}
+                    eventHandlers={{
+                      click: e => {
+                        setRightbarState('link');
+                        setSelectedLink(data);
+                      },
+                      mouseover: e => {
+                        setShowlinltoolkit(true);
+                        setSelectedLink(data);
+                      },
+                      mouseout: e => {
+                        setShowlinltoolkit(false);
+                        // alert('dfdfd');
+                      },
+                    }}
+                    positions={[
+                      [start.latitude, start.longitude],
+                      [end.latitude, end.longitude],
+                    ]}
+                    color="red"></Polyline>
+                );
+              })}
+            </>
+          ) : null}
 
           <MapClickAlert />
         </MapContainer>
