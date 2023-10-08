@@ -185,8 +185,6 @@ const MapPage = () => {
     );
   };
 
-
-
   // ******************** return ****************** return ************************** return *******************************
   return (
     <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
@@ -403,48 +401,47 @@ const MapPage = () => {
             </>
           ) : (
             <>
-              {state?.detail?.data?.regions.map((data, index) => (
-                <Marker
-                  key={index}
-                  eventHandlers={{
-                    click: e => {
-                      setRightbarState('station');
-                      // setSelectedStation(data)
-                    },
-                  }}
-                  position={[
-                    (data.stations[0].latitude +
-                      data.stations[1].latitude +
-                      data.stations[1].latitude) /
-                      3,
-                    (data.stations[0].longitude +
-                      data.stations[1].longitude +
-                      data.stations[1].longitude) /
-                      3,
-                  ]}
-                  icon={MapgroupServerIcon}>
-                  <Tooltip
-                    opacity={1}
-                    className="h-[150px] w-[215px]"
-                    direction="top"
-                    offset={[0, -25]}>
-                    <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
-                      <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                        {data?.name}
-                      </span>
-                      <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                        High Severity: 0
-                      </span>
-                      <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                        Medium Severity: 1
-                      </span>
-                      <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                        Low Severity: 1
-                      </span>
-                    </div>
-                  </Tooltip>
-                </Marker>
-              ))}
+              {state?.detail?.data?.regions.map((data, index) => {
+                let sumlatitude = 0;
+                let sumlongitude = 0;
+                for (let i = 0; i < data.stations.length; i++) {
+                  sumlatitude += data.stations[i].latitude;
+                  sumlongitude += data.stations[i].longitude;
+                }
+                return (
+                  <Marker
+                    key={index}
+                    eventHandlers={{
+                      click: e => {
+                        setRightbarState('station');
+                        // setSelectedStation(data)
+                      },
+                    }}
+                    position={[sumlatitude / 3, sumlongitude / 3]}
+                    icon={MapgroupServerIcon}>
+                    <Tooltip
+                      opacity={1}
+                      className="h-[150px] w-[215px]"
+                      direction="top"
+                      offset={[0, -25]}>
+                      <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                        <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                          {data?.name}
+                        </span>
+                        <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                          High Severity: 0
+                        </span>
+                        <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                          Medium Severity: 1
+                        </span>
+                        <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                          Low Severity: 1
+                        </span>
+                      </div>
+                    </Tooltip>
+                  </Marker>
+                );
+              })}
             </>
           )}
 
