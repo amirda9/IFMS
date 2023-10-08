@@ -48,6 +48,8 @@ export const URLS = {
      
       addregionStationList:'/otdr/region/{region_id}/update_stations?action_type=append',
       updateregionLinkList:'/otdr/region/{region_id}/update_links',
+      addregionLinkList:'/otdr/region/{region_id}/update_links?action_type=append',
+      removeregionLinkList:'/otdr/region/{region_id}/update_links?action_type=remove',
     },
     station: {
       all: '/otdr/station',

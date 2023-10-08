@@ -44,9 +44,21 @@ const RegionLinksPage = () => {
   const {
     state: {list},request
   } = useHttpRequest({
-    selector: state => ({list: state.http.regionLinkList}),
+    selector: state => ({
+      list: state.http.regionLinkList,
+      remove: state.http.removeregionLinkList,
+      add: state.http.addregionLinkList,
+    }),
     initialRequests: request => {
       request('regionLinkList', {params: {region_id: params.regionId!}});
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        (lastState.add?.httpRequestStatus === 'loading' &&
+          state.add!.httpRequestStatus === 'success')
+      ) {
+        request('regionLinkList', {params: {region_id: params.regionId!}});
+      }
     },
   });
 
@@ -61,7 +73,7 @@ const RegionLinksPage = () => {
 
   useEffect(() => {
     setItemssorted(items.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
-  }, []);
+  }, [request]);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
     if (sortalfabet) {
@@ -84,15 +96,44 @@ const RegionLinksPage = () => {
   };
 
   const save=()=>{
+    const appenddata = [];
+    const removedata = [];
+    const alllist = list?.data || [];
+
+    for (let i = 0; i < alllist.length; i++) {
+      const find = newregionlinklist.findIndex(
+        (data: any) => data == alllist[i].id,
+      );
+      if (find < 0) {
+        removedata.push(alllist[i].id);
+      }
+    }
+
+    for (let j = 0; j < newregionlinklist.length; j++) {
+      const find = alllist.findIndex(
+        (data: any) => data.id == newregionlinklist[j],
+      );
+      if (find < 0) {
+        appenddata.push(newregionlinklist[j]);
+      }
+    }
+
+
     let first =list?.data || [];
     if (first.length == 0 && newregionlinklist?.length == 0) {
     } else {
-      request('updateregionLinkList', {
+      request('addregionLinkList', {
         params: {region_id: params.regionId!},
-        data: {links_id: newregionlinklist || []},
+        data: {links_id: appenddata || []},
+      });
+      request('removeregionLinkList', {
+        params: {region_id: params.regionId!},
+        data: {links_id: removedata || []},
       });
     }
   }
+
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
