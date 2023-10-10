@@ -142,9 +142,11 @@ function App() {
               </Route>
             </Route>
             <Route path="optical-routes" Component={pages.OpticalRoutesLayout}>
+           
               <Route
                 path=":opticalRouteId"
                 Component={pages.SingleOpticalRouteLayout}>
+               
                 <Route index Component={pages.OpticalRouteDetailsPage} />
                 <Route path="route" Component={pages.OpticalRouteRoutePage} />
                 <Route
@@ -169,6 +171,7 @@ function App() {
                 />
               </Route>
             </Route>
+            <Route path="chart" Component={pages.Chart} />
             <Route path="remote-test-units" Component={pages.RtuLayout}>
               <Route path=":rtuId" Component={pages.SingleRtuLayout}>
                 <Route index Component={pages.RtuDetailsPage} />
