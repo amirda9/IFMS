@@ -5,15 +5,18 @@ type Resultdata={
  value:string
 }
 
-const options = [
-  {value: 'chocolate', label: 'Chocolate'},
-  {value: 'strawberry', label: 'Strawberry'},
-  {value: 'vanilla', label: 'Vanilla'},
-];
+type Iprops={
+  onclick:(name:string)=>void
+ }
+ const options = [
+   {value: 'Result', label: 'Result'},
+   {value: 'Optical Route', label: 'Optical Route'},
+   {value: 'Alarms', label: 'Alarms'},
+ ];
 
 const Resultdata=({name,value}:Resultdata)=>{
  return(
-  <div className='flex flex-row justify-between items-center mb-[20px] w-[400px]'>
+  <div className='flex flex-row justify-between items-center mb-[20px] w-full'>
   <span className='text-[20px] w-[197px] text-[#000000] font-light leading-[24.2px]'>
  {name}
   </span>
@@ -23,12 +26,13 @@ const Resultdata=({name,value}:Resultdata)=>{
  </div>
  )
 }
-function Rightbar() {
+function Rightbar({onclick}:Iprops) {
   return (
-   <div className="h-full w-[370px] bg-[#C6DFF8] p-[10px] box-border rounded-[10px]">
+   <div className="h-full w-full o bg-[#C6DFF8] p-[10px] box-border rounded-[10px]">
    <Selectbox
-     onclickItem={(e: {value: string; label: string}) => {}}
+ onclickItem={(e: {value: string; label: string}) => onclick(e.label)}
      options={options}
+     defaultvalue='Result'
      borderColor={'black'}
      classname={'w-full h-[40px] rounded-[10px] mb-[25px]'}
    />

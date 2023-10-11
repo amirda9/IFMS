@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import {ResponsiveLineCanvas, ResponsiveLine} from '@nivo/line';
-import Resultdata from '~/components/chart/rightbar';
+import Resultdata from '~/components/chart/result';
+import Opticalroute from '~/components/chart/opticalroute';
+import Detailbox from '~/components/chart/detailbox';
+import Alarms from '~/components/chart/alarms';
 import arrowupchart from '~/assets/icons/arrowupchart.png';
 import hand from '~/assets/icons/hand.png';
 import ZoomArea from '~/assets/icons/ZoomArea.png';
@@ -15,6 +18,7 @@ import Avg from '~/assets/icons/Avg.png';
 import {SimpleBtn, Table} from '~/components';
 import {Line} from '@nivo/line';
 import {MyResponsiveLineCanvas} from '~/components/chart';
+import {MdOutlineArrowBackIos} from 'react-icons/md';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -27,7 +31,6 @@ type Verticalbotton = {
 // ######################################################
 
 // ######################################################
-
 
 const columns = {
   index: {label: 'Index', size: 'w-[7%]'},
@@ -125,19 +128,19 @@ function Chart() {
   const [mousecursor, setMousecursor] = useState(false);
   const [allcurveline, setAllcurveline] = useState<any>([]);
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
+  const [reightbar, setReightbar] = useState('Result');
   const [verticalLines, setVerticalLines] = useState<{x: number; y: number}[]>(
     [],
   );
 
-
-  
   const [xScale, setXScale] = useState<any>({
-    type: 'point',tickFormat: (value:any) => Math.abs(Math.round(value / 5) * 5)
+    type: 'point',
+    tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
   });
   const [yScale, setYScale] = useState<any>({
-    type: 'linear'
+    type: 'linear',
   });
-// ---- func ------func --------------- func ---------------- func ------------- func --------
+  // ---- func ------func --------------- func ---------------- func ------------- func --------
   const Events = () => {
     setLeftverticaltab('Events');
     const dataa = [
@@ -202,33 +205,109 @@ function Chart() {
 
   const VerticalLine = ({xScale, yScale}: any) => {
     const elements: any = [];
-    verticalLines.forEach((point,index) => {
+    verticalLines.forEach((point, index) => {
       const X = xScale(point.x);
-      const Y = yScale(point.y);
+      const Y = yScale(15);
+
       elements.push(
-        <line key={index} x1={X} y1={Y + 70} x2={X} y2={Y - 70} stroke="red" />,
-      );
-      elements.push(
-        <text
+        // <line  key={index} x1={X} y1={Y + 40} x2={X} y2={Y - 40} stroke="red" />,
+        // <line  key={index} x1={X+20} y1={Y + 40} x2={X} y2={Y + 40} stroke="red" />,
+        // <line  key={index} x1={X+20} y1={Y - 40} x2={X} y2={Y - 40} stroke="red" />,
+        // <line  key={index} x1={X+20} y1={Y - 40} x2={X+15} y2={Y - 45} stroke="red" />,
+        // <line  key={index} x1={X+20} y1={Y - 40} x2={X+15} y2={Y - 35} stroke="red" />,
+        // <line  key={index} x1={X+20} y1={Y + 40} x2={X+15} y2={Y + 35} stroke="red" />,
+        // <line  key={index} x1={X+20} y1={Y + 40} x2={X+15} y2={Y + 45} stroke="red" />,
+        // ----------------------------------------------------------------
+        <line key={index} x1={X} y1={Y + 40} x2={X} y2={Y - 40} stroke="red" />,
+        <line
           key={index}
-          x={X}
-          y={Y + 84}
-          fill="red"
-          fontSize={12}
-          textAnchor="middle">
-          2
-        </text>,
+          x1={X - 20}
+          y1={Y + 40}
+          x2={X}
+          y2={Y + 40}
+          stroke="red"
+        />,
+        <line
+          key={index}
+          x1={X - 20}
+          y1={Y - 40}
+          x2={X}
+          y2={Y - 40}
+          stroke="red"
+        />,
+        <line
+          key={index}
+          x1={X - 20}
+          y1={Y - 40}
+          x2={X - 15}
+          y2={Y - 45}
+          stroke="red"
+        />,
+        <line
+          key={index}
+          x1={X - 20}
+          y1={Y - 40}
+          x2={X - 15}
+          y2={Y - 35}
+          stroke="red"
+        />,
+        <line
+          key={index}
+          x1={X - 20}
+          y1={Y + 40}
+          x2={X - 15}
+          y2={Y + 35}
+          stroke="red"
+        />,
+        <line
+          key={index}
+          x1={X - 20}
+          y1={Y + 40}
+          x2={X - 15}
+          y2={Y + 45}
+          stroke="red"
+        />,
       );
+      // ----------------------------
+
+      // elements.push(
+      //   <line key={index} x1={X} y1={-10000} x2={X} y2={Y} stroke="red" />,
+      // );
+      // elements.push(
+      //   <text
+      //     key={index}
+      //     x={X}
+      //     y={Y + 20}
+      //     fill="red"
+      //     fontSize={12}
+      //     textAnchor="middle">
+      //     {index+1}
+      //   </text>,
+      // );
+      // ------------------------------------------------
+      // elements.push(
+      //   <line key={index} x1={X} y1={Y + 70} x2={X} y2={Y - 70} stroke="red" />,
+      // );
+      // elements.push(
+      //   <text
+      //     key={index}
+      //     x={X}
+      //     y={Y + 84}
+      //     fill="red"
+      //     fontSize={12}
+      //     textAnchor="middle">
+      //     2
+      //   </text>,
+      // );
     });
     return elements;
   };
 
-// تعریف یک تابع برای دریافت مختصات موس
-const handlePointMouseEnter = (event
-  :any, point:any) => {
-  // نمایش مختصات موس و نقطه در کنسول
-  console.log("Mouse coordinates:", event);
-  console.log("Point coordinates:", point);
+  // تعریف یک تابع برای دریافت مختصات موس
+  const handlePointMouseEnter = (event: any, point: any) => {
+    // نمایش مختصات موس و نقطه در کنسول
+    console.log('Mouse coordinates:', event);
+    console.log('Point coordinates:', point);
   };
 
   React.useEffect(() => {
@@ -252,15 +331,14 @@ const handlePointMouseEnter = (event
     },
   ];
 
-
-// ------ component --------- component ------------ component --------------- component ------------------
+  // ------ component --------- component ------------ component --------------- component ------------------
   const Chatrtabtype = ({name, src, ...props}: chatrtabtype) => {
     return (
       <button
         onClick={() => showcurveline(name)}
         className={`${
           allchart.indexOf(name) > -1 ? 'bg-[#C6DFF8]' : 'bg-none'
-        } mb-[2px] flex h-[40px] w-[87px]  flex-row items-center justify-between px-[4px]`}>
+        } mb-[2px] box-border flex h-[40px]  w-[87px] flex-row items-center justify-between px-[4px]`}>
         <img {...props} src={src} className="mt-[0px] h-[20.5px] w-[37px]" />
         <span className="text-[20px] font-light leading-[24.2px] text-[#000000]">
           {name}
@@ -281,9 +359,11 @@ const handlePointMouseEnter = (event
       </button>
     );
   };
+  console.log(reightbar, '🥵');
+
   // ##############################################################################################
   return (
-    <div className="box-border flex w-full flex-col overflow-x-hidden p-[10px]">
+    <div className="box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
       <div className="flex h-[540px] w-full flex-row">
         {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
         <div className="flex h-full w-[87px] flex-col">
@@ -346,13 +426,12 @@ const handlePointMouseEnter = (event
           <Chatrtabtype name="Avg" src={Avg} />
         </div>
         {/* ---- chart ------- chart ------------------ chart ------------- chart ------------- chart ------------ */}
-        <div className="mx-[10px] flex h-full w-[calc(100%-474px)] flex-col">
+        <div className="mx-[10px] flex h-full w-[calc(100vw-510px)] flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
-          
               className={`${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
-              } h-full w-full`}>
+              } h-full w-[calc(100vw-480px)]`}>
               <ResponsiveLine
                 data={allcurveline}
                 margin={{top: 50, right: 50, bottom: 50, left: 50}}
@@ -361,10 +440,12 @@ const handlePointMouseEnter = (event
                 colors={({id}) => getColorForId(id)}
                 xFormat="d"
                 curve="linear"
-                 onMouseEnter={(point:any, event:any)=>handlePointMouseEnter(point, event)} 
+                onMouseEnter={(point: any, event: any) =>
+                  handlePointMouseEnter(point, event)
+                }
                 lineWidth={3}
                 // useMesh={true}
-              
+
                 layers={[
                   'grid',
                   // "markers",
@@ -374,7 +455,7 @@ const handlePointMouseEnter = (event
                   'lines',
                   // "points",
                   // 'slices',
-                  "mesh",
+                  'mesh',
                   'legends',
                   VerticalLine, // اضافه کردن تابع VerticalLine به لایه ها
                 ]}
@@ -394,24 +475,143 @@ const handlePointMouseEnter = (event
           </div>
         </div>
         {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}
-        <Resultdata />
+        <div className="w-[370px]">
+          {reightbar == 'Result' ? (
+            <Resultdata onclick={e => setReightbar(e)} />
+          ) : reightbar == 'Alarms' ? (
+            <Alarms onclick={e => setReightbar(e)} />
+          ) : (
+            <Opticalroute onclick={e => setReightbar(e)} />
+          )}
+        </div>
       </div>
-<div>{mousePosition.x}</div>
-      {/* ---- tabel ------- tabel ------------------ tabel ------------- tabel ------------- tabel ------------ */}
-      <Table
-        onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
-        tabicon={'Name'}
-        cols={columns}
-        items={[]}
-        dynamicColumns={['index']}
-        renderDynamicColumn={data => data.index}
-        containerClassName="w-[calc(100vw-494px)] ml-[80px] mt-[20px]"
-        // loading={list?.httpRequestStatus === 'loading'}
-      />
+
+      <div className="flex w-full flex-row justify-between">
+        {/* ---- tabel ------- tabel ------------------ tabel ------------- tabel ------------- tabel ------------ */}
+        <Table
+          onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
+          tabicon={'Name'}
+          cols={columns}
+          items={[]}
+          dynamicColumns={['index']}
+          renderDynamicColumn={data => data.index}
+          containerClassName="w-[calc(100vw-504px)] ml-[80px] mt-[20px]"
+        />
+        {/* -------------------------------- */}
+        <Detailbox />
+      </div>
+      <div className="ml-[80px] mt-[20px] flex w-[calc(100vw-504px)] flex-row justify-between">
+        <div className="box-border  flex  w-[35.4%] flex-col">
+          <div className="relative h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px] box-border">
+            <div className="mb-[4px] flex w-full flex-row justify-between">
+              <span className="2xl:tex-[25px] w-[68px] text-[20px]  leading-[36.31px] text-[#000000]">
+                A:
+              </span>
+              <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
+                4.124
+              </span>
+              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                km
+              </span>
+              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                dB
+              </span>
+            </div>
+            <div className="mb-[4px] flex w-full flex-row justify-between">
+              <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
+                B:
+              </span>
+              <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
+                4.124
+              </span>
+              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                km
+              </span>
+              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                dB
+              </span>
+            </div>
+            <div className="flex w-full flex-row justify-between">
+              <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
+                A-B:
+              </span>
+              <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
+                4.124
+              </span>
+              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                km
+              </span>
+              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                dB
+              </span>
+            </div>
+          </div>
+          <div className="mt-[10px] flex w-full flex-row justify-between">
+            <button className="flex h-[53px] w-[50px] justify-center items-center  bg-[#C6DFF8]">
+              <MdOutlineArrowBackIos size={40} />
+            </button>
+            <button className="flex justify-center items-center h-[50px] w-[50px] bg-[#C6DFF8] text-[20px]">
+              a
+            </button>
+            <button className="flex justify-center items-center h-[50px] w-[50px] bg-[#C6DFF8] text-[20px]">
+              A
+            </button>
+            <button className="flex justify-center items-center h-[50px] w-[50px] bg-[#C6DFF8] text-[20px]">
+              B
+            </button>
+            <button className="flex h-[50px] justify-center items-center w-[50px] bg-[#C6DFF8] text-[20px]">
+              b
+            </button>
+            <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
+              <MdOutlineArrowBackIos size={40} className="rotate-180" />
+            </button>
+          </div>
+        </div>
+
+
+        
+        <div className="flex h-[195px] w-[63.9%] flex-col">
+          <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
+            <div className="flex h-full w-[265px] flex-col items-center justify-center">
+              <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                Four-Point Loss:
+              </span>
+              <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                0.384 dB
+              </span>
+            </div>
+            <div className="flex h-full w-[265px] flex-col items-center justify-center">
+              <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                Four-Point Loss:
+              </span>
+              <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                0.384 dB
+              </span>
+            </div>
+            <div className="flex h-full w-[265px] flex-col items-center justify-center">
+              <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                Four-Point Loss:
+              </span>
+              <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                0.384 dB
+              </span>
+            </div>
+          </div>
+          <div className="flex w-full flex-row justify-between mt-[10px]">
+            <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+              Event
+            </button>
+            <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+              Section
+            </button>
+            <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+              ORL
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default Chart;
-
-
