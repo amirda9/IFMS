@@ -17,6 +17,7 @@ const RegionStationsPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {newregionstationlist} = useSelector((state: any) => state.network);
   const login = localStorage.getItem('login');
+  const [tabname, setTabname] = useState('Name');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [appendstationsdata, setAppendstationsdata] = useState([]);
   const [removestationsdata, setRemovetationsdata] = useState([]);
@@ -75,38 +76,40 @@ const RegionStationsPage = () => {
 
   useEffect(() => {
     setItemssorted(dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
-  }, [request]);
+  }, [state]);
 
 
 
-  const sortddata = (tabname: string, sortalfabet: boolean) => {
+  const sortddata = (tabnamee: string, sortalfabet: boolean) => {
+    console.log(tabnamee,sortalfabet,'rrrr');
+    
     if (sortalfabet) {
-      if (tabname == 'Name') {
+      if (tabnamee == 'Name') {
         dataa.sort(
           (a: any, b: any) =>
-            -a[tabname.toLocaleLowerCase()].localeCompare(
-              b[tabname.toLocaleLowerCase()],
+            -a[tabnamee.toLocaleLowerCase()].localeCompare(
+              b[tabnamee.toLocaleLowerCase()],
               'en-US',
             ),
         );
       } else {
         dataa.sort(
           (a: any, b: any) =>
-            a[tabname.toLocaleLowerCase()] - b[tabname.toLocaleLowerCase()],
+            a[tabnamee.toLocaleLowerCase()] - b[tabnamee.toLocaleLowerCase()],
         );
       }
     } else {
-      if (tabname == 'Name') {
+      if (tabnamee == 'Name') {
         dataa.sort((a: any, b: any) =>
-          a[tabname.toLocaleLowerCase()].localeCompare(
-            b[tabname.toLocaleLowerCase()],
+          a[tabnamee.toLocaleLowerCase()].localeCompare(
+            b[tabnamee.toLocaleLowerCase()],
             'en-US',
           ),
         );
       } else {
         dataa.sort(
           (a: any, b: any) =>
-            b[tabname.toLocaleLowerCase()] - a[tabname.toLocaleLowerCase()],
+            b[tabnamee.toLocaleLowerCase()] - a[tabnamee.toLocaleLowerCase()],
         );
       }
     }
@@ -156,11 +159,12 @@ const RegionStationsPage = () => {
       <div className="relative h-5/6">
         <Table
           cols={columns}
-          tabicon={'Name'}
           items={itemssorted}
-          onclicktitle={(tabname: string, sortalfabet: boolean) =>
-            sortddata(tabname, sortalfabet)
-          }
+          tabicon={tabname}
+          onclicktitle={(tabname: string, sortalfabet: boolean) => {
+            setTabname(tabname);
+            sortddata(tabname, sortalfabet);
+          }}
           dynamicColumns={['index']}
           renderDynamicColumn={data => data.index + 1}
           containerClassName="w-3/5"
