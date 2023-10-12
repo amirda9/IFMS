@@ -17,6 +17,8 @@ const StationAccessPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [tabname, setTabname] = useState('User');
+
   const [itemssorted, setItemssorted] = useState<
     {
       index: string;
@@ -164,11 +166,12 @@ const StationAccessPage = () => {
               className="h-full">
               <Table
                 dynamicColumns={['index']}
-                renderDynamicColumn={data => data.index}
-                tabicon={'User'}
-                onclicktitle={(tabname: string, sortalfabet: boolean) =>
-                  sortddata(tabname, sortalfabet)
-                }
+                renderDynamicColumn={data => data.index + 1}
+                tabicon={tabname}
+                onclicktitle={(tabname: string, sortalfabet: boolean) => {
+                  setTabname(tabname);
+                  sortddata(tabname, sortalfabet);
+                }}
                 cols={columns}
                 items={itemssorted.length > 0 ? itemssorted : items}
                 containerClassName="w-3/5 mt-[-6px]"

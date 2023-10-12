@@ -37,6 +37,7 @@ const Table = <
   Item extends ItemType<C, DC>,
   DC extends C | never = never,
 >({
+  
   items,
   cols,
   tabicon,
@@ -49,11 +50,23 @@ const Table = <
   onclicktitle=()=>{}
 }: PropsType<C, DC, Item>) => {
   const headerItems = Object.entries(cols) as Array<[C, ColType]>;
+  const [selectedtab,setselectedtab]=useState<string>(tabicon || "")
   const [sortalfabet,setSortalfabet]=useState(true)
-
+const changeTab=(name:string)=>{
+  if(name == selectedtab){
+    onclicktitle(name,sortalfabet)
+  setSortalfabet(!sortalfabet)
+ 
+}else{
+  setselectedtab(name)
+  onclicktitle(name,false)
+  setSortalfabet(true)
+}
+}
+// tabicon && tabicon == col.label?setSortalfabet(!sortalfabet):null
   const renderHeader = ([key, col]: [C, ColType]) => (
     <th
-    onClick={()=>{onclicktitle(col.label,sortalfabet),tabicon && tabicon == col.label?setSortalfabet(!sortalfabet):null}}
+    onClick={()=>{changeTab(col.label)}}
       key={key}
       className={classNames(
         col.size,
