@@ -6,6 +6,7 @@ import {FormLayout} from '~/layout';
 import {useSelector} from 'react-redux';
 import {BASE_URL} from '~/constant';
 import {useNavigate, useParams} from 'react-router-dom';
+
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -25,6 +26,7 @@ const RegionAccessPage = () => {
   >([]);
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {network} = useSelector((state: any) => state);
+  const [tabname, setTabname] = useState('User');
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -66,7 +68,7 @@ const RegionAccessPage = () => {
       }
     },
   });
-  console.log(viewers,'viewersviewersviewers');
+
   
   const saveAdmin = () => {
     const viewerWithoutAdmin =
@@ -160,11 +162,13 @@ const RegionAccessPage = () => {
         <Description label="Region Viewer(s)" items="start" className="h-full">
           <Table
                dynamicColumns={['index']}
-               renderDynamicColumn={data => data.index}
-            tabicon={'User'}
-            onclicktitle={(tabname: string, sortalfabet: boolean) =>
-              sortddata(tabname, sortalfabet)
-            }
+               renderDynamicColumn={data => data.index + 1}
+               tabicon={tabname}
+         
+               onclicktitle={(tabname: string, sortalfabet: boolean) => {
+                setTabname(tabname);
+                sortddata(tabname, sortalfabet);
+              }}
             items={
               itemssorted.length > 0
                 ? itemssorted
