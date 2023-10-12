@@ -5,6 +5,7 @@ import {AccessEnum} from '~/types';
 import {useParams} from 'react-router-dom';
 import {FormLayout} from '~/layout';
 import Cookies from 'js-cookie';
+
 import {BASE_URL, networkExplored} from '~/constant';
 import {useSelector} from 'react-redux';
 const columns = {
@@ -18,6 +19,7 @@ const NetworkAccessPage = () => {
   const login = localStorage.getItem('login');
   const accesstoken=JSON.parse(login || "")?.data.access_token
   const [userrole,setuserrole]=useState<any>("")
+  const [tabname, setTabname] = useState('User');
   const getrole=async()=>{
     const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
       headers: {
@@ -133,10 +135,14 @@ const [itemssorted,setItemssorted]=useState< {
         </Description>
         <Description label="Network Viewer(s)" items="start" className="h-full">
           <Table
-               dynamicColumns={['index']}
-               renderDynamicColumn={data => data.index}
-          onclicktitle={(tabname:string,sortalfabet:boolean)=>sortddata(tabname,sortalfabet)}
-            tabicon={"User"}
+                   dynamicColumns={['index']}
+                   renderDynamicColumn={data => data.index + 1}
+                   tabicon={tabname}
+          onclicktitle={(tabname:string,sortalfabet:boolean)=>{
+            sortddata(tabname,sortalfabet)
+            setTabname(tabname);
+          }}
+ 
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
             items={itemssorted.length>0?itemssorted:items}
