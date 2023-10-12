@@ -23,7 +23,7 @@ const dummy = [
 const LinkAccessPage = () => {
   const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
   const {network} = useSelector((state: any) => state);
-
+  const [tabname,setTabname]=useState("User")
 const [itemssorted,setItemssorted]=useState< {
   index: string;
   user: string;
@@ -149,9 +149,12 @@ const [itemssorted,setItemssorted]=useState< {
           className="h-full text-sm">
           <Table
                dynamicColumns={['index']}
-               renderDynamicColumn={data => data.index}
-            onclicktitle={(tabname:string,sortalfabet:boolean)=>sortddata(tabname,sortalfabet)}
-            tabicon={"User"}
+               renderDynamicColumn={data => data.index+1}
+            onclicktitle={(tabname:string,sortalfabet:boolean)=>{
+              sortddata(tabname,sortalfabet)
+              setTabname(tabname)
+            }}
+            tabicon={tabname}
             cols={columns}
             items={itemssorted.length>0?itemssorted:items}
             containerClassName="w-3/5 mt-[-5px]"
