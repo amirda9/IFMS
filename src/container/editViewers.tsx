@@ -116,6 +116,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       };
     });
   };
+
   const renderDynamicColumn = (side: 'left' | 'right') => {
     return ({value, key, index}: RenderDynamicColumnType) => {
       if (key === 'index') return index + 1;
@@ -278,7 +279,7 @@ useEffect(()=>{
             (groups?.httpRequestStatus !== 'success' && state.group) ||
             (users?.httpRequestStatus !== 'success' && !state.group)
           }
-          tabicon={'User'}
+          tabicon={usertabselected}
           onclicktitle={(tabname: string, sortalfabet: boolean) => {
             setUsertabselected(tabname), setUsertablesort(sortalfabet);
           }}
@@ -322,7 +323,7 @@ useEffect(()=>{
           setVeiwertabselected(tabname), setVeiwertablesort(sortalfabet);
         }}
         cols={columns}
-        tabicon={'User'}
+        tabicon={veiwertabselected}
         items={veiwersssorted.length > 0 ? veiwersssorted : veiwers}
         containerClassName="w-[44%] h-[calc(100vh-260px)] ml-[5px]  overflow-y-auto"
         dynamicColumns={['select', 'index']}
