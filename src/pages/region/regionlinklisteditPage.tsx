@@ -65,7 +65,7 @@ const RegionlinklisteditPage = () => {
   const params = useParams<{regionId: string}>();
   const [mount, setmount] = useState(false);
   const [leftlinksorted, setLeftlinksorted] = useState<UserTableType[]>([]);
-
+  const [tabnameleft, setTabnameleft] = useState('Name');
   const [reightlinksorted, setReightlinksorted] = useState<UserTableType[]>([]);
 const regionlinklist=state.regionLinkList?.data || []
   useEffect(() => {
@@ -162,10 +162,11 @@ const regionlinklist=state.regionLinkList?.data || []
   };
 
   const sortleft = (tabname: string, sortalfabet: boolean) => {
-    const old = [...leftlinksorted];
+    console.log(sortalfabet,'sortalfabet');
+    
+    const old =JSON.parse(JSON.stringify(leftlinksorted))
     if (tabname != 'Index') {
       if (sortalfabet) {
-        if (tabname == 'Name') {
           old.sort(
             (a: any, b: any) =>
               -a[tabname.toLocaleLowerCase()].localeCompare(
@@ -173,26 +174,13 @@ const regionlinklist=state.regionLinkList?.data || []
                 'en-US',
               ),
           );
-        } else {
-          old.sort(
-            (a: any, b: any) =>
-              a[tabname.toLocaleLowerCase()] - b[tabname.toLocaleLowerCase()],
-          );
-        }
       } else {
-        if (tabname == 'Name') {
           old.sort((a: any, b: any) =>
             a[tabname.toLocaleLowerCase()].localeCompare(
               b[tabname.toLocaleLowerCase()],
               'en-US',
             ),
           );
-        } else {
-          old.sort(
-            (a: any, b: any) =>
-              b[tabname.toLocaleLowerCase()] - a[tabname.toLocaleLowerCase()],
-          );
-        }
       }
       setLeftlinksorted(old);
     }
@@ -202,7 +190,7 @@ const regionlinklist=state.regionLinkList?.data || []
     const old = [...reightlinksorted];
     if (tabname != 'Index') {
       if (sortalfabet) {
-        if (tabname == 'Name') {
+
           old.sort(
             (a: any, b: any) =>
               -a[tabname.toLocaleLowerCase()].localeCompare(
@@ -210,26 +198,16 @@ const regionlinklist=state.regionLinkList?.data || []
                 'en-US',
               ),
           );
-        } else {
-          old.sort(
-            (a: any, b: any) =>
-              a[tabname.toLocaleLowerCase()] - b[tabname.toLocaleLowerCase()],
-          );
-        }
+ 
       } else {
-        if (tabname == 'Name') {
+
           old.sort((a: any, b: any) =>
             a[tabname.toLocaleLowerCase()].localeCompare(
               b[tabname.toLocaleLowerCase()],
               'en-US',
             ),
           );
-        } else {
-          old.sort(
-            (a: any, b: any) =>
-              b[tabname.toLocaleLowerCase()] - a[tabname.toLocaleLowerCase()],
-          );
-        }
+     
       }
       setReightlinksorted(old);
     }
@@ -260,7 +238,7 @@ const regionlinklist=state.regionLinkList?.data || []
           setLefttableselecttab(tabname), setLefttablesort(sortalfabet);
         }}
         loading={state.links?.httpRequestStatus !== 'success'}
-        tabicon={'Name'}
+        tabicon={lefttableselecttab}
         cols={columns}
         items={leftlinksorted}
         containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
@@ -295,7 +273,7 @@ const regionlinklist=state.regionLinkList?.data || []
           setReighttableselecttab(tabname), setreighttablesort(sortalfabet);
         }}
         cols={columns}
-        tabicon={'Name'}
+        tabicon={reighttableselecttab}
         items={reightlinksorted}
         containerClassName="w-[44%] h-[calc(100vh-260px)] ml-[5px]  overflow-y-auto"
         dynamicColumns={['select', 'index']}
