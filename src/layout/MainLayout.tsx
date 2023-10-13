@@ -62,7 +62,7 @@ const MainLayout: FC = () => {
           onClick={handleLogout}
         />
       </nav>
-      <div className="flex min-h-[calc(90vh-39px)] flex-row bg-b">
+      <div className="flex min-h-[calc(90vh-34px)] flex-row bg-b">
         <Outlet />
       </div>
       <div className="h-6 bg-p">footer</div>
