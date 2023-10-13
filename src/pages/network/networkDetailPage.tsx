@@ -63,7 +63,7 @@ const NetworkDetailPage = () => {
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
     return <>loading</>;
   return (
-    <div className="flex flex-grow flex-col gap-4">
+    <div className="flex  flex-grow flex-col gap-4">
       <Formik
         enableReinitialize
         initialValues={{
