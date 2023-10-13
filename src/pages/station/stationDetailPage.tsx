@@ -1,6 +1,5 @@
 import {Outlet, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
-import {FormLayout} from '~/layout';
 import {Field, Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
@@ -9,47 +8,43 @@ import {getPrettyDateTime} from '~/util/time';
 import {Request} from '~/hooks/useHttpRequest';
 import {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
-import {BASE_URL} from './../../constant'
+import {BASE_URL} from './../../constant';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
-  description: Yup.string().required('Please enter station comment'),
   latitude: Yup.string().required('Please enter latitude'),
   longitude: Yup.string().required('Please enter longitude'),
 });
 const StationDetailPage = () => {
-  const {regionDetail,networkDetail} = useSelector((state: any) => state.http);
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
-  const accesstoken=JSON.parse(login || "")?.data.access_token
-  const [userrole,setuserrole]=useState<any>("")
-  const getrole=async()=>{
-    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
-        Authorization:`Bearer ${accesstoken}`,
+        Authorization: `Bearer ${accesstoken}`,
         Accept: 'application.json',
-        'Content-Type': 'application/json'},
-    }).then(res =>res.json())
-    setuserrole(role.role)
-  console.log(role,'getrole');
-  }
-useEffect(()=>{
-  getrole()
-},[])
-console.log(BASE_URL,'u');
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
 
   const {stationDetail} = useSelector((state: any) => state.http);
-  console.log(stationDetail, 'stationDetail');
   const params = useParams<{stationId: string}>();
+
   const initialRequests = (request: Request) => {
     request('stationDetail', {params: {station_id: params.stationId!}});
   };
+
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.stationDetail,
       update: state.http.stationUpdate,
     }),
-    // initialRequests: request => {
-    //   request('stationDetail', {params: {station_id:params.stationId!}});
-    // },
     initialRequests,
     onUpdate: (lastState, state) => {
       if (
@@ -57,6 +52,7 @@ console.log(BASE_URL,'u');
         state.update!.httpRequestStatus === 'success'
       ) {
         initialRequests(request);
+        request('allStations', undefined);
       }
     },
   });
@@ -65,7 +61,6 @@ console.log(BASE_URL,'u');
     <Formik
       enableReinitialize
       initialValues={{
-        // name: `Station ${params.stationId}`,
         name: `${state?.detail?.data?.name}`,
         description:
           state?.detail?.data?.versions?.find(
@@ -87,11 +82,9 @@ console.log(BASE_URL,'u');
           )?.time_created || '',
       }}
       onSubmit={values => {
-        console.log(values, 'valuesvalues');
-
         request('stationUpdate', {
           data: {
-            name:values.name,
+            name: values.name,
             longitude: Number(values.longitude),
             latitude: Number(values.latitude),
             description: values.description,
@@ -166,12 +159,9 @@ console.log(BASE_URL,'u');
             </Description>
           </div>
           <div className="absolute bottom-0 right-0 flex flex-row  gap-x-4 self-end">
-            {/* <SimpleBtn
-              onClick={() => {}}>
-              Explore
-            </SimpleBtn>
-            <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
-            {userrole == 'superuser' || stationDetail?.data?.access.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ? (
+            {userrole == 'superuser' ||
+            stationDetail?.data?.access.access == 'ADMIN' ||
+            networkDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"
                 disabled={state?.detail?.httpRequestStatus === 'loading'}>
