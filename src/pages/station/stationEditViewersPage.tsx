@@ -36,7 +36,8 @@ const RegionAccessPage = () => {
       ) {
         editor.current?.setValues(
           viewers.data!.users.map(viewer => viewer.user.id),
-        );
+        )
+       
       }
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
@@ -59,9 +60,10 @@ console.log(viewers,'viewers');
             value => value?.access === AccessEnum.admin,
           );
           const viewerList = editor.current!.values;
+console.log(viewerList,'viewerListviewerList111');
 
           if (admin) {
-            const index = viewerList.indexOf(admin?.user.id);
+            const index = viewerList.findIndex(data => data == admin?.user.id)
             if (index !== -1 && index !== null) {
               viewerList.splice(index, 1);
             }

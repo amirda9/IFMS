@@ -1,9 +1,10 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 import {BASE_URL} from '~/constant';
 import {useHttpRequest} from '~/hooks';
+import { setstationviewers } from '~/store/slices/networkslice';
 import {AccessEnum} from '~/types';
 
 const columns = {
@@ -18,7 +19,7 @@ const StationAccessPage = () => {
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [tabname, setTabname] = useState('User');
-
+  const dispatch = useDispatch();
   const [itemssorted, setItemssorted] = useState<
     {
       index: string;
@@ -69,6 +70,10 @@ const StationAccessPage = () => {
     },
   });
 
+  console.log(users, 'users💋');
+
+  console.log(network?.stationviewers, '😵‍💫');
+
   const saveAdmin = () => {
     const viewerWithoutAdmin =
       viewers?.data?.users
@@ -92,18 +97,38 @@ const StationAccessPage = () => {
       params: {station_id: params.stationId!},
       data: {users: network?.stationviewers},
     });
+    dispatch(setstationviewers([])) 
   };
 
   const body = useMemo(() => {
-    const items = (viewers?.data?.users || [])
+    // const dataa = [];
+    // for (let i = 0; i < network?.stationviewers.length; i++) {
+    //   const findd =
+    //     users?.data?.findIndex(data => data.id == network?.stationviewers[i]) || -1;
+    //   if (findd > -1 && users?.data) {
+    //     dataa.push({
+    //       index: (i + 1).toString(),
+    //       user: users?.data && users?.data[findd]?.username,
+    //       station: (users?.data && users?.data[findd]?.station?.name) || '-',
+    //       region: (users?.data && users?.data[findd]?.region?.name) || '-',
+    //     });
+    //   }
+    // }
+
+    const items =(viewers?.data?.users || [])
       .filter(value => value.access !== AccessEnum.admin)
       .map((value, index) => ({
         index: (index + 1).toString(),
         user: value.user.username,
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
-      }))
-      .sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
+      }));
+
+    // for (let j = 0; j < dataa.length; j++) {
+    //   items.push(dataa[j]);
+    // }
+
+    items.sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
 
     const sortddata = (tabname: string, sortalfabet: boolean) => {
       if (sortalfabet) {
