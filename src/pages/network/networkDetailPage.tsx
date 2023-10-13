@@ -10,46 +10,36 @@ import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
-import {BASE_URL} from './../../constant'
+import {BASE_URL} from './../../constant';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
-  description: Yup.string().required('Please enter network description'),
 });
 const NetworkDetailPage = () => {
   const login = localStorage.getItem('login');
-  const accesstoken=JSON.parse(login || "")?.data.access_token
-  const [userrole,setuserrole]=useState<any>("")
-  const getrole=async()=>{
-    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
-        Authorization:`Bearer ${accesstoken}`,
+        Authorization: `Bearer ${accesstoken}`,
         Accept: 'application.json',
-        'Content-Type': 'application/json'},
-    }).then(res =>res.json())
-    setuserrole(role.role)
-  console.log(role,'getrole');
-  }
-useEffect(()=>{
-  getrole()
-},[])
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const {networkDetail} = useSelector((state: any) => state.http);
-  console.log(
-    networkDetail?.data?.access?.access,
-    'networkDetailnetworkDetailnetworkDetail',
-  );
+
   const params = useParams<{networkId: string}>();
   const [dataa, setdataa] = useState(0);
   const navigate = useNavigate();
   const initialRequests = (request: Request) => {
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
-  console.log(typeof params.networkId, 'params');
-  // useEffect(() => {
-  //   Cookies.set('networkExplored', params.networkId!);
-  // }, []);
-  // useEffect(()=>{
-  //   setdataa(dataa+1)
-  // },[])
+
   const {
     state: {detail, update},
     request,
@@ -64,22 +54,14 @@ useEffect(()=>{
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
+        request('networkList', undefined);
         initialRequests(request);
       }
     },
   });
 
-  // console.log(update, 'lklklk')
-  console.log(detail, 'ppp');
-  // update?.data.id
-
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
     return <>loading</>;
-
-  // name:detail?.data?.current_version.id == update?.data?.id ?update?.request?.data.name:
-  // name:detail!.data!.versions.find(
-  //   version => version.id === update?.data?.id
-  // )?.id ?update?.request?.data.name:
   return (
     <div className="flex flex-grow flex-col gap-4">
       <Formik
@@ -92,8 +74,6 @@ useEffect(()=>{
             )?.description || '',
         }}
         onSubmit={values => {
-          console.log(values, 'valuesvalues');
-
           request('networkUpdate', {
             data: values,
             params: {networkId: params.networkId!},
@@ -129,7 +109,8 @@ useEffect(()=>{
               Explore
             </SimpleBtn>
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
-            {userrole == 'superuser' || networkDetail?.data?.access?.access == 'ADMIN' ? (
+            {userrole == 'superuser' ||
+            networkDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"
                 disabled={update?.httpRequestStatus === 'loading'}>
