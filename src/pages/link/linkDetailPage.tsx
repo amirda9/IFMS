@@ -18,7 +18,7 @@ const typeoptions = [
 const LinkDetailPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {type} = useSelector((state: any) => state.network);
-  console.log(type,'typetype');
+
   
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
@@ -49,6 +49,14 @@ const LinkDetailPage = () => {
       request('linkDetail', {params: {link_id: params.linkId!}});
       if (networkId) {
         request('allStations', undefined);
+      }
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        request('allLinks', undefined);
       }
     },
   });
@@ -103,15 +111,6 @@ const LinkDetailPage = () => {
         version => version.id === state?.detail?.data?.current_version?.id,
       )?.type || '',
     );
-    console.log(state?.detail?.data?.versions?.find(
-      version => version.id === state?.detail?.data?.current_version?.id,
-    )?.type ,'ttttttttttttttttttt');
-    
-    // setdefaulttype(
-    //   state?.detail?.data?.versions?.find(
-    //     version => version.id === state?.detail?.data?.current_version?.id,
-    //   )?.type || '',
-    // );
 
     let data: any = [];
     if (state.stations) {
@@ -167,14 +166,7 @@ const LinkDetailPage = () => {
           description: comment,
           name:name,
           link_points: [
-            {
-              latitude: 1,
-              longitude: 1,
-            },
-            {
-              latitude: 1,
-              longitude: 1,
-            },
+        
           ],
           source_id: source,
           destination_id: destinationid,
@@ -207,12 +199,6 @@ const LinkDetailPage = () => {
       <div className="relative mt-[20px] flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Comment</div>
         <textarea
-          // defaultValue={
-          //   state?.detail?.data?.versions?.find(
-          //     version =>
-          //       version.id === state?.detail?.data?.current_version?.id,
-          //   )?.description || ''
-          // }
           value={comment}
           onChange={(e: any) => {
             setComment(e.target.value), setCommmenerror('');
