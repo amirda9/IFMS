@@ -165,14 +165,7 @@ console.log(stations,'stations');
           source_id: source,
           destination_id: destinationid,
           link_points: [
-            {
-              latitude: 1,
-              longitude: 1,
-            },
-            {
-              latitude: 0,
-              longitude: 0,
-            },
+       
           ],
           // region_id:"",
           description: comment,

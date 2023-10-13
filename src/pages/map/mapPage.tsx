@@ -158,7 +158,7 @@ const MapPage = () => {
     return (
       <div
         style={{
-          top: `${mousePosition.y - 245}px`,
+          top: `${mousePosition.y - 335}px`,
           left: `${mousePosition.x - 100}px`,
         }}
         className={`absolute z-[1000]   h-[240px] w-[220px] flex-col bg-[#E7EFF7]`}>
@@ -550,6 +550,7 @@ const MapPage = () => {
                 );
 
                 return (
+                  <>
                   <Polyline
                     key={index}
                     eventHandlers={{
@@ -570,7 +571,38 @@ const MapPage = () => {
                       [start.latitude, start.longitude],
                       [end.latitude, end.longitude],
                     ]}
-                    color="red"></Polyline>
+               
+                    color="red">
+                   
+                    </Polyline>
+
+                    <Polyline
+                    key={index}
+                    weight={5}
+                    eventHandlers={{
+                      click: e => {
+                        setRightbarState('link');
+                        setSelectedLink(data);
+                      },
+                      mouseover: e => {
+                        setShowlinltoolkit(true);
+                        setSelectedLink(data);
+                      },
+                      mouseout: e => {
+                        setShowlinltoolkit(false);
+                     
+                      },
+                    }}
+                    positions={[
+                      [start.latitude, start.longitude],
+                      [end.latitude, end.longitude],
+                    ]}
+                    pathOptions={{color:"black",weight:20,opacity:0}}
+                    // color="black"
+                    >
+                   
+                    </Polyline>
+                    </>
                 );
               })}
             </>
@@ -589,3 +621,5 @@ const MapPage = () => {
 };
 
 export default MapPage;
+
+
