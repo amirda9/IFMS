@@ -8,7 +8,6 @@ import {useNavigate} from 'react-router-dom';
 
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
-  description: Yup.string().required('Please enter network description'),
 });
 const NetworkCreatePage = () => {
   const navigate = useNavigate();
