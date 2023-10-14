@@ -4,6 +4,10 @@ type veiwerlists = {
   payload: string[];
   type: string;
 };
+type veiwerlistsstatus = {
+  payload: boolean;
+  type: string;
+};
 type linkpoints = {
   payload: {latitude: number; longitude: number}[];
   type: string;
@@ -11,6 +15,7 @@ type linkpoints = {
 const initialState = {
   type: 'Cable',
   networkviewers: [],
+  networkviewersstatus:false,
   regionviewers: [],
   stationviewers: [],
   linkviewers: [],
@@ -27,6 +32,9 @@ const changetyperstate = createSlice({
     },
     setnetworkviewers: (state, action: veiwerlists) => {
       state.networkviewers = action.payload;
+    },
+    setnetworkviewersstatus: (state, action: veiwerlistsstatus) => {
+      state.networkviewersstatus = action.payload;
     },
     setregionviewers: (state, action: veiwerlists) => {
       state.regionviewers = action.payload;
@@ -53,7 +61,8 @@ export const {
   setstationviewers,
   setlinkviewers,
   setnewregionstationlist,
-  setnewregionlinklist
+  setnewregionlinklist,
+  setnetworkviewersstatus
 } = changetyperstate.actions;
 
 export default changetyperstate.reducer;

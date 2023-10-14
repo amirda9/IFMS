@@ -7,14 +7,16 @@ import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 import {useDispatch, useSelector} from 'react-redux';
-import {setnetworkviewers} from './../../store/slices/networkslice'
-import { LoginPage } from '../auth';
+import {
+  setnetworkviewers,
+  setnetworkviewersstatus,
+} from './../../store/slices/networkslice';
+import {LoginPage} from '../auth';
 const NetworkAccessPage = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
   const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
-  console.log(editor,'editor');
-  
+
   const params = useParams<{networkId: string}>();
   const navigate = useNavigate();
   const {
@@ -51,42 +53,39 @@ const NetworkAccessPage = () => {
     },
   });
 
-  console.log(viewers, 'viewers');
-
   const buttons = (
     <div className="mt-[25px] w-auto ">
+      <SimpleBtn
+        className="mt-[25px] h-[40px] w-[149px]"
+        disabled={update?.httpRequestStatus === 'loading'}
+        onClick={() => {
+          const admin = viewers?.data?.users?.find(
+            value => value.access === AccessEnum.admin,
+          );
+          const viewerList = editor.current!.values;
 
-        <SimpleBtn
-          className="mt-[25px] h-[40px] w-[149px]"
-          disabled={update?.httpRequestStatus === 'loading'}
-          onClick={() => {
-            console.log(viewers?.data,'viewers?.data');
-            const admin = viewers?.data?.users?.find(
-              value => value.access === AccessEnum.admin,
-            );
-            const viewerList = editor.current!.values;
-
-            console.log(viewerList,'viewerList');
-            if (admin) {
-              const index = viewerList.indexOf(admin.user.id);
-              if (index !== -1 && index !== null) {
+          if (admin) {
+            const index = viewerList.indexOf(admin.user.id);
+            if (index !== -1 && index !== null) {
               viewerList.splice(index, 1);
-              }
             }
-            const users = viewerList.map(value => value);
-            console.log(users,'usersppppp');
-            
-           dispatch(setnetworkviewers(users)) 
-            navigate(-1)
-            // request('networkAccessUpdate', {
-            //   params: {network_id: params.networkId!},
-            //   data: {users},
-            // });
-          }}>
-          OK
-        </SimpleBtn>
+          }
+          const users = viewerList.map(value => value);
 
-      <SimpleBtn className="ml-2 px-14 py-[12px] " to="./../access" link>
+          dispatch(setnetworkviewers(users));
+          dispatch(setnetworkviewersstatus(true));
+          navigate(-1);
+        }}>
+        OK
+      </SimpleBtn>
+
+      <SimpleBtn
+        onClick={() => {
+          dispatch(setnetworkviewers([])),
+            dispatch(setnetworkviewersstatus(false)),
+            navigate(-1);
+        }}
+        className="ml-2 px-14 py-[12px]">
         <span>Cancel</span>
       </SimpleBtn>
     </div>
@@ -110,5 +109,3 @@ const NetworkAccessPage = () => {
 };
 
 export default NetworkAccessPage;
-
-
