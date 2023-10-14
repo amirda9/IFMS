@@ -212,7 +212,7 @@ const StationAccessPage = () => {
             {userrole == 'superuser' ||
             http.stationDetail?.data?.access.access == 'ADMIN' ||
             networkDetail?.data?.access?.access == 'ADMIN' ? (
-              <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
+              <SimpleBtn onClick={network.stationviewersstatus?saveAdmin:()=>{}}>Save</SimpleBtn>
             ) : null}
             <SimpleBtn onClick={()=>{dispatch(setstationviewers([])), dispatch(setstationviewersstatus(false));} }>Cancel</SimpleBtn>
           </div>
