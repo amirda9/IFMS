@@ -41,7 +41,7 @@ const LinkCablesAndSegmentsPage = () => {
       },
     }).then(res => res.json());
     setuserrole(role.role);
-    console.log(role, 'getrole');
+   
   };
   useEffect(() => {
     getrole();
@@ -95,7 +95,7 @@ const LinkCablesAndSegmentsPage = () => {
     selector: state => ({
       detail: state.http.linkDetail,
       stations: state.http.allStations,
-      update:state.http.linkupdatecables
+      update: state.http.linkupdatecables,
     }),
     initialRequests: request => {
       request('linkDetail', {params: {link_id: params.linkId!}});
@@ -114,7 +114,7 @@ const LinkCablesAndSegmentsPage = () => {
   });
 
   useEffect(() => {
-    console.log(state?.detail?.data?.data, 'detaildetail44');
+
     const Cables = state?.detail?.data?.data?.cables || [];
     const Ducts = state?.detail?.data?.data?.ducts || [];
     let allcables = JSON.parse(JSON.stringify(Cables));
@@ -194,12 +194,21 @@ const LinkCablesAndSegmentsPage = () => {
     name: string,
   ) => {
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
+    let beforadddata2 = JSON.parse(JSON.stringify(parentcabl?.cables));
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
     const findcableslicecabl = beforadddata[findcable].segments.findIndex(
       (data: any) => data.id == slicecablId,
     );
     beforadddata[findcable].segments[findcableslicecabl][name] =
       name == 'fiber_type' ? x : Number(x);
+    if (name == 'start') {
+
+      console.log(beforadddata[findcable].segments[findcableslicecabl - 1].length,'🤩');
+      console.log(beforadddata2[findcable].segments[(findcableslicecabl - 1)].length-Number(x),'😘');
+      
+      // beforadddata[findcable].segments[findcableslicecabl - 1].length=beforadddata2[findcable].segments[(findcableslicecabl - 1)].length-Number(x);
+
+    }
     setParentcable({cables: beforadddata, ducts: []});
   };
 
@@ -322,7 +331,7 @@ const LinkCablesAndSegmentsPage = () => {
       offset: number;
       loss: number;
       fiber_type: string;
-      fixId:boolean
+      fixId: boolean;
     }[] = [];
 
     for (let i = 0; i < beforslicecabl.length; i++) {
@@ -333,7 +342,7 @@ const LinkCablesAndSegmentsPage = () => {
         offset: beforslicecabl[i]?.offset,
         loss: beforslicecabl[i]?.loss,
         fiber_type: beforslicecabl[i]?.fiber_type,
-        fixId:beforslicecabl[i]?.fixId || false
+        fixId: beforslicecabl[i]?.fixId || false,
       });
     }
 
@@ -462,6 +471,8 @@ const LinkCablesAndSegmentsPage = () => {
                     </div>
                     {data?.segments?.map((dataa: any, index: number) => {
                       let finddata = finddataindex(data.cableId);
+                      // console.log(data.segments[index-1],'😁');
+                      
                       return (
                         <div className="w-full" key={index}>
                           <div
@@ -470,14 +481,18 @@ const LinkCablesAndSegmentsPage = () => {
                             <div className="flex w-full flex-row">
                               <div className="flex w-1/5 justify-center">
                                 <TextInput
-                                  value={dataa.start}
-                                  onChange={e =>
-                                    setcableslicecabsegment(
-                                      data.id,
-                                      dataa.id,
-                                      e.target.value,
-                                      'start',
-                                    )
+                                  defaultValue={10}
+                                  value={index == 0?0:dataa.start == 0?data.segments[index-1].length+0.001:dataa.start}
+                                  onChange={
+                                    index == 0
+                                      ? () => {}
+                                      : e =>
+                                          setcableslicecabsegment(
+                                            data.id,
+                                            dataa.id,
+                                            e.target.value,
+                                            'start',
+                                          )
                                   }
                                   className="w-28"
                                   type="number"

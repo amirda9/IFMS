@@ -131,6 +131,11 @@ const LinkCablesAndSegmentsPage = () => {
     );
     beforadddata[findcable].segments[findcableslicecabl][name] =
       name == 'fiber_type' ? x : Number(x);
+      if (name == 'start') {
+
+        beforadddata[findcable].segments[(findcableslicecabl - 1)].length=beforadddata[findcable].segments[(findcableslicecabl - 1)].length-Number(x);
+  
+      }
     setParentcable({cables:parentcabl?.cables || [], ducts: beforadddata});
   };
 
@@ -586,8 +591,8 @@ const LinkCablesAndSegmentsPage = () => {
                           <div className="flex w-full flex-row">
                             <div className=" flex w-1/5 justify-center">
                               <TextInput
-                                value={dataa.start}
-                                onChange={e =>
+                                  value={index == 0?0:dataa.start == 0?data.segments[index-1].length+0.001:dataa.start}
+                                onChange={ index== 0?()=>{}:e =>
                                   setcableslicecabsegment(
                                     data.id,
                                     dataa.id,
