@@ -6,11 +6,16 @@ import {networkExplored} from '~/constant';
 
 import Cookies from 'js-cookie';
 import {useNavigate, useParams} from 'react-router-dom';
-import {setnewregionstationlist} from './../../store/slices/networkslice';
-import {useDispatch} from 'react-redux';
+import {
+  setnewregionstationlist,
+  setnewregionstationliststatus,
+} from './../../store/slices/networkslice';
+import {useDispatch, useSelector} from 'react-redux';
 type UserTableType = {
   id: string;
   name: string;
+  latitude: string;
+  longitude: string;
 };
 type RenderDynamicColumnType = {
   index: number;
@@ -34,6 +39,7 @@ const columns = {
 };
 // *****************************************************************************
 const RegionstationlisteditPage = () => {
+  const {network} = useSelector((state: any) => state);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {state} = useHttpRequest({
@@ -50,20 +56,25 @@ const RegionstationlisteditPage = () => {
   });
   const allstations =
     removeCommon(state?.stations?.data, state?.regionstationlist?.data)?.map(
-      (data: any) => ({id: data?.id, name: data?.name}),
+      (data: any) => ({
+        id: data?.id,
+        name: data?.name,
+        latitude: '-',
+        longitude: '-',
+      }),
     ) || [];
   const allsregiontations =
     state?.regionstationlist?.data?.map((data: any) => ({
       id: data?.id,
       name: data?.name,
+      latitude: '-',
+      longitude: '-',
     })) || [];
 
   const networkId = Cookies.get(networkExplored);
   const params = useParams<{regionId: string}>();
   const [leftstationsorted, setLeftstationssorted] =
     useState<UserTableType[]>(allstations);
-
-
 
   useEffect(() => {
     dispatch(setnewregionstationlist([]));
@@ -105,7 +116,6 @@ const RegionstationlisteditPage = () => {
       }
     };
 
-
   const renderDynamicColumn = (side: 'left' | 'right') => {
     return ({value, key, index}: RenderDynamicColumnType) => {
       if (key === 'index') return index + 1;
@@ -123,18 +133,16 @@ const RegionstationlisteditPage = () => {
   };
 
   const savestations = () => {
-    let dataa = reightstationsorted.map((data: UserTableType) => data.id);
+    let dataa = reightstationsorted;
     dispatch(setnewregionstationlist(dataa));
+    dispatch(setnewregionstationliststatus(true));
     navigate(-1);
   };
   // ------------------------------------------------------------------------
   return (
     <div className="mb-2 flex h-[calc(100vh-150px)]  w-full flex-row items-center justify-between p-6 pb-2">
       <Table
-        loading={
-
-          (state.stations?.httpRequestStatus !== 'success')
-        }
+        loading={state.stations?.httpRequestStatus !== 'success'}
         tabicon={'Name'}
         onclicktitle={(tabname: string, sortalfabet: boolean) => {
           const dataa = [...leftstationsorted];
@@ -172,10 +180,7 @@ const RegionstationlisteditPage = () => {
       />
 
       <Table
-    loading={
-
-     (state.regionstationlist?.httpRequestStatus !== 'success')
-   }
+        loading={state.regionstationlist?.httpRequestStatus !== 'success'}
         onclicktitle={(tabname: string, sortalfabet: boolean) => {
           const dataa = [...reightstationsorted];
           if (sortalfabet) {
@@ -198,7 +203,10 @@ const RegionstationlisteditPage = () => {
         </SimpleBtn>
         <SimpleBtn
           onClick={() => {
-            dispatch(setnewregionstationlist(allsregiontations.map((data)=>data.id)));
+            dispatch(
+              setnewregionstationlist(allsregiontations.map(data => data.id)),
+            );
+            dispatch(setnewregionstationliststatus(false));
             navigate(-1);
           }}>
           Cancel
