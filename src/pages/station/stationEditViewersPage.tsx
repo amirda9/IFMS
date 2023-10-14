@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {SimpleBtn, Switch} from '~/components';
 import {FormLayout} from '~/layout';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -6,14 +6,19 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-import {useDispatch, useSelector} from 'react-redux';
-import {setstationviewers} from './../../store/slices/networkslice'
+import {useDispatch} from 'react-redux';
+import {setstationviewers} from './../../store/slices/networkslice';
 
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{stationId: string}>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setstationviewers([]);
+  }, []);
+
   const {
     request,
     state: {viewers, update},
@@ -36,8 +41,7 @@ const RegionAccessPage = () => {
       ) {
         editor.current?.setValues(
           viewers.data!.users.map(viewer => viewer.user.id),
-        )
-       
+        );
       }
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
@@ -49,8 +53,6 @@ const RegionAccessPage = () => {
     },
   });
 
-console.log(viewers,'viewers');
-
   const buttons = (
     <>
       <SimpleBtn
@@ -60,18 +62,17 @@ console.log(viewers,'viewers');
             value => value?.access === AccessEnum.admin,
           );
           const viewerList = editor.current!.values;
-console.log(viewerList,'viewerListviewerList111');
 
           if (admin) {
-            const index = viewerList.findIndex(data => data == admin?.user.id)
+            const index = viewerList.findIndex(data => data == admin?.user.id);
             if (index !== -1 && index !== null) {
               viewerList.splice(index, 1);
             }
           }
 
           const users = viewerList.map(value => value);
-          dispatch(setstationviewers(users)) 
-          navigate(-1)
+          dispatch(setstationviewers(users));
+          navigate(-1);
           // request('stationAccessUpdate', {
           //   params: {station_id: params.stationId!},
           //   data: {users},
@@ -79,7 +80,11 @@ console.log(viewerList,'viewerListviewerList111');
         }}>
         OK
       </SimpleBtn>
-      <SimpleBtn link to="../">
+      <SimpleBtn
+        onClick={() => {
+          dispatch(setstationviewers([]));
+          navigate(-1);
+        }}>
         Cancel
       </SimpleBtn>
     </>

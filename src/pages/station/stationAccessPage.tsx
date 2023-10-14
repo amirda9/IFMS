@@ -70,10 +70,6 @@ const StationAccessPage = () => {
     },
   });
 
-  console.log(users, 'users💋');
-
-  console.log(network?.stationviewers, '😵‍💫');
-
   const saveAdmin = () => {
     const viewerWithoutAdmin =
       viewers?.data?.users
@@ -100,22 +96,23 @@ const StationAccessPage = () => {
     dispatch(setstationviewers([])) 
   };
 
-  const body = useMemo(() => {
-    // const dataa = [];
-    // for (let i = 0; i < network?.stationviewers.length; i++) {
-    //   const findd =
-    //     users?.data?.findIndex(data => data.id == network?.stationviewers[i]) || -1;
-    //   if (findd > -1 && users?.data) {
-    //     dataa.push({
-    //       index: (i + 1).toString(),
-    //       user: users?.data && users?.data[findd]?.username,
-    //       station: (users?.data && users?.data[findd]?.station?.name) || '-',
-    //       region: (users?.data && users?.data[findd]?.region?.name) || '-',
-    //     });
-    //   }
-    // }
+  var dataa:any= [];
+  for (let i = 0; i < network?.stationviewers.length; i++) {
+    const findd =
+      users!.data!.findIndex(data => data.id == network?.stationviewers[i]);
+    if (findd > -1) {
+      dataa.push({
+        index: (i + 1).toString(),
+        user: users?.data && users?.data[findd]?.username,
+        station: (users?.data && users?.data[findd]?.station?.name) || '-',
+        region: (users?.data && users?.data[findd]?.region?.name) || '-',
+      });
+    }
+  }
 
-    const items =(viewers?.data?.users || [])
+
+  const body = useMemo(() => {
+    const items =dataa.length>0?dataa.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US')):(viewers?.data?.users || [])
       .filter(value => value.access !== AccessEnum.admin)
       .map((value, index) => ({
         index: (index + 1).toString(),
@@ -128,7 +125,7 @@ const StationAccessPage = () => {
     //   items.push(dataa[j]);
     // }
 
-    items.sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
+    items.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US'));
 
     const sortddata = (tabname: string, sortalfabet: boolean) => {
       if (sortalfabet) {
@@ -216,7 +213,7 @@ const StationAccessPage = () => {
             networkDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
             ) : null}
-            <SimpleBtn>Cancel</SimpleBtn>
+            <SimpleBtn onClick={()=>dispatch(setstationviewers([])) }>Cancel</SimpleBtn>
           </div>
         </div>
       </>
@@ -226,6 +223,7 @@ const StationAccessPage = () => {
     users?.httpRequestStatus,
     userAdmin,
     itemssorted,
+    network?.stationviewers
   ]);
 
   return <>{body}</>;
