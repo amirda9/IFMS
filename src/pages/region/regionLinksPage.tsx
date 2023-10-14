@@ -6,7 +6,8 @@ import {useSelector} from 'react-redux';
 import {BASE_URL} from '~/constant';
 import {BsChevronDown} from 'react-icons/bs';
 import {string} from 'yup';
-
+import {setnewregionlinklist,setnewregionlinkliststatus} from './../../store/slices/networkslice';
+import {useDispatch} from 'react-redux';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   name: {label: 'Name', size: 'w-[30%]', sort: true},
@@ -16,7 +17,8 @@ const columns = {
 
 const RegionLinksPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
-  const {newregionlinklist} = useSelector((state: any) => state.network);
+  const dispatch=useDispatch()
+  const {newregionlinklist,newregionlinkliststatus} = useSelector((state: any) => state.network);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -74,14 +76,22 @@ const RegionLinksPage = () => {
       destination: link?.destination,
     })) || [];
 
+    console.log(list,'list');
+    
 
   useEffect(() => {
-    setItemssorted(items.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
-  }, [request]);
+    if(newregionlinkliststatus){
+      setItemssorted(newregionlinklist);
+    }else{
+      setItemssorted(items.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
+
+    }
+  }, [newregionlinkliststatus]);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
+    const newitem=newregionlinkliststatus?[...newregionlinklist]:[...items]
     if (sortalfabet) {
-      items.sort(
+      newitem.sort(
         (a: any, b: any) =>
           -a[tabname.toLowerCase()].localeCompare(
             b[tabname.toLowerCase()],
@@ -89,23 +99,23 @@ const RegionLinksPage = () => {
           ),
       );
     } else {
-      items.sort((a: any, b: any) =>
+      newitem.sort((a: any, b: any) =>
         a[tabname.toLowerCase()].localeCompare(
           b[tabname.toLowerCase()],
           'en-US',
         ),
       );
     }
-    setItemssorted(items);
+    setItemssorted(newitem);
   };
 
   const save = () => {
     const appenddata = [];
     const removedata = [];
     const alllist = list?.data || [];
-
+    const newregionlinklist2=newregionlinklist.map((data:any) => data.id)
     for (let i = 0; i < alllist.length; i++) {
-      const find = newregionlinklist.findIndex(
+      const find = newregionlinklist2.findIndex(
         (data: any) => data == alllist[i].id,
       );
       if (find < 0) {
@@ -113,12 +123,12 @@ const RegionLinksPage = () => {
       }
     }
 
-    for (let j = 0; j < newregionlinklist.length; j++) {
+    for (let j = 0; j < newregionlinklist2.length; j++) {
       const find = alllist.findIndex(
-        (data: any) => data.id == newregionlinklist[j],
+        (data: any) => data.id == newregionlinklist2[j],
       );
       if (find < 0) {
-        appenddata.push(newregionlinklist[j]);
+        appenddata.push(newregionlinklist2[j]);
       }
     }
 
@@ -134,6 +144,9 @@ const RegionLinksPage = () => {
         data: {links_id: removedata || []},
       });
     }
+
+    dispatch(setnewregionlinkliststatus(false))
+    dispatch(setnewregionlinklist([]))
   };
 
   return (
@@ -164,9 +177,12 @@ const RegionLinksPage = () => {
         {userrole == 'superuser' ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
-          <SimpleBtn onClick={save}>Save</SimpleBtn>
+          <SimpleBtn onClick={newregionlinkliststatus?save:()=>{}}>Save</SimpleBtn>
         ) : null}
-        <SimpleBtn>Cancel</SimpleBtn>
+        <SimpleBtn onClick={()=>{
+          dispatch(setnewregionlinkliststatus(false))
+          dispatch(setnewregionlinklist([]))
+        }}>Cancel</SimpleBtn>
       </div>
     </div>
   );

@@ -3,12 +3,11 @@ import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
 import {useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {networkExplored} from '~/constant';
-
 import Cookies from 'js-cookie';
 import {useNavigate, useParams} from 'react-router-dom';
-import {setnewregionlinklist} from './../../store/slices/networkslice';
+import {setnewregionlinklist,setnewregionlinkliststatus} from './../../store/slices/networkslice';
 import {useDispatch} from 'react-redux';
-import { array } from 'yup';
+import {array} from 'yup';
 type UserTableType = {
   id: string;
   name: string;
@@ -38,7 +37,7 @@ const columns = {
   source: {label: 'Source', size: 'w-[28%]'},
   destination: {label: 'Destination', size: 'w-[28%]'},
 };
-// *****************************************************************************
+// *************************************************************************************
 const RegionlinklisteditPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,7 +54,8 @@ const RegionlinklisteditPage = () => {
     },
   });
 
-  
+  console.log(state?.links?.data, '😁');
+
   const [change, setCange] = useState(false);
   const [lefttableselecttab, setLefttableselecttab] = useState('Name');
   const [reighttableselecttab, setReighttableselecttab] = useState('Name');
@@ -67,26 +67,27 @@ const RegionlinklisteditPage = () => {
   const [leftlinksorted, setLeftlinksorted] = useState<UserTableType[]>([]);
   const [tabnameleft, setTabnameleft] = useState('Name');
   const [reightlinksorted, setReightlinksorted] = useState<UserTableType[]>([]);
-const regionlinklist=state.regionLinkList?.data || []
+  const regionlinklist = state.regionLinkList?.data || [];
   useEffect(() => {
     dispatch(setnewregionlinklist([]));
     setReightlinksorted(
-      state.regionLinkList?.data?.map((data: any) => ({
-        id: data?.id,
-        name: data?.name,
-        source: data?.source,
-        destination: data?.destination,
-      }))?.sort((a:any, b:any) =>
-        a?.name?.localeCompare(b?.name, 'en-US'),
-      ) || [],
+      state.regionLinkList?.data
+        ?.map((data: any) => ({
+          id: data?.id,
+          name: data?.name,
+          source: data?.source,
+          destination: data?.destination,
+        }))
+        ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
+        [],
     );
     setLeftlinksorted(
       removeCommon(
         state?.links?.data?.map(data => ({
           id: data?.id,
           name: data?.name,
-          source:data?.source?.name,
-          destination:data?.destination?.name,
+          source: data?.source?.name,
+          destination: data?.destination?.name,
         })),
         state?.regionLinkList?.data,
       )
@@ -96,7 +97,8 @@ const regionlinklist=state.regionLinkList?.data || []
           source: data?.source,
           destination: data?.destination,
         }))
-        ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) || [],
+        ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
+        [],
     );
   }, []);
 
@@ -156,31 +158,40 @@ const regionlinklist=state.regionLinkList?.data || []
   };
 
   const savestations = () => {
-    let dataa = reightlinksorted.map((data: UserTableType) => data.id);
+
+    console.log(reightlinksorted,'🥰😘');
+    let dataa = reightlinksorted.map((data: any) => ({
+      name: data?.name,
+      id:data.id,
+      source: data?.source,
+      destination: data?.destination,
+    })).sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
+    console.log(dataa,'🥰');
     dispatch(setnewregionlinklist(dataa));
+    dispatch(setnewregionlinkliststatus(true))
     navigate(-1);
   };
 
   const sortleft = (tabname: string, sortalfabet: boolean) => {
-    console.log(sortalfabet,'sortalfabet');
-    
-    const old =JSON.parse(JSON.stringify(leftlinksorted))
+    console.log(sortalfabet, 'sortalfabet');
+
+    const old = JSON.parse(JSON.stringify(leftlinksorted));
     if (tabname != 'Index') {
       if (sortalfabet) {
-          old.sort(
-            (a: any, b: any) =>
-              -a[tabname.toLocaleLowerCase()].localeCompare(
-                b[tabname.toLocaleLowerCase()],
-                'en-US',
-              ),
-          );
-      } else {
-          old.sort((a: any, b: any) =>
-            a[tabname.toLocaleLowerCase()].localeCompare(
+        old.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
               b[tabname.toLocaleLowerCase()],
               'en-US',
             ),
-          );
+        );
+      } else {
+        old.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
       }
       setLeftlinksorted(old);
     }
@@ -190,24 +201,20 @@ const regionlinklist=state.regionLinkList?.data || []
     const old = [...reightlinksorted];
     if (tabname != 'Index') {
       if (sortalfabet) {
-
-          old.sort(
-            (a: any, b: any) =>
-              -a[tabname.toLocaleLowerCase()].localeCompare(
-                b[tabname.toLocaleLowerCase()],
-                'en-US',
-              ),
-          );
- 
-      } else {
-
-          old.sort((a: any, b: any) =>
-            a[tabname.toLocaleLowerCase()].localeCompare(
+        old.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
               b[tabname.toLocaleLowerCase()],
               'en-US',
             ),
-          );
-     
+        );
+      } else {
+        old.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
       }
       setReightlinksorted(old);
     }
@@ -286,9 +293,10 @@ const regionlinklist=state.regionLinkList?.data || []
         <SimpleBtn
           onClick={() => {
             dispatch(
-              setnewregionlinklist(
-                state?.regionLinkList?.data?.map((data: any) => data?.id) || [],
-              ),
+              setnewregionlinkliststatus(false)
+              // setnewregionlinklist(
+              //   state?.regionLinkList?.data?.map((data: any) => data?.id) || [],
+              // ),
             );
             navigate(-1);
           }}>

@@ -8,6 +8,10 @@ type staionveiwerlists = {
   payload: {id: string; name: string; latitude: string; longitude: string}[];
   type: string;
 };
+type linkveiwerlists = {
+  payload: {id: string; name: string; source: string; destination: string}[];
+  type: string;
+};
 type veiwerlistsstatus = {
   payload: boolean;
   type: string;
@@ -69,11 +73,11 @@ const changetyperstate = createSlice({
     setnewregionstationliststatus: (state, action: veiwerlistsstatus) => {
       state.newregionstationliststatus = action.payload;
     },
-    setnewregionlinklist: (state, action: veiwerlists) => {
+    setnewregionlinklist: (state, action: linkveiwerlists) => {
       state.newregionlinklist = action.payload;
     },
     setnewregionlinkliststatus: (state, action: veiwerlistsstatus) => {
-      state.newregionlinklist = action.payload;
+      state.newregionlinkliststatus = action.payload;
     },
   },
 });
