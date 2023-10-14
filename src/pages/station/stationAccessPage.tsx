@@ -4,7 +4,7 @@ import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 import {BASE_URL} from '~/constant';
 import {useHttpRequest} from '~/hooks';
-import { setstationviewers } from '~/store/slices/networkslice';
+import { setstationviewers,setstationviewersstatus} from '~/store/slices/networkslice';
 import {AccessEnum} from '~/types';
 
 const columns = {
@@ -94,6 +94,7 @@ const StationAccessPage = () => {
       data: {users: network?.stationviewers},
     });
     dispatch(setstationviewers([])) 
+    dispatch(setstationviewersstatus(false));
   };
 
   var dataa:any= [];
@@ -112,7 +113,7 @@ const StationAccessPage = () => {
 
 
   const body = useMemo(() => {
-    const items =dataa.length>0?dataa.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US')):(viewers?.data?.users || [])
+    const items =network.stationviewersstatus?dataa.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US')):(viewers?.data?.users || [])
       .filter(value => value.access !== AccessEnum.admin)
       .map((value, index) => ({
         index: (index + 1).toString(),
@@ -213,7 +214,7 @@ const StationAccessPage = () => {
             networkDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
             ) : null}
-            <SimpleBtn onClick={()=>dispatch(setstationviewers([])) }>Cancel</SimpleBtn>
+            <SimpleBtn onClick={()=>{dispatch(setstationviewers([])), dispatch(setstationviewersstatus(false));} }>Cancel</SimpleBtn>
           </div>
         </div>
       </>

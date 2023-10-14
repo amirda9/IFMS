@@ -7,7 +7,7 @@ import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 import {useDispatch} from 'react-redux';
-import {setstationviewers} from './../../store/slices/networkslice';
+import {setstationviewers,setstationviewersstatus} from './../../store/slices/networkslice';
 
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
@@ -72,6 +72,7 @@ const RegionAccessPage = () => {
 
           const users = viewerList.map(value => value);
           dispatch(setstationviewers(users));
+          dispatch(setstationviewersstatus(true));
           navigate(-1);
           // request('stationAccessUpdate', {
           //   params: {station_id: params.stationId!},
@@ -83,6 +84,7 @@ const RegionAccessPage = () => {
       <SimpleBtn
         onClick={() => {
           dispatch(setstationviewers([]));
+          dispatch(setstationviewersstatus(false));
           navigate(-1);
         }}>
         Cancel
