@@ -6,7 +6,7 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-import {setregionviewers} from './../../store/slices/networkslice';
+import {setregionviewers,setregionviewersstatus} from './../../store/slices/networkslice';
 import {useDispatch, useSelector} from 'react-redux';
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
@@ -71,6 +71,7 @@ const RegionAccessPage = () => {
 
           const users = viewerList.map(value => value);
           dispatch(setregionviewers(users));
+          dispatch(setregionviewersstatus(true));
           navigate(-1);
 
           // request('regionAccessUpdate', {
@@ -81,7 +82,7 @@ const RegionAccessPage = () => {
         OK
       </SimpleBtn>
       {/* ):null} */}
-      <SimpleBtn onClick={() => navigate(-1)}>Cancel</SimpleBtn>
+      <SimpleBtn onClick={() => {dispatch(setregionviewersstatus(false)),navigate(-1)}}>Cancel</SimpleBtn>
     </>
   );
 

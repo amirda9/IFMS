@@ -2,11 +2,15 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
+import {useDispatch} from 'react-redux';
 import {FormLayout} from '~/layout';
 import {useSelector} from 'react-redux';
 import {BASE_URL} from '~/constant';
 import {useNavigate, useParams} from 'react-router-dom';
-
+import {
+  setregionviewersstatus,
+  setregionviewers,
+} from './../../store/slices/networkslice';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -16,6 +20,7 @@ const columns = {
 
 const RegionAccessPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [itemssorted, setItemssorted] = useState<
     {
       index: string;
@@ -93,10 +98,26 @@ const RegionAccessPage = () => {
       params: {region_id: params.regionId!},
       data: {users: network?.regionviewers},
     });
+    dispatch(setregionviewersstatus(false)),
+    dispatch(setregionviewers([]))
   };
+  var dataa: any = [];
 
   const body = useMemo(() => {
-    const items = (viewers?.data?.users || [])
+    for (let i = 0; i < network?.regionviewers.length; i++) {
+      const findd = users!.data!.findIndex(
+        data => data.id == network?.regionviewers[i],
+      );
+      if (findd > -1) {
+        dataa.push({
+          index: (i + 1).toString(),
+          user: users?.data && users?.data[findd]?.username,
+          station: (users?.data && users?.data[findd]?.station?.name) || '-',
+          region: (users?.data && users?.data[findd]?.region?.name) || '-',
+        });
+      }
+    }
+    const items =network.regionviewersstatus?dataa: (viewers?.data?.users || [])
       .filter(value => value.access !== AccessEnum.admin)
       .map((value, index) => ({
         index: (index + 1).toString(),
@@ -181,7 +202,7 @@ const RegionAccessPage = () => {
         </Description>
       </>
     );
-  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin,itemssorted]);
+  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin,itemssorted,network?.regionviewers]);
   const buttons = (
     <>
       {userrole == 'superuser' ||
@@ -201,7 +222,8 @@ const RegionAccessPage = () => {
         </SimpleBtn>
       ) : null}
 
-      <SimpleBtn link to="../">
+      <SimpleBtn onClick={()=>{dispatch(setregionviewersstatus(false)),dispatch(setregionviewers([]));
+}}>
         Cancel
       </SimpleBtn>
     </>
