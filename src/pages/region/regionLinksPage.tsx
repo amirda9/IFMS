@@ -76,7 +76,7 @@ const RegionLinksPage = () => {
       destination: link?.destination,
     })) || [];
 
-    console.log(list,'list');
+
     
 
   useEffect(() => {

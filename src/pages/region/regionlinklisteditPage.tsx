@@ -54,7 +54,7 @@ const RegionlinklisteditPage = () => {
     },
   });
 
-  console.log(state?.links?.data, '😁');
+
 
   const [change, setCange] = useState(false);
   const [lefttableselecttab, setLefttableselecttab] = useState('Name');
@@ -159,21 +159,21 @@ const RegionlinklisteditPage = () => {
 
   const savestations = () => {
 
-    console.log(reightlinksorted,'🥰😘');
+
     let dataa = reightlinksorted.map((data: any) => ({
       name: data?.name,
       id:data.id,
       source: data?.source,
       destination: data?.destination,
     })).sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
-    console.log(dataa,'🥰');
+
     dispatch(setnewregionlinklist(dataa));
     dispatch(setnewregionlinkliststatus(true))
     navigate(-1);
   };
 
   const sortleft = (tabname: string, sortalfabet: boolean) => {
-    console.log(sortalfabet, 'sortalfabet');
+
 
     const old = JSON.parse(JSON.stringify(leftlinksorted));
     if (tabname != 'Index') {
