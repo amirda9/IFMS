@@ -91,7 +91,11 @@ const MapPage = () => {
   const [regionname, setRegionname] = useState('');
   const [selectedStation, setSelectedStation] = useState([]);
   const [selectedLink, setSelectedLink] = useState([]);
-
+  const [selectedregion, setSelectedregion] = useState<any>([]);
+  const [sumselectedregionlatitude, setSumSelectedregionlatitude] =
+    useState<any>([]);
+  const [sumselectedregionlongitude, setSumSelectedregionlongitude] =
+    useState<any>([]);
   const [selectboxregions, setSelectboxregions] = useState<
     {value: string; label: string}[]
   >([]);
@@ -99,35 +103,36 @@ const MapPage = () => {
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.mapDetail,
-      // stations: state.http.allStations,
-      // update:state.http.linkupdatecables
     }),
     initialRequests: request => {
       request('mapDetail', {params: {network_id: networkId!}});
-      // if (networkId) {
-      //   request('allStations', undefined);
-      // }
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.update?.httpRequestStatus === 'loading' &&
-    //     state.update!.httpRequestStatus === 'success'
-    //   ) {
-    //     request('linkDetail', {params: {link_id: params.linkId!}});
-    //   }
-    // },
   });
 
   const Stations = state?.detail?.data?.stations;
   const Regions = state?.detail?.data?.regions || [];
+
+  const regiondata = (id: string) => {
+    const find = Regions.find((data: any) => data.id == id);
+    let sumlatitude = 0;
+    let sumlongitude = 0;
+    for (let i = 0; i < find.stations.length; i++) {
+      sumlatitude += find.stations[i].latitude;
+      sumlongitude += find.stations[i].longitude;
+    }
+    setSumSelectedregionlatitude(sumlatitude);
+    setSumSelectedregionlongitude(sumlongitude);
+    setSelectedregion(find);
+  };
+
   useEffect(() => {
-    setSelectboxregions([]);
-    for (let i = 0; i < Regions.length || 0; i++) {
+    const dataa = [...Regions];
+    for (let i = 0; i < dataa?.length; i++) {
       setSelectboxregions(prev => [
         ...prev,
         {
-          value: state!.detail!.data!.regions[i].id,
-          label: state!.detail!.data!.regions[i].name,
+          value: Regions[i].id || '',
+          label: Regions[i]?.name || '',
         },
       ]);
     }
@@ -230,6 +235,7 @@ const MapPage = () => {
                 <Selectbox
                   onclickItem={(e: {value: string; label: string}) => {
                     setRegionname(e.label);
+                    regiondata(e.value);
                   }}
                   options={selectboxregions}
                   borderColor={'black'}
@@ -360,64 +366,62 @@ const MapPage = () => {
             />
           )}
 
-          {switchstatus ? (
+          {regionname.length > 0 ? (
             <>
-              {Stations?.map((data, index) => (
-                <Marker
-                  key={index}
-                  eventHandlers={{
-                    click: e => {
-                      setRightbarState('station');
-                      setSelectedStation(data);
-                    },
-                  }}
-                  position={[data.latitude, data.longitude]}
-                  icon={MapServerIcon}>
-                  <Tooltip
-                    opacity={1}
-                    className="h-[150px] w-[215px]"
-                    direction="top"
-                    offset={[0, -25]}>
-                    <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
-                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                        {data.name}
-                      </span>
-                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                        Region: Region1
-                      </span>
-                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                        Latitude:{data.latitude}
-                      </span>
-                      <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                        Longitude:{data.longitude}
-                      </span>
-                      <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
-                        RTU(s):{data.RTUs.length}
-                      </span>
-                    </div>
-                  </Tooltip>
-                </Marker>
-              ))}
-            </>
-          ) : (
-            <>
-              {state?.detail?.data?.regions.map((data, index) => {
-                let sumlatitude = 0;
-                let sumlongitude = 0;
-                for (let i = 0; i < data.stations.length; i++) {
-                  sumlatitude += data.stations[i].latitude;
-                  sumlongitude += data.stations[i].longitude;
-                }
-                return (
+              {switchstatus ? (
+                <>
+                  {selectedregion?.stations?.map((data: any, index: any) => (
+                    <Marker
+                      key={index}
+                      eventHandlers={{
+                        click: e => {
+                          setRightbarState('station');
+                          setSelectedStation(data);
+                        },
+                      }}
+                      position={[data.latitude, data.longitude]}
+                      icon={MapServerIcon}>
+                      <Tooltip
+                        opacity={1}
+                        className="h-[150px] w-[215px]"
+                        direction="top"
+                        offset={[0, -25]}>
+                        <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            {data.name}
+                          </span>
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            Region: Region1
+                          </span>
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            Latitude:{data.latitude}
+                          </span>
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            Longitude:{data.longitude}
+                          </span>
+                          <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
+                            RTU(s):{data.RTUs.length}
+                          </span>
+                        </div>
+                      </Tooltip>
+                    </Marker>
+                  ))}
+                </>
+              ) : (
+                <>
                   <Marker
-                    key={index}
                     eventHandlers={{
                       click: e => {
                         setRightbarState('station');
                         // setSelectedStation(data)
                       },
                     }}
-                    position={[sumlatitude / 3, sumlongitude / 3]}
+                    position={[
+                      sumselectedregionlatitude /
+                        selectedregion.stations.length,
+                      sumselectedregionlongitude /
+                        selectedregion.stations.length,
+                    ]}
                     icon={MapgroupServerIcon}>
                     <Tooltip
                       opacity={1}
@@ -426,7 +430,7 @@ const MapPage = () => {
                       offset={[0, -25]}>
                       <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
                         <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                          {data?.name}
+                          {selectedregion?.name}
                         </span>
                         <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
                           High Severity: 0
@@ -440,8 +444,98 @@ const MapPage = () => {
                       </div>
                     </Tooltip>
                   </Marker>
-                );
-              })}
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              {switchstatus ? (
+                <>
+                  {Stations?.map((data, index) => (
+                    <Marker
+                      key={index}
+                      eventHandlers={{
+                        click: e => {
+                          setRightbarState('station');
+                          setSelectedStation(data);
+                        },
+                      }}
+                      position={[data.latitude, data.longitude]}
+                      icon={MapServerIcon}>
+                      <Tooltip
+                        opacity={1}
+                        className="h-[150px] w-[215px]"
+                        direction="top"
+                        offset={[0, -25]}>
+                        <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            {data.name}
+                          </span>
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            Region: Region1
+                          </span>
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            Latitude:{data.latitude}
+                          </span>
+                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                            Longitude:{data.longitude}
+                          </span>
+                          <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
+                            RTU(s):{data.RTUs.length}
+                          </span>
+                        </div>
+                      </Tooltip>
+                    </Marker>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {state?.detail?.data?.regions.map((data, index) => {
+                    let sumlatitude = 0;
+                    let sumlongitude = 0;
+                    for (let i = 0; i < data.stations.length; i++) {
+                      sumlatitude += data.stations[i].latitude;
+                      sumlongitude += data.stations[i].longitude;
+                    }
+                    return (
+                      <Marker
+                        key={index}
+                        eventHandlers={{
+                          click: e => {
+                            setRightbarState('station');
+                            // setSelectedStation(data)
+                          },
+                        }}
+                        position={[
+                          sumlatitude / data.stations.length,
+                          sumlongitude / data.stations.length,
+                        ]}
+                        icon={MapgroupServerIcon}>
+                        <Tooltip
+                          opacity={1}
+                          className="h-[150px] w-[215px]"
+                          direction="top"
+                          offset={[0, -25]}>
+                          <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                            <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                              {data?.name}
+                            </span>
+                            <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                              High Severity: 0
+                            </span>
+                            <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                              Medium Severity: 1
+                            </span>
+                            <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                              Low Severity: 1
+                            </span>
+                          </div>
+                        </Tooltip>
+                      </Marker>
+                    );
+                  })}
+                </>
+              )}
             </>
           )}
 
@@ -538,75 +632,139 @@ const MapPage = () => {
             </>
           ) : null}
 
-          {switchstatus ? (
+          {regionname.length > 0 ? (
             <>
-              {state?.detail?.data?.links.map((data, index) => {
-                let start = state?.detail?.data?.stations.find(
-                  dat => dat.id == data.source.id,
-                );
+              {switchstatus ? (
+                <>
+                  {selectedregion.links.map((data: any, index: any) => {
+                    let start = state?.detail?.data?.stations.find(
+                      dat => dat.id == data.source.id,
+                    );
 
-                let end = state?.detail?.data?.stations.find(
-                  dat => dat.id == data.destination.id,
-                );
+                    let end = state?.detail?.data?.stations.find(
+                      dat => dat.id == data.destination.id,
+                    );
 
-                return (
-                  <>
-                  <Polyline
-                    key={index}
-                    eventHandlers={{
-                      click: e => {
-                        setRightbarState('link');
-                        setSelectedLink(data);
-                      },
-                      mouseover: e => {
-                        setShowlinltoolkit(true);
-                        setSelectedLink(data);
-                      },
-                      mouseout: e => {
-                        setShowlinltoolkit(false);
-                        // alert('dfdfd');
-                      },
-                    }}
-                    positions={[
-                      [start.latitude, start.longitude],
-                      [end.latitude, end.longitude],
-                    ]}
-               
-                    color="red">
-                   
-                    </Polyline>
+                    return (
+                      <>
+                        <Polyline
+                          key={index}
+                          eventHandlers={{
+                            click: e => {
+                              setRightbarState('link');
+                              setSelectedLink(data);
+                            },
+                            mouseover: e => {
+                              setShowlinltoolkit(true);
+                              setSelectedLink(data);
+                            },
+                            mouseout: e => {
+                              setShowlinltoolkit(false);
+                              // alert('dfdfd');
+                            },
+                          }}
+                          positions={[
+                            [start.latitude, start.longitude],
+                            [end.latitude, end.longitude],
+                          ]}
+                          color="red"></Polyline>
 
-                    <Polyline
-                    key={index}
-                    weight={5}
-                    eventHandlers={{
-                      click: e => {
-                        setRightbarState('link');
-                        setSelectedLink(data);
-                      },
-                      mouseover: e => {
-                        setShowlinltoolkit(true);
-                        setSelectedLink(data);
-                      },
-                      mouseout: e => {
-                        setShowlinltoolkit(false);
-                     
-                      },
-                    }}
-                    positions={[
-                      [start.latitude, start.longitude],
-                      [end.latitude, end.longitude],
-                    ]}
-                    pathOptions={{color:"black",weight:20,opacity:0}}
-                    // color="black"
-                    >
-                   
-                    </Polyline>
-                    </>
-                );
-              })}
+                        <Polyline
+                          key={index}
+                          weight={5}
+                          eventHandlers={{
+                            click: e => {
+                              setRightbarState('link');
+                              setSelectedLink(data);
+                            },
+                            mouseover: e => {
+                              setShowlinltoolkit(true);
+                              setSelectedLink(data);
+                            },
+                            mouseout: e => {
+                              setShowlinltoolkit(false);
+                            },
+                          }}
+                          positions={[
+                            [start.latitude, start.longitude],
+                            [end.latitude, end.longitude],
+                          ]}
+                          pathOptions={{color: 'black', weight: 20, opacity: 0}}
+                          // color="black"
+                        ></Polyline>
+                      </>
+                    );
+                  })}
+                </>
+              ) : null}
             </>
-          ) : null}
+          ) : (
+            <>
+              {switchstatus ? (
+                <>
+                  {state?.detail?.data?.links.map((data, index) => {
+                    let start = state?.detail?.data?.stations.find(
+                      dat => dat.id == data.source.id,
+                    );
+
+                    let end = state?.detail?.data?.stations.find(
+                      dat => dat.id == data.destination.id,
+                    );
+
+                    return (
+                      <>
+                        <Polyline
+                          key={index}
+                          eventHandlers={{
+                            click: e => {
+                              setRightbarState('link');
+                              setSelectedLink(data);
+                            },
+                            mouseover: e => {
+                              setShowlinltoolkit(true);
+                              setSelectedLink(data);
+                            },
+                            mouseout: e => {
+                              setShowlinltoolkit(false);
+                              // alert('dfdfd');
+                            },
+                          }}
+                          positions={[
+                            [start.latitude, start.longitude],
+                            [end.latitude, end.longitude],
+                          ]}
+                          color="red"></Polyline>
+
+                        <Polyline
+                          key={index}
+                          weight={5}
+                          eventHandlers={{
+                            click: e => {
+                              setRightbarState('link');
+                              setSelectedLink(data);
+                            },
+                            mouseover: e => {
+                              setShowlinltoolkit(true);
+                              setSelectedLink(data);
+                            },
+                            mouseout: e => {
+                              setShowlinltoolkit(false);
+                            },
+                          }}
+                          positions={[
+                            [start.latitude, start.longitude],
+                            [end.latitude, end.longitude],
+                          ]}
+                          pathOptions={{color: 'black', weight: 20, opacity: 0}}
+                          // color="black"
+                        ></Polyline>
+                      </>
+                    );
+                  })}
+                </>
+              ) : null}
+            </>
+          )}
 
           <MapClickAlert />
         </MapContainer>
@@ -621,5 +779,3 @@ const MapPage = () => {
 };
 
 export default MapPage;
-
-
