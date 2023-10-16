@@ -17,9 +17,9 @@ const typeoptions = [
 // *********************************************************************
 const LinkDetailPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+
   const {type} = useSelector((state: any) => state.network);
 
-  
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -33,9 +33,11 @@ const LinkDetailPage = () => {
     }).then(res => res.json());
     setuserrole(role.role);
   };
+
   useEffect(() => {
     getrole();
   }, []);
+
   const dispatch = useDispatch();
   const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
@@ -60,6 +62,7 @@ const LinkDetailPage = () => {
       }
     },
   });
+
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [types, setType] = useState('');
@@ -73,6 +76,7 @@ const LinkDetailPage = () => {
   const [allsource, setAllsource] = useState<{value: string; label: string}[]>(
     [],
   );
+  
   const [soueceerror, setSourcerror] = useState('');
   const [destenationerror, setDestinationerror] = useState('');
   const [alldestinaton, setAlldestination] = useState([]);
@@ -106,10 +110,27 @@ const LinkDetailPage = () => {
         version => version.id === state?.detail?.data?.current_version?.id,
       )?.source.name || '',
     );
-    setType(
-      state?.detail?.data?.versions?.find(
-        version => version.id === state?.detail?.data?.current_version?.id,
-      )?.type || '',
+    let findtaype = type.findIndex(
+      (data: any) => data.id == state?.detail?.data?.id,
+    );
+
+    if (findtaype > -1) {
+      setType(type[findtaype].type);
+    } else {
+      setType(
+        state?.detail?.data?.versions?.find(
+          version => version.id === state?.detail?.data?.current_version?.id,
+        )?.type || '',
+      );
+    }
+
+    dispatch(
+      settypestate({
+        type: state?.detail?.data?.versions?.find(
+          version => version.id === state?.detail?.data?.current_version?.id,
+        )?.type,
+        id: state?.detail?.data?.id,
+      }),
     );
 
     let data: any = [];
@@ -143,7 +164,7 @@ const LinkDetailPage = () => {
   const updatelink = () => {
     if (name.length < 1) {
       setNameerror('Please enter link name');
-    }  else if (source.length == 0) {
+    } else if (source.length == 0) {
       setNameerror('');
       setTypeerror('');
       setSourcerror('Please select source');
@@ -164,10 +185,8 @@ const LinkDetailPage = () => {
         params: {link_id: params.linkId || ''},
         data: {
           description: comment,
-          name:name,
-          link_points: [
-        
-          ],
+          name: name,
+          link_points: [],
           source_id: source,
           destination_id: destinationid,
           type: types,
@@ -179,6 +198,7 @@ const LinkDetailPage = () => {
   // ---------------------------------------------------------------
   return (
     <div className="relative flex h-[calc(100vh-220px)]  w-full flex-col">
+
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
@@ -187,7 +207,7 @@ const LinkDetailPage = () => {
           onChange={(e: any) => {
             setName(e.target.value), setNameerror('');
           }}
-          className="h-[40px] text-sm w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 placeholder-[#000000]"
+          className="h-[40px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 text-sm placeholder-[#000000]"
         />
         {nameerror.length > 0 ? (
           <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">
@@ -203,7 +223,7 @@ const LinkDetailPage = () => {
           onChange={(e: any) => {
             setComment(e.target.value), setCommmenerror('');
           }}
-          className="h-[100px] text-sm w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 placeholder-[#000000]"
+          className="h-[100px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2 text-sm placeholder-[#000000]"
         />
         {commenerror.length > 0 ? (
           <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">
@@ -260,11 +280,13 @@ const LinkDetailPage = () => {
         <div className="w-[130px] text-sm text-black">Type</div>
         <div className="rlative flex w-[268px]  flex-col">
           <Selectbox
-            placeholder={type}
+            placeholder={types}
             onclickItem={(e: {value: string; label: string}) => {
               setType(e.value);
               setTypeerror('');
-              dispatch(settypestate(e.label));
+              dispatch(
+                settypestate({type: e.label, id: state?.detail?.data?.id}),
+              );
             }}
             options={typeoptions}
             borderColor={'black'}
@@ -279,6 +301,7 @@ const LinkDetailPage = () => {
           </div>
         ) : null}
       </div>
+
       <Description label="Owner" items="start" className="mt-6">
         {state?.detail?.data?.versions?.find(
           version => version.id === state?.detail?.data?.current_version?.id,
@@ -304,6 +327,7 @@ const LinkDetailPage = () => {
 
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
+      
     </div>
   );
 };

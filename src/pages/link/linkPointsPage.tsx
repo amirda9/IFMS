@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {SimpleBtn, TextInput} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
-import {FormLayout} from '~/layout';
-import {useSelector} from 'react-redux';
 import {BsPlusLg} from 'react-icons/bs';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';

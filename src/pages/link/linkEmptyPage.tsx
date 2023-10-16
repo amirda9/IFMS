@@ -4,8 +4,10 @@ import {Outlet, useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 
 const LinkEmptyPage = () => {
-  const {type} = useSelector((state: any) => state.network);
-  console.log(type, 'opendraweropendrawer');
+  const {network, http} = useSelector((state: any) => state);
+  let findtaype = network.type.find(
+    (data: any) => data.id == http.linkDetail.data?.id,
+  );
 
   const params = useParams<{linkId: string}>();
   return (
@@ -13,7 +15,7 @@ const LinkEmptyPage = () => {
       <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
         <TabItem to="." name="Detail" />
         <TabItem to="access" name="Access" />
-        {type == 'Cable' ? (
+        {findtaype?.type == 'cable' ? (
           <TabItem
             to="cables-segments"
             name="Cables & Segments"

@@ -21,7 +21,7 @@ type linkpoints = {
   type: string;
 };
 const initialState = {
-  type: 'Cable',
+  type: [],
   networkviewers: [],
   networkviewersstatus: false,
   regionviewers: [],
@@ -41,7 +41,16 @@ const changetyperstate = createSlice({
   initialState,
   reducers: {
     settypestate: (state, action) => {
-      state.type = action.payload;
+      const finddataindex = state.type.findIndex(
+        (data: any) => data.id == action.payload.id,
+      );
+      if (finddataindex > -1) {
+        const newdata = [...state.type];
+        newdata[finddataindex]=action.payload;
+        state.type = newdata;
+      } else {
+        state.type = [...state.type, action.payload];
+      }
     },
     setnetworkviewers: (state, action: veiwerlists) => {
       state.networkviewers = action.payload;

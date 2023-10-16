@@ -32,6 +32,7 @@ const LinkCablesAndSegmentsPage = () => {
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
+
   const getrole = async () => {
     const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
@@ -42,14 +43,17 @@ const LinkCablesAndSegmentsPage = () => {
     }).then(res => res.json());
     setuserrole(role.role);
   };
+
   useEffect(() => {
     getrole();
   }, []);
+
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
+
   const [parentcabl, setParentcable] = useState<{
     cables:
       | {
@@ -93,8 +97,6 @@ const LinkCablesAndSegmentsPage = () => {
       | [];
   }>();
 
-
-
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
       setMousePosition({x: ev.page, y: ev.pageY});
@@ -108,8 +110,6 @@ const LinkCablesAndSegmentsPage = () => {
   }, []);
 
   // -------------------------------------------------
-
-
 
   const setcableId = (id: number, x: string) => {
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.ducts));
@@ -270,8 +270,6 @@ const LinkCablesAndSegmentsPage = () => {
   };
 
   const deletefibredata = (cableid: number, fibreid: number) => {
-
-  
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.ducts));
     const findcable = beforadddata.findIndex((data: any) => data.id == cableid);
     let beforslicecabl = beforadddata[findcable].mini_ducts;
@@ -410,8 +408,6 @@ const LinkCablesAndSegmentsPage = () => {
     }
     setParentcable({cables: allcables, ducts: allducts});
   }, [state?.detail]);
-
-
 
   return (
     // <FormLayout buttons={buttons}>

@@ -383,7 +383,7 @@ const LinkCablesAndSegmentsPage = () => {
   console.log(lengthlongitude, 'lengthlongitude');
 
   let mainlength = Math.sqrt(lengthlatitude + lengthlongitude);
-  
+
   console.log(mainlength, 'mainlength');
   return (
     <div className="relative  min-h-[calc(100vh-220px)] w-full">
@@ -660,6 +660,7 @@ const LinkCablesAndSegmentsPage = () => {
           );
         })}
       </div>
+      
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
         {userrole == 'superuser' ||
         state?.detail?.data?.access?.access == 'ADMIN' ||
