@@ -41,7 +41,6 @@ const LinkCablesAndSegmentsPage = () => {
       },
     }).then(res => res.json());
     setuserrole(role.role);
-   
   };
   useEffect(() => {
     getrole();
@@ -114,7 +113,6 @@ const LinkCablesAndSegmentsPage = () => {
   });
 
   useEffect(() => {
-
     const Cables = state?.detail?.data?.data?.cables || [];
     const Ducts = state?.detail?.data?.data?.ducts || [];
     let allcables = JSON.parse(JSON.stringify(Cables));
@@ -157,6 +155,8 @@ const LinkCablesAndSegmentsPage = () => {
       data: {cables: newcable, ducts: beforadddata.ducts},
     });
   };
+
+  // console.log(state.detail,'🥰');
 
   const finddataindex = (x: string) => {
     let alldatabasecabel = state?.detail?.data?.data?.cables?.findIndex(
@@ -202,12 +202,22 @@ const LinkCablesAndSegmentsPage = () => {
     beforadddata[findcable].segments[findcableslicecabl][name] =
       name == 'fiber_type' ? x : Number(x);
     if (name == 'start') {
+      // console.log(
+      //   beforadddata[findcable].segments[findcableslicecabl - 1],
+      //   'uuuuuuuuuuuu',
+      // );
 
-      console.log(beforadddata[findcable].segments[findcableslicecabl - 1].length,'🤩');
-      console.log(beforadddata2[findcable].segments[(findcableslicecabl - 1)].length-Number(x),'😘');
-      
+      beforadddata[findcable].segments[findcableslicecabl - 1].length =
+        beforadddata[findcable].segments[findcableslicecabl] -
+        beforadddata[findcable].segments[findcableslicecabl - 1];
+
+      // console.log(
+      //   beforadddata2[findcable].segments[findcableslicecabl - 1].length -
+      //     Number(x),
+      //   '😘',
+      // );
+
       // beforadddata[findcable].segments[findcableslicecabl - 1].length=beforadddata2[findcable].segments[(findcableslicecabl - 1)].length-Number(x);
-
     }
     setParentcable({cables: beforadddata, ducts: []});
   };
@@ -256,6 +266,10 @@ const LinkCablesAndSegmentsPage = () => {
   };
 
   const addcabledata = (id: number, index: number) => {
+    // alert(index)
+    const Length = parentcabl?.cables?.length || 0;
+    // console.log(index, 'indexindexindexindex');
+
     let beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
     let beforslicecabl = JSON.parse(
@@ -269,9 +283,13 @@ const LinkCablesAndSegmentsPage = () => {
         return item;
       }
     });
+    // console.log(newArray.length, 'newArray.length');
     newArray.push({
       id: index + 2,
-      start: 0,
+      start:
+        index < newArray.length - 1
+          ? (newArray[index].start + newArray[index + 1].start) / 2
+          : 8,
       length: 0,
       offset: 0,
       loss: 0,
@@ -350,7 +368,23 @@ const LinkCablesAndSegmentsPage = () => {
 
     setParentcable({cables: beforadddata, ducts: parentcabl?.ducts || []});
   };
+  console.log(state?.detail?.data?.current_version?.link_points, '🥰');
+  const allpoints: any =
+    state?.detail?.data?.current_version?.link_points || [];
+  let lengthlatitude = Math.pow(
+    allpoints[0]?.latitude + allpoints[allpoints.length - 1]?.latitude,
+    2,
+  );
+  let lengthlongitude = Math.pow(
+    allpoints[0]?.longitude + allpoints[allpoints.length - 1]?.longitude,
+    2,
+  );
+  console.log(lengthlatitude, 'lengthlatitude');
+  console.log(lengthlongitude, 'lengthlongitude');
 
+  let mainlength = Math.sqrt(lengthlatitude + lengthlongitude);
+  
+  console.log(mainlength, 'mainlength');
   return (
     <div className="relative  min-h-[calc(100vh-220px)] w-full">
       {(parentcabl?.cables && parentcabl?.cables?.length > 0) ||
@@ -472,7 +506,7 @@ const LinkCablesAndSegmentsPage = () => {
                     {data?.segments?.map((dataa: any, index: number) => {
                       let finddata = finddataindex(data.cableId);
                       // console.log(data.segments[index-1],'😁');
-                      
+
                       return (
                         <div className="w-full" key={index}>
                           <div
@@ -482,7 +516,13 @@ const LinkCablesAndSegmentsPage = () => {
                               <div className="flex w-1/5 justify-center">
                                 <TextInput
                                   defaultValue={10}
-                                  value={index == 0?0:dataa.start == 0?data.segments[index-1].length+0.001:dataa.start}
+                                  value={
+                                    index == 0
+                                      ? 0
+                                      : dataa.start == 0
+                                      ? data.segments[index - 1].length
+                                      : dataa.start
+                                  }
                                   onChange={
                                     index == 0
                                       ? () => {}
@@ -502,7 +542,7 @@ const LinkCablesAndSegmentsPage = () => {
                                 <TextInput
                                   value={dataa.length}
                                   onChange={
-                                    dataa.fixId
+                                    data?.segments?.length > 1
                                       ? () => {}
                                       : e =>
                                           setcableslicecabsegment(
