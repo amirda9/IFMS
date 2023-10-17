@@ -426,12 +426,12 @@ function Chart() {
           <Chatrtabtype name="Avg" src={Avg} />
         </div>
         {/* ---- chart ------- chart ------------------ chart ------------- chart ------------- chart ------------ */}
-        <div className="mx-[10px] flex h-full w-[calc(100vw-510px)] flex-col">
+        <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
               className={`${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
-              } h-full w-[calc(100vw-480px)]`}>
+              } h-full w-[calc(100vw-480px)] bg-[#ffff]`}>
               <ResponsiveLine
                 data={allcurveline}
                 margin={{top: 50, right: 50, bottom: 50, left: 50}}
@@ -466,12 +466,19 @@ function Chart() {
                 pointBorderWidth={2}
                 pointBorderColor={{from: 'serieColor'}}
               />
-              <button
+              {/* <button
                 onClick={zoom}
                 className="absoloute reight-[200px] top-[200px] z-50">
                 Zoom
-              </button>
+              </button> */}
             </div>
+          </div>
+
+          <div className="relative mt-[30px] flex h-[10px] w-[720px] bg-[#18C047]">
+            <div className="absolute left-0 top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
+            <div className="absolute right-0  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
+            <div className="absolute right-[100px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
+            <div className="absolute right-[150px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
           </div>
         </div>
         {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}
@@ -502,7 +509,7 @@ function Chart() {
       </div>
       <div className="ml-[80px] mt-[20px] flex w-[calc(100vw-504px)] flex-row justify-between">
         <div className="box-border  flex  w-[35.4%] flex-col">
-          <div className="relative h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px] box-border">
+          <div className="relative box-border h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px]">
             <div className="mb-[4px] flex w-full flex-row justify-between">
               <span className="2xl:tex-[25px] w-[68px] text-[20px]  leading-[36.31px] text-[#000000]">
                 A:
@@ -547,19 +554,19 @@ function Chart() {
             </div>
           </div>
           <div className="mt-[10px] flex w-full flex-row justify-between">
-            <button className="flex h-[53px] w-[50px] justify-center items-center  bg-[#C6DFF8]">
+            <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
               <MdOutlineArrowBackIos size={40} />
             </button>
-            <button className="flex justify-center items-center h-[50px] w-[50px] bg-[#C6DFF8] text-[20px]">
+            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
               a
             </button>
-            <button className="flex justify-center items-center h-[50px] w-[50px] bg-[#C6DFF8] text-[20px]">
+            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
               A
             </button>
-            <button className="flex justify-center items-center h-[50px] w-[50px] bg-[#C6DFF8] text-[20px]">
+            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
               B
             </button>
-            <button className="flex h-[50px] justify-center items-center w-[50px] bg-[#C6DFF8] text-[20px]">
+            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
               b
             </button>
             <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
@@ -568,8 +575,6 @@ function Chart() {
           </div>
         </div>
 
-
-        
         <div className="flex h-[195px] w-[63.9%] flex-col">
           <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
             <div className="flex h-full w-[265px] flex-col items-center justify-center">
@@ -597,7 +602,7 @@ function Chart() {
               </span>
             </div>
           </div>
-          <div className="flex w-full flex-row justify-between mt-[10px]">
+          <div className="mt-[10px] flex w-full flex-row justify-between">
             <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
               Event
             </button>

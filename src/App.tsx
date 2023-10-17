@@ -104,6 +104,16 @@ function App() {
           </Route>
 
           <Route path="/config">
+          <Route
+              path="system-maintenance"
+              Component={pages.Systemmaintenance}>
+
+              </Route>
+              <Route
+              path="all-rtu-status"
+              Component={pages.AllRTUsStatus}>
+
+              </Route>
             <Route
               path="system-settings"
               Component={pages.SystemSettingsLayout}>
