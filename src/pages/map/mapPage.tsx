@@ -125,18 +125,6 @@ const MapPage = () => {
     setSelectedregion(find);
   };
 
-  useEffect(() => {
-    const dataa = [...Regions];
-    for (let i = 0; i < dataa?.length; i++) {
-      setSelectboxregions(prev => [
-        ...prev,
-        {
-          value: Regions[i].id || '',
-          label: Regions[i]?.name || '',
-        },
-      ]);
-    }
-  }, []);
 
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
@@ -190,6 +178,22 @@ const MapPage = () => {
     );
   };
 
+  const onclicmenue=()=>{
+    setLeftbarstate(true)
+    if(selectboxregions.length == 0){
+      const dataa = [...Regions];
+      for (let i = 0; i < dataa?.length; i++) {
+        setSelectboxregions(prev => [
+          ...prev,
+          {
+            value: Regions[i].id,
+            label: Regions[i]?.name,
+          },
+        ]);
+      }
+    }
+
+  }
   // ******************** return ****************** return ************************** return *******************************
   return (
     <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
@@ -220,7 +224,7 @@ const MapPage = () => {
               </div>
             ) : (
               <button
-                onClick={() => setLeftbarstate(true)}
+                onClick={() => onclicmenue()}
                 type="button"
                 className="mb-4  active:opacity-50">
                 <IoMenu className="h-8 w-8" />
@@ -233,6 +237,7 @@ const MapPage = () => {
                   Region
                 </span>
                 <Selectbox
+                placeholder={regionname}
                   onclickItem={(e: {value: string; label: string}) => {
                     setRegionname(e.label);
                     regiondata(e.value);
