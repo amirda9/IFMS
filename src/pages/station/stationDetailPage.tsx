@@ -94,8 +94,8 @@ const StationDetailPage = () => {
         });
       }}
       validationSchema={stationSchema}>
-      <Form className="w-full">
-        <div className="relative flex min-h-[calc(100vh-220px)] flex-col justify-between">
+      <Form >
+        <div className="relative flex h-[calc(100vh-220px)] flex-col justify-between">
           <div className="flex flex-col gap-y-4">
             <Description label="Name" items="start">
               <InputFormik

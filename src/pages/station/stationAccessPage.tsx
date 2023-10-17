@@ -162,7 +162,7 @@ const StationAccessPage = () => {
 
     return (
       <>
-        <div className="relative flex min-h-[calc(100vh-215px)] flex-col justify-between">
+        <div className="relative flex min-h-[calc(100vh-220px)] flex-col justify-between">
           <div className="h-5/6">
             <Description label="Station Admin" className="mb-4">
               <Select

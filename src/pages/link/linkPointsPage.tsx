@@ -70,6 +70,8 @@ const LinkPointsPage = () => {
 
 
   let linkDetail = state.detail;
+  console.log(linkDetail,'🥴');
+  
 
   useEffect(() => {
     const all =
