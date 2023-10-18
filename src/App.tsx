@@ -50,7 +50,14 @@ function App() {
             path="/regions/:regionId/edit-access"
             Component={pages.RegionAccessEditPage}
           />
-
+          <Route
+            path="/regions/:regionId/edit-stationlist"
+            Component={pages.RegionstationlisteditPage}
+          />
+             <Route
+            path="/regions/:regionId/edit-linklist"
+            Component={pages.RegionlinklisteditPage}
+          />
           <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
@@ -80,6 +87,7 @@ function App() {
             Component={pages.LinkEditViewersPage}
           />
           <Route path="/links" Component={pages.LinksPage}>
+          <Route path="create" Component={pages.LinkCreatePage} />
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
               <Route path="access" Component={pages.LinkAccessPage} />
@@ -96,6 +104,16 @@ function App() {
           </Route>
 
           <Route path="/config">
+          <Route
+              path="system-maintenance"
+              Component={pages.Systemmaintenance}>
+
+              </Route>
+              <Route
+              path="all-rtu-status"
+              Component={pages.AllRTUsStatus}>
+
+              </Route>
             <Route
               path="system-settings"
               Component={pages.SystemSettingsLayout}>
@@ -134,9 +152,11 @@ function App() {
               </Route>
             </Route>
             <Route path="optical-routes" Component={pages.OpticalRoutesLayout}>
+           
               <Route
                 path=":opticalRouteId"
                 Component={pages.SingleOpticalRouteLayout}>
+               
                 <Route index Component={pages.OpticalRouteDetailsPage} />
                 <Route path="route" Component={pages.OpticalRouteRoutePage} />
                 <Route
@@ -161,6 +181,7 @@ function App() {
                 />
               </Route>
             </Route>
+            <Route path="chart" Component={pages.Chart} />
             <Route path="remote-test-units" Component={pages.RtuLayout}>
               <Route path=":rtuId" Component={pages.SingleRtuLayout}>
                 <Route index Component={pages.RtuDetailsPage} />

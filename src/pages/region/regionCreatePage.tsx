@@ -11,12 +11,11 @@ import {networkExplored} from '~/constant';
 
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
-  description: Yup.string().required('Please enter region comments'),
+  // description: Yup.string().required('Please enter region comments'),
 });
 const RegionDetailPage = () => {
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
-
   const {
     state: {create},
     request,
@@ -57,7 +56,7 @@ const RegionDetailPage = () => {
         }}
         onSubmit={values => {
           request('regionCreate', {
-            params: {network_id: networkId!},
+            params: {network_id : networkId!},
             data: {name: values.name, description: values.description},
           });
         }}

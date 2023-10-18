@@ -1,13 +1,32 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SidebarItem} from '~/components';
 import {SidebarLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
-
+import { useSelector } from 'react-redux';
+import {BASE_URL} from './../../constant'
 const RegionsPage = () => {
   const networkId = Cookies.get(networkExplored);
+  const {networkDetail} = useSelector((state: any) => state.http);
+  const login = localStorage.getItem('login');
+  const accesstoken=JSON.parse(login || "")?.data.access_token
+  const [userrole,setuserrole]=useState<any>("")
+  const getrole=async()=>{
+    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+      headers: {
+        Authorization:`Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json'},
+    }).then(res =>res.json())
+    setuserrole(role.role)
+  }
+useEffect(()=>{
+  getrole()
+},[])
+
+
   const [regionID, setRegionId] = useState<string | null>(null);
   const {
     state: {regions},
@@ -50,15 +69,16 @@ const RegionsPage = () => {
       <SidebarLayout
         searchOnChange={() => {}}
         createTitle="Regions"
-        canAdd={!!networkId}>
+        // regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false
+        canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access == "ADMIN"?true:false}>
         {regions?.data?.map(region => (
           <SidebarItem
             name={region.name}
             to={region.id}
             key={region.id}
-            onDelete={() => {
+            onDelete={userrole == 'superuser' || networkDetail?.data?.access?.access == "ADMIN"?() => {
               setRegionId(region.id);
-            }}
+            }:()=>{}}
           />
         ))}
       </SidebarLayout>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {FormLayout} from '~/layout';
@@ -8,15 +8,18 @@ import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
+import { useSelector } from 'react-redux';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
-  description: Yup.string().required('Please enter station comment'),
+  // description: Yup.string().required('Please enter station comment'),
   latitude: Yup.string().required('Please enter latitude'),
   longitude: Yup.string().required('Please enter longitude'),
-  region: Yup.string().required('Please select region'),
+  // region: Yup.string().required('Please select region'),
 });
 const StationDetailPage = () => {
+  const {stationDetail} = useSelector((state: any) => state.http);
+console.log(stationDetail,'stationDetail');
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const {state, request} = useHttpRequest({
@@ -37,13 +40,27 @@ const StationDetailPage = () => {
       request('regionList', {params: {network_id: networkId!}});
     },
   });
+  console.log(state.create,'create');
+  
+  // const buttons = (
+  //   <>
+  //     <SimpleBtn
+  //       onClick={() => {
+  //         reff.current.click();
+  //       }}
+  //       disabled={state.create?.httpRequestStatus === 'loading'}>
+  //       Save
+  //     </SimpleBtn>
+  //     <SimpleBtn link to="../">
+  //       Cancel
+  //     </SimpleBtn>
+  //   </>
+  // );
   const buttons = (
     <>
       <SimpleBtn
-        onClick={() => {
-          document.getElementById('submit')?.click();
-        }}
-        disabled={state.create?.httpRequestStatus === 'loading'}>
+        type="submit"
+        disabled={state?.create?.httpRequestStatus === 'loading'}>
         Save
       </SimpleBtn>
       <SimpleBtn link to="../">
@@ -52,7 +69,7 @@ const StationDetailPage = () => {
     </>
   );
   return (
-    <FormLayout buttons={buttons}>
+
       <Formik
         initialValues={{
           name: '',
@@ -62,20 +79,22 @@ const StationDetailPage = () => {
           region: '',
         }}
         onSubmit={values => {
+    
           request('stationCreate', {
             data: {
               name: values.name,
               description: values.description,
               longitude: values.longitude,
               latitude: values.latitude,
-              region_id: values.region,
+              // region_id:"",
               model: 'cables',
               network_id: networkId!,
             },
           });
         }}
         validationSchema={stationSchema}>
-        <Form className="flex h-full flex-col justify-between">
+        <Form className="w-full">
+          <div className='flex flex-grow relative min-h-[calc(100vh-160px)] flex-col justify-between '>
           <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" className="w-2/3 disabled:bg-white" />
@@ -101,7 +120,7 @@ const StationDetailPage = () => {
               />
             </Description>
 
-            <Description label="Region" items="start" className="mb-4">
+            {/* <Description label="Region" items="start" className="mb-4">
               <SelectFormik
                 placeholder="select region"
                 name="region"
@@ -118,12 +137,31 @@ const StationDetailPage = () => {
                   </option>
                 ))}
               </SelectFormik>
-            </Description>
+            </Description> */}
           </div>
-          <button className="hidden" id="submit" />
+          <div className="flex flex-row  gap-x-4 self-end absolute bottom-[0px] right-0">
+            {/* <SimpleBtn
+              onClick={() => {}}>
+              Explore
+            </SimpleBtn>
+            <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
+            {/* {stationDetail?.data?.access == 'ADMIN' ? */}
+            <SimpleBtn
+              type="submit"
+              disabled={state?.create?.httpRequestStatus === 'loading'}
+              >
+              Save
+            </SimpleBtn>
+            {/* :null} */}
+            <SimpleBtn link to="../">
+              Cancel
+            </SimpleBtn>
+          </div>
+          </div>
+          {/* <button ref={reff} type="submit" id="formSubmit" hidden /> */}
         </Form>
       </Formik>
-    </FormLayout>
+
   );
 };
 

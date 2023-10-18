@@ -18,6 +18,7 @@ type RequestKeys =
   | 'networkDetail'
   | 'networkCreate'
   | 'networkDelete'
+  | 'stationDelete'
   | 'networkUpdate'
   | 'networkAccessList'
   | 'userList'
@@ -27,7 +28,9 @@ type RequestKeys =
   | 'deleteUserSession'
   | 'userGroupsList'
   | 'networkAccessUpdate'
+  | 'deleteShapefile'
   | 'networkUpdateAdmin'
+  | 'linkupdatecables'
   | 'groupList'
   | 'groupDetail'
   | 'createGroup'
@@ -36,21 +39,36 @@ type RequestKeys =
   | 'allRegions'
   | 'regionList'
   | 'regionCreate'
+  | 'linkCreate'
+  | 'linkDetail'
+  | 'mapDetail'
+  | 'linkUpdate'
   | 'regionDetail'
   | 'regionUpdate'
   | 'regionAccessList'
   | 'regionAccessUpdate'
   | 'regionStationList'
+  | 'updateregionStationList'
+  | 'removeregionStationList'
+  | 'addregionStationList'
+  | 'updateregionLinkList'
+  | 'addregionLinkList'
+  | 'removeregionLinkList'
   | 'allLinks'
   | 'regionLinkList'
   | 'regionAdminUpdate'
   | 'allStations'
+  | 'networkstations'
   | 'stationCreate'
   | 'stationDetail'
   | 'stationUpdate'
-  | 'stationDelete'
+  | 'stationAccessUpdate'
+  | 'linkAccessUpdate'
   | 'networkStationList'
   | 'stationAccessList'
+  | 'linkAccessList'
+  | 'linkAddadmin'
+  | 'stationAddadmin'
   | 'stationViewerUpdate'
   | 'stationAdminUpdate'
   | 'userNetworkAccesses'
@@ -61,7 +79,8 @@ type RequestKeys =
   | 'updateUserRegionAccesses'
   | 'updateUserStationAccesses'
   | 'updateUserLinkAccesses'
-  | 'regionDelete';
+  | 'regionDelete'
+  | 'linkDelete';
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -139,6 +158,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+
   networkAccessList: {
     url: api.BASE_URL + api.URLS.otdr.network.allAccess,
     method: 'get',
@@ -147,6 +167,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   networkAccessUpdate: {
     url: api.BASE_URL + api.URLS.otdr.network.viewersAccess,
     method: 'post',
+    auth: true,
+  },
+  deleteShapefile: {
+    url: api.BASE_URL + api.URLS.otdr.network.deleteShapefile,
+    method: 'delete',
     auth: true,
   },
   groupList: {
@@ -209,9 +234,49 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     auth: true,
   },
+  stationDelete: {
+    url: api.BASE_URL + api.URLS.otdr.station.single,
+    method: 'delete',
+    auth: true,
+  },
+  stationAccessUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.station.viewersAccess,
+    method: 'post',
+    auth: true,
+  },
   regionStationList: {
     url: api.BASE_URL + api.URLS.otdr.station.listInRegion,
     method: 'get',
+    auth: true,
+  },
+  updateregionStationList: {
+    url: api.BASE_URL + api.URLS.otdr.region.updateregionStationList,
+    method: 'post',
+    auth: true,
+  },
+  addregionStationList: {
+    url: api.BASE_URL + api.URLS.otdr.region.addregionStationList,
+    method: 'post',
+    auth: true,
+  },
+  removeregionStationList: {
+    url: api.BASE_URL + api.URLS.otdr.region.removeregionStationList,
+    method: 'post',
+    auth: true,
+  },
+  updateregionLinkList: {
+    url: api.BASE_URL + api.URLS.otdr.region.updateregionLinkList,
+    method: 'post',
+    auth: true,
+  },
+  addregionLinkList: {
+    url: api.BASE_URL + api.URLS.otdr.region.addregionLinkList,
+    method: 'post',
+    auth: true,
+  },
+  removeregionLinkList: {
+    url: api.BASE_URL + api.URLS.otdr.region.removeregionLinkList,
+    method: 'post',
     auth: true,
   },
   networkUpdateAdmin: {
@@ -222,6 +287,36 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   allLinks: {
     url: api.BASE_URL + api.URLS.otdr.link.all,
     method: 'get',
+    auth: true,
+  },
+  linkDetail: {
+    url: api.BASE_URL + api.URLS.otdr.link.single,
+    method: 'get',
+    auth: true,
+  },
+  linkupdatecables: {
+    url: api.BASE_URL + api.URLS.otdr.link.updatecableandduct,
+    method: 'put',
+    auth: true,
+  },
+  linkAccessUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.link.viewersAccess,
+    method: 'post',
+    auth: true,
+  },
+  linkUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.link.single,
+    method: 'put',
+    auth: true,
+  },
+  linkAccessList: {
+    url: api.BASE_URL + api.URLS.otdr.link.allAccess,
+    method: 'get',
+    auth: true,
+  },
+  linkAddadmin: {
+    url: api.BASE_URL + api.URLS.otdr.link.Addadmin,
+    method: 'put',
     auth: true,
   },
   regionLinkList: {
@@ -239,6 +334,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  networkstations: {
+    url: api.BASE_URL + api.URLS.otdr.station.networkstations,
+    method: 'get',
+    auth: true,
+  },
   stationCreate: {
     url: api.BASE_URL + api.URLS.otdr.station.all,
     method: 'post',
@@ -246,7 +346,12 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   stationDetail: {
     url: api.BASE_URL + api.URLS.otdr.station.single,
-    method: 'post',
+    method: 'get',
+    auth: true,
+  },
+  stationAddadmin: {
+    url: api.BASE_URL + api.URLS.otdr.station.Addadmin,
+    method: 'put',
     auth: true,
   },
   stationUpdate: {
@@ -254,9 +359,9 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
-  stationDelete: {
-    url: api.BASE_URL + api.URLS.otdr.station.single,
-    method: 'delete',
+  mapDetail: {
+    url: api.BASE_URL + api.URLS.otdr.map.single,
+    method: 'get',
     auth: true,
   },
   networkStationList: {
@@ -324,6 +429,16 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'delete',
     auth: true,
   },
+  linkDelete: {
+    url: api.BASE_URL + api.URLS.otdr.link.single,
+    method: 'delete',
+    auth: true,
+  },
+  linkCreate: {
+    url: api.BASE_URL + api.URLS.otdr.link.create,
+    method: 'post',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -388,11 +503,17 @@ export type RequestListTypes = {
   networkList: undefined;
   networkDetail: {params: {networkId: string}};
   networkDelete: {params: {networkId: string}};
-  networkUpdate: {params: {networkId: string}; data: {description: string}};
+  networkUpdate: {
+    params: {networkId: string};
+    data: {name: string; description: string};
+  };
   networkAccessList: {params: {network_id: string}};
   networkAccessUpdate: {
     params: {network_id: string};
     data: {users: string[]};
+  };
+  deleteShapefile: {
+    params: {shapefile_id: string};
   };
   groupList: undefined;
   groupDetail: {params: {group_id: string}};
@@ -410,6 +531,96 @@ export type RequestListTypes = {
     params: {network_id: string};
     data: {name: string; description: string};
   };
+  // linkList: undefined;
+  linkCreate: {
+    data: {
+      name: string;
+      network_id: string;
+      source_id: string;
+      destination_id: string;
+      link_points: {
+        latitude: number;
+        longitude: number;
+      }[];
+      // region_id: string;
+      description: string;
+      type: string;
+    };
+  };
+  linkAccessUpdate: {
+    params: {link_id: string};
+    data: {users: string[]};
+  };
+  linkAccessList: {
+    params: {link_id: string};
+  };
+  linkAddadmin: {
+    params: {link_id: string};
+    data: {
+      user_id: string;
+    };
+  };
+  linkDelete: {params: {link_id: string}};
+  linkDetail: {params: {link_id: string}};
+
+  linkUpdate: {
+    params: {link_id: string};
+    data: {
+      name: string;
+      description: string;
+      link_points: {
+        latitude: number;
+        longitude: number;
+      }[];
+
+      source_id: string;
+      destination_id: string;
+      type: string;
+    };
+  };
+  linkupdatecables: {
+    data: {
+      cables:
+        | {
+            id: number;
+            cableId: string;
+            number_of_cores: number;
+            segments: [
+              {
+                id: number;
+                start: number;
+                length: number;
+                offset: number;
+                loss: number;
+                fiber_type: string;
+              },
+            ];
+          }[]
+        | [];
+      ducts:
+        | {
+            id: string;
+            mini_ducts: [
+              {
+                id: string;
+                number_of_fibers: number;
+              },
+            ];
+            segments: [
+              {
+                start: number;
+                length: number;
+                offset: number;
+                loss: number;
+                fiber_type: string;
+              },
+            ];
+          }[]
+        | [];
+    };
+    params: {link_id: string};
+  };
+
   regionDetail: {params: {region_id: string}};
   regionUpdate: {params: {region_id: string}; data: {description: string}};
   regionAccessList: {params: {region_id: string}};
@@ -418,21 +629,66 @@ export type RequestListTypes = {
     data: {users: string[]};
   };
   regionStationList: {params: {region_id: string}};
+  updateregionStationList: {
+    params: {region_id: string};
+    data: {
+      stations_id: string[];
+    };
+  };
+  addregionStationList: {
+    params: {region_id: string};
+    data: {
+      stations_id: string[];
+    };
+  };
+
+ removeregionStationList: {
+    params: {region_id: string};
+    data: {
+      stations_id: string[];
+    };
+  };
+  updateregionLinkList: {
+    params: {region_id: string};
+    data: {
+      links_id: string[];
+    };
+  };
+  addregionLinkList: {
+    params: {region_id: string};
+    data: {
+      links_id: string[];
+    };
+  };
+  removeregionLinkList: {
+    params: {region_id: string};
+    data: {
+      links_id: string[];
+    };
+  };
+  mapDetail: {params: {network_id: string}};
+
   networkUpdateAdmin: {data: {user_id: string}; params: {network_id: string}};
   allLinks: undefined;
   regionLinkList: {params: {region_id: string}};
   regionAdminUpdate: {params: {region_id: string}; data: {user_id: string}};
   allStations: undefined;
+  networkstations: {params: {network_id: string}};
   stationCreate: {data: T.StationCreateType};
   stationDetail: {params: {station_id: string}};
   stationUpdate: {
     params: {station_id: string};
     data: {
+      name: string;
       model: string;
       longitude: number;
       latitude: number;
       description: string;
     };
+  };
+  stationAccessUpdate: {
+    params: {station_id: string};
+    data: {users: string[]};
   };
   stationDelete: {
     params: {station_id: string};
@@ -446,6 +702,12 @@ export type RequestListTypes = {
   stationViewerUpdate: {
     params: {station_id: string};
     data: {users: string};
+  };
+  stationAddadmin: {
+    params: {station_id: string};
+    data: {
+      user_id: string;
+    };
   };
   stationAdminUpdate: {
     params: {station_id: string};
@@ -546,6 +808,7 @@ export type ResponseListType = {
   networkUpdate: T.NetworkType;
   networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
+  deleteShapefile: string;
   groupList: T.GroupType[];
   groupDetail: T.GroupDetailType;
   createGroup: string | null;
@@ -554,22 +817,39 @@ export type ResponseListType = {
   allRegions: T.RegionListType[];
   regionList: T.RegionListType[];
   regionCreate: T.RegionListType & {region_id: string};
+  linkCreate: T.LinkCreateType;
   regionDetail: T.RegionType;
+  linkDetail: T.LinksType;
+  linkUpdate: T.LinksType;
+  linkupdatecables: string;
+  linkAccessList: {users: T.AccessListType[]};
+  linkAddadmin: string;
+  linkAccessUpdate: {count: number};
+  mapDetail: T.MapType;
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};
-  regionStationList: T.StationListType[];
+  regionStationList: T.regionstationlist[];
+  updateregionStationList: T.regionstationlist[];
+ addregionStationList: T.regionstationlist[];
+  removeregionStationList: T.regionstationlist[];
+  updateregionLinkList: T.regionlinklist[];
+  addregionLinkList: T.regionlinklist[];
+  removeregionLinkList: T.regionlinklist[];
   networkUpdateAdmin: string;
-  allLinks: T.LinkType[];
-  regionLinkList: T.LinkType[];
+  allLinks: T.allLinksType[];
+  regionLinkList: T.regiolinklist[];
   regionAdminUpdate: string;
   allStations: T.StationListType[];
+  networkstations: T.networkstationslistType[];
   stationCreate: T.StationCreateType & {station_id: string};
+  stationAddadmin: string;
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
+  stationAccessUpdate: {count: number};
   stationDelete: {count: number};
   networkStationList: T.StationListType[];
-  stationAccessList: T.AccessListType;
+  stationAccessList: {users: T.AccessListType[]};
   stationViewerUpdate: {count: number};
   stationAdminUpdate: string;
   userNetworkAccesses: T.NetworkAccessType[];
@@ -581,4 +861,5 @@ export type ResponseListType = {
   updateUserStationAccesses: string | null;
   updateUserLinkAccesses: string | null;
   regionDelete: {count: number};
+  linkDelete: {count: number};
 };

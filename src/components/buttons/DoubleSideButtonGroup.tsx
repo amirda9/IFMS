@@ -5,6 +5,7 @@ import {TallArrow} from '../icons';
 type Props = {
   leftButtonText?: string;
   rightButtonText?: string;
+
   onClickRightButton?: () => void; // TODO: Probably the () => void signature is not the best to choose. We might need to use the click callback event type for this prop and the SimpleBtn component
   onClickLeftButton?: () => void;
 };

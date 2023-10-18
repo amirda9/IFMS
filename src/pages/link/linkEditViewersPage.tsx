@@ -6,21 +6,28 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-
+import {useDispatch, useSelector} from 'react-redux';
+import {setlinkviewers,setlinkviewersstatus} from './../../store/slices/networkslice'
 const RegionAccessPage = () => {
+  const {linkDetail} = useSelector((state: any) => state.http);
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{linkId: string}>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     request,
     state: {viewers, update},
   } = useHttpRequest({
     selector: state => ({
-      viewers: state.http.regionAccessList,
-      update: state.http.regionAccessUpdate,
+      viewers: state.http.linkAccessList,
+      update: state.http.linkAccessUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.linkId!}});
+      request('linkAccessList', {params: {link_id: params.linkId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
@@ -35,7 +42,7 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('regionAccessList', {params: {region_id: params.linkId!}});
+        request('linkAccessList', {params: {link_id: params.linkId!}});
         navigate('../access', {replace: true, relative: 'path'});
       }
     },
@@ -43,31 +50,29 @@ const RegionAccessPage = () => {
 
   const buttons = (
     <>
-      <SimpleBtn
-        disabled={update?.httpRequestStatus === 'loading'}
-        onClick={() => {
-          const admin = viewers!.data!.users.find(
-            value => value.access === AccessEnum.admin,
-          );
-          const viewerList = editor.current!.values;
+        <SimpleBtn
+          disabled={update?.httpRequestStatus === 'loading'}
+          onClick={() => {
+            const admin = viewers!.data!.users.find(
+              value => value?.access === AccessEnum.admin,
+            );
+            const viewerList = editor.current!.values;
 
-          if (admin) {
-            const index = viewerList.indexOf(admin.user.id);
-            if (index !== -1 && index !== null) {
-              viewerList.splice(index, 1);
+            if (admin) {
+              const index = viewerList.indexOf(admin.user.id);
+              if (index !== -1 && index !== null) {
+                viewerList.splice(index, 1);
+              }
             }
-          }
 
-          const users = viewerList.map(value => value);
-
-          request('regionAccessUpdate', {
-            params: {region_id: params.linkId!},
-            data: {users},
-          });
-        }}>
-        OK
-      </SimpleBtn>
-      <SimpleBtn link to="../">
+            const users = viewerList.map(value => value);
+            dispatch(setlinkviewers(users)) 
+            dispatch(setlinkviewersstatus(true)) 
+            navigate(-1)
+          }}>
+          OK
+        </SimpleBtn>
+      <SimpleBtn onClick={()=>{dispatch(setlinkviewersstatus(false)),navigate(-1) }}>
         Cancel
       </SimpleBtn>
     </>

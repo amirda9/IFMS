@@ -1,10 +1,16 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
-import {useParams} from 'react-router-dom';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
+import {useDispatch} from 'react-redux';
 import {FormLayout} from '~/layout';
-
+import {useSelector} from 'react-redux';
+import {BASE_URL} from '~/constant';
+import {useNavigate, useParams} from 'react-router-dom';
+import {
+  setregionviewersstatus,
+  setregionviewers,
+} from './../../store/slices/networkslice';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -13,6 +19,35 @@ const columns = {
 };
 
 const RegionAccessPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [itemssorted, setItemssorted] = useState<
+    {
+      index: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const {network} = useSelector((state: any) => state);
+  const [tabname, setTabname] = useState('User');
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const params = useParams<{regionId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -28,7 +63,18 @@ const RegionAccessPage = () => {
       request('regionAccessList', {params: {region_id: params.regionId!}});
       request('userList', undefined);
     },
+    onUpdate: lastState => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        update?.httpRequestStatus === 'success'
+      ) {
+        request('regionAccessList', {params: {region_id: params.regionId!}});
+        navigate('../access', {replace: true, relative: 'path'});
+      }
+    },
   });
+
+  
   const saveAdmin = () => {
     const viewerWithoutAdmin =
       viewers?.data?.users
@@ -48,17 +94,57 @@ const RegionAccessPage = () => {
       params: {region_id: params.regionId!},
       data: {user_id: userAdmin || admin!.user.id!},
     });
+    request('regionAccessUpdate', {
+      params: {region_id: params.regionId!},
+      data: {users: network?.regionviewers},
+    });
+    dispatch(setregionviewersstatus(false)),
+    dispatch(setregionviewers([]))
   };
+  var dataa: any = [];
 
   const body = useMemo(() => {
-    const items = (viewers?.data?.users || [])
+    for (let i = 0; i < network?.regionviewers.length; i++) {
+      const findd = users!.data!.findIndex(
+        data => data.id == network?.regionviewers[i],
+      );
+      if (findd > -1) {
+        dataa.push({
+          index: (i + 1).toString(),
+          user: users?.data && users?.data[findd]?.username,
+          station: (users?.data && users?.data[findd]?.station?.name) || '-',
+          region: (users?.data && users?.data[findd]?.region?.name) || '-',
+        });
+      }
+    }
+    const items =network.regionviewersstatus?dataa: (viewers?.data?.users || [])
       .filter(value => value.access !== AccessEnum.admin)
       .map((value, index) => ({
         index: (index + 1).toString(),
         user: value.user.username,
         station: value.user.station?.name || '-',
         region: value.user.region?.name || '-',
-      }));
+      })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
+
+    const sortddata = (tabname: string, sortalfabet: boolean) => {
+      if (sortalfabet) {
+        items.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        items.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setItemssorted(items);
+    };
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
     );
@@ -68,10 +154,18 @@ const RegionAccessPage = () => {
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
+    
     return (
       <>
         <Description label="Region Admin" className="mb-4">
           <Select
+            disabled={
+              userrole == 'superuser' ||
+              networkDetail?.data?.access?.access == 'ADMIN' ||
+              regionDetail?.data?.access.role == 'superuser'
+                ? false
+                : true
+            }
             className="w-80"
             value={userAdmin || admin?.user.id}
             onChange={event => {
@@ -86,28 +180,50 @@ const RegionAccessPage = () => {
             ))}
           </Select>
         </Description>
-        <Description label="Region Viewers(s)" items="start" className="h-full">
+        <Description label="Region Viewer(s)" items="start" className="h-full">
           <Table
+               dynamicColumns={['index']}
+               renderDynamicColumn={data => data.index + 1}
+               tabicon={tabname}
+         
+               onclicktitle={(tabname: string, sortalfabet: boolean) => {
+                setTabname(tabname);
+                sortddata(tabname, sortalfabet);
+              }}
+            items={
+              itemssorted.length > 0
+                ? itemssorted
+                : items
+            }
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
-            items={items}
-            containerClassName="w-3/5"
+            containerClassName="w-3/5 mt-[-6px]"
           />
         </Description>
       </>
     );
-  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
+  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin,itemssorted,network?.regionviewers]);
   const buttons = (
     <>
-      <SimpleBtn link to="../edit-access">
-        Edit Region Viewer(s)
-      </SimpleBtn>
-      <SimpleBtn
-        onClick={saveAdmin}
-        disabled={update?.httpRequestStatus === 'loading'}>
-        Save
-      </SimpleBtn>
-      <SimpleBtn link to="../">
+      {userrole == 'superuser' ||
+      networkDetail?.data?.access?.access == 'ADMIN' ||
+      regionDetail?.data?.access.access == 'ADMIN' ? (
+        <SimpleBtn link to="../edit-access">
+          Edit Region Viewer(s)
+        </SimpleBtn>
+      ) : null}
+      {userrole == 'superuser' ||
+      networkDetail?.data?.access?.access == 'ADMIN' ||
+      regionDetail?.data?.access.access == 'ADMIN' ? (
+        <SimpleBtn
+          onClick={saveAdmin}
+          disabled={update?.httpRequestStatus === 'loading'}>
+          Save
+        </SimpleBtn>
+      ) : null}
+
+      <SimpleBtn onClick={()=>{dispatch(setregionviewersstatus(false)),dispatch(setregionviewers([]));
+}}>
         Cancel
       </SimpleBtn>
     </>

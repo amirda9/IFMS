@@ -1,12 +1,15 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
+import {useNavigate} from 'react-router-dom';
 import {useParams} from 'react-router-dom';
 import {FormLayout} from '~/layout';
 import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
-
+import {useDispatch} from 'react-redux';
+import networkslice, {setnetworkviewers,setnetworkviewersstatus} from './../../store/slices/networkslice';
+import {BASE_URL, networkExplored} from '~/constant';
+import {useSelector} from 'react-redux';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -15,6 +18,35 @@ const columns = {
 };
 
 const NetworkAccessPage = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const [tabname, setTabname] = useState('User');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
+  const {networkDetail} = useSelector((state: any) => state.http);
+  const {network} = useSelector((state: any) => state);
+  const [itemssorted, setItemssorted] = useState<
+    {
+      index: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
   const params = useParams<{networkId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -26,11 +58,22 @@ const NetworkAccessPage = () => {
       users: state.http.userList,
       update: state.http.networkUpdateAdmin,
     }),
+
     initialRequests: request => {
       request('networkAccessList', {params: {network_id: params.networkId!}});
       request('userList', undefined);
     },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'success'
+      ) {
+        request('networkAccessList', {params: {network_id: params.networkId!}});
+      }
+    },
   });
+
+
   const saveAdmin = () => {
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
@@ -39,17 +82,43 @@ const NetworkAccessPage = () => {
       params: {network_id: params.networkId!},
       data: {user_id: userAdmin || admin!.user.id},
     });
-  };
+    request('networkAccessUpdate', {
+      params: {network_id: params.networkId!},
+      data: {users: network?.networkviewers},
+    });
+    dispatch(setnetworkviewersstatus(false));
 
+  };
+  useEffect(()=>{
+
+  },[])
+  var dataa: any = [];
+  for (let i = 0; i < network?.networkviewers.length; i++) {
+    const findd = users!.data!.findIndex(
+      data => data.id == network?.networkviewers[i],
+    );
+    if (findd > -1) {
+      dataa.push({
+        index: (i + 1).toString(),
+        user: users?.data && users?.data[findd]?.username,
+        station: (users?.data && users?.data[findd]?.station?.name) || '-',
+        region: (users?.data && users?.data[findd]?.region?.name) || '-',
+      });
+    }
+  }
   const body = useMemo(() => {
-    const items = (viewers?.data?.users || [])
-      .filter(value => value.access !== AccessEnum.admin)
-      .map((value, index) => ({
-        index: (index + 1).toString(),
-        user: value.user.username,
-        station: value.user.station?.name || '-',
-        region: value.user.region?.name || '-',
-      }));
+    const items =network.networkviewersstatus
+        ? dataa.sort((a: any, b: any) => a.user.localeCompare(b.user, 'en-US'))
+        : (viewers?.data?.users || [])
+            .filter(value => value.access !== AccessEnum.admin)
+            .map((value, index) => ({
+              index: (index + 1).toString(),
+              user: value.user.username,
+              station: value.user.station?.name || '-',
+              region: value.user.region?.name || '-',
+            }))
+            .sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
+
     const admin = viewers?.data?.users.find(
       viewer => viewer.access === AccessEnum.admin,
     );
@@ -59,10 +128,37 @@ const NetworkAccessPage = () => {
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
+
+    const sortddata = (tabname: string, sortalfabet: boolean) => {
+      if (sortalfabet) {
+        items.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        items.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setItemssorted(items);
+    };
+
     return (
       <>
         <Description label="Network Admin" className="mb-4">
           <Select
+            disabled={
+              userrole == 'superuser' ||
+              networkDetail?.data?.access?.role == 'superuser'
+                ? false
+                : true
+            }
             className="w-80"
             value={userAdmin || admin?.user.id}
             onChange={event => {
@@ -77,26 +173,40 @@ const NetworkAccessPage = () => {
             ))}
           </Select>
         </Description>
-        <Description
-          label="Network Viewers(s)"
-          items="start"
-          className="h-full">
+        <Description label="Network Viewer(s)" items="start" className="h-full">
           <Table
+            dynamicColumns={['index']}
+            renderDynamicColumn={data => data.index + 1}
+            tabicon={tabname}
+            onclicktitle={(tabname: string, sortalfabet: boolean) => {
+              sortddata(tabname, sortalfabet);
+              setTabname(tabname);
+            }}
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
-            items={items}
-            containerClassName="w-3/5"
+            items={itemssorted.length > 0 ? itemssorted : items}
+            containerClassName="w-3/5 mt-[-7px]"
           />
         </Description>
       </>
     );
-  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin]);
+  }, [
+    viewers?.httpRequestStatus,
+    users?.httpRequestStatus,
+    userAdmin,
+    itemssorted,
+    network.networkviewers,
+  ]);
 
   const buttons = (
     <>
-      <SimpleBtn link to="../edit-access">
-        Edit Network Viewer(s)
-      </SimpleBtn>
+      {userrole == 'superuser' ||
+      networkDetail?.data?.access?.access == 'ADMIN' ? (
+        <SimpleBtn link to="../edit-access">
+          Edit Network Viewer(s)
+        </SimpleBtn>
+      ) : null}
+
       <SimpleBtn
         onClick={() => {
           Cookies.set(networkExplored, params.networkId!);
@@ -106,12 +216,20 @@ const NetworkAccessPage = () => {
       <SimpleBtn link to="../history">
         History
       </SimpleBtn>
+      {userrole == 'superuser' ||
+      networkDetail?.data?.access?.access == 'ADMIN' ? (
+        <SimpleBtn
+          onClick={saveAdmin}
+          disabled={update?.httpRequestStatus === 'loading'}>
+          Save
+        </SimpleBtn>
+      ) : null}
+
       <SimpleBtn
-        onClick={saveAdmin}
-        disabled={update?.httpRequestStatus === 'loading'}>
-        Save
-      </SimpleBtn>
-      <SimpleBtn link to="../">
+        onClick={() => {
+          dispatch(setnetworkviewers([]));
+          dispatch(setnetworkviewersstatus(false));
+        }}>
         Cancel
       </SimpleBtn>
     </>

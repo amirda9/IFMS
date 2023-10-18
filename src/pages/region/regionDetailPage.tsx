@@ -6,13 +6,37 @@ import * as Yup from 'yup';
 import {FormLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
-
+import {useSelector} from 'react-redux';
+import {useEffect, useState} from 'react';
+import Cookies from 'js-cookie';
+import {networkExplored} from '~/constant';
+import {BASE_URL} from './../../constant';
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
-  description: Yup.string().required('Please enter region comment'),
 });
 const RegionDetailPage = () => {
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const networkId = Cookies.get(networkExplored) || '';
   const params = useParams<{regionId: string}>();
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+  };
+
+  useEffect(() => {
+    getrole();
+  }, []);
+
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.regionDetail,
@@ -27,22 +51,30 @@ const RegionDetailPage = () => {
         state.update?.httpRequestStatus === 'success'
       ) {
         request('regionDetail', {params: {region_id: params.regionId!}});
+        request('regionList', {params: {network_id: networkId}});
       }
     },
   });
+
   const buttons = (
     <>
-      <SimpleBtn
-        type="submit"
-        disabled={state.update?.httpRequestStatus === 'loading'}
-        onClick={() => {
-          document.getElementById('formSubmit')?.click();
-        }}>
-        Save
-      </SimpleBtn>
+      {userrole == 'superuser' ||
+      networkDetail?.data?.access?.access == 'ADMIN' ||
+      regionDetail?.data?.access?.access == 'ADMIN' ? (
+        <SimpleBtn
+          type="submit"
+          disabled={state.update?.httpRequestStatus === 'loading'}
+          onClick={() => {
+            document.getElementById('formSubmit')?.click();
+          }}>
+          Save
+        </SimpleBtn>
+      ) : null}
+
       <SimpleBtn>Cancel</SimpleBtn>
     </>
   );
+  
   if (state.detail?.httpRequestStatus !== 'success') return <>loading</>;
   return (
     <FormLayout buttons={buttons}>
@@ -53,7 +85,7 @@ const RegionDetailPage = () => {
         }}
         onSubmit={values => {
           request('regionUpdate', {
-            data: {description: values.description},
+            data: values,
             params: {region_id: params.regionId!},
           });
         }}
@@ -63,21 +95,20 @@ const RegionDetailPage = () => {
             <Description label="Name" items="start">
               <InputFormik
                 name="name"
-                wrapperClassName="w-2/3"
+                wrapperClassName="w-2/3 text-sm"
                 className="disabled:bg-white"
-                disabled
               />
             </Description>
 
-            <Description label="Comments" items="start">
-              <TextareaFormik name="description" className="w-2/3" />
+            <Description label="Comment" items="start">
+              <TextareaFormik name="description" className="w-2/3 text-sm" />
             </Description>
 
             <Description label="Owner" items="start">
               {state.detail?.data?.current_version.owner.username}
             </Description>
 
-            <Description label="Created" className="mb-4">
+            <Description label="Created">
               {getPrettyDateTime(state.detail?.data?.time_created)}
             </Description>
 

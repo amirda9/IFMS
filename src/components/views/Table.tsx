@@ -1,6 +1,7 @@
-import {ReactNode} from 'react';
+import {ReactNode, useState} from 'react';
 import GeneralLoadingSpinner from '../loading/GeneralLoadingSpinner';
 import classNames from '~/util/classNames';
+import { BsChevronDown } from 'react-icons/bs';
 
 export type ColType = {label: string; size?: string; sort?: boolean};
 
@@ -28,34 +29,68 @@ type PropsType<
   loading?: boolean;
   keyExtractor?: (value: Item) => string;
   bordered?: boolean;
+  tabicon?:string;
+  onclicktitle?:Function
 };
 const Table = <
   C extends string,
   Item extends ItemType<C, DC>,
   DC extends C | never = never,
 >({
+  
   items,
   cols,
+  tabicon,
   dynamicColumns = [],
   renderDynamicColumn,
   containerClassName,
   loading,
   keyExtractor,
   bordered,
+  onclicktitle=()=>{}
 }: PropsType<C, DC, Item>) => {
   const headerItems = Object.entries(cols) as Array<[C, ColType]>;
-
+  const [selectedtab,setselectedtab]=useState<string>(tabicon || "")
+  const [sortalfabet,setSortalfabet]=useState(true)
+const changeTab=(name:string)=>{
+  if(name == selectedtab){
+    onclicktitle(name,sortalfabet)
+  setSortalfabet(!sortalfabet)
+ 
+}else{
+  setselectedtab(name)
+  onclicktitle(name,false)
+  setSortalfabet(true)
+}
+}
+// tabicon && tabicon == col.label?setSortalfabet(!sortalfabet):null
   const renderHeader = ([key, col]: [C, ColType]) => (
     <th
+    onClick={()=>{changeTab(col.label)}}
       key={key}
       className={classNames(
         col.size,
         bordered
           ? 'border-b border-r border-gray96 last:border-r-0'
-          : 'border-r last:border-0',
-        'bg-blueLight py-1 font-normal',
+          : 'border-r border-[#969696] border-[1px] border-t-[0px] last:border-r-[0px] first:border-l-[0px]',
+        'bg-blueLight py-1 cursor-pointer font-normal text-sm border-[#969696] border-[1px] relative border-t-[0px]',
       )}>
       {col.label}
+{tabicon == col.label?
+<>
+{sortalfabet?
+  <BsChevronDown  className='absolute right-[5px] top-[8px]' />
+:
+<BsChevronDown  className='absolute rotate-180 right-[5px] top-[8px]' />
+}
+
+</>
+ 
+:null
+}
+         
+
+ 
     </th>
   );
 
@@ -75,8 +110,11 @@ const Table = <
           {dynamicColumns?.includes(key as DC)
             ? renderDynamicColumn?.({key: key as DC, value: row, index})
             : row[key as Exclude<C, DC>]}
+           
         </td>
+    
       ))}
+         
     </tr>
   );
 
@@ -94,10 +132,12 @@ const Table = <
           <tr
             className={classNames(
               !bordered &&
-                '[&_td]:border-b [&_td]:border-r [&_td]:!border-goodGray',
+                '[&_td]:border-b [&_td]:border-r [&_td]:!border-goodGray relative',
             )}>
             {headerItems.map(renderHeader)}
+         
           </tr>
+     
         </thead>
         <tbody>
           {loading ? (

@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {SimpleBtn, Switch} from '~/components';
 import {FormLayout} from '~/layout';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -6,21 +6,33 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
+import {useDispatch} from 'react-redux';
+import {setstationviewers,setstationviewersstatus} from './../../store/slices/networkslice';
 
 const RegionAccessPage = () => {
+  const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{stationId: string}>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setstationviewers([]);
+  }, []);
+
   const {
     request,
     state: {viewers, update},
   } = useHttpRequest({
     selector: state => ({
-      viewers: state.http.regionAccessList,
-      update: state.http.regionAccessUpdate,
+      viewers: state.http.stationAccessList,
+      update: state.http.stationAccessUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.stationId!}});
+      request('stationAccessList', {params: {station_id: params.stationId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
@@ -35,7 +47,7 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('regionAccessList', {params: {region_id: params.stationId!}});
+        request('stationAccessList', {params: {station_id: params.stationId!}});
         navigate('../access', {replace: true, relative: 'path'});
       }
     },
@@ -47,27 +59,34 @@ const RegionAccessPage = () => {
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
           const admin = viewers!.data!.users.find(
-            value => value.access === AccessEnum.admin,
+            value => value?.access === AccessEnum.admin,
           );
           const viewerList = editor.current!.values;
 
           if (admin) {
-            const index = viewerList.indexOf(admin.user.id);
+            const index = viewerList.findIndex(data => data == admin?.user.id);
             if (index !== -1 && index !== null) {
               viewerList.splice(index, 1);
             }
           }
 
           const users = viewerList.map(value => value);
-
-          request('regionAccessUpdate', {
-            params: {region_id: params.stationId!},
-            data: {users},
-          });
+          dispatch(setstationviewers(users));
+          dispatch(setstationviewersstatus(true));
+          navigate(-1);
+          // request('stationAccessUpdate', {
+          //   params: {station_id: params.stationId!},
+          //   data: {users},
+          // });
         }}>
         OK
       </SimpleBtn>
-      <SimpleBtn link to="../">
+      <SimpleBtn
+        onClick={() => {
+          dispatch(setstationviewers([]));
+          dispatch(setstationviewersstatus(false));
+          navigate(-1);
+        }}>
         Cancel
       </SimpleBtn>
     </>

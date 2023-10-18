@@ -4,8 +4,8 @@ export enum AccessEnum {
   viewer = 'VIEWER',
 }
 export type AccessListType = {
-  user: UserListType;
-  access: AccessEnum;
+ user: UserListType;
+ access: AccessEnum
 };
 
 export type AccessCreateType = {

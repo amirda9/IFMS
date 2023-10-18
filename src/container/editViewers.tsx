@@ -1,4 +1,10 @@
-import React, {FC, forwardRef, useImperativeHandle, useState} from 'react';
+import React, {
+  FC,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
@@ -14,6 +20,7 @@ type StateType = {
   selectLeft: string[];
   selectRight: string[];
   group: boolean;
+  Adminid:string
 };
 const columns = {
   select: {label: '', size: 'w-[6%]'},
@@ -33,6 +40,7 @@ export type EditorRefType = {
   setValues: (values: string[]) => void;
   group: boolean;
   setGroup: (isGroup: boolean) => void;
+  setAdminid:(values:string) => void;
 };
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   const [state, setState] = useState<StateType>({
@@ -40,28 +48,46 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     selectLeft: [],
     selectRight: [],
     group: false,
+    Adminid:""
   });
 
-  const {
-    state: {users, groups},
-    request,
-  } = useHttpRequest({
-    selector: state => ({
-      users: state.http.userList,
-      groups: state.http.groupList,
-    }),
-    initialRequests: request => {
-      request('userList', undefined);
-    },
-  });
+  
+  const [mount, setmount] = useState(false);
+  const [usertabselected, setUsertabselected] = useState('User');
+  const [veiwertabselected, setVeiwertabselected] = useState('User');
+  const [usertablesorte, setUsertablesort] = useState(false);
+  const [veiwertablesorte, setVeiwertablesort] = useState(false);
+  const [change, setCange] = useState(false);
+  const [usersssorted, setUserssorted] = useState<
+    {
+      id: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
+  const [veiwersssorted, setWeiverssorted] = useState<
+    {
+      id: string;
+      user: string;
+      station: string;
+      region: string;
+    }[]
+  >([]);
+
+ 
 
   useImperativeHandle(
     ref,
     () => ({
       values: state.values,
       group: state.group,
+      
       setValues: (values: string[]) => {
         setState({...state, values});
+      },
+      setAdminid:(values: string)=>{
+        setState({...state, Adminid:values});
       },
       setGroup: (isGroup: boolean) => {
         if (isGroup && !groups?.data) {
@@ -70,7 +96,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
         setState({...state, group: isGroup});
       },
     }),
-    [state.values, state.group],
+    [state.values, state.group,state.Adminid],
   );
 
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
@@ -90,6 +116,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       };
     });
   };
+
   const renderDynamicColumn = (side: 'left' | 'right') => {
     return ({value, key, index}: RenderDynamicColumnType) => {
       if (key === 'index') return index + 1;
@@ -107,6 +134,21 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     };
   };
 
+  // const admin = groups?.data?.find(
+  //   value => value.access === AccessEnum.admin,
+  // );
+  const {
+    state: {users, groups},
+    request,
+  } = useHttpRequest({
+    selector: state => ({
+      users: state.http.userList,
+      groups: state.http.groupList,
+    }),
+    initialRequests: request => {
+      request('userList', undefined);
+    },
+  });
   const userList =
     users?.data?.map(user => ({
       user: user.username,
@@ -115,24 +157,108 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       id: user.id,
     })) || [];
 
+
+  const group1 = groups?.data;
+
   const groupList =
     groups?.data?.map(group => {
       const users = group.users.map(user => ({
         label: `${user.username} - ${user.station?.name || '_'}`,
         value: user.id,
       }));
+
       return {
         label: group.name,
         items: users.filter(item => !state.values.includes(item.value)),
       };
     }) || [];
 
+  const Users = userList.filter(user => !state.values.includes(user.id)) || [];
+
+  const sortdusers = (tabname: string, sortalfabet: boolean) => {
+    if (tabname != 'Index') {
+      if (sortalfabet) {
+        Users.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        Users.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setUserssorted(Users);
+    }
+  };
+
+
+
+  const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
+
+  for (let i=0;i<veiwers.length;i++){
+    // const findusers=state.Viewers?.findIndex(data =>data.user.id == veiwers[i].id);
+    
+  if(veiwers[i].id == state.Adminid){
+  veiwers.splice(i,1)
+  }
+  }
+
+
+  const sortdveiwers = (tabname: string, sortalfabet: boolean) => {
+    if (tabname != 'Index') {
+      if (sortalfabet) {
+        veiwers.sort(
+          (a: any, b: any) =>
+            -a[tabname.toLocaleLowerCase()].localeCompare(
+              b[tabname.toLocaleLowerCase()],
+              'en-US',
+            ),
+        );
+      } else {
+        veiwers.sort((a: any, b: any) =>
+          a[tabname.toLocaleLowerCase()].localeCompare(
+            b[tabname.toLocaleLowerCase()],
+            'en-US',
+          ),
+        );
+      }
+      setWeiverssorted(veiwers);
+    }
+  };
+
+  useEffect(() => {
+    if (mount) {
+      if (usertabselected != 'Index') {
+        sortdusers(usertabselected, usertablesorte);
+      }
+    } 
+  }, [
+    usertabselected,
+    usertablesorte,
+    change,
+  ]);
+
+useEffect(()=>{
+  if (mount) {
+    if (veiwertabselected != 'Index') {
+      sortdveiwers(veiwertabselected, veiwertablesorte);
+    }
+  } 
+  setmount(true);
+},[veiwertablesorte,veiwertabselected,change])
+
   return (
-    <div className="flex h-full w-full flex-row items-center justify-between">
+    <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">
       {state.group ? (
         <Table
           keyExtractor={value => value.label}
-          containerClassName="w-[44%] h-full"
+          containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px] overflow-y-auto"
           cols={{groups: {label: 'Groups'}}}
           items={groupList}
           dynamicColumns={['groups']}
@@ -153,20 +279,29 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
             (groups?.httpRequestStatus !== 'success' && state.group) ||
             (users?.httpRequestStatus !== 'success' && !state.group)
           }
+          tabicon={usertabselected}
+          onclicktitle={(tabname: string, sortalfabet: boolean) => {
+            setUsertabselected(tabname), setUsertablesort(sortalfabet);
+          }}
           cols={columns}
-          items={userList.filter(user => !state.values.includes(user.id))}
-          containerClassName="w-[44%] h-full"
+          items={usersssorted.length > 0 ? usersssorted : Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US'))}
+          containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
           dynamicColumns={['select', 'index']}
           renderDynamicColumn={renderDynamicColumn('left')}
         />
       )}
+
       <DoubleSideButtonGroup
         onClickRightButton={() => {
+          // if(parentname == "networkaccess"){
+
+          // }
           setState({
             ...state,
             selectLeft: [],
             values: [...state.values, ...state.selectLeft],
           });
+          setCange(!change);
         }}
         onClickLeftButton={() => {
           const values = [...state.values];
@@ -175,16 +310,22 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
             values.splice(index, 1);
           });
           setState({...state, selectRight: [], values});
+          setCange(!change);
         }}
       />
+
       <Table
         loading={
           (groups?.httpRequestStatus !== 'success' && state.group) ||
           (users?.httpRequestStatus !== 'success' && !state.group)
         }
+        onclicktitle={(tabname: string, sortalfabet: boolean) => {
+          setVeiwertabselected(tabname), setVeiwertablesort(sortalfabet);
+        }}
         cols={columns}
-        items={userList.filter(user => state.values.includes(user.id))}
-        containerClassName="w-[44%] h-full"
+        tabicon={veiwertabselected}
+        items={veiwersssorted.length > 0 ? veiwersssorted : veiwers}
+        containerClassName="w-[44%] h-[calc(100vh-260px)] ml-[5px]  overflow-y-auto"
         dynamicColumns={['select', 'index']}
         renderDynamicColumn={renderDynamicColumn('right')}
       />

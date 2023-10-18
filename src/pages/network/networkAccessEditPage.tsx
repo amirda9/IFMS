@@ -6,9 +6,17 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  setnetworkviewers,
+  setnetworkviewersstatus,
+} from './../../store/slices/networkslice';
+import {LoginPage} from '../auth';
 const NetworkAccessPage = () => {
+  const {networkDetail} = useSelector((state: any) => state.http);
+  const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
+
   const params = useParams<{networkId: string}>();
   const navigate = useNavigate();
   const {
@@ -21,6 +29,10 @@ const NetworkAccessPage = () => {
     }),
     initialRequests: request => {
       request('networkAccessList', {params: {network_id: params.networkId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
@@ -28,7 +40,7 @@ const NetworkAccessPage = () => {
         viewers?.httpRequestStatus === 'success'
       ) {
         editor.current?.setValues(
-          viewers.data!.users.map(viewer => viewer.user.id),
+          viewers?.data!.users.map(viewer => viewer.user.id),
         );
       }
       if (
@@ -42,11 +54,12 @@ const NetworkAccessPage = () => {
   });
 
   const buttons = (
-    <>
+    <div className="mt-[25px] w-auto ">
       <SimpleBtn
+        className="mt-[25px] h-[40px] w-[149px]"
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
-          const admin = viewers!.data!.users.find(
+          const admin = viewers?.data?.users?.find(
             value => value.access === AccessEnum.admin,
           );
           const viewerList = editor.current!.values;
@@ -59,21 +72,27 @@ const NetworkAccessPage = () => {
           }
           const users = viewerList.map(value => value);
 
-          request('networkAccessUpdate', {
-            params: {network_id: params.networkId!},
-            data: {users},
-          });
+          dispatch(setnetworkviewers(users));
+          dispatch(setnetworkviewersstatus(true));
+          navigate(-1);
         }}>
         OK
       </SimpleBtn>
-      <SimpleBtn link to="./../access">
-        Cancel
+
+      <SimpleBtn
+        onClick={() => {
+          dispatch(setnetworkviewers([])),
+            dispatch(setnetworkviewersstatus(false)),
+            navigate(-1);
+        }}
+        className="ml-2 px-14 py-[12px]">
+        <span>Cancel</span>
       </SimpleBtn>
-    </>
+    </div>
   );
 
   return (
-    <FormLayout buttons={buttons} wrapperClassName="p-8">
+    <FormLayout buttons={buttons} wrapperClassName="p-8 h-[calc(100vh-120px)]">
       <div className="mb-4 flex flex-row items-center">
         <span>Users</span>
         <Switch

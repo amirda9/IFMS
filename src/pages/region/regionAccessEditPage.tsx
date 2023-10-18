@@ -6,8 +6,12 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-
+import {setregionviewers,setregionviewersstatus} from './../../store/slices/networkslice';
+import {useDispatch, useSelector} from 'react-redux';
 const RegionAccessPage = () => {
+  const dispatch = useDispatch();
+  const {regionDetail} = useSelector((state: any) => state.http);
+
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{regionId: string}>();
   const navigate = useNavigate();
@@ -21,6 +25,10 @@ const RegionAccessPage = () => {
     }),
     initialRequests: request => {
       request('regionAccessList', {params: {region_id: params.regionId!}});
+      editor.current?.setAdminid(
+        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+          '',
+      );
     },
     onUpdate: lastState => {
       if (
@@ -41,8 +49,11 @@ const RegionAccessPage = () => {
     },
   });
 
+
+
   const buttons = (
     <>
+      {/* {regionDetail?.data?.access == 'ADMIN' ? ( */}
       <SimpleBtn
         disabled={update?.httpRequestStatus === 'loading'}
         onClick={() => {
@@ -59,17 +70,19 @@ const RegionAccessPage = () => {
           }
 
           const users = viewerList.map(value => value);
+          dispatch(setregionviewers(users));
+          dispatch(setregionviewersstatus(true));
+          navigate(-1);
 
-          request('regionAccessUpdate', {
-            params: {region_id: params.regionId!},
-            data: {users},
-          });
+          // request('regionAccessUpdate', {
+          //   params: {region_id: params.regionId!},
+          //   data: {users},
+          // });
         }}>
         OK
       </SimpleBtn>
-      <SimpleBtn link to="../">
-        Cancel
-      </SimpleBtn>
+      {/* ):null} */}
+      <SimpleBtn onClick={() => {dispatch(setregionviewersstatus(false)),navigate(-1)}}>Cancel</SimpleBtn>
     </>
   );
 

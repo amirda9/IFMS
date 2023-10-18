@@ -32,6 +32,7 @@ export const URLS = {
       allAccess: '/otdr/network/{network_id}/access',
       viewersAccess: '/otdr/network/{network_id}/access/viewers',
       adminAccess: '/otdr/network/{network_id}/access/admin',
+      deleteShapefile:'/otdr/network/shapefile/{shapefile_id}',
     },
     region: {
       all: '/otdr/region',
@@ -41,19 +42,38 @@ export const URLS = {
       allAccess: '/otdr/region/{region_id}/access',
       viewersAccess: '/otdr/region/{region_id}/access/viewers',
       adminAccess: '/otdr/region/{region_id}/access/admin',
+      listInRegion: '/otdr/region/{region_id}/links',
+      updateregionStationList:'/otdr/region/{region_id}/update_stations',
+      removeregionStationList:'/otdr/region/{region_id}/update_stations?action_type=remove',
+     
+      addregionStationList:'/otdr/region/{region_id}/update_stations?action_type=append',
+      updateregionLinkList:'/otdr/region/{region_id}/update_links',
+      addregionLinkList:'/otdr/region/{region_id}/update_links?action_type=append',
+      removeregionLinkList:'/otdr/region/{region_id}/update_links?action_type=remove',
     },
     station: {
       all: '/otdr/station',
       single: '/otdr/station/{station_id}',
-      listInRegion: '/otdr/station/region/{region_id}',
+      listInRegion: '/otdr/region/{region_id}/stations',
       listInNetwork: '/otdr/station/network/{network_id}',
       allAccess: '/otdr/station/{station_id}/access',
       viewersAccess: '/otdr/station/{station_id}/access/viewers',
       adminAccess: '/otdr/station/{station_id}/access/admin',
+      Addadmin:'/otdr/station/{station_id}/access/admin',
+      networkstations:'/otdr/station/network/{network_id}'
     },
     link: {
       all: '/otdr/link',
-      listInRegion: '/otdr/link/region/{region_id}',
+      listInRegion: '/otdr/region/{region_id}/links',
+      create: '/otdr/link/',
+      single: '/otdr/link/{link_id}',
+      allAccess: '/otdr/link/{link_id}/access',
+      viewersAccess: '/otdr/link/{link_id}/access/viewers',
+      updatecableandduct:'/otdr/link/{link_id}/cables_and_ducts',
+      Addadmin:'/otdr/link/{link_id}/access/admin'
     },
+    map:{
+      single:'/otdr/map/{network_id}'
+    }
   },
 };

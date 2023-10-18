@@ -1,9 +1,28 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
 import {SidebarItem} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
-
+import {BASE_URL} from './../../constant';
 const NetworksPage: FC = () => {
+  const login = localStorage.getItem('login');
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+      headers: {
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
+    setuserrole(role.role);
+    console.log(role, 'getrole');
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
+
   const {
     request,
     state: {list, deleteRequest},
@@ -26,15 +45,21 @@ const NetworksPage: FC = () => {
       }
     },
   });
+
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Networks" canAdd>
+    <SidebarLayout
+      searchOnChange={() => {}}
+      createTitle="Networks"
+      canAdd={userrole == 'superuser' ? true : false}>
       {list?.data?.map(value => (
         <SidebarItem
           name={value.name}
           to={value.id}
           key={value.id}
-          onDelete={() =>
-            request('networkDelete', {params: {networkId: value.id}})
+          onDelete={
+            userrole == 'superuser'
+              ? () => request('networkDelete', {params: {networkId: value.id}})
+              : () => {}
           }
           disabled={
             deleteRequest?.httpRequestStatus === 'loading' &&
