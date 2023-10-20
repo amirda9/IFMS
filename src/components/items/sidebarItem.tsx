@@ -9,6 +9,7 @@ type PropsType = {
   onDelete?: () => void;
   disabled?: boolean;
   className?: string;
+  onclick?:() => void;
 };
 const SidebarItem: FC<PropsType> = ({
   to,
@@ -16,10 +17,12 @@ const SidebarItem: FC<PropsType> = ({
   onDelete,
   disabled,
   className,
+  onclick=()=>{}
 }) => {
   return (
     <div  className={'my-1 flex flex-row ' + className}>
       <NavLink
+       onClick={onclick}
         to={to}
         className={({isActive}) =>
           `flex h-10 flex-grow items-center rounded-lg pl-2 ${
