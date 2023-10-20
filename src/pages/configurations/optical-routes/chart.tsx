@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+
+import React, {useEffect, useRef, useState} from 'react';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import {ResponsiveLineCanvas, ResponsiveLine} from '@nivo/line';
 import Resultdata from '~/components/chart/result';
@@ -19,6 +20,7 @@ import {SimpleBtn, Table} from '~/components';
 import {Line} from '@nivo/line';
 import {MyResponsiveLineCanvas} from '~/components/chart';
 import {MdOutlineArrowBackIos} from 'react-icons/md';
+// import {scaleLinear} from "d3-scale";
 type chatrtabtype = {
   name: string;
   src: string;
@@ -122,6 +124,7 @@ const allcurve = [
 
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
+  const svgRef = useRef(null);
   const [leftbartabselected, setLeftbartabselected] = useState('');
   const [leftverticaltab, setLeftverticaltab] = useState<string>('');
   const [allchart, setAllchart] = useState<string[]>([]);
@@ -129,10 +132,13 @@ function Chart() {
   const [allcurveline, setAllcurveline] = useState<any>([]);
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [reightbar, setReightbar] = useState('Result');
+  const [change, setChange] = useState(0);
+  const [lineX, setLineX] = useState(5);
+  const [isDragging, setIsDragging] = useState(false);
   const [verticalLines, setVerticalLines] = useState<{x: number; y: number}[]>(
     [],
   );
-
+  const [mouseCoords, setMouseCoords] = useState({x: null, y: null});
   const [xScale, setXScale] = useState<any>({
     type: 'point',
     tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
@@ -203,87 +209,110 @@ function Chart() {
     }
   };
 
+
+
   const VerticalLine = ({xScale, yScale}: any) => {
     const elements: any = [];
     verticalLines.forEach((point, index) => {
       const X = xScale(point.x);
       const Y = yScale(15);
 
-      elements.push(
-        // <line  key={index} x1={X} y1={Y + 40} x2={X} y2={Y - 40} stroke="red" />,
-        // <line  key={index} x1={X+20} y1={Y + 40} x2={X} y2={Y + 40} stroke="red" />,
-        // <line  key={index} x1={X+20} y1={Y - 40} x2={X} y2={Y - 40} stroke="red" />,
-        // <line  key={index} x1={X+20} y1={Y - 40} x2={X+15} y2={Y - 45} stroke="red" />,
-        // <line  key={index} x1={X+20} y1={Y - 40} x2={X+15} y2={Y - 35} stroke="red" />,
-        // <line  key={index} x1={X+20} y1={Y + 40} x2={X+15} y2={Y + 35} stroke="red" />,
-        // <line  key={index} x1={X+20} y1={Y + 40} x2={X+15} y2={Y + 45} stroke="red" />,
-        // ----------------------------------------------------------------
-        <line key={index} x1={X} y1={Y + 40} x2={X} y2={Y - 40} stroke="red" />,
-        <line
-          key={index}
-          x1={X - 20}
-          y1={Y + 40}
-          x2={X}
-          y2={Y + 40}
-          stroke="red"
-        />,
-        <line
-          key={index}
-          x1={X - 20}
-          y1={Y - 40}
-          x2={X}
-          y2={Y - 40}
-          stroke="red"
-        />,
-        <line
-          key={index}
-          x1={X - 20}
-          y1={Y - 40}
-          x2={X - 15}
-          y2={Y - 45}
-          stroke="red"
-        />,
-        <line
-          key={index}
-          x1={X - 20}
-          y1={Y - 40}
-          x2={X - 15}
-          y2={Y - 35}
-          stroke="red"
-        />,
-        <line
-          key={index}
-          x1={X - 20}
-          y1={Y + 40}
-          x2={X - 15}
-          y2={Y + 35}
-          stroke="red"
-        />,
-        <line
-          key={index}
-          x1={X - 20}
-          y1={Y + 40}
-          x2={X - 15}
-          y2={Y + 45}
-          stroke="red"
-        />,
-      );
-      // ----------------------------
+      // elements.push(
+      //   // <line  key={index} x1={X} y1={Y + 40} x2={X} y2={Y - 40} stroke="red" />,
+      //   // <line  key={index} x1={X+20} y1={Y + 40} x2={X} y2={Y + 40} stroke="red" />,
+      //   // <line  key={index} x1={X+20} y1={Y - 40} x2={X} y2={Y - 40} stroke="red" />,
+      //   // <line  key={index} x1={X+20} y1={Y - 40} x2={X+15} y2={Y - 45} stroke="red" />,
+      //   // <line  key={index} x1={X+20} y1={Y - 40} x2={X+15} y2={Y - 35} stroke="red" />,
+      //   // <line  key={index} x1={X+20} y1={Y + 40} x2={X+15} y2={Y + 35} stroke="red" />,
+      //   // <line  key={index} x1={X+20} y1={Y + 40} x2={X+15} y2={Y + 45} stroke="red" />,
+      //   // ----------------------------------------------------------------
+      //   <line onMouseDown={()=>alert("kkjjjj")}  stroke-width={10} className="cursor-pointer opacity-0" key={index} x1={X} y1={Y + 40} x2={X} y2={Y - 40} stroke="red" />,
+      //   <line onMouseDown={()=>alert("kkjjjj")} className="cursor-pointer" key={index} x1={X} y1={Y + 40} x2={X} y2={Y - 40} stroke="red" />,
 
-      // elements.push(
-      //   <line key={index} x1={X} y1={-10000} x2={X} y2={Y} stroke="red" />,
-      // );
-      // elements.push(
-      //   <text
+      //   <line
       //     key={index}
-      //     x={X}
-      //     y={Y + 20}
-      //     fill="red"
-      //     fontSize={12}
-      //     textAnchor="middle">
-      //     {index+1}
-      //   </text>,
+      //     x1={X - 20}
+      //     y1={Y + 40}
+      //     x2={X}
+      //     y2={Y + 40}
+      //     stroke="red"
+      //   />,
+      //   <line
+      //     key={index}
+      //     x1={X - 20}
+      //     y1={Y - 40}
+      //     x2={X}
+      //     y2={Y - 40}
+      //     stroke="red"
+      //   />,
+      //   <line
+      //     key={index}
+      //     x1={X - 20}
+      //     y1={Y - 40}
+      //     x2={X - 15}
+      //     y2={Y - 45}
+      //     stroke="red"
+      //   />,
+      //   <line
+      //     key={index}
+      //     x1={X - 20}
+      //     y1={Y - 40}
+      //     x2={X - 15}
+      //     y2={Y - 35}
+      //     stroke="red"
+      //   />,
+      //   <line
+      //     key={index}
+      //     x1={X - 20}
+      //     y1={Y + 40}
+      //     x2={X - 15}
+      //     y2={Y + 35}
+      //     stroke="red"
+      //   />,
+      //   <line
+      //     key={index}
+      //     x1={X - 20}
+      //     y1={Y + 40}
+      //     x2={X - 15}
+      //     y2={Y + 45}
+      //     stroke="red"
+      //   />,
       // );
+      // ----------------------------
+// console.log(lineX,'lineX');
+
+      elements.push(
+        <svg
+          // some props
+          // onMouseMove={handleMouseMove}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          >
+          <line
+                // onMouseUp={handleMouseUp}
+          strokeWidth={10}
+            // onMouseDown={handleMouseDown}
+            key={index}
+            x1={lineX}
+            y1={-10000}
+            x2={lineX}
+            y2={Y}
+            stroke="red"
+          />
+         
+        </svg>,
+      );
+      elements.push(
+        <text
+          key={index}
+          x={X}
+          y={Y + 20}
+          fill="red"
+          fontSize={12}
+          textAnchor="middle">
+          {index + 1}
+        </text>,
+      );
       // ------------------------------------------------
       // elements.push(
       //   <line key={index} x1={X} y1={Y + 70} x2={X} y2={Y - 70} stroke="red" />,
@@ -302,13 +331,11 @@ function Chart() {
     });
     return elements;
   };
-
-  // تعریف یک تابع برای دریافت مختصات موس
-  const handlePointMouseEnter = (event: any, point: any) => {
-    // نمایش مختصات موس و نقطه در کنسول
-    console.log('Mouse coordinates:', event);
-    console.log('Point coordinates:', point);
+  const handleMouseUp = () => {
+    // set the flag to false
+    setIsDragging(false);
   };
+;
 
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
@@ -359,11 +386,29 @@ function Chart() {
       </button>
     );
   };
-  console.log(reightbar, '🥵');
+
+
+
+
+
+
+  const handleMouseDown = (event:any) => {
+    // set the flag to true
+    setIsDragging(true);
+  };
+  const handleMouseMove = (event:any) => {
+
+
+    if (isDragging) {
+      const x = event.nativeEvent.offsetX;
+      setLineX(event.nativeEvent.offsetX-50);
+    }
+  };
 
   // ##############################################################################################
   return (
     <div className="box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
+      <span>{change}</span>
       <div className="flex h-[540px] w-full flex-row">
         {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
         <div className="flex h-full w-[87px] flex-col">
@@ -429,39 +474,53 @@ function Chart() {
         <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
+         
               className={`${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
-              } h-full w-[calc(100vw-480px)] bg-[#ffff]`}>
+              } h-full  w-[calc(100vw-480px)] bg-[#ffff]`}>
+           
               <ResponsiveLine
+              // tooltip={tooltip}
                 data={allcurveline}
                 margin={{top: 50, right: 50, bottom: 50, left: 50}}
-                xScale={xScale}
+                xScale={{
+                  type: 'point',
+                }}
+   
                 yScale={yScale}
                 colors={({id}) => getColorForId(id)}
                 xFormat="d"
                 curve="linear"
-                onMouseEnter={(point: any, event: any) =>
-                  handlePointMouseEnter(point, event)
-                }
+                // enableSlices={false}
+                // debugSlices={true}
+                // enableCrosshair={false}
+                ref={svgRef}
+                // onMouseMove={handleMouseMove}
+           
+              // onMouseLeave={handleMouseUp}
+          
+                onMouseMove={(point, event) => {
+                  handleMouseMove(event)
+                  //  const xValue = xxScale.invert(event.nativeEvent.clientX);
+      
+                }}
                 lineWidth={3}
-                // useMesh={true}
-
+                useMesh={true}
                 layers={[
                   'grid',
                   // "markers",
                   'axes',
                   'areas',
-                  'crosshair',
                   'lines',
-                  // "points",
+                   "points",
                   // 'slices',
                   'mesh',
                   'legends',
                   VerticalLine, // اضافه کردن تابع VerticalLine به لایه ها
                 ]}
                 // markers={markers}
-                enablePoints={true}
-                pointSize={10}
+                // enablePoints={true}
+                pointSize={0.1}
                 pointColor={{theme: 'background'}}
                 pointBorderWidth={2}
                 pointBorderColor={{from: 'serieColor'}}
@@ -620,3 +679,4 @@ function Chart() {
 }
 
 export default Chart;
+
