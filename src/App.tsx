@@ -152,12 +152,13 @@ function App() {
               </Route>
             </Route>
             <Route path="optical-routes" Component={pages.OpticalRoutesLayout}>
-           
+            <Route path="create" Component={pages.OpticalRouteCreatePage} />
               <Route
                 path=":opticalRouteId"
                 Component={pages.SingleOpticalRouteLayout}>
-               
+           
                 <Route index Component={pages.OpticalRouteDetailsPage} />
+       
                 <Route path="route" Component={pages.OpticalRouteRoutePage} />
                 <Route
                   path="test-setup"

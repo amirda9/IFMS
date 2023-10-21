@@ -1,12 +1,17 @@
 import {useState} from 'react';
 import {FC} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
+import {NavLink} from 'react-router-dom';
 import {SidebarItem, TextInput} from '~/components';
-import { useHttpRequest } from '~/hooks';
+import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 type Itembtntype = {
   name: string;
+  id: string;
+  classname?: string;
 };
+
+// ----- main ----- main ----- main ------ main ------- main ------- main
 const OpticalRouteLayout: FC = () => {
   const {
     request,
@@ -31,53 +36,55 @@ const OpticalRouteLayout: FC = () => {
     },
   });
 
-  console.log(list,'listlistlist');
-  
   const [openall, setOpenall] = useState(false);
   const [networkselectedlist, setNetworkselectedlist] = useState<string[]>([]);
 
-  const Itembtn = ({name}: Itembtntype) => {
+  const Itembtn = ({name, id, classname}: Itembtntype) => {
     return (
       <div
-        
-        className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000]`}>
+        className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
         <span className="mt-[-6px] text-[12px] ">...</span>
-        {networkselectedlist.indexOf(name) > -1 ? (
+        {networkselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
         ) : (
           <span className="mx-[3px] mt-[-2px] font-light">+</span>
         )}
 
         <button
-        onClick={() => opennetworkopticallist(name)}
+          onClick={() => opennetworkopticallist(id)}
           className={`${
-            networkselectedlist.indexOf(name) > -1 ? 'font-bold' : 'font-light'
+            networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
         </button>
-        {networkselectedlist.indexOf(name) > -1 ? (
-          <BsPlusLg color="#18C047" className="ml-[10px]" />
+        {networkselectedlist.indexOf(id) > -1 ? (
+          <NavLink to={`create?${id}`} end>
+            <BsPlusLg color="#18C047" className="ml-[10px]" />
+          </NavLink>
         ) : null}
       </div>
     );
   };
 
-  const opennetworkopticallist = (name: string) => {
-    const findnetwork = networkselectedlist.findIndex(data => data == name);
+  const opennetworkopticallist = (id: string) => {
+    const findnetwork = networkselectedlist.findIndex(data => data == id);
     if (findnetwork > -1) {
       let old = [...networkselectedlist];
       old.splice(findnetwork, 1);
       setNetworkselectedlist(old);
     } else {
-      setNetworkselectedlist(prev => [...prev, name]);
+      setNetworkselectedlist(prev => [...prev, id]);
     }
   };
+
+  const lastnetwork =
+    (list?.data && list?.data[list?.data?.length - 1].id) || '';
+  // ######################################################################
   return (
-    // <SidebarLayout createTitle="Optical Routes" canAdd>
-    //   <SidebarItem   name="Optical Route 1" to="gdfgdfgfd" />
-    // </SidebarLayout>
-    <div className="flex h-[calc(100vh-140px)] w-1/4 flex-col overflow-y-auto border-r-2  border-g p-4">
-      <div className="flex flex-row items-center">
+    <SidebarLayout  createTitle="" canAdd>
+      {/* <div className="flex h-[calc(100vh-140px)] relative w-1/4 flex-col overflow-y-auto border-r-2  border-g p-4"> */}
+
+      <div className="flex flex-row items-center ">
         <label htmlFor="search" className="mr-2">
           Search
         </label>
@@ -90,60 +97,81 @@ const OpticalRouteLayout: FC = () => {
           }}
         />
       </div>
-      <div className="mt-[30px] flex w-full flex-col">
+
+      <div className={`relative mt-[30px] flex w-full flex-col`}>
+        <div
+          className={`absolute h-[40px] w-[10px] ${
+            networkselectedlist.indexOf(lastnetwork) > -1
+              ? 'bottom-[-20px]'
+              : 'bottom-[-15.5px]'
+          }  left-[-5px] bg-[#E7EFF7]`}></div>
         <button
           onClick={() => setOpenall(!openall)}
           className="flex w-[95px] flex-row text-[20px] font-bold text-[#000000]">
           {openall ? (
             <span className="ml-[-4px] mr-[5px] font-light">-</span>
           ) : (
-            <span className="mb-[5px] ml-[-6px] mr-[5px] font-light">+</span>
+            <span className="mb-[5px] ml-[3px] mr-[5px] font-light">+</span>
           )}
 
           <span>Networks</span>
         </button>
+
         {openall ? (
-          <div
-            className={` mt-[-10px] w-full border-l-[1px] border-dotted border-[#000000]`}>
-            <div className="flex flex-col">
-              <Itembtn name={'Network1'} />
-              {networkselectedlist.indexOf('Network1') > -1 ? (
-                <div className="flex w-full flex-row items-center">
-                  <span className="w-[25px] text-[12px]">.........</span>
-                  <SidebarItem
-                    className="ml-[5px] w-[calc(100%-30px)]"
-                    onclick={() => alert('rree')}
-                    name="Optical Route 1"
-                    to="#"
-                  />
-                </div>
-              ) : null}
-            </div>
+          <>
+            {list?.data?.map((data, index) => (
+              <div
+                key={index}
+                className={`mt-[-10px] relative w-full  border-l-[1px] border-dotted   ${ list?.data && index == list?.data?.length-1?"border-none":"border-[#000000]"}  `}>
+               { list?.data && index == list?.data?.length-1?
+                  <div className='border-l-[1px] ml-[0px] border-dotted border-[#000000] absolute h-[36px]'></div>:null}
+                <div className={`z-10 absolute ${networkselectedlist.indexOf(data.id) > -1?"bottom-[-2px]":"bottom-[-7px]"}  bg-[#E7EFF7] left-[15px] h-[25px] w-[5px]`}></div>
+              
+              
+                <div className="flex flex-col relative">
 
-            <Itembtn name={'Network2'} />
-
-            <div className="relative flex flex-col ">
-              <div className="absolute left-[-5px] top-[36px] z-10 h-full w-[10px] bg-[#E7EFF7]"></div>
-              {networkselectedlist.indexOf('Network3') > -1 ? (
-                <div className="absolute left-[16px] top-[38px] z-10 h-[calc(100%-59px)]  border-l-[1px]  border-dotted border-[#000000] bg-[#E7EFF7]"></div>
-              ) : null}
-              <Itembtn name={'Network3'} />
-              {networkselectedlist.indexOf('Network3') > -1 ? (
-                <div className="ml-[17px] flex w-full flex-row items-center overflow-hidden">
-                  <span className="w-[15px] text-[12px]">....</span>
-                  <SidebarItem
-                    className="w-[calc(100%-10px)]"
-                    onclick={() => alert('rree')}
-                    name="Optical Route 1"
-                    to="#"
+                  <Itembtn
+                    classname="mb-[-10px]"
+                    name={data.name}
+                    id={data.id}
                   />
+                 
+
+                  {networkselectedlist.indexOf(data.id) > -1 ? (
+                    <div className='flex relative flex-col border-l-[1px] ml-[18px] border-dotted border-[#000000]'>
+                     
+                       <div className='border-dotted border-[#000000] h-[18px] border-l-[1px] absolute top-[-20px] left-[-1px]'></div>
+                      <div className="flex w-full flex-row items-center">
+                        <span className="w-[15px] text-[12px]">.....</span>
+
+                        <SidebarItem
+                          className="ml-[5px] w-[calc(100%-20px)] mt-[10px]"
+                          name="Optical Route 1"
+                          to={data.name}
+                        />
+                      </div>
+                      <div className="flex w-full flex-row items-center">
+                        <span className="w-[15px] text-[12px]">.....</span>
+
+                        <SidebarItem
+                          className="ml-[5px] w-[calc(100%-20px)] mt-[10px]"
+                          name="Optical Route 1"
+                          to={data.name}
+                        />
+                      </div>
+                   
+                    </div>
+                    
+                  ) : null}
+
                 </div>
-              ) : null}
-            </div>
-          </div>
+              </div>
+            ))}
+          </>
         ) : null}
       </div>
-    </div>
+      {/* </div> */}
+    </SidebarLayout>
   );
 };
 
