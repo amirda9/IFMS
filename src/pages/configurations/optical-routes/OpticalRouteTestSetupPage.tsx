@@ -1,4 +1,5 @@
-import {FC} from 'react';
+import {FC, useState} from 'react';
+import { BsPlusLg } from 'react-icons/bs';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {Link, Outlet} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
@@ -44,12 +45,18 @@ const items = [
 ];
 
 const OpticalRouteTestSetupPage: FC = () => {
+  const [selectedTab,setSelectedtab]=useState("Name")
   return (
     <div className="flex flex-grow flex-col">
-      <div className="flex flex-grow flex-col gap-y-4 pr-16">
+      
+      <div className="relative flex  flex-grow flex-col gap-y-4 pr-16">
+      <BsPlusLg size={25} color="#18C047" className=' absolute right-[30px]' />
         <Table
           cols={columns}
           items={items}
+          tdclassname="text-left pl-[6px]"
+          tabicon={selectedTab}
+          onclicktitle={(e:string)=> setSelectedtab(e)}
           dynamicColumns={['details', 'delete']}
           renderDynamicColumn={({key}) => {
             if (key === 'details')

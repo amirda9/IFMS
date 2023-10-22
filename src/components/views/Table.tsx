@@ -32,6 +32,7 @@ type PropsType<
   bordered?: boolean;
   tabicon?: string;
   onclicktitle?: Function;
+  tdclassname?:string
 };
 const Table = <
   C extends string,
@@ -45,6 +46,7 @@ const Table = <
   renderDynamicColumn,
   containerClassName,
   loading,
+  tdclassname,
   tabbodybg = [],
   keyExtractor,
   bordered,
@@ -103,14 +105,19 @@ const Table = <
             let BG =row.tabbodybg?.find((data: any) => data.name == key)?.bg || 'white';
           return (
             <td
+            
               style={{backgroundColor: BG}}
               key={key}
               className={classNames(
+
                 bordered && `border-r  border-gray96 last:border-r-0`,
+               
               )}>
+              <div className={tdclassname}>
               {dynamicColumns?.includes(key as DC)
                 ? renderDynamicColumn?.({key: key as DC, value: row, index})
                 : row[key as Exclude<C, DC>]}
+                </div>
             </td>
           );
         })}
