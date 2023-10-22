@@ -35,18 +35,16 @@ const OpticalRouteDetailsPage: FC = () => {
                 className="min-w-[13rem]"
               />
             </Description>
-
-            <Description label="Average Helix (%)">
+             <div className='flex flex-row items-center'>
+             <Description label="Avg. Helix Factor">
               <InputFormik name="averageHelix" className="w-[13rem]" type='number' />
             </Description>
-
-            <Description label="IOR">
-              <InputFormik name="ior" className="w-[13rem]" type='number' />
-            </Description>
-
-            <Description label="RBS">
-              <InputFormik name="rbs" className="w-[13rem]" type='number' />
-            </Description>
+            <span className='ml-[4px]'>
+            %
+            </span>
+            
+             </div>
+         
 
             <Description label="Owner">
               <span>Admin</span>
