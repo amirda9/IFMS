@@ -1,75 +1,163 @@
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {SidebarItem, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 type Itembtntype = {
   name: string;
+  id: string;
+  classname?: string;
+  onclick?: Function;
 };
 const RtuLayout: FC = () => {
+  const [change, setChange] = useState(false);
+  const [mount, setMount] = useState(false);
+  const [networkId, setNetworkId] = useState('');
+  const [regionId, setRegionId] = useState('');
+  const [networkregions, setNetworkregions] = useState<
+    {networkid: string; regions: {name: string; id: string}[]}[]
+  >([]);
+  const [regionstations, setRegionstations] = useState<
+    {regionid: string; stations: {name: string; id: string}[]}[]
+  >([]);
   const {
     request,
-    state: {list, deleteRequest},
+    state: {list, deleteRequest, regions, regionStations},
   } = useHttpRequest({
     selector: state => ({
       list: state.http.networkList,
+      regions: state.http.regionList,
       deleteRequest: state.http.networkDelete,
+      regionStations: state.http.regionStationList,
     }),
     initialRequests: request => {
       if (list?.httpRequestStatus !== 'success') {
         request('networkList', undefined);
       }
     },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.deleteRequest?.httpRequestStatus === 'loading' &&
-        state.deleteRequest!.httpRequestStatus === 'success'
-      ) {
-        request('networkList', undefined);
-      }
-    },
+    // onUpdate: (lastState, state) => {
+    //   if (
+    //     lastState.regions?.httpRequestStatus === 'loading' &&
+    //     state.regions!.httpRequestStatus === 'success'
+    //   ) {
+    //     // request('networkList', undefined);
+    //     request('regionList', {params: {network_id: networkId}});
+    //   }
+    // },
   });
 
-  console.log(list, 'listlistlist');
+  // console.log(list, 'listlistlist');
 
   const [openall, setOpenall] = useState(false);
   const [networkselectedlist, setNetworkselectedlist] = useState<string[]>([]);
 
-  const Itembtn = ({name}: Itembtntype) => {
+  const Itembtn = ({name, id, classname, onclick = () => {}}: Itembtntype) => {
     return (
       <div
-        className={`flex h-[60px] w-auto flex-row items-center  text-[20px] text-[#000000]`}>
+        className={`flex h-[60px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
         <span className="mt-[-6px] text-[12px] ">...</span>
-        {networkselectedlist.indexOf(name) > -1 ? (
+        {networkselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
         ) : (
           <span className="mx-[3px] mt-[-2px] font-light">+</span>
         )}
 
         <button
-          onClick={() => opennetworkopticallist(name)}
+          onClick={() => {
+            opennetworkopticallist(id), onclick();
+          }}
           className={`${
-            networkselectedlist.indexOf(name) > -1 ? 'font-bold' : 'font-light'
+            networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
         </button>
-        {networkselectedlist.indexOf(name) > -1 ? (
+        {networkselectedlist.indexOf(id) > -1 ? (
           <BsPlusLg color="#18C047" className="ml-[10px]" />
         ) : null}
       </div>
     );
   };
 
-  const opennetworkopticallist = (name: string) => {
-    const findnetwork = networkselectedlist.findIndex(data => data == name);
+  const opennetworkopticallist = (id: string) => {
+    const findnetwork = networkselectedlist.findIndex(data => data == id);
     if (findnetwork > -1) {
       let old = [...networkselectedlist];
       old.splice(findnetwork, 1);
       setNetworkselectedlist(old);
     } else {
-      setNetworkselectedlist(prev => [...prev, name]);
+      setNetworkselectedlist(prev => [...prev, id]);
     }
   };
+
+  const networklist = list?.data || [];
+  const regionrklist = regions?.data || [];
+  const stationlist = regionStations?.data || [];
+
+  const onclicknetwork = (id: string) => {
+    request('regionList', {params: {network_id: id}});
+  };
+
+  const onclickregion = (id: string) => {
+    request('regionStationList', {params: {region_id: id}});
+    setRegionId(id);
+  };
+
+  console.log(regionStations, 'bb');
+
+  useEffect(() => {
+    if (mount) {
+      const finddata = networkregions.filter(
+        (data: any) => data.networkid == networkId,
+      );
+      console.log(finddata, 'finddatafinddatafinddata');
+      const maindata = regions?.data || [];
+      // console.log(maindata,'dataaaa');
+      let allregionsid: any = [];
+      if (finddata.length == 0) {
+        for (let i = 0; i < maindata?.length; i++) {
+          allregionsid.push({id: maindata[i].id, name: maindata[i].name});
+        }
+        // console.log(allregionsid,'ssssss');
+
+        setNetworkregions(prev => [
+          ...prev,
+          {networkid: regionrklist[0]?.network_id, regions: allregionsid},
+        ]);
+      }
+      //   console.log(allregionsid,'allregionsid');
+    } else {
+    }
+  }, [regions]);
+
+  useEffect(() => {
+    if (mount) {
+      const finddata = regionstations.filter(
+        (data: any) => data.regionid == regionId,
+      );
+      console.log(finddata, 'finddatafinddatafinddata');
+      const maindata = regionStations?.data || [];
+      console.log(maindata, 'dataaaa');
+      let allregionsid: any = [];
+      if (finddata.length == 0) {
+        for (let i = 0; i < maindata?.length; i++) {
+          allregionsid.push({id: maindata[i].id, name: maindata[i].name});
+        }
+        console.log(allregionsid, 'ssssss');
+
+        setRegionstations(prev => [
+          ...prev,
+          {regionid: regionId, stations: allregionsid},
+        ]);
+      }
+      //   console.log(allregionsid,'allregionsid');
+    } else {
+      setMount(true);
+    }
+  }, [regionStations]);
+
+  //  console.log(reg, '🥰🥵');
+  // console.log(regionstations, '🥰d🥵');
+  // console.log(regions, 'regions');
   return (
     // <SidebarLayout createTitle="Remote Test Units" canAdd>
     //   <SidebarItem name="RTU1" to="rtu-id-goes-here" />
@@ -84,7 +172,7 @@ const RtuLayout: FC = () => {
           id="search"
           className="mr-10 w-full"
           onChange={event => {
-            console.log(event);
+            // console.log(event);
           }}
         />
       </div>
@@ -102,80 +190,156 @@ const RtuLayout: FC = () => {
         </button>
         {openall ? (
           <div
-            className={` mt-[-10px] w-full border-l-[1px] border-dotted border-[#000000]`}>
-            <div className="flex flex-col">
-              <Itembtn name={'Network1'} />
-              <div className=" relative ml-[17px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
-                {networkselectedlist.indexOf('Network1') > -1 ? (
-                  <div className="absolute left-[-1px] top-[-23px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
-                ) : null}
-                {/* <div className="absolute bottom-[-7px] left-[-2.5px] z-20 h-[30px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div> */}
-                {networkselectedlist.indexOf('Network1') > -1 ? (
-                  <>
-                    <div className="flex w-full flex-row items-center">
-                      {/* <span className="mt-[-6px] w-[25px] text-[12px]">
-                      .....
-                    </span> */}
-                      <Itembtn name={'Region 1'} />
-                    </div>
-                    {networkselectedlist.indexOf('Region 1') > -1 ? (
-                      <div className=" relative ml-[16px] mt-[2px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
-                        <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
-                        <div className="absolute bottom-[-11px]  left-[-2.5px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div>
-                        <div className="flex w-full flex-row items-center ">
-                          <span className="mt-[-6px] w-[10px] text-[12px]">
-                            ...
-                          </span>
-                          <Itembtn name={'Station1'} />
-                        </div>
-                        {networkselectedlist.indexOf('Station1') > -1 ? (
-                          <div className=" relative ml-[28px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
-                            <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
-                            {/* <div className="absolute bottom-[-5.5px] left-[-2.5px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div> */}
-                            <div className="ml-[0px] mt-[10px] flex w-full flex-row items-center">
-                              <span className="mt-[-6px] w-[20px] text-[12px]">
-                                .....
-                              </span>
-                              <SidebarItem
-                                className="w-[calc(100%-30px)]"
-                                name="RTU1"
-                                to="rtu-id-goes-here"
-                              />
-                            </div>
-                            <div className="ml-[0px] mt-[10px] flex w-full flex-row items-center">
-                              <span className="mt-[-6px] w-[20px] text-[12px]">
-                                .....
-                              </span>
-                              <SidebarItem
-                                className="w-[calc(100%-30px)]"
-                                name="RTU1"
-                                to="rtu-id-goes-here"
-                              />
-                            </div>
-                          </div>
-                        ) : null}
+            className={` mt-[-10px] w-full  border-l-[1px] border-dotted border-[#000000]`}>
+            {networklist.map((data, index) => (
+              <div key={index} className="flex flex-col">
+                <Itembtn
+                  onclick={() => {
+                    onclicknetwork(data.id), () => setNetworkId(data.id);
+                  }}
+                  id={data.id}
+                  name={data.name}
+                />
 
-                        <div className="flex w-full flex-row items-center  ">
-                          <span className="mt-[-6px] w-[10px] text-[12px]">
-                            ...
-                          </span>
-                          <Itembtn name={'Station2'} />
-                        </div>
-                      </div>
-                    ) : null}
+                <div className=" relative ml-[17px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
+                  {networkselectedlist.indexOf(data.id) > -1 ? (
+                    <div className="absolute left-[-1px] top-[-23px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                  ) : null}
 
-                    <div className="flex w-full flex-row items-center">
-                      {/* <span className="mt-[-6px] w-[25px] text-[12px]">
-                      .....
-                    </span> */}
-                      <Itembtn name={'Region 2'} />
-                    </div>
-                  </>
-                ) : null}
+                  {index == networklist.length - 1 ? (
+                    <div
+                      className={`absolute left-[-1px] ${
+                        networkselectedlist.indexOf(data.id) > -1
+                          ? 'top-[-29px]'
+                          : 'top-[-29px]'
+                      }  left-[-20px] z-10 h-[calc(100%+100px)] w-[5px] bg-[#E7EFF7]`}></div>
+                  ) : null}
+
+                  <div
+                    className={`absolute left-[-1px] ${
+                      networkselectedlist.indexOf(data.id) > -1
+                        ? 'bottom-[-11px]'
+                        : 'bottom-[-16px]'
+                    }  z-10 h-[40px] w-[5px] bg-[#E7EFF7]`}></div>
+                  {networkselectedlist.indexOf(data.id) > -1 ? (
+                    <>
+                      {networkregions
+                        .find(dataa => dataa.networkid == data.id)
+                        ?.regions.map((dat, index) =>
+                        
+                        {
+                          
+                          return(
+                          (
+                            <div key={index} className="w-full">
+                              <div className="flex w-full flex-row items-center">
+                                <Itembtn
+                                  onclick={() => {
+                                    onclickregion(dat.id),
+                                      () => setRegionId(dat.id);
+                                  }}
+                                  id={dat.id}
+                                  name={dat.name}
+                                />
+                              </div>
+                              {networkselectedlist.indexOf(dat.id) > -1 ? (
+                                <div className="relative w-full">
+                                  <div className="absolute left-[16px] top-[-28.5px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                                  <div className="absolute bottom-[-11px]  left-[14px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div>
+                                  {networkregions
+                        .find(dataa => dataa.networkid == data.id)
+                        ?.regions.length == index+1 ? 
+                                  <div
+                                  className={`absolute left-[-1px] ${
+                                    networkselectedlist.indexOf(dat.id) > -1
+                                      ? 'top-[-31px]'
+                                      : 'top-[-29px]'
+                                  }  left-[-2px] z-30 h-full w-[5px] bg-[#E7EFF7]`}></div>:null}
+                               
+                                  {regionstations
+                                    .find(dataa => dataa.regionid == dat.id)
+                                    ?.stations.map((dat, index) =>
+                                    {
+                                      let findd=regionstations
+                                      .find(dataa => dataa.regionid == dat.id)
+                                      ?.stations;
+                                      return(
+                                        (
+                                          <div
+                                            key={index}
+                                            className=" relative ml-[16px] mt-[2px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
+                                            <div className="absolute bottom-[-17px]  left-[25px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div>
+                                            {/* {index == regionstations.length - 1 ? ( */}
+      
+                                            {/* ) : null} */}
+                                            <div className="flex w-full flex-row items-center ">
+                                              <span className="mt-[-6px] w-[10px] text-[12px]">
+                                                ...
+                                              </span>
+                                              <Itembtn id={dat.id} name={dat.name} />
+                                            </div>
+                                            {networkselectedlist.indexOf(dat.id) >
+                                            -1 ? (
+                                              <div className=" relative ml-[28px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
+                                       
+                                                  {/* <div
+                                                    className={`absolute left-[-1px] ${
+                                                      networkselectedlist.indexOf(
+                                                        dat.id,
+                                                      ) > -1
+                                                        ? 'top-[-31px]'
+                                                        : 'top-[-29px]'
+                                                    }  left-[-30px] z-30 h-full w-[5px] bg-[red]`}></div> */}
+                                        
+                                      
+                                              
+                                                <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                                                <div className="ml-[0px] mt-[10px] flex w-full flex-row items-center">
+                                                  <span className="mt-[-6px] w-[20px] text-[12px]">
+                                                    .....
+                                                  </span>
+                                                  <SidebarItem
+                                                    className="w-[calc(100%-30px)]"
+                                                    name="RTU1"
+                                                    to="rtu-id-goes-here"
+                                                  />
+                                                </div>
+                                                <div className="ml-[0px] mt-[10px] flex w-full flex-row items-center">
+                                                  <span className="mt-[-6px] w-[20px] text-[12px]">
+                                                    .....
+                                                  </span>
+                                                  <SidebarItem
+                                                    className="w-[calc(100%-30px)]"
+                                                    name="RTU1"
+                                                    to="rtu-id-goes-here"
+                                                  />
+                                                </div>
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        )
+                                      )
+                                    }
+                                    
+                                   )}
+                                </div>
+                              ) : null}
+                            </div>
+                          )
+                        )}
+                        
+                       )}
+
+                      {/* <div className="flex w-full flex-row items-center">
+                          <Itembtn name={'Region 2'} />
+                        </div> */}
+                    </>
+                  ) : null}
+                </div>
               </div>
-            </div>
+            ))}
 
-            <Itembtn name={'Network2'} />
+            {/* <Itembtn name={'Network2'} /> */}
 
             {/* <div className="relative flex flex-col ">
             <div className="absolute left-[-5px] top-[36px] z-10 h-full w-[10px] bg-[#E7EFF7]"></div>
