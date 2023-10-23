@@ -86,11 +86,11 @@ const RtuPortsPage: FC = () => {
     <div className="flex flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">
         <div className="flex items-center px-4">
-          <span className="basis-20">Index</span>
-          <span className="flex-1">Optical Route</span>
-          <span className="flex-1">End Station</span>
-          <span className="basis-52">Length (km)</span>
-          <span className="basis-52">State</span>
+          <span className="basis-16">Index</span>
+          <span className="basis-64">Optical Route</span>
+          <span className="basis-44">End Station</span>
+          <span className="basis-32">Length (km)</span>
+          <span className="basis-40">State</span>
           <span className="basis-40"></span>
         </div>
         {ports.map((port, i) => (

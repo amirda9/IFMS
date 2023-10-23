@@ -29,17 +29,17 @@ const RtuPortItem: FC<RtuItemProps> = ({
         'flex items-center rounded-lg p-4',
         isEmpty ? 'bg-red-300' : isActive ? 'bg-success' : 'bg-neutral-400',
       )}>
-      <span className="basis-20">{index}</span>
-      <div className="flex-1">
+      <span className="basis-16">{index}</span>
+      <div className="basis-64 pr-[20px]">
         <ControlledSelect
-          className="h-10 w-9/12"
+          className="h-10 w-full"
           options={opticalRouteOptions}
           onChange={() => {}}
         />
       </div>
-      <span className="flex-1">{!isEmpty && endStation}</span>
-      <span className="basis-52">{!isEmpty && length}</span>
-      <div className="basis-52">
+      <span className="basis-44 ">{!isEmpty && endStation}</span>
+      <span className="basis-32">{!isEmpty && length}</span>
+      <div className="basis-40">
         {!isEmpty && (
           <ControlledSelect
             className="h-10 w-[80%]"
