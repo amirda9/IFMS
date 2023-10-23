@@ -9,14 +9,14 @@ const TestDetailsParameters: FC = () => {
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
-        <div className="flex w-1/2 flex-grow flex-col gap-y-4 pb-4">
+        <div className="flex w-2/3 flex-grow flex-col gap-y-4 pb-4">
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
             label="Name">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
+              wrapperClassName="w-full"
               name="name"
             />
           </Description>
@@ -40,6 +40,29 @@ const TestDetailsParameters: FC = () => {
               className="basis-96"
             />
           </Description>
+
+          <Description
+            className="flex justify-between"
+            labelClassName="flex-grow"
+            label="Station">
+            <InputFormik
+              outerClassName="!flex-grow-0 w-96"
+              wrapperClassName="w-full"
+              name="station"
+            />
+          </Description>
+
+          <Description
+            className="flex justify-between"
+            labelClassName="flex-grow"
+            label="RTU">
+            <InputFormik
+              outerClassName="!flex-grow-0 w-96"
+              wrapperClassName="w-full"
+              name="rtu"
+            />
+          </Description>
+
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
@@ -53,21 +76,21 @@ const TestDetailsParameters: FC = () => {
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Station">
-            <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="station"
+            label="Break Strategy">
+            <ControlledSelect
+              options={[{label: 'Skip'}, {label: 'Slow?'}]}
+              onChange={() => {}}
+              className="basis-96"
             />
           </Description>
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="RTU">
-            <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="rtu"
+            label="Data Save Policy">
+            <ControlledSelect
+              options={[{label: 'Attach Trace File'}, {label: 'Slow?'}]}
+              onChange={() => {}}
+              className="basis-96"
             />
           </Description>
           <Description
@@ -80,6 +103,7 @@ const TestDetailsParameters: FC = () => {
               className="basis-96"
             />
           </Description>
+
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
@@ -90,6 +114,7 @@ const TestDetailsParameters: FC = () => {
               className="basis-96"
             />
           </Description>
+
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
@@ -110,6 +135,7 @@ const TestDetailsParameters: FC = () => {
               className="basis-96"
             />
           </Description>
+
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
@@ -146,182 +172,103 @@ const TestDetailsParameters: FC = () => {
             label="Sampling Duration (s)">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
+              wrapperClassName="w-full"
               name="sampling-duration"
               type="number"
             />
           </Description>
+
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Refraction">
+            label="IOR">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="refraction"
+              wrapperClassName="w-full"
+              name="IOR"
               type="number"
             />
           </Description>
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Scattering Coefficient">
+            label="RBS (dB)">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="scattering-coefficient"
+              wrapperClassName="w-full"
+              name="RBS (dB)"
               type="number"
             />
           </Description>
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Reflection Event Threshold">
+            label="Event Loss threshold (dB)">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="reflection-event-threshold"
+              wrapperClassName="w-full"
+              name="Event Loss threshold (dB)"
+              type="number"
+            />
+          </Description>
+
+          <Description
+            className="flex justify-between"
+            labelClassName="flex-grow"
+            label="Event Reflection Threshold (dB)">
+            <InputFormik
+              outerClassName="!flex-grow-0 w-96"
+              wrapperClassName="w-full"
+              name="Event Reflection Threshold (dB)"
               type="number"
             />
           </Description>
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Fiber End Threshold">
+            label="Fiber End Threshold (dB)">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="fiber-end-threshold"
+              wrapperClassName="w-full"
+              name="Fiber End Threshold (dB)"
               type="number"
             />
           </Description>
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Connection Loss Threshold">
+            label="Total Loss Threshold (dB)">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="connection-loss-threshold"
+              wrapperClassName="w-full"
+              name="Total Loss Threshold (dB)"
               type="number"
             />
           </Description>
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Fault Threshold Settings">
-            <ControlledSelect
-              options={[{label: 'Normal'}, {label: 'Abnormal'}]}
-              onChange={() => {}}
-              className="basis-96"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Targeted Learning Count">
+            label="Section Loss Threshold (dB)">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="targeted-learning-count"
+              wrapperClassName="w-full"
+              name="Section Loss Threshold (dB)"
               type="number"
             />
           </Description>
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
-            label="Reset Learning">
+            label="Injection Level Threshold (dB)">
             <InputFormik
               outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="reset-learning"
+              wrapperClassName="w-full"
+              name="Injection Level Threshold (dB)"
               type="number"
             />
           </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Reset Frequency">
-            <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="reset-frequency"
-              type="number"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Reset Periodicity">
-            <ControlledSelect
-              options={[{label: 'Days'}, {label: 'Months'}]}
-              onChange={() => {}}
-              className="basis-96"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Expand Learning">
-            <ControlledSelect
-              options={[{label: 'Yes'}, {label: 'No'}]}
-              onChange={() => {}}
-              className="basis-96"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Expand Frequency">
-            <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="expand-frequency"
-              type="number"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Expand Periodicity">
-            <ControlledSelect
-              options={[{label: 'Days'}, {label: 'Months'}]}
-              onChange={() => {}}
-              className="basis-96"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Expand Step">
-            <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="expand-step"
-              type="number"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Expand Learning to Max. # trace(s)">
-            <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName='w-full'
-              name="expand-learning-max"
-              type="number"
-            />
-          </Description>
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Extend Mode (Peak Monitoring)">
-            <ControlledSelect
-              options={[{label: 'No'}, {label: 'Yes'}]}
-              onChange={() => {}}
-              className="basis-96"
-            />
-          </Description>
+          {/* 
+----------- */}
         </div>
       </Form>
     </FormikProvider>
