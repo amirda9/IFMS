@@ -13,11 +13,11 @@ const Description: FC<PropsType> = ({
   children,
   items = 'center',
   className,
-  labelClassName,
+  labelClassName="text-sm",
 }) => {
   return (
     <div className={classNames(`items-${items}`, 'flex flex-row', className)}>
-      <label className={classNames('w-40 text-sm', labelClassName)}>
+      <label className={classNames('w-40', labelClassName)}>
         {label}
       </label>
       {typeof children === 'string' ? (

@@ -9,6 +9,8 @@ type Itembtntype = {
   classname?: string;
   onclick?: Function;
 };
+
+
 const RtuLayout: FC = () => {
   const [change, setChange] = useState(false);
   const [mount, setMount] = useState(false);
@@ -35,18 +37,9 @@ const RtuLayout: FC = () => {
         request('networkList', undefined);
       }
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.regions?.httpRequestStatus === 'loading' &&
-    //     state.regions!.httpRequestStatus === 'success'
-    //   ) {
-    //     // request('networkList', undefined);
-    //     request('regionList', {params: {network_id: networkId}});
-    //   }
-    // },
   });
 
-  // console.log(list, 'listlistlist');
+
 
   const [openall, setOpenall] = useState(false);
   const [networkselectedlist, setNetworkselectedlist] = useState<string[]>([]);
@@ -102,7 +95,7 @@ const RtuLayout: FC = () => {
     setRegionId(id);
   };
 
-  console.log(regionStations, 'bb');
+
 
   useEffect(() => {
     if (mount) {
@@ -111,23 +104,22 @@ const RtuLayout: FC = () => {
       );
       console.log(finddata, 'finddatafinddatafinddata');
       const maindata = regions?.data || [];
-      // console.log(maindata,'dataaaa');
+
       let allregionsid: any = [];
       if (finddata.length == 0) {
         for (let i = 0; i < maindata?.length; i++) {
           allregionsid.push({id: maindata[i].id, name: maindata[i].name});
         }
-        // console.log(allregionsid,'ssssss');
-
         setNetworkregions(prev => [
           ...prev,
           {networkid: regionrklist[0]?.network_id, regions: allregionsid},
         ]);
       }
-      //   console.log(allregionsid,'allregionsid');
+
     } else {
     }
   }, [regions]);
+
 
   useEffect(() => {
     if (mount) {
@@ -155,14 +147,12 @@ const RtuLayout: FC = () => {
     }
   }, [regionStations]);
 
-  //  console.log(reg, '🥰🥵');
-  // console.log(regionstations, '🥰d🥵');
-  // console.log(regions, 'regions');
+// ############################################################
   return (
     // <SidebarLayout createTitle="Remote Test Units" canAdd>
     //   <SidebarItem name="RTU1" to="rtu-id-goes-here" />
     // </SidebarLayout>
-    <div className="flex h-[calc(100vh-140px)] w-1/4 flex-col overflow-y-auto border-r-2  border-g p-4">
+    <SidebarLayout createTitle="">
       <div className="flex flex-row items-center">
         <label htmlFor="search" className="mr-2">
           Search
@@ -362,7 +352,7 @@ const RtuLayout: FC = () => {
           </div>
         ) : null}
       </div>
-    </div>
+    </SidebarLayout>
   );
 };
 
