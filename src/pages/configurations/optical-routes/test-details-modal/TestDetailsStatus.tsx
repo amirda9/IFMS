@@ -1,35 +1,68 @@
 import dayjs from 'dayjs';
 import {FC} from 'react';
+import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {Description, SimpleBtn} from '~/components';
+import Selectbox from '~/components/selectbox/selectbox';
+type Rowtext = {
+  name: string;
+  value: string;
+};
+
+const options=[{label:"Valid",value:"Valid"}]
+const Rowtext = ({name, value}: Rowtext) => {
+  return (
+    <div className="mb-[4px] flex flex-row">
+      <span className="w-[250px] text-[20px] font-light leading-[24.2px]">
+        {name}
+      </span>
+      <span className="text-[18px] font-light leading-[24.2px]">{value}</span>
+    </div>
+  );
+};
 
 const TestDetailsStatus: FC = () => {
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">
-        <Description label="Current Learning Cycle">
-          <span>1</span>
-        </Description>
-        <Description label="On Learning">
-          <span>No</span>
-        </Description>
-        <Description label="Next Cycle Start">
-          <span>{dayjs().format('YYYY-MM-DD HH:mm:ss')}</span>
-        </Description>
-        <Description label="Next Cycle Start">
-          <span>{dayjs().format('YYYY-MM-DD HH:mm:ss')}</span>
-        </Description>
-        <Description label="First Reference Time">
-          <span>{dayjs().format('YYYY-MM-DD HH:mm:ss')}</span>
-        </Description>
-        <Description label="Last Reference Time">
-          <span>{dayjs().format('YYYY-MM-DD HH:mm:ss')}</span>
-        </Description>
-        <Description label="Reference Status">
-          <span>Valid</span>
-        </Description>
-        <Description label="Last Learning Count">
-          <span>24</span>
-        </Description>
+        <Rowtext name="Current Learning Cycle" value={'1'} />
+
+        <Rowtext name="On Learning" value={'No'} />
+
+        <Rowtext
+          name="Current Cycle Start"
+          value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
+        />
+
+        <Rowtext
+          name="Next Cycle Start"
+          value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
+        />
+
+        <Rowtext
+          name="First Reference Time"
+          value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
+        />
+
+        <Rowtext
+          name="Last Reference Time"
+          value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
+        />
+
+        <div className="flex flex-row">
+          <span className="w-[250px] text-[20px] font-light leading-[24.2px]">
+            Current Reference
+          </span>
+          <IoOpenOutline size={25} />
+        </div>
+
+        <div className="flex flex-row items-center">
+          <span className="w-[250px] text-[20px] font-light leading-[24.2px]">
+            Reference Status
+          </span>
+          <Selectbox onclickItem={()=>{}} options={options} classname="w-[123px] rounded-[10px] h-[40px]" />
+        </div>
+
+        <Rowtext name="Last Learning Count" value={'24'} />
       </div>
     </div>
   );
