@@ -5,13 +5,13 @@ import RouteItem from './RouteItem';
 const OpticalRouteRoutePage: FC = () => {
   return (
     <div className="flex flex-grow flex-col">
-      <div className="flex flex-grow flex-col gap-y-4 w-4/5">
+      <div className="flex flex-grow flex-col gap-y-4 w-10/12">
         <div className='flex gap-x-4 px-4'>
           <span className='basis-10'></span>
-          <span className='flex-1'>Source Station</span>
-          <span className='flex-1'>Destination Station</span>
-          <span className='flex-1'>Cable (Duct)</span>
-          <span className='basis-30'>Core (Fiber)</span>
+          <span className='flex-1 text-[20px] leading-[24.2px]'>Source Station</span>
+          <span className='flex-1 text-[20px] leading-[24.2px]'>Destination Station</span>
+          <span className='flex-1 text-[20px] leading-[24.2px]'>Cable (Duct)</span>
+          <span className='basis-30 text-[20px] leading-[24.2px]'>Core (Fiber)</span>
           <span className='basis-10'></span>
         </div>
         <RouteItem

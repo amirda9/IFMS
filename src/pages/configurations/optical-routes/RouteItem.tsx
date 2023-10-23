@@ -33,7 +33,7 @@ const RouteItem: FC<Props> = ({
           options={sourceOptions}
           value={selectedSource}
           onChange={() => {}}
-          className='w-full'
+          className='w-full text-[20px] leading-[24.2px]'
         />
       </div>
       <div className='flex-1'>
@@ -41,7 +41,7 @@ const RouteItem: FC<Props> = ({
           options={destinationOptions}
           value={selectedDestination}
           onChange={() => {}}
-          className='w-full'
+          className='w-full text-[20px] leading-[24.2px]'
         />
       </div>
       <div className='flex-1'>
@@ -49,7 +49,7 @@ const RouteItem: FC<Props> = ({
           options={ductOptions}
           value={selectedDuct}
           onChange={() => {}}
-          className='w-full'
+          className='w-full text-[20px] leading-[24.2px]'
         />
       </div>
       <div className='basis-30'>
@@ -57,7 +57,7 @@ const RouteItem: FC<Props> = ({
           options={fiberOptions}
           value={selectedFiber}
           onChange={() => {}}
-          className='w-full'
+          className='w-full text-[20px] leading-[24.2px]'
         />
       </div>
       <div className='basis-10'>
