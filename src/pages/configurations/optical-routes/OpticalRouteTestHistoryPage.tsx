@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {FC} from 'react';
+import {FC, useState} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {SimpleBtn, Table} from '~/components';
 
@@ -7,9 +7,9 @@ const columns = {
   index: {label: 'Index', size: 'w-[7%]'},
   date: {label: 'Date', size: 'w-[18%]', sort: true},
   type: {label: 'Type', size: 'w-[18%]'},
-  alarms: {label: 'Alarms', size: 'w-[7%]'},
-  rtu: {label: 'RTU', size: 'w-[18%]'},
-  station: {label: 'Station', size: 'w-[18%]'},
+  alarms: {label: 'Alarms', size: 'w-[9%]'},
+  rtu: {label: 'RTU', size: 'w-[24%]'},
+  station: {label: 'Station', size: 'w-[10%]'},
   details: {label: 'Details', size: 'w-[7%]'},
   delete: {label: 'Delete', size: 'w-[7%]'},
 };
@@ -48,10 +48,14 @@ const items = [
 ];
 
 const OpticalRouteTestHistoryPage: FC = () => {
+  const [selectedtab,setSelectedtab]=useState("Date")
   return (
     <div className="flex flex-grow flex-col">
       <div className="flex flex-grow flex-col gap-y-4 pr-16">
         <Table
+        tdclassname='text-left pl-[6px]'
+        onclicktitle={(e:string)=>setSelectedtab(e)}
+        tabicon={selectedtab}
           cols={columns}
           items={items}
           dynamicColumns={['details', 'delete']}
