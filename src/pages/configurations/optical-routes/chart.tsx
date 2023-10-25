@@ -1,4 +1,3 @@
-
 import React, {useEffect, useRef, useState} from 'react';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import {ResponsiveLineCanvas, ResponsiveLine} from '@nivo/line';
@@ -135,13 +134,16 @@ function Chart() {
   const [change, setChange] = useState(0);
   const [lineX, setLineX] = useState(5);
   const [isDragging, setIsDragging] = useState(false);
+  const [rectangelzoom, setRectangelzoom] = useState(false);
+  const [startdraw, setStartDraw] = useState(false);
   const [verticalLines, setVerticalLines] = useState<{x: number; y: number}[]>(
     [],
   );
   const [mouseCoords, setMouseCoords] = useState({x: null, y: null});
+  const [basescale, setbasescale] = useState(2);
   const [xScale, setXScale] = useState<any>({
-    type: 'point',
-    tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
+    type: 'linear',
+    // tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
   });
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
@@ -168,17 +170,22 @@ function Chart() {
     setLeftverticaltab('LinkView');
   };
 
-  const zoom = () => {
+  const zoom = (x: boolean, y: number) => {
     setXScale({
-      type: 'point',
-      min: 2,
+      type: 'linear',
+      min: y,
       // max: 4,
     });
     setYScale({
       type: 'linear',
-      min: 15,
+      min: y,
       // max: 20,
     });
+    if (x) {
+      setbasescale(basescale + 1);
+    } else {
+      setbasescale(basescale - 1);
+    }
   };
 
   const getColorForId = (id: string) => {
@@ -208,8 +215,6 @@ function Chart() {
       setAllchart(prev => [...prev, name]);
     }
   };
-
-
 
   const VerticalLine = ({xScale, yScale}: any) => {
     const elements: any = [];
@@ -279,18 +284,17 @@ function Chart() {
       //   />,
       // );
       // ----------------------------
-// console.log(lineX,'lineX');
+      // console.log(lineX,'lineX');
 
       elements.push(
         <svg
           // some props
           // onMouseMove={handleMouseMove}
           onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          >
+          onMouseUp={handleMouseUp}>
           <line
-                // onMouseUp={handleMouseUp}
-          strokeWidth={10}
+            // onMouseUp={handleMouseUp}
+            strokeWidth={10}
             // onMouseDown={handleMouseDown}
             key={index}
             x1={lineX}
@@ -299,7 +303,6 @@ function Chart() {
             y2={Y}
             stroke="red"
           />
-         
         </svg>,
       );
       elements.push(
@@ -332,11 +335,8 @@ function Chart() {
     return elements;
   };
   const handleMouseUp = () => {
-    // set the flag to false
     setIsDragging(false);
   };
-;
-
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
       setMousePosition({x: ev.clientX, y: ev.pageY});
@@ -387,27 +387,97 @@ function Chart() {
     );
   };
 
-
-
-
-
-
-  const handleMouseDown = (event:any) => {
+  const handleMouseDown = (event: any) => {
     // set the flag to true
     setIsDragging(true);
   };
-  const handleMouseMove = (event:any) => {
-
-
+  const handleMouseMove = (event: any) => {
     if (isDragging) {
       const x = event.nativeEvent.offsetX;
-      setLineX(event.nativeEvent.offsetX-50);
+      setLineX(event.nativeEvent.offsetX - 50);
     }
   };
 
+  // ***********************************
+  const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
+  const [endX, setEndX] = useState(0);
+  const [endY, setEndY] = useState(0);
+
+  // تعریف استایل برای div container
+  const containerStyle = {
+    width: '500px',
+    height: '500px',
+    border: '1px solid black',
+    position: 'relative',
+  };
+
+  // تعریف استایل برای div rectangle
+  const rectangleStyle = {
+    width: Math.abs(endX - startX) + 'px', // عرض برابر با فاصله افقی شروع و پایان
+    height: Math.abs(endY - startY) + 'px', // ارتفاع برابر با فاصله عمودی شروع و پایان
+    left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
+    top: Math.min(startY, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
+    border: '1px solid red', // حاشیه قرمز رنگ
+    position: 'absolute', // موقعیت نسبی به div container
+  };
+
+  // تعریف تابع برای ذخیره مختصات شروع وقتی دکمه موس فشار داده شود
+  const handleMouseDown2 = (event: any) => {
+    setStartDraw(true);
+    setStartX(event.clientX);
+    setStartY(event.clientY);
+    setEndX(event.clientX);
+    setEndY(event.clientY);
+  };
+
+  // تعریف تابع برای ذخیره مختصات پایان وقتی موس حرکت کند
+  const handleMouseMove2 = (event: any) => {
+    if (startdraw) {
+      setEndX(event.clientX);
+      setEndY(event.clientY);
+    }
+  };
+
+  // تعریف تابع برای ذخیره مختصات پایان وقتی دکمه موس رها شود
+  const handleMouseUp2 = (event: any) => {
+    setStartDraw(false);
+    setEndX(event.clientX);
+    setEndY(event.clientY);
+    // ---------------------------------------
+
+    //     const x = startX/2+endX/2;
+    // const y =endY/2+startY/2 ;
+    const x = event.clientX;
+    const y = event.clientY;
+    // تعریف حدود زوم
+    const zoomWidth = 0.2; // عرض زوم نسبت به xScale
+    const zoomHeight = 0.2; // ارتفاع زوم نسبت به yScale
+    // تعریف مقادیر min و max برای x و y
+    const xMin = Math.max(x - zoomWidth / 2, 0); // حداقل مقدار x برابر با صفر یا کمترین مقدار شروع و پایان در جهت افقی
+    const xMax = Math.min(x + zoomWidth / 2, 2); // حداکثر مقدار x برابر با چهار یا بیشترین مقدار شروع و پایان در جهت افقی
+    const yMin = Math.max(y - zoomHeight / 2, 0); // حداقل مقدار y برابر با صفر یا کمترین مقدار شروع و پایان در جهت عمودی
+    const yMax = Math.min(y + zoomHeight / 2, 2); // حداکثر مقدار y برابر با بیست یا بیشترین مقدار شروع و پایان در جهت عمودی
+    // زوم کردن به نقطه مورد نظر با استفاده از تابعهای setXScale و setYScale
+    setXScale({
+      type: 'linear',
+      min: x,
+      // max: xMax,
+    });
+    setYScale({
+      type: 'linear',
+      min: y,
+      // max: yMax,
+    });
+  };
+  // **************************************
+
   // ##############################################################################################
   return (
-    <div className="box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
+    <div
+      // onClick={()=>{rectangelzoom?setStartDraw(!startdraw):{}}}
+
+      className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
       <span>{change}</span>
       <div className="flex h-[540px] w-full flex-row">
         {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
@@ -447,13 +517,25 @@ function Chart() {
                 src={hand}
                 className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
               />
-              <GoZoomIn size={30} className="mt-[20px] cursor-pointer" />
-              <GoZoomOut size={30} className="mt-[20px] cursor-pointer" />
+              <GoZoomIn
+                onClick={() => zoom(true, basescale + 1)}
+                size={30}
+                className="mt-[20px] cursor-pointer"
+              />
+              <GoZoomOut
+                onClick={() => zoom(false, basescale - 1)}
+                size={30}
+                className="mt-[20px] cursor-pointer"
+              />
               <img
+                onClick={() => setRectangelzoom(true)}
                 src={ZoomArea}
                 className="mt-[20px] h-[30px] w-[30px] cursor-pointer"
               />
               <img
+                onClick={() => {
+                  zoom(false, 1), setbasescale(2);
+                }}
                 src={Vector1}
                 className="mt-[15px] h-[25.5px] w-[30px] cursor-pointer"
               />
@@ -474,46 +556,46 @@ function Chart() {
         <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
-         
-              className={`${
+              onMouseDown={handleMouseDown2}
+              // onMouseMove={handleMouseMove2}
+              onMouseUp={handleMouseUp2}
+              className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
-              } h-full  w-[calc(100vw-480px)] bg-[#ffff]`}>
-           
+              } h-full  w-[calc(100vw-510px)] bg-[#ffff]`}>
               <ResponsiveLine
-              // tooltip={tooltip}
+                // tooltip={tooltip}
                 data={allcurveline}
-                margin={{top: 50, right: 50, bottom: 50, left: 50}}
-                xScale={{
-                  type: 'point',
-                }}
-   
+                margin={{top: 10, right: 50, bottom: 40, left: 50}}
+                xScale={xScale}
                 yScale={yScale}
                 colors={({id}) => getColorForId(id)}
                 xFormat="d"
                 curve="linear"
-                // enableSlices={false}
-                // debugSlices={true}
-                // enableCrosshair={false}
+                enableSlices={false}
+                debugSlices={false}
+                enableCrosshair={false}
                 ref={svgRef}
-                // onMouseMove={handleMouseMove}
-           
-              // onMouseLeave={handleMouseUp}
-          
                 onMouseMove={(point, event) => {
-                  handleMouseMove(event)
+                  console.log(point, 'point');
+
+                  handleMouseMove2(event);
+                  // console.log(event, 'point');
+
+                  handleMouseMove(event);
                   //  const xValue = xxScale.invert(event.nativeEvent.clientX);
-      
                 }}
                 lineWidth={3}
-                useMesh={true}
+                useMesh={!mousecursor}
                 layers={[
                   'grid',
-                  // "markers",
+                  'markers',
                   'axes',
                   'areas',
+                  'crosshair',
                   'lines',
-                   "points",
-                  // 'slices',
+
+                  'points',
+                  'slices',
                   'mesh',
                   'legends',
                   VerticalLine, // اضافه کردن تابع VerticalLine به لایه ها
@@ -525,11 +607,6 @@ function Chart() {
                 pointBorderWidth={2}
                 pointBorderColor={{from: 'serieColor'}}
               />
-              {/* <button
-                onClick={zoom}
-                className="absoloute reight-[200px] top-[200px] z-50">
-                Zoom
-              </button> */}
             </div>
           </div>
 
@@ -674,9 +751,11 @@ function Chart() {
           </div>
         </div>
       </div>
+      {rectangelzoom == true && startdraw == true ? (
+        <div onMouseUp={() => setStartDraw(false)} style={rectangleStyle}></div>
+      ) : null}
     </div>
   );
 }
 
 export default Chart;
-
