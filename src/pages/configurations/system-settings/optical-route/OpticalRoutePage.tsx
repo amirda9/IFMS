@@ -21,8 +21,8 @@ type Rowinputtype = {
 const FiberTypeoptions = ['G.652', 'G.653', 'G.654', 'G.655', 'G.656', 'G.657'];
 const Rowinput = ({name, children}: Rowinputtype) => {
   return (
-    <div className="mb-[6px] flex w-[700px] flex-row justify-between">
-      <span className="w-[400px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+    <div className="mb-[6px] flex w-[700px] flex-row justify-between text-[20px] font-light leading-[24.2px] text-[#000000]">
+      <span className="w-[400px] ">
         {name}
       </span>
       <div className="flex w-[350px]">{children}</div>
