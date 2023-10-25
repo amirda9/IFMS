@@ -1,7 +1,23 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {FormLayout} from '~/layout';
-import {Description, Select, SimpleBtn} from '~/components';
+import {Description, Select, SimpleBtn, TextInput} from '~/components';
 
+type Rowinputtype = {
+  name: string;
+  children: ReactNode;
+};
+
+const Rowinput = ({name, children}: Rowinputtype) => {
+  return (
+    <div className="flex w-[700px] flex-row justify-between">
+      <span className="w-[400px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+        {name}
+      </span>
+      <div className="flex w-[350px]">{children}</div>
+    </div>
+  );
+};
+// -------------------- main --------------------------- main ---------------------- main --------------------- main --------
 const ThresholdSettingsPage = () => {
   const buttons = (
     <>
@@ -13,8 +29,8 @@ const ThresholdSettingsPage = () => {
   return (
     <FormLayout buttons={buttons}>
       <div className="flex flex-col gap-y-4">
-        <Description label="Break Strategy" labelClassName="w-80">
-          <Select className="w-1/5">
+        <Rowinput name="Wavelength">
+          <Select className="w-full">
             <option value="" className="hidden">
               Select
             </option>
@@ -24,64 +40,22 @@ const ThresholdSettingsPage = () => {
             <option>Continue</option>
             <option>Skip</option>
           </Select>
-        </Description>
-
-        <Description
-          label="Fiber Test Setup Definition Strategy"
-          labelClassName="w-80">
-          <Select className="w-1/5">
-            <option value="" className="hidden">
-              Select
-            </option>
-            <option value={undefined} className="hidden">
-              Select
-            </option>
-            <option>None</option>
-            <option>Monitoring Only</option>
-            <option>Both</option>
-          </Select>
-        </Description>
-
-        <Description label="Data Save Policy" labelClassName="w-80">
-          <Select className="w-1/5">
-            <option value="" className="hidden">
-              Select
-            </option>
-            <option value={undefined} className="hidden">
-              Select
-            </option>
-            <option>Save Trace File</option>
-            <option>Don’t Save Trace File</option>
-          </Select>
-        </Description>
-
-        <Description label="Test Type" labelClassName="w-80">
-          <Select className="w-1/5">
-            <option value="" className="hidden">
-              Select
-            </option>
-            <option value={undefined} className="hidden">
-              Select
-            </option>
-            <option>Monitoring</option>
-            <option>Proactive Maintenance</option>
-          </Select>
-        </Description>
-
-        <Description
-          label="Degraded fiber Handling Strategy"
-          labelClassName="w-80">
-          <Select className="w-1/5">
-            <option value="" className="hidden">
-              Select
-            </option>
-            <option value={undefined} className="hidden">
-              Select
-            </option>
-            <option>Enabled</option>
-            <option>Disable</option>
-          </Select>
-        </Description>
+        </Rowinput>
+        <Rowinput name="Total Loss (dB)">
+          <TextInput type="number" className="w-full" defaultValue={1} />
+        </Rowinput>
+        <Rowinput name="Section Loss (dB)">
+          <TextInput type="number" className="w-full" defaultValue={0.1} />
+        </Rowinput>
+        <Rowinput name="Event Loss (dB)">
+          <TextInput type="number" className="w-full" defaultValue={0.1} />
+        </Rowinput>
+        <Rowinput name="Event Reflectance (dB)">
+          <TextInput type="number" className="w-full" defaultValue={1} />
+        </Rowinput>
+        <Rowinput name="Injection Level (dB)">
+          <TextInput type="number" className="w-full" defaultValue={1} />
+        </Rowinput>
       </div>
     </FormLayout>
   );
