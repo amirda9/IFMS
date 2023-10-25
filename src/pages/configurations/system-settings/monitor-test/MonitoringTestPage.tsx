@@ -122,7 +122,7 @@ const MonitoringTestPage: FC = () => {
       {inputs.map((input, i) =>
         input.type === 'select' ? (
           <Rowinput name={input.label}>
-            <Select className="w-[350px] flex-grow">
+            <Select className="w-[350px] flex-grow text-[20px] font-light leading-[24.2px] text-[#000000]">
               {input.options.map(opt => (
                 <option key={'OPT__' + opt}>{opt}</option>
               ))}
@@ -131,7 +131,7 @@ const MonitoringTestPage: FC = () => {
         ) : input.type === 'number' ? (
           <Rowinput name={input.label}>
             <TextInput
-              className="w-[350px] flex-grow"
+              className="w-[350px] flex-grow text-[20px] font-light leading-[24.2px] text-[#000000]"
               max={input.maxValue}
               min={input.minValue}
               defaultValue={input.defaultValue.toFixed(input.precision)}
