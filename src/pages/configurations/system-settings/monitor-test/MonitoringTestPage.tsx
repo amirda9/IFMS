@@ -1,6 +1,22 @@
-import {FC, Fragment} from 'react';
+import {FC, Fragment, ReactNode} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {Description, Select, TextInput} from '~/components';
+type Rowinputtype = {
+  name: string;
+  children: ReactNode;
+};
+
+const Rowinput = ({name, children}: Rowinputtype) => {
+  return (
+    <div className="flex w-[800px] flex-row justify-between">
+      <span className="w-[400px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+        {name}
+      </span>
+      <div className="flex w-[350px]">{children}</div>
+    </div>
+  );
+};
+
 
 type SelectInputType = {
   type: 'select';
@@ -21,12 +37,6 @@ type NumberInputType = {
 const inputs: (SelectInputType | NumberInputType)[] = [
   {
     type: 'select',
-    label: 'Wavelength (nm)',
-    options: [1625],
-    defaultValue: 1625,
-  },
-  {
-    type: 'select',
     label: 'Test Mode',
     options: ['Fast'],
     defaultValue: 'Fast',
@@ -43,6 +53,7 @@ const inputs: (SelectInputType | NumberInputType)[] = [
     options: ['Manual'],
     defaultValue: 'Manual',
   },
+
   {
     type: 'select',
     label: 'Range (km)',
@@ -74,124 +85,58 @@ const inputs: (SelectInputType | NumberInputType)[] = [
   },
   {
     type: 'number',
-    label: 'Refraction',
+    label: 'IOR',
     defaultValue: 1.476,
     precision: 6,
   },
   {
     type: 'number',
-    label: 'Scattering Coefficient',
-    defaultValue: -79.0,
-    precision: 2,
+    label: 'RBS (dB)',
+    defaultValue: 1.476,
+    precision: 6,
   },
   {
     type: 'number',
-    label: 'Reflection Event Threshold',
-    defaultValue: -40.0,
-    precision: 1,
+    label: 'Event Loss threshold (dB)',
+    defaultValue: 1.476,
+    precision: 6,
   },
   {
     type: 'number',
-    label: 'Fiber End Threshold',
-    defaultValue: 5.0,
-    precision: 2,
+    label: 'Event Reflection Threshold (dB)',
+    defaultValue: 1.476,
+    precision: 6,
   },
   {
     type: 'number',
-    label: 'Connection Loss Threshold',
-    defaultValue: 0.05,
-    precision: 2,
+    label: 'Fiber End Threshold (dB)',
+    defaultValue: 1.476,
+    precision: 6,
   },
-  {
-    type: 'select',
-    label: 'Fault Threshold Settings',
-    options: ['Normal'],
-    defaultValue: 'Normal',
-  },
-  {
-    type: 'number',
-    label: 'Targeted Learning Count',
-    defaultValue: 1,
-  },
-  {
-    type: 'select',
-    label: 'Reset Learning',
-    options: ['Yes'],
-    defaultValue: 'Yes',
-  },
-  {
-    type: 'number',
-    label: 'Reset Frequency',
-    defaultValue: 1,
-  },
-  {
-    type: 'select',
-    label: 'Reset Frequency',
-    options: ['Days'],
-    defaultValue: 'Days',
-  },
-  {
-    type: 'select',
-    label: 'Expand Learning',
-    options: ['Yes'],
-    defaultValue: 'Yes',
-  },
-  {
-    type: 'number',
-    label: 'Expand Frequency',
-    defaultValue: 14,
-  },
-  {
-    type: 'select',
-    label: 'Expand Periodicity',
-    options: ['Days'],
-    defaultValue: 'Days',
-  },
-  {
-    type: 'number',
-    label: 'Expand Step',
-    defaultValue: 1,
-  },
-  {
-    type: 'number',
-    label: 'Expand Learning to Max. # trace(s)',
-    defaultValue: 54,
-  },
-  {
-    type: 'select',
-    label: 'Expand Mode (Peak Monitoring)',
-    options: ['No'],
-    defaultValue: 'No',
-  },
+  // -------------
 ];
 
 const MonitoringTestPage: FC = () => {
   return (
-    <SystemSettingsMain contentClassName='w-2/5'>
+    <SystemSettingsMain contentClassName="w-4/5">
       {inputs.map((input, i) =>
         input.type === 'select' ? (
-          <Description
-            key={input.type + '__' + input.label}
-            labelClassName="w-[18rem]"
-            label={input.label}>
-            <Select className="flex-grow">
+          <Rowinput name={input.label}>
+            <Select className="w-[350px] flex-grow">
               {input.options.map(opt => (
                 <option key={'OPT__' + opt}>{opt}</option>
               ))}
             </Select>
-          </Description>
+          </Rowinput>
         ) : input.type === 'number' ? (
-          <Description
-            key={input.type + '__' + input.label}
-            labelClassName="w-[18rem]"
-            label={input.label}>
+          <Rowinput name={input.label}>
             <TextInput
-              className="flex-grow"
+              className="w-[350px] flex-grow"
               max={input.maxValue}
               min={input.minValue}
               defaultValue={input.defaultValue.toFixed(input.precision)}
             />
-          </Description>
+          </Rowinput>
         ) : (
           <Fragment key={'FRAG__' + i} />
         ),

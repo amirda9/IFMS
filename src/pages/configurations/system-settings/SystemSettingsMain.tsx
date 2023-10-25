@@ -24,7 +24,7 @@ const SystemSettingsMain: FC<Props> = ({
         )}>
         {children}
       </div>
-      <div className="flex flex-row gap-x-4 self-end">
+      <div className="flex flex-row gap-x-4 self-end  mt-[40px]">
         <SimpleBtn onClick={onSaveButtonClick}>Save</SimpleBtn>
         <SimpleBtn onClick={onResetButtonClick}>Reset to Default</SimpleBtn>
         <SimpleBtn link to="..">
