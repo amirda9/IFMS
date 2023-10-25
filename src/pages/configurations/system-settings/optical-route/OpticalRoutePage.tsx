@@ -34,6 +34,7 @@ const Rowinput = ({name, children}: Rowinputtype) => {
 const OpticalRoutePage = () => {
   return (
     <SystemSettingsMain>
+      
       <Rowinput name="Fiber Type">
         <Select className="w-full">
           <option value="" className="hidden">
