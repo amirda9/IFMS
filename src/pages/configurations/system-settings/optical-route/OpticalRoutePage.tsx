@@ -1,10 +1,8 @@
-import {Description, TextInput} from '~/components';
+import {Description, Select, TextInput} from '~/components';
 import SystemSettingsMain from '../SystemSettingsMain';
+import {ReactNode} from 'react';
 
-const wavelengths = [
-  850, 1300, 1310, 1383, 1410, 1470, 1490, 1510, 1530, 1550, 1570, 1590, 1610,
-  1625, 1630, 1650,
-];
+const wavelengths = [1310, 1490, 1550, 1625];
 
 const iorInitialValues = [
   1.4139, 1.4142, 1.4678, 1.4679, 1.468, 1.4681, 1.4682, 1.4683, 1.4683, 1.4684,
@@ -15,37 +13,65 @@ const rbsInitialValues = [
   -73.7, -73.3, -79.44, -80.205, -80.48, -81.28, -81.45, -81.7, -81.87, -82,
   -82.2, -82.4, -82.58, -82.64, -82.821,
 ];
+type Rowinputtype = {
+  name: string;
+  children: ReactNode;
+};
+
+const FiberTypeoptions = ['G.652', 'G.653', 'G.654', 'G.655', 'G.656', 'G.657'];
+const Rowinput = ({name, children}: Rowinputtype) => {
+  return (
+    <div className="mb-[6px] flex w-[700px] flex-row justify-between">
+      <span className="w-[400px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+        {name}
+      </span>
+      <div className="flex w-[350px]">{children}</div>
+    </div>
+  );
+};
+// -------------------- main --------------------------- main ---------------------- main --------------------- main --------
 
 const OpticalRoutePage = () => {
   return (
     <SystemSettingsMain>
-      <Description
-        labelClassName="min-w-[25rem]"
-        label="Helix factor of multimode fiber">
-        <TextInput type="number" defaultValue={1.01} />
-      </Description>
-      <Description
-        labelClassName="min-w-[25rem]"
-        label="Helix factor of singlemode fiber">
-        <TextInput type="number" defaultValue={1.01} />
-      </Description>
+      <Rowinput name="Fiber Type">
+        <Select className="w-full">
+          <option value="" className="hidden">
+            FiberTypeoptions[0]
+          </option>
+          <option value={undefined} className="hidden">
+            FiberTypeoptions[0]
+          </option>
+          {FiberTypeoptions.map((data, index) => (
+            <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+              {data}
+            </option>
+          ))}
+        </Select>
+      </Rowinput>
+
+      <Rowinput name="Helix Factor">
+        <TextInput className="w-full" type="number" defaultValue={1.01} />
+      </Rowinput>
+
       {wavelengths.map((wl, i) => (
-        <Description
-          labelClassName="min-w-[25rem]"
-          label={`IOR for ${wl} nm wavelength on ${
-            i <= 1 ? 'multimode' : 'singlemode'
-          } fiber`}>
-          <TextInput type="number" defaultValue={iorInitialValues[i]} />
-        </Description>
+        <Rowinput name={`IOR for ${wl} nm wavelength`}>
+          <TextInput
+            className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+            type="number"
+            defaultValue={iorInitialValues[i]}
+          />
+        </Rowinput>
       ))}
+
       {wavelengths.map((wl, i) => (
-        <Description
-          labelClassName="min-w-[25rem]"
-          label={`RBS for ${wl} nm wavelength on ${
-            i <= 1 ? 'multimode' : 'singlemode'
-          } fiber`}>
-          <TextInput type="number" defaultValue={rbsInitialValues[i]} />
-        </Description>
+        <Rowinput name={`RBS for ${wl} nm wavelength`}>
+          <TextInput
+            className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+            type="number"
+            defaultValue={iorInitialValues[i]}
+          />
+        </Rowinput>
       ))}
     </SystemSettingsMain>
   );
