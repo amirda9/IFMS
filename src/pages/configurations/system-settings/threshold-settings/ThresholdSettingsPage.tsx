@@ -9,10 +9,8 @@ type Rowinputtype = {
 
 const Rowinput = ({name, children}: Rowinputtype) => {
   return (
-    <div className="flex w-[700px] flex-row justify-between">
-      <span className="w-[400px] text-[20px] font-light leading-[24.2px] text-[#000000]">
-        {name}
-      </span>
+    <div className="flex w-[700px] flex-row justify-between text-[20px] font-light leading-[24.2px] text-[#000000]">
+      <span className="w-[400px] ">{name}</span>
       <div className="flex w-[350px]">{children}</div>
     </div>
   );
