@@ -1,5 +1,7 @@
 import {FC, useEffect, useState} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
+import { useNavigate,useSearchParams } from 'react-router-dom';
+
 import {SidebarItem, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
@@ -8,6 +10,7 @@ type Itembtntype = {
   id: string;
   classname?: string;
   onclick?: Function;
+  canAdd?:boolean
 };
 
 
@@ -16,6 +19,10 @@ const RtuLayout: FC = () => {
   const [mount, setMount] = useState(false);
   const [networkId, setNetworkId] = useState('');
   const [regionId, setRegionId] = useState('');
+  const navigate=useNavigate()
+
+
+  
   const [networkregions, setNetworkregions] = useState<
     {networkid: string; regions: {name: string; id: string}[]}[]
   >([]);
@@ -44,7 +51,7 @@ const RtuLayout: FC = () => {
   const [openall, setOpenall] = useState(false);
   const [networkselectedlist, setNetworkselectedlist] = useState<string[]>([]);
 
-  const Itembtn = ({name, id, classname, onclick = () => {}}: Itembtntype) => {
+  const Itembtn = ({name, id, classname, onclick = () => {},canAdd=false}: Itembtntype) => {
     return (
       <div
         className={`flex h-[60px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
@@ -64,9 +71,16 @@ const RtuLayout: FC = () => {
           }`}>
           {name}
         </button>
-        {networkselectedlist.indexOf(id) > -1 ? (
-          <BsPlusLg color="#18C047" className="ml-[10px]" />
-        ) : null}
+        {canAdd?
+        <>
+             {networkselectedlist.indexOf(id) > -1 ? (
+              <BsPlusLg onClick={()=>navigate(`create/${id}`)} color="#18C047" className="ml-[10px] cursor-pointer" />
+            ) : null}
+            </>
+      :
+      
+      false}
+   
       </div>
     );
   };
@@ -266,7 +280,7 @@ const RtuLayout: FC = () => {
                                               <span className="mt-[-6px] w-[10px] text-[12px]">
                                                 ...
                                               </span>
-                                              <Itembtn id={dat.id} name={dat.name} />
+                                              <Itembtn canAdd={true} id={dat.id} name={dat.name} />
                                             </div>
                                             {networkselectedlist.indexOf(dat.id) >
                                             -1 ? (

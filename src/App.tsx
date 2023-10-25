@@ -108,12 +108,14 @@ function App() {
               path="system-maintenance"
               Component={pages.Systemmaintenance}>
 
-              </Route>
+          </Route>
+
               <Route
               path="all-rtu-status"
               Component={pages.AllRTUsStatus}>
 
               </Route>
+
             <Route
               path="system-settings"
               Component={pages.SystemSettingsLayout}>
@@ -132,6 +134,7 @@ function App() {
                 Component={pages.ProactiveMaintenanceTestPage}
               />
             </Route>
+
             <Route path="alarm-types" Component={pages.AlarmTypesLayout}>
               <Route path=":alarmId" Component={pages.SingleAlarmTypeLayout}>
                 <Route index Component={pages.AlarmTypeDetailsPage} />
@@ -151,6 +154,7 @@ function App() {
                 <Route path="access" Component={pages.AlarmTypeAccessPage} />
               </Route>
             </Route>
+
             <Route path="optical-routes" Component={pages.OpticalRoutesLayout}>
             <Route path="create" Component={pages.OpticalRouteCreatePage} />
               <Route
@@ -184,12 +188,16 @@ function App() {
             </Route>
             <Route path="chart" Component={pages.Chart} />
             <Route path="remote-test-units" Component={pages.RtuLayout}>
+         
               <Route path=":rtuId" Component={pages.SingleRtuLayout}>
+            
                 <Route index Component={pages.RtuDetailsPage} />
                 <Route path="ports" Component={pages.RtuPortsPage} />
               </Route>
+              <Route path="create/:id" Component={pages.RtuCreatepage} />
             </Route>
           </Route>
+
 
           <Route path="/users" Component={pages.UsersLayout}>
             <Route
