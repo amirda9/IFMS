@@ -1,15 +1,17 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 
 import {FC} from 'react';
-import { useSearchParams } from 'react-router-dom';
+import {useSearchParams, useParams} from 'react-router-dom';
 import {
   ControlledSelect,
   Description,
   SimpleBtn,
   TextInput,
+  Select,
 } from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
 import {InputFormik} from '~/container';
+import {useHttpRequest} from '~/hooks';
 type Rowtext = {
   name: string;
   value: string;
@@ -17,7 +19,7 @@ type Rowtext = {
 
 const Rowtext = ({name, value}: Rowtext) => {
   return (
-    <div className="flex flex-row mb-[4px]">
+    <div className="mb-[4px] flex flex-row">
       <span className="w-[162px] text-[18px] font-light leading-[24.2px]">
         {name}
       </span>
@@ -27,21 +29,71 @@ const Rowtext = ({name, value}: Rowtext) => {
 };
 
 const RtuCreatePage: FC = () => {
- const [searchParams] = useSearchParams()
- console.log(searchParams,'paramsparamsparamsparamsparams');
- 
+  const params = useParams();
+
+  const {
+    state: {create, stations, users},
+    request,
+  } = useHttpRequest({
+    selector: state => ({
+      create: state.http.linkCreate,
+      users: state.http.userList,
+      // allLinks: state.http.allLinks,
+      stations: state.http.allStations,
+    }),
+    initialRequests: request => {
+      request('userList', undefined);
+    },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.create?.httpRequestStatus === 'loading' &&
+        state.create?.httpRequestStatus === 'success'
+      ) {
+        request('allLinks', undefined);
+      }
+    },
+    // onUpdate: lastState => {
+    //   if (
+    //     lastState.create?.httpRequestStatus === 'loading' &&
+    //     create?.httpRequestStatus === 'success'
+    //   ) {
+    //     request('allLinks', undefined);
+    //     // navigate('../' + create?.data?.link_id);
+    //   }
+    // },
+  });
   const formik = useFormik({
     initialValues: {
-      name: 'RTU1',
+      name: '',
       OTDRSECEND: '',
+      OTDRFIRST: '',
       SWITCHSECEND: '',
+      SWITCHFIRST: '',
       SubnetMask: '',
-      model:""
+      model: '',
+      ContactPerson: '',
+      DefaultGateway: '',
     },
-    onSubmit: () => {},
+
+    onSubmit: values => {
+      request('rtuCreate', {
+        data: {
+          name: values.name,
+          model: values.model,
+          station_id: params.id || '',
+          contact_person_id: values.ContactPerson,
+          otdr_ip: values.OTDRFIRST,
+          otdr_port: Number(values.OTDRSECEND),
+          switch_ip: values.SWITCHFIRST,
+          switch_port: Number(values.SWITCHSECEND),
+          subnet_mask: values.SubnetMask,
+          default_gateway: values.DefaultGateway,
+        },
+      });
+    },
   });
   console.log(formik.values, 'fff');
-
+  const Users = users?.data || [];
   return (
     <div className="flex flex-grow">
       <FormikProvider value={formik}>
@@ -57,27 +109,59 @@ const RtuCreatePage: FC = () => {
               />
             </Description>
             <Description
-              labelClassName="text-[18px] font-light leading-[24.2px] mb-[4px]"
+              labelClassName=" text-[18px] font-light leading-[24.2px] mb-[4px]"
               label="Model">
-              <ControlledSelect
+              <Select
+                onChange={e => formik.setFieldValue('model', e.target.value)}
+                className="w-[400px]">
+                <option value="" className="hidden">
+                  select
+                </option>
+                <option value={undefined} className="hidden">
+                select
+                </option>
+
+                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                  model1
+                </option>
+                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                  model2
+                </option>
+              </Select>
+              {/* <ControlledSelect
                 options={[{label: 'Model1'},{label: 'Model2'}]}
                 onChange={value => {
                   formik.setFieldValue('model', value);
                 }}
                 className="w-[400px] text-[18px] font-light leading-[24.2px]"
-              />
+              /> */}
             </Description>
+
             <Description
               labelClassName="text-[18px] font-light leading-[24.2px] mb-[4px]"
               label="Contact Person">
-              <ControlledSelect
-                options={[{label: 'User2'}]}
-                onChange={value => {
-                  formik.setFieldValue('contactUser', value);
-                }}
-                className="w-[400px] text-[18px] font-light leading-[24.2px]"
-              />
+              <Select
+                onChange={e =>
+                  formik.setFieldValue('ContactPerson', e.target.value)
+                }
+                className="w-[400px]">
+                <option value="" className="hidden">
+                  select
+                </option>
+                <option value={undefined} className="hidden">
+                  select
+                </option>
+                {Users.map((data, index) => (
+                  <option
+                  key={index}
+                    value={data.id}
+                    className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    {data.name}
+                  </option>
+                ))}
+              </Select>
             </Description>
+
             <div className="mb-[4px] flex w-full flex-row">
               <div className="flex w-[50%] flex-row xl:w-[500px]">
                 <Description
@@ -85,7 +169,7 @@ const RtuCreatePage: FC = () => {
                   labelClassName="text-[18px] font-light leading-[24.2px]"
                   label="OTDR IP & Port">
                   <InputFormik
-                    name="OTDR IP & Port"
+                    name="OTDRFIRST"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                   />
                 </Description>
@@ -102,7 +186,7 @@ const RtuCreatePage: FC = () => {
                   labelClassName="text-[18px] font-light leading-[24.2px]"
                   label="Switch IP & Port">
                   <InputFormik
-                    name="Switch IP & Port"
+                    name="SWITCHFIRST"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                   />
                 </Description>
@@ -121,7 +205,7 @@ const RtuCreatePage: FC = () => {
                   labelClassName="text-[18px] font-light leading-[24.2px]"
                   label="Subnet Mask">
                   <InputFormik
-                    name="Subnet Mask"
+                    name="SubnetMask"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                     onChange={value => {
                       console.log(value);
@@ -137,7 +221,7 @@ const RtuCreatePage: FC = () => {
                   labelClassName="text-[18px] font-light leading-[24.2px]"
                   label="Default Gateway">
                   <InputFormik
-                    name="Switch IP & Port"
+                    name="DefaultGateway"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                   />
                 </Description>
@@ -174,7 +258,6 @@ const RtuCreatePage: FC = () => {
               </span>
             </div>
 
-  
             {/* --------------------------------------------------- */}
           </div>
           <div className="flex gap-x-4 self-end">

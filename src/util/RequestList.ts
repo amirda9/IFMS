@@ -39,6 +39,7 @@ type RequestKeys =
   | 'allRegions'
   | 'regionList'
   | 'regionCreate'
+  | 'rtuCreate'
   | 'linkCreate'
   | 'linkDetail'
   | 'mapDetail'
@@ -61,6 +62,7 @@ type RequestKeys =
   | 'networkstations'
   | 'stationCreate'
   | 'stationDetail'
+  | 'stationrtuList'
   | 'stationUpdate'
   | 'stationAccessUpdate'
   | 'linkAccessUpdate'
@@ -80,7 +82,8 @@ type RequestKeys =
   | 'updateUserStationAccesses'
   | 'updateUserLinkAccesses'
   | 'regionDelete'
-  | 'linkDelete';
+  | 'linkDelete'
+  |'rtuCreate';
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -349,6 +352,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  stationrtuList: {
+    url: api.BASE_URL + api.URLS.otdr.station.stationrtuList,
+    method: 'get',
+    auth: true,
+  },
   stationAddadmin: {
     url: api.BASE_URL + api.URLS.otdr.station.Addadmin,
     method: 'put',
@@ -436,6 +444,12 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   linkCreate: {
     url: api.BASE_URL + api.URLS.otdr.link.create,
+    method: 'post',
+    auth: true,
+  },
+
+  rtuCreate: {
+    url: api.BASE_URL + api.URLS.otdr.rtu.create,
     method: 'post',
     auth: true,
   },
@@ -621,6 +635,21 @@ export type RequestListTypes = {
     params: {link_id: string};
   };
 
+  rtuCreate: {
+    data: {
+      name: string,
+      model: string,
+      station_id: string,
+      contact_person_id: string,
+      otdr_ip: string,
+      otdr_port: number,
+      switch_ip: string,
+      switch_port: number,
+      subnet_mask: string,
+      default_gateway: string
+    };
+  };
+
   regionDetail: {params: {region_id: string}};
   regionUpdate: {params: {region_id: string}; data: {description: string}};
   regionAccessList: {params: {region_id: string}};
@@ -676,6 +705,7 @@ export type RequestListTypes = {
   networkstations: {params: {network_id: string}};
   stationCreate: {data: T.StationCreateType};
   stationDetail: {params: {station_id: string}};
+  stationrtuList: {params: {station_id: string}};
   stationUpdate: {
     params: {station_id: string};
     data: {
@@ -825,6 +855,7 @@ export type ResponseListType = {
   linkAccessList: {users: T.AccessListType[]};
   linkAddadmin: string;
   linkAccessUpdate: {count: number};
+  rtuCreate: T.RtucreateType;
   mapDetail: T.MapType;
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
@@ -846,6 +877,7 @@ export type ResponseListType = {
   stationAddadmin: string;
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
+  stationrtuList:T.stationrtulisttype[]
   stationAccessUpdate: {count: number};
   stationDelete: {count: number};
   networkStationList: T.StationListType[];

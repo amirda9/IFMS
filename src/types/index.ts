@@ -10,3 +10,4 @@ export * from './StationType';
 export * from './GroupType';
 export * from './LinkType';
 export * from './mapType';
+export * from './Rtutype';

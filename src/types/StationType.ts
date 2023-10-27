@@ -22,7 +22,10 @@ export type networkstationslistType = {
     time_updated:string,
     region_id:string
 };
-
+export type stationrtulisttype = {
+  id: string,
+  name: string,
+};
 export type StationCreateType = {
   name: string;
   model: string;

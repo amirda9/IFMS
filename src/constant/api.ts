@@ -60,7 +60,8 @@ export const URLS = {
       viewersAccess: '/otdr/station/{station_id}/access/viewers',
       adminAccess: '/otdr/station/{station_id}/access/admin',
       Addadmin:'/otdr/station/{station_id}/access/admin',
-      networkstations:'/otdr/station/network/{network_id}'
+      networkstations:'/otdr/station/network/{network_id}',
+      stationrtuList:'/otdr/station/{station_id}/rtus'
     },
     link: {
       all: '/otdr/link',
@@ -71,6 +72,9 @@ export const URLS = {
       viewersAccess: '/otdr/link/{link_id}/access/viewers',
       updatecableandduct:'/otdr/link/{link_id}/cables_and_ducts',
       Addadmin:'/otdr/link/{link_id}/access/admin'
+    },
+    rtu:{
+      create:'/otdr/rtu/',
     },
     map:{
       single:'/otdr/map/{network_id}'
