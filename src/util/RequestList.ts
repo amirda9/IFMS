@@ -16,6 +16,7 @@ type RequestKeys =
   | 'passwordReset'
   | 'networkList'
   | 'networkDetail'
+  | 'rtuDetail'
   | 'networkCreate'
   | 'networkDelete'
   | 'stationDelete'
@@ -151,6 +152,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+
   networkDelete: {
     url: api.BASE_URL + api.URLS.otdr.network.single,
     method: 'delete',
@@ -453,6 +455,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     auth: true,
   },
+  rtuDetail: {
+    url: api.BASE_URL + api.URLS.otdr.rtu.single,
+    method: 'get',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -649,7 +656,7 @@ export type RequestListTypes = {
       default_gateway: string
     };
   };
-
+  rtuDetail: {params: {rtu_Id: string}};
   regionDetail: {params: {region_id: string}};
   regionUpdate: {params: {region_id: string}; data: {description: string}};
   regionAccessList: {params: {region_id: string}};
@@ -856,6 +863,7 @@ export type ResponseListType = {
   linkAddadmin: string;
   linkAccessUpdate: {count: number};
   rtuCreate: T.RtucreateType;
+  rtuDetail: T.rtudetailType;
   mapDetail: T.MapType;
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};

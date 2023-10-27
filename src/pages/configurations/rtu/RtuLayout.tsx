@@ -309,7 +309,7 @@ const RtuLayout: FC = () => {
                                                   data =>
                                                     data.stationid == datt.id,
                                                 )
-                                                ?.rtues.map((data, index) => {
+                                                ?.rtues.map((dataaa, index) => {
                                                   return (
                                                     <div
                                                       key={index}
@@ -319,8 +319,8 @@ const RtuLayout: FC = () => {
                                                       </span>
                                                       <SidebarItem
                                                         className="w-[calc(100%-30px)]"
-                                                        name={data.name}
-                                                        to="rtu-id-goes-here"
+                                                        name={dataaa.name}
+                                                        to={dataaa.id}
                                                       />
                                                     </div>
                                                   );

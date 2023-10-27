@@ -75,6 +75,7 @@ export const URLS = {
     },
     rtu:{
       create:'/otdr/rtu/',
+      single:"/otdr/rtu/{rtu_Id}"
     },
     map:{
       single:'/otdr/map/{network_id}'
