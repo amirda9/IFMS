@@ -40,6 +40,7 @@ const RtuDetailsPage: FC = () => {
     selector: state => ({
       rtuDetail: state.http.rtuDetail,
       users: state.http.userList,
+      update: state.http.rtuUpdate,
     }),
     initialRequests: request => {
       request('rtuDetail', {params: {rtu_Id: params.rtuId || ''}});
@@ -47,14 +48,14 @@ const RtuDetailsPage: FC = () => {
         request('userList', undefined);
 
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.create?.httpRequestStatus === 'loading' &&
-    //     state.create?.httpRequestStatus === 'success'
-    //   ) {
-    //     request('allLinks', undefined);
-    //   }
-    // },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update?.httpRequestStatus === 'success'
+      ) {
+        request('rtuDetail', {params: {rtu_Id: params.rtuId || ''}});
+      }
+    },
     // onUpdate: lastState => {
     //   if (
     //     lastState.create?.httpRequestStatus === 'loading' &&
@@ -71,9 +72,9 @@ const RtuDetailsPage: FC = () => {
   const formik = useFormik({
     initialValues: {
       name: rtuDetail?.data?.name || '',
-      OTDRSECEND: rtuDetail?.data?.otdr_port || '',
+      OTDRSECEND: rtuDetail?.data?.otdr_port || 0,
       OTDRFIRST: rtuDetail?.data?.otdr_ip || '',
-      SWITCHSECEND: rtuDetail?.data?.switch_port || '',
+      SWITCHSECEND: rtuDetail?.data?.switch_port || 0,
       SWITCHFIRST: rtuDetail?.data?.switch_ip || '',
       SubnetMask: rtuDetail?.data?.subnet_mask || '',
       model: rtuDetail?.data?.model || '',
@@ -86,9 +87,24 @@ const RtuDetailsPage: FC = () => {
         username: rtuDetail?.data?.owner.username,
       } || {id: '', username: ''},
     },
-    onSubmit: () => {},
+    onSubmit: () => {
+   
+      request("rtuUpdate",{ params: {rtu_id: params.rtuId || ''},
+    data:{
+      name:formik.values.name,
+      model: formik.values.model,
+      station_id:rtuDetail?.data?.station_id || "",
+      contact_person_id:rtuDetail?.data?.contact_person_id || "",
+      otdr_ip:formik.values.OTDRFIRST,
+      otdr_port: formik.values.OTDRSECEND,
+      switch_ip: formik.values.SWITCHFIRST,
+      switch_port: formik.values.SWITCHSECEND,
+      subnet_mask: formik.values.SubnetMask,
+      default_gateway: formik.values.DefaultGateway
+    }})
+    },
   });
-  console.log(users, 'fff');
+  console.log(formik.values, 'fff');
   const Users = users?.data || [];
   return (
     <div className="flex flex-grow">
@@ -109,7 +125,7 @@ const RtuDetailsPage: FC = () => {
               label="Model">
                 <Select
                 onChange={e =>
-                  formik.setFieldValue('ContactPerson', e.target.value)
+                  formik.setFieldValue('model', e.target.value)
                 }
                 className="w-[400px]">
                 <option value="" className="hidden">
@@ -169,7 +185,7 @@ const RtuDetailsPage: FC = () => {
                   label="OTDR IP & Port">
                   <InputFormik
                     defaultValue={formik.values.OTDRFIRST}
-                    name="OTDR IP & Port"
+                    name="OTDRFIRST"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                   />
                 </Description>
@@ -188,7 +204,7 @@ const RtuDetailsPage: FC = () => {
                   label="Switch IP & Port">
                   <InputFormik
                     defaultValue={formik.values.SWITCHFIRST}
-                    name="Switch IP & Port"
+                    name="SWITCHFIRST"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                   />
                 </Description>
@@ -226,7 +242,7 @@ const RtuDetailsPage: FC = () => {
                   label="Default Gateway">
                   <InputFormik
                     defaultValue={formik.values.DefaultGateway}
-                    name="Switch IP & Port"
+                    name="DefaultGateway"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                   />
                 </Description>

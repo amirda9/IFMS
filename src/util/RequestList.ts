@@ -17,6 +17,7 @@ type RequestKeys =
   | 'networkList'
   | 'networkDetail'
   | 'rtuDetail'
+  | 'rtuPorts'
   | 'networkCreate'
   | 'networkDelete'
   | 'stationDelete'
@@ -41,6 +42,7 @@ type RequestKeys =
   | 'regionList'
   | 'regionCreate'
   | 'rtuCreate'
+  | 'rtuUpdate'
   | 'linkCreate'
   | 'linkDetail'
   | 'mapDetail'
@@ -460,6 +462,16 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  rtuUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.rtu.update,
+    method: 'put',
+    auth: true,
+  },
+  rtuPorts: {
+    url: api.BASE_URL + api.URLS.otdr.rtu.ports,
+    method: 'get',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -656,7 +668,23 @@ export type RequestListTypes = {
       default_gateway: string
     };
   };
+  rtuUpdate: {
+    params: {rtu_id: string};
+    data: { 
+      name: string,
+      model: string,
+      station_id: string,
+      contact_person_id: string,
+      otdr_ip: string,
+      otdr_port: number,
+      switch_ip: string,
+      switch_port: number,
+      subnet_mask: string,
+      default_gateway: string
+  };
+  };
   rtuDetail: {params: {rtu_Id: string}};
+  rtuPorts: {params: {rtu_id: string}};
   regionDetail: {params: {region_id: string}};
   regionUpdate: {params: {region_id: string}; data: {description: string}};
   regionAccessList: {params: {region_id: string}};
@@ -864,6 +892,8 @@ export type ResponseListType = {
   linkAccessUpdate: {count: number};
   rtuCreate: T.RtucreateType;
   rtuDetail: T.rtudetailType;
+  rtuPorts: T.rtuportType;
+  rtuUpdate:T.rtuupdateType;
   mapDetail: T.MapType;
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};

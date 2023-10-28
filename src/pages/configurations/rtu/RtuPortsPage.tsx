@@ -1,6 +1,9 @@
 import {FC} from 'react';
 import {SimpleBtn} from '~/components';
 import RtuPortItem, {RtuItemProps} from './RtuPortItem';
+import { useHttpRequest } from '~/hooks';
+import { useParams } from 'react-router-dom';
+import { log } from 'console';
 
 const ports: RtuItemProps[] = [
   {
@@ -82,6 +85,38 @@ const ports: RtuItemProps[] = [
 ];
 
 const RtuPortsPage: FC = () => {
+  const params = useParams();
+  const {
+    state: {rtuports},
+    request,
+  } = useHttpRequest({
+    selector: state => ({
+      rtuports: state.http.rtuPorts,
+    }),
+    initialRequests: request => {
+      request('rtuPorts', {params: {rtu_id: params.rtuId || ''}});
+    },
+    // onUpdate: (lastState, state) => {
+    //   if (
+    //     lastState.update?.httpRequestStatus === 'loading' &&
+    //     state.update?.httpRequestStatus === 'success'
+    //   ) {
+    //     request('rtuDetail', {params: {rtu_Id: params.rtuId || ''}});
+    //   }
+    // },
+    // onUpdate: lastState => {
+    //   if (
+    //     lastState.create?.httpRequestStatus === 'loading' &&
+    //     create?.httpRequestStatus === 'success'
+    //   ) {
+    //     request('allLinks', undefined);
+    //     // navigate('../' + create?.data?.link_id);
+    //   }
+    // },
+  });
+
+ console.log(rtuports,'rtuportsrtuportsrtuports');
+ const allports:any=rtuports?.data || [];
   return (
     <div className="flex flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">
@@ -93,7 +128,7 @@ const RtuPortsPage: FC = () => {
           <span className="basis-40">State</span>
           <span className="basis-40"></span>
         </div>
-        {ports.map((port, i) => (
+        {allports.length>0 && allports.map((port:any, i:any) => (
           <RtuPortItem key={i} {...port} />
         ))}
       </div>
