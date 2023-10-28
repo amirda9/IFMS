@@ -79,6 +79,9 @@ export const URLS = {
       update:"/otdr/rtu/{rtu_id}",
       ports:"/otdr/rtu/{rtu_id}/ports"
     },
+    opticalroute:{
+      create:'/otdr/optical-route/',
+    },
     map:{
       single:'/otdr/map/{network_id}'
     }

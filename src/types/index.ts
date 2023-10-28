@@ -10,4 +10,5 @@ export * from './StationType';
 export * from './GroupType';
 export * from './LinkType';
 export * from './mapType';
-export * from './Rtutype';
+export * from './RtuTypes';
+export * from './opticalrouteType';

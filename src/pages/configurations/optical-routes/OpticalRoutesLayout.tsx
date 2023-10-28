@@ -58,7 +58,7 @@ const OpticalRouteLayout: FC = () => {
           {name}
         </button>
         {networkselectedlist.indexOf(id) > -1 ? (
-          <NavLink to={`create?${id}`} end>
+          <NavLink to={`create/${id}`} end>
             <BsPlusLg color="#18C047" className="ml-[10px]" />
           </NavLink>
         ) : null}

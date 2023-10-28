@@ -86,7 +86,8 @@ type RequestKeys =
   | 'updateUserLinkAccesses'
   | 'regionDelete'
   | 'linkDelete'
-  |'rtuCreate';
+  | 'opticalrouteCreate'
+  ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -472,6 +473,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  opticalrouteCreate: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.create,
+    method: 'post',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -683,6 +689,19 @@ export type RequestListTypes = {
       default_gateway: string
   };
   };
+
+  opticalrouteCreate: {
+    data: {
+      name: string,
+      comment: string,
+      test_ready: boolean,
+      type:string,
+      avg_hellix_factor: number,
+      network_id: string
+    };
+  };
+
+
   rtuDetail: {params: {rtu_Id: string}};
   rtuPorts: {params: {rtu_id: string}};
   regionDetail: {params: {region_id: string}};
@@ -893,6 +912,7 @@ export type ResponseListType = {
   rtuCreate: T.RtucreateType;
   rtuDetail: T.rtudetailType;
   rtuPorts: T.rtuportType;
+  opticalrouteCreate: T.opticalroutecreateType;
   rtuUpdate:T.rtuupdateType;
   mapDetail: T.MapType;
   regionUpdate: T.RegionType;
