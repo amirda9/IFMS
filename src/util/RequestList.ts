@@ -87,6 +87,7 @@ type RequestKeys =
   | 'regionDelete'
   | 'linkDelete'
   | 'opticalrouteCreate'
+  | 'networkOpticallist'
   ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
@@ -478,6 +479,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     auth: true,
   },
+  networkOpticallist: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.networkOpticallist,
+    method: 'get',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -700,7 +706,7 @@ export type RequestListTypes = {
       network_id: string
     };
   };
-
+  networkOpticallist:{params: {network_id: string}};
 
   rtuDetail: {params: {rtu_Id: string}};
   rtuPorts: {params: {rtu_id: string}};
@@ -913,6 +919,7 @@ export type ResponseListType = {
   rtuDetail: T.rtudetailType;
   rtuPorts: T.rtuportType;
   opticalrouteCreate: T.opticalroutecreateType;
+  networkOpticallist: T.opticalroutecreateType[];
   rtuUpdate:T.rtuupdateType;
   mapDetail: T.MapType;
   regionUpdate: T.RegionType;
