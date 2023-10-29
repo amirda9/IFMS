@@ -1,14 +1,14 @@
 import dayjs from 'dayjs';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {FC} from 'react';
-import { useParams } from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
-import { useHttpRequest } from '~/hooks';
-import { getPrettyDateTime } from '~/util/time';
+import {useHttpRequest} from '~/hooks';
+import {getPrettyDateTime} from '~/util/time';
 
 const OpticalRouteDetailsPage: FC = () => {
-  const params=useParams()
+  const params = useParams();
 
   const {
     request,
@@ -19,8 +19,9 @@ const OpticalRouteDetailsPage: FC = () => {
     }),
     initialRequests: request => {
       // if (list?.httpRequestStatus !== 'success') {
-        request('opticalrouteDetail', {params:{optical_route_id:params.opticalRouteId || ""
-        }});
+      request('opticalrouteDetail', {
+        params: {optical_route_id: params.opticalRouteId || ''},
+      });
       // }
     },
     // onUpdate: (lastState, state) => {
@@ -33,32 +34,45 @@ const OpticalRouteDetailsPage: FC = () => {
     // },
   });
   // console.log(opticalrouteDetail?.data,'opticalrouteDetail');
-  const formik = useFormik({  enableReinitialize:true,initialValues: {
-    name:opticalrouteDetail?.data?.name,
-  comment: opticalrouteDetail?.data?.comment,
-  test_ready: opticalrouteDetail?.data?.test_ready,
-  type:opticalrouteDetail?.data?.type,
-  avg_hellix_factor:opticalrouteDetail?.data?.avg_hellix_factor,
-  id:opticalrouteDetail?.data?.id,
-  owner: {
-    id:opticalrouteDetail?.data?.owner.id,
-    username:opticalrouteDetail?.data?.owner.username
-  },
-  time_created:opticalrouteDetail?.data?.time_created,
-  time_updated:opticalrouteDetail?.data?.time_updated
-  }, onSubmit: () => {
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      name: opticalrouteDetail?.data?.name,
+      comment: opticalrouteDetail?.data?.comment,
+      test_ready: opticalrouteDetail?.data?.test_ready,
+      type: opticalrouteDetail?.data?.type,
+      avg_hellix_factor: opticalrouteDetail?.data?.avg_hellix_factor,
+      id: opticalrouteDetail?.data?.id,
+      owner: {
+        id: opticalrouteDetail?.data?.owner.id,
+        username: opticalrouteDetail?.data?.owner.username,
+      },
+      time_created: opticalrouteDetail?.data?.time_created,
+      time_updated: opticalrouteDetail?.data?.time_updated,
+    },
+    onSubmit: () => {
+      request('opticalrouteUpdate', {
+        params: {optical_route_id: params.opticalRouteId || ''},
+        data: {
+          name: formik.values.name || '',
+          comment: formik.values.comment || '',
+          test_ready: formik.values.test_ready || false,
+          type: formik.values.type || '',
+          avg_hellix_factor: formik.values.avg_hellix_factor || 0,
+        },
+      });
+    },
+  });
 
-  }});
+  console.log(formik.values, 'uuu');
 
-  console.log(formik.values,'uuu');
-  
   return (
     <div className="flex flex-grow flex-col">
-      <FormikProvider    value={formik}>
-        <Form    className="flex h-full flex-col justify-between">
+      <FormikProvider value={formik}>
+        <Form className="flex h-full flex-col justify-between">
           <div className="flex w-2/3 flex-col gap-y-4">
             <Description label="Name" items="start">
-              <InputFormik  name="name" wrapperClassName="w-full" />
+              <InputFormik name="name" wrapperClassName="w-full" />
             </Description>
 
             <Description label="Comment" items="start">
@@ -66,54 +80,59 @@ const OpticalRouteDetailsPage: FC = () => {
             </Description>
 
             <Description label="Test Ready">
-            <Select
-                onChange={e => formik.setFieldValue('type', e.target.value == "NO"?false:true)}
+              <Select
+                onChange={e =>
+                  formik.setFieldValue(
+                    'type',
+                    e.target.value == 'NO' ? false : true,
+                  )
+                }
                 className="min-w-[13rem]">
                 <option value="" className="hidden">
-                {opticalrouteDetail?.data?.test_ready == false?"NO":"YES"}
+                  {opticalrouteDetail?.data?.test_ready == false ? 'NO' : 'YES'}
                 </option>
                 <option value={undefined} className="hidden">
-                {opticalrouteDetail?.data?.test_ready == false?"NO":"YES"}
+                  {opticalrouteDetail?.data?.test_ready == false ? 'NO' : 'YES'}
                 </option>
 
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-               YES
+                  YES
                 </option>
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              NO
+                  NO
                 </option>
               </Select>
             </Description>
 
             <Description label="Type">
-            <Select
+              <Select
                 onChange={e => formik.setFieldValue('type', e.target.value)}
                 className="min-w-[13rem]">
                 <option value="" className="hidden">
-                {opticalrouteDetail?.data?.type}
+                  {opticalrouteDetail?.data?.type}
                 </option>
                 <option value={undefined} className="hidden">
-                {opticalrouteDetail?.data?.type}
+                  {opticalrouteDetail?.data?.type}
                 </option>
 
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                dark
+                  dark
                 </option>
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   light
                 </option>
               </Select>
             </Description>
-             <div className='flex flex-row items-center'>
-             <Description label="Avg. Helix Factor">
-              <InputFormik name="avg_hellix_factor" className="w-[13rem]" type='number' />
-            </Description>
-            <span className='ml-[4px]'>
-            %
-            </span>
-            
-             </div>
-         
+            <div className="flex flex-row items-center">
+              <Description label="Avg. Helix Factor">
+                <InputFormik
+                  name="avg_hellix_factor"
+                  className="w-[13rem]"
+                  type="number"
+                />
+              </Description>
+              <span className="ml-[4px]">%</span>
+            </div>
 
             <Description label="Owner">
               <span>{opticalrouteDetail?.data?.owner.username}</span>

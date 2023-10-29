@@ -89,6 +89,7 @@ type RequestKeys =
   | 'opticalrouteCreate'
   | 'networkOpticallist'
   | 'opticalrouteDetail'
+  | 'opticalrouteUpdate'
   ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
@@ -490,6 +491,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  opticalrouteUpdate: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteUpdate,
+    method: 'put',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -713,6 +719,14 @@ export type RequestListTypes = {
     };
   };
   opticalrouteDetail: {params: {optical_route_id: string}};
+  opticalrouteUpdate: {params: {optical_route_id: string},data:
+  {
+  name: string,
+  comment: string,
+  test_ready: boolean,
+  type: string,
+  avg_hellix_factor: number
+}}
   networkOpticallist:{params: {network_id: string}};
 
   rtuDetail: {params: {rtu_Id: string}};
