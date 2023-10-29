@@ -1,13 +1,12 @@
-
 import {useState} from 'react';
 import {FC} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {NavLink} from 'react-router-dom';
 import {SidebarItem, TextInput} from '~/components';
-import { Opticalroute } from '~/components/chart';
+import {Opticalroute} from '~/components/chart';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
-import { $GET } from '~/util/requestapi';
+import {$GET} from '~/util/requestapi';
 type Itembtntype = {
   name: string;
   id: string;
@@ -41,8 +40,10 @@ const OpticalRouteLayout: FC = () => {
 
   const [openall, setOpenall] = useState(false);
   const [networkselectedlist, setNetworkselectedlist] = useState<string[]>([]);
- const [networkoptical,setNetworkoptical]=useState<{networkid:string,opticalrouts:{name:string,id:string}[]}[]>([])
- 
+  const [networkoptical, setNetworkoptical] = useState<
+    {networkid: string; opticalrouts: {name: string; id: string}[]}[]
+  >([]);
+
   const Itembtn = ({name, id, classname}: Itembtntype) => {
     return (
       <div
@@ -70,7 +71,7 @@ const OpticalRouteLayout: FC = () => {
     );
   };
 
-  const opennetworkopticallist = async(id: string) => {
+  const opennetworkopticallist = async (id: string) => {
     const findnetwork = networkselectedlist.findIndex(data => data == id);
     if (findnetwork > -1) {
       let old = [...networkselectedlist];
@@ -79,21 +80,24 @@ const OpticalRouteLayout: FC = () => {
     } else {
       setNetworkselectedlist(prev => [...prev, id]);
     }
-    const findopt=networkoptical.findIndex(data => data.networkid == id)
-    if(findopt < 0){
-      const opticals=await $GET(`otdr/optical-route/?network_id=${id}`)
-      setNetworkoptical(prev => [...prev,{networkid:id,opticalrouts:opticals}])
+    const findopt = networkoptical.findIndex(data => data.networkid == id);
+    const opticals = await $GET(`otdr/optical-route/?network_id=${id}`);
+    let old = [...networkoptical];
+    if (findopt > -1) {
+      old[findopt].opticalrouts = opticals;
+      setNetworkoptical(old);
+    } else {
+      const opticals = await $GET(`otdr/optical-route/?network_id=${id}`);
+      setNetworkoptical(prev => [...prev, {networkid: id, opticalrouts:opticals}]);
     }
- 
   };
-
-
+  console.log(networkoptical, 'fff');
 
   const lastnetwork =
     (list?.data && list?.data[list?.data?.length - 1].id) || '';
   // ######################################################################
   return (
-    <SidebarLayout  createTitle="" canAdd>
+    <SidebarLayout createTitle="" canAdd>
       {/* <div className="flex h-[calc(100vh-140px)] relative w-1/4 flex-col overflow-y-auto border-r-2  border-g p-4"> */}
 
       <div className="flex flex-row items-center ">
@@ -131,44 +135,51 @@ const OpticalRouteLayout: FC = () => {
 
         {openall ? (
           <>
-            {list?.data?.map((data, index) => (
+            {list?.data?.map((dataaa, index) => (
               <div
                 key={index}
-                className={`mt-[-10px] relative w-full  border-l-[1px] border-dotted   ${ list?.data && index == list?.data?.length-1?"border-none":"border-[#000000]"}  `}>
-               { list?.data && index == list?.data?.length-1?
-                  <div className='border-l-[1px] ml-[0px] border-dotted border-[#000000] absolute h-[36px]'></div>:null}
-                <div className={`z-10 absolute ${networkselectedlist.indexOf(data.id) > -1?"bottom-[-2px]":"bottom-[-7px]"}  bg-[#E7EFF7] left-[15px] h-[25px] w-[5px]`}></div>
-              
-              
-                <div className="flex flex-col relative">
+                className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
+                  list?.data && index == list?.data?.length - 1
+                    ? 'border-none'
+                    : 'border-[#000000]'
+                }  `}>
+                {list?.data && index == list?.data?.length - 1 ? (
+                  <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
+                ) : null}
+                <div
+                  className={`absolute z-10 ${
+                    networkselectedlist.indexOf(dataaa.id) > -1
+                      ? 'bottom-[-2px]'
+                      : 'bottom-[-7px]'
+                  }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
 
+                <div className="relative flex flex-col">
                   <Itembtn
                     classname="mb-[-10px]"
-                    name={data.name}
-                    id={data.id}
+                    name={dataaa.name}
+                    id={dataaa.id}
                   />
-                 
 
-                  {networkselectedlist.indexOf(data.id) > -1 ? (
-                    <div className='flex relative flex-col border-l-[1px] ml-[18px] border-dotted border-[#000000]'>
-                     
-                       <div className='border-dotted border-[#000000] h-[18px] border-l-[1px] absolute top-[-20px] left-[-1px]'></div>
-                      {networkoptical && networkoptical.length> 1 && networkoptical?.find(dataa => dataa.networkid == data.id)?.opticalrouts.map((data,index)=>
-                   <div key={index} className="flex w-full flex-row items-center">
-                   <span className="w-[15px] text-[12px]">.....</span>
+                  {networkselectedlist.indexOf(dataaa.id) > -1 ? (
+                    <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                      <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                      {networkoptical
+                        ?.find(dataa => dataa.networkid == dataaa.id)
+                        ?.opticalrouts.map((data, index) => (
+                          <div
+                            key={index}
+                            className="flex w-full flex-row items-center">
+                            <span className="w-[15px] text-[12px]">.....</span>
 
-                   <SidebarItem
-                     className="ml-[5px] w-[calc(100%-20px)] mt-[10px]"
-                     name={data.name}
-                     to={data.id}
-                   />
-                 </div>
-                      )}
-                    
+                            <SidebarItem
+                              className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
+                              name={data.name}
+                              to={data.id}
+                            />
+                          </div>
+                        ))}
                     </div>
-                    
                   ) : null}
-
                 </div>
               </div>
             ))}

@@ -75,7 +75,7 @@ const OpticalRouteCreatePage: FC = () => {
                 dark
                 </option>
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  white
+                  light
                 </option>
               </Select>
        
@@ -83,7 +83,7 @@ const OpticalRouteCreatePage: FC = () => {
 
             <Description label="Average Helix (%)">
               <InputFormik
-                name="averageHelix"
+                name="avg_hellix_factor"
                 className="w-[13rem]"
                 type="number"
               />
