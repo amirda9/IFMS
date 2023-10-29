@@ -1,8 +1,36 @@
 import {FC} from 'react';
 import {SimpleBtn} from '~/components';
 import RouteItem from './RouteItem';
+import { useHttpRequest } from '~/hooks';
+import { useParams } from 'react-router-dom';
 
 const OpticalRouteRoutePage: FC = () => {
+  const params=useParams()
+  const {
+    request,
+    state: {opticalrouteRoute},
+  } = useHttpRequest({
+    selector: state => ({
+      opticalrouteRoute: state.http.opticalrouteRoute,
+    }),
+    initialRequests: request => {
+      // if (list?.httpRequestStatus !== 'success') {
+      request('opticalrouteRoute', {
+        params: {optical_route_id: params.opticalRouteId || ''},
+      });
+      // }
+    },
+    // onUpdate: (lastState, state) => {
+    //   if (
+    //     lastState.deleteRequest?.httpRequestStatus === 'loading' &&
+    //     state.deleteRequest!.httpRequestStatus === 'success'
+    //   ) {
+    //     request('networkList', undefined);
+    //   }
+    // },
+  });
+  console.log(opticalrouteRoute,'opticalrouteRoute😵‍💫');
+  
   return (
     <div className="flex flex-grow flex-col">
       <div className="flex flex-grow flex-col gap-y-4 w-10/12">

@@ -83,7 +83,8 @@ export const URLS = {
       create:'/otdr/optical-route/',
       networkOpticallist:"/otdr/optical-route/",
       opticalrouteDetail:"/otdr/optical-route/{optical_route_id}",
-      opticalrouteUpdate:"/otdr/optical-route/{optical_route_id}"
+      opticalrouteUpdate:"/otdr/optical-route/{optical_route_id}",
+      opticalrouteRoute:"/otdr/optical-route/{optical_route_id}/routes"
     },
     map:{
       single:'/otdr/map/{network_id}'

@@ -18,6 +18,22 @@ export type opticalrouteDetailType = {
  time_updated:string
 };
 
+export type opticalrouteRoute = {
+  link_id: string,
+    cable: string,
+    core: number,
+    id: string,
+    source: {
+      id: string,
+      name: string
+    },
+    destination: {
+      id: string,
+      name: string
+    }
+ };
+
+
 export type opticalrouteUpdateType = {
   name: string,
   comment: string,
