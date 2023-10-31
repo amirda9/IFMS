@@ -91,6 +91,9 @@ type RequestKeys =
   | 'opticalrouteDetail'
   | 'opticalrouteUpdate'
   | 'opticalrouteRoute'
+  | 'opticalrouteTestSetup'
+  | 'opticalrouteDeletTestsetup'
+  | 'opticalrouteTestSetupDetail'
   ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
@@ -502,6 +505,21 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'put',
     auth: true,
   },
+  opticalrouteTestSetup: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteTestSetup,
+    method: 'get',
+    auth: true,
+  },
+  opticalrouteDeletTestsetup: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteDeletTestsetup,
+    method: 'delete',
+    auth: true,
+  },
+  opticalrouteTestSetupDetail: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteTestSetupDetail,
+    method: 'get',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -725,7 +743,10 @@ export type RequestListTypes = {
     };
   };
   opticalrouteDetail: {params: {optical_route_id: string}};
+  opticalrouteTestSetup: {params: {optical_route_id: string}};
   opticalrouteRoute: {params: {optical_route_id: string}};
+  opticalrouteDeletTestsetup:{params: {optical_route_id: string},data:string[]};
+  opticalrouteTestSetupDetail:{params: {optical_route_id: string,test_setup_id:string}};
   opticalrouteUpdate: {params: {optical_route_id: string},data:
   {
   name: string,
@@ -949,6 +970,9 @@ export type ResponseListType = {
   opticalrouteCreate: T.opticalroutecreateType;
   networkOpticallist: T.opticalroutecreateType[];
   opticalrouteDetail: T.opticalrouteDetailType;
+  opticalrouteDeletTestsetup: string;
+  opticalrouteTestSetupDetail:T.opticalrouteTestSetupDetail;
+  opticalrouteTestSetup: T.opticalrouteTestSetup[];
   opticalrouteRoute: T.opticalrouteRoute[];
   rtuUpdate:T.rtuupdateType;
   mapDetail: T.MapType;
