@@ -1,12 +1,17 @@
 import {Form, FormikProvider, useFormik} from 'formik';
-import {FC, useEffect} from 'react';
+import {FC, useEffect, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {useParams} from 'react-router-dom';
+import {setopticalroutUpdateTestsetupDetail} from './../../../../store/slices/opticalroutslice'
 import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 
 const TestDetailsParameters: FC = () => {
+  const [mount,setMount]=useState(false)
   const params = useParams();
+  const dispatch=useDispatch()
+  const {opticalroutUpdateTestsetupDetail} = useSelector((state: any) => state.opticalroute);
 
 
 
@@ -37,20 +42,33 @@ const TestDetailsParameters: FC = () => {
     //   }
     // },
   });
+  const Detail=opticalrouteTestSetupDetail?.data || {}
+  useEffect(()=>{
+    const dataa=JSON.parse(JSON.stringify(Detail))
+    dataa.station_id=dataa?.station?.id
+    dataa.init_rtu_id=dataa?.rtu?.id
+    delete dataa['station'];
+    delete dataa['rtu'];
+    dispatch(setopticalroutUpdateTestsetupDetail(dataa))
+  },[])
+
   const formik = useFormik({
     initialValues: {
       name:opticalrouteTestSetupDetail?.data?.name || "",
-      station:opticalrouteTestSetupDetail?.data?.station.name || "",
+      station:opticalrouteTestSetupDetail?.data?.station?.name || "",
+      stationId:opticalrouteTestSetupDetail?.data?.station?.id || "",
+      type:opticalrouteTestSetupDetail?.data?.parameters?.type || "",
       rtu:opticalrouteTestSetupDetail?.data?.rtu?.name || "",
+      rtuID:opticalrouteTestSetupDetail?.data?.rtu?.id || "",
       enabled:opticalrouteTestSetupDetail?.data?.parameters?.enabled || false,
       Wavelength:opticalrouteTestSetupDetail?.data?.parameters?.wavelength || "",
       BreakStrategy:opticalrouteTestSetupDetail?.data?.parameters?.break_strategy || "",
       DataSavePolicy:opticalrouteTestSetupDetail?.data?.parameters?.date_save_policy || "",
-      TestMode:opticalrouteTestSetupDetail?.data?.parameters.test_mode  || "",
-      RunMode:opticalrouteTestSetupDetail?.data?.parameters.run_mode || "",
+      TestMode:opticalrouteTestSetupDetail?.data?.parameters?.test_mode  || "",
+      RunMode:opticalrouteTestSetupDetail?.data?.parameters?.run_mode || "",
       PulseWidthMode:opticalrouteTestSetupDetail?.data?.parameters?.pulse_width_mode || "",
-      PulseWidthns:opticalrouteTestSetupDetail?.data?.parameters.pulse_width || 0,
-      samplingduration:opticalrouteTestSetupDetail?.data?.parameters.run_mode || 0,
+      PulseWidthns:opticalrouteTestSetupDetail?.data?.parameters?.pulse_width || 0,
+      samplingduration:opticalrouteTestSetupDetail?.data?.parameters?.sampling_duration || 0,
       IOR:opticalrouteTestSetupDetail?.data?.parameters?.IOR || 0,
       RBS:opticalrouteTestSetupDetail?.data?.parameters?.RBS || 0,
       SectionLossThreshold:opticalrouteTestSetupDetail?.data?.parameters?.section_loss_threshold || 0,
@@ -59,10 +77,45 @@ const TestDetailsParameters: FC = () => {
       Range:opticalrouteTestSetupDetail?.data?.parameters?.range,
       SamplingMode:opticalrouteTestSetupDetail?.data?.parameters?.sampling_mode
     },
-    onSubmit: () => {},
+
+    onSubmit: () => {
+  
+
+    },
   });
-  console.log(opticalrouteTestSetupDetail, '😘🤑😎');
-  console.log(formik.values, 'yyyyyyyyyyy');
+
+  useEffect(()=>{
+    if(mount){
+      const dataa=JSON.parse(JSON.stringify(opticalroutUpdateTestsetupDetail))
+      dataa.station_id = formik.values.stationId;
+      dataa.init_rtu_id=formik.values.rtuID;
+      dataa.parameters={}
+      dataa.parameters.enabled =formik.values.enabled;
+      dataa.parameters.type =formik.values.type;
+      dataa.parameters.wavelength =formik.values.Wavelength;
+      dataa.parameters.break_strategy =formik.values.BreakStrategy;
+      dataa.parameters.date_save_policy =formik.values.DataSavePolicy;
+      dataa.parameters.test_mode =formik.values.TestMode;
+      dataa.parameters.run_mode =formik.values.RunMode;
+      dataa.parameters.pulse_width_mode =formik.values.PulseWidthMode;
+      dataa.parameters.pulse_width =formik.values.PulseWidthns;
+      dataa.parameters.sampling_duration =formik.values.samplingduration;
+      dataa.parameters.IOR =formik.values.IOR;
+      dataa.parameters.RBS =formik.values.RBS;
+      dataa.parameters.section_loss_threshold =formik.values.SectionLossThreshold;
+      dataa.parameters.injection_level_threshold =formik.values.InjectionLevelThreshold;
+      dataa.parameters.distance_mode =formik.values.DistanceMode;
+      dataa.parameters.range =formik.values.Range;
+      dataa.parameters.sampling_mode =formik.values.SamplingMode;
+      dispatch(setopticalroutUpdateTestsetupDetail(dataa))
+    }else{
+      setMount(true)
+    }
+
+  },[formik.values])
+
+
+
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -72,6 +125,7 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Name">
             <InputFormik
+         
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
               name="name"
@@ -85,7 +139,7 @@ const TestDetailsParameters: FC = () => {
               name="enabled"
               options={[{label: 'False'}, {label: 'True'}]}
               onChange={e =>
-                formik.setFieldValue('enabel', e == 1 ? 'true' : 'false')
+                formik.setFieldValue('enabled', e == 1 ? true : false)
               }
               className="basis-96"
             />
@@ -94,11 +148,30 @@ const TestDetailsParameters: FC = () => {
             className="flex justify-between"
             labelClassName="flex-grow"
             label="Type">
-            <ControlledSelect
+            {/* <ControlledSelect
               options={[{label: 'Proactive'}, {label: 'Proactive 2'}]}
               onChange={() => {}}
               className="basis-96"
-            />
+            /> */}
+                 <Select
+              onChange={e =>
+                formik.setFieldValue('type', e.target.value.toString())
+              }
+              className="basis-96">
+              <option value="" className="hidden">
+              {formik.values.station}
+              </option>
+              <option value={undefined} className="hidden">
+              {formik.values.station}
+              </option>
+
+              <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+              Proactive
+              </option>
+              <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+              Proactive 2
+              </option>
+            </Select>
           </Description>
 
           <Description

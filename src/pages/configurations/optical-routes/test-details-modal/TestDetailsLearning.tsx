@@ -2,7 +2,11 @@ import {FC, useRef, useState} from 'react';
 import {Description, Select, TextInput} from '~/components';
 import dateicon from '~/assets/images/dateicon.png'
 import './index.css'
+import { useSelector } from 'react-redux';
 const TestDetailsLearning: FC = () => {
+  const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
+  const {opticalroutUpdateTestsetupDetail} = useSelector((state: any) => state.opticalroute);
+
   const [selectedradio,setSelectedradio]=useState("On")
   const [selectedradio2,setSelectedradio2]=useState("On")
   const firstdateref:any=useRef(null)
@@ -41,6 +45,9 @@ const TestDetailsLearning: FC = () => {
       </div>
     );
   }
+  console.log(opticalrouteTestSetupDetail,'rrrrrr');
+  console.log(opticalroutUpdateTestsetupDetail,'opticalroutUpdateTestsetupDetail🤓');
+  
   return (
     <div className="flex flex-col gap-y-8">
     
