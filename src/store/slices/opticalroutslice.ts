@@ -9,6 +9,7 @@ type veiwerlists = {
 
 const initialState = {
   opticalroutUpdateTestsetupDetail:{}
+  
 } as any;
 
 const opticalroute = createSlice({
