@@ -7,6 +7,10 @@ export type opticalrouteUpdateTestSetupDetailtype = {
     name: string,
     station_id: string,
     init_rtu_id: string,
+    startdatePart:string,
+    starttimePart:string,
+    enddatePart:string,
+   endtimePart:string,
     parameters: {
       enabled: boolean,
       type: string,
@@ -55,11 +59,9 @@ export type opticalrouteUpdateTestSetupDetailtype = {
     },
     test_program: {
       starting_date: {
-        start: string,
         immediately: false
       },
       end_date: {
-        end: string,
         indefinite: true
       },
       period_time: {

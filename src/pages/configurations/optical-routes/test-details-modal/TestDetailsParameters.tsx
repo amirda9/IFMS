@@ -6,7 +6,19 @@ import {setopticalroutUpdateTestsetupDetail} from './../../../../store/slices/op
 import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
-
+const seperatedate =(time:string)=>{
+  let date = new Date(time);
+  let year = date?.getFullYear(); // year = 2023
+  let month = date?.getMonth() + 1; // month = 11
+  let day = date?.getDate(); // day = 2
+  let hour = date?.getHours(); // hour = 9
+  let minute = date?.getMinutes(); // minute = 31
+  let Minute=Number(minute)<10?`0${minute}`:minute;
+  let second = date.getSeconds(); // second = 27
+  let datePart = year + "-" + month + "-" + day; // datePart = "2023-11-2"
+  let timePart = hour + ":" + Minute  // timePart = "9:31:27"
+  return {datePart:datePart,timePart:timePart}
+}
 const TestDetailsParameters: FC = () => {
   const [mount,setMount]=useState(false)
   const params = useParams();
@@ -46,7 +58,11 @@ const TestDetailsParameters: FC = () => {
   useEffect(()=>{
     const dataa=JSON.parse(JSON.stringify(Detail))
     dataa.station_id=dataa?.station?.id
-    dataa.init_rtu_id=dataa?.rtu?.id
+    dataa.init_rtu_id=dataa?.rtu?.id,
+    dataa.startdatePart==seperatedate(dataa?.test_program?.starting_date?.start).datePart,
+    dataa.starttimePart==seperatedate(dataa?.test_program?.starting_date?.start).timePart,
+    dataa.enddatePart==seperatedate(dataa?.test_program?.end_date?.end).datePart,
+    dataa.starttimePart==seperatedate(dataa?.test_program?.end_date?.end).timePart,
     delete dataa['station'];
     delete dataa['rtu'];
     dispatch(setopticalroutUpdateTestsetupDetail(dataa))
