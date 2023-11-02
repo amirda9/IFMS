@@ -70,6 +70,7 @@ const RtuDetailsPage: FC = () => {
   console.log(rtuDetail?.data, 'rtuDetailrtuDetail');
 
   const formik = useFormik({
+    enableReinitialize:true,
     initialValues: {
       name: rtuDetail?.data?.name || '',
       OTDRSECEND: rtuDetail?.data?.otdr_port || 0,
