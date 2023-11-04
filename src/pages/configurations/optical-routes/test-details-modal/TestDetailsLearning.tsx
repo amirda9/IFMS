@@ -18,48 +18,45 @@ const TestDetailsLearning: FC = () => {
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
 
-
-
   const formik = useFormik({
     initialValues: {
       countpercycle:
-        opticalrouteTestSetupDetail?.data?.learning_data
+      opticalroutUpdateTestsetupDetail?.learning_data
           ?.targeted_count_per_cycle,
       startcycletype:
-        opticalrouteTestSetupDetail?.data?.learning_data?.start_cycle_time
+      opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time
           ?.type,
       startcycletime:
-        opticalrouteTestSetupDetail?.data?.learning_data?.start_cycle_time
+      opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time
           ?.time,
       periodicoptionsvalue:
-        opticalrouteTestSetupDetail?.data?.learning_data?.start_cycle_time
+      opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time
           ?.periodic_options?.value,
       periodicoptionsperiodtime:
-        opticalrouteTestSetupDetail?.data?.learning_data?.increase_count_options
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.time,
       increasecountoptionscount:
-        opticalrouteTestSetupDetail?.data?.learning_data?.increase_count_options
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.count,
       increasecountoptionstype:
-        opticalrouteTestSetupDetail?.data?.learning_data?.increase_count_options
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.type,
       increaseperiodicoptionsvalue:
-        opticalrouteTestSetupDetail?.data?.learning_data?.increase_count_options
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.periodic_options?.value,
       increaseperiodicoptionsperiodtime:
-        opticalrouteTestSetupDetail?.data?.learning_data?.increase_count_options
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.periodic_options?.period_time,
       increasecountoptionstiming:
-        opticalrouteTestSetupDetail?.data?.learning_data?.increase_count_options
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.time,
       increasecountoptionsmaximumcount:
-        opticalrouteTestSetupDetail?.data?.learning_data?.increase_count_options
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.maximum_count,
     },
 
     onSubmit: () => {},
   });
-
 
   function RadioButton({name}: any) {
     let data = name == 'On' ? 'fixed' : '';
@@ -115,21 +112,7 @@ const TestDetailsLearning: FC = () => {
     );
   }
 
-  useEffect(() => {
-    // I have not received the real data from the server yet, so I am filling it with fake data for now to avoid errors
-    const dataa = JSON.parse(JSON.stringify(opticalroutUpdateTestsetupDetail));
-    dataa.learning_data = {
-      start_cycle_time: {
-        periodic_options: {},
-      },
-      increase_count_options: {
-        timing: {
-          periodic_options: {},
-        },
-      },
-    };
-    dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-  }, []);
+
 
   return (
     <FormikProvider value={formik}>

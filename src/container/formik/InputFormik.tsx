@@ -13,6 +13,7 @@ type PropsType = Omit<InputType, 'value'> & {
   outerClassName?: string;
   name: string;
   hideEye?: boolean;
+  onchange?:(e:any)=>void;
 };
 const InputFormik = ({
   name,
@@ -20,6 +21,7 @@ const InputFormik = ({
   wrapperClassName,
   outerClassName,
   className,
+  onchange=()=>{},
   ...props
 }: PropsType) => {
   const [fields, meta] = useField(name);
@@ -51,7 +53,7 @@ const InputFormik = ({
             'w-full',
           )}
           value={fields.value}
-          onChange={fields.onChange}
+          onChange={(e)=>{fields.onChange(e),onchange(e)}}
           onBlur={fields.onBlur}
           type={inputType}
         />

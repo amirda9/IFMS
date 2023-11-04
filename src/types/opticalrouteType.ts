@@ -6,6 +6,7 @@ export type opticalroutecreateType = {
 export type opticalrouteUpdateTestSetupDetailtype = {
     name: string,
     station_id: string,
+    station_name: string,
     init_rtu_id: string,
     startdatePart:string,
     starttimePart:string,
@@ -84,7 +85,7 @@ export type opticalrouteTestSetupDetail = {
     name: string;
   };
   parameters: {
-    enabled: true;
+    enabled: boolean;
     type: string;
     wavelength: string;
     break_strategy: string;

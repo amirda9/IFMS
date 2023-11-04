@@ -30,8 +30,8 @@ const TestDetailsTestProgram: FC = () => {
   const {opticalroutUpdateTestsetupDetail} = useSelector(
     (state: any) => state.opticalroute,
   );
-  const [selectedradio, setSelectedradio] = useState<string[]>([]);
-  const [selectedradio2, setSelectedradio2] = useState('Hourly');
+  const [selectedradio, setSelectedradio] = useState<string[]>(["Indefinite"]);
+  const [selectedradio2, setSelectedradio2] = useState('');
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
 
@@ -48,47 +48,38 @@ const TestDetailsTestProgram: FC = () => {
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
     let a = opticalrouteTestSetupDetail?.data?.test_program?.period_time || '';
     var firstLetter = a.charAt(0);
-    var firstLetterUpper = firstLetter.toUpperCase(); 
+    var firstLetterUpper = firstLetter.toUpperCase();
     var restOfStr = a.slice(1);
     var result = firstLetterUpper + restOfStr;
     setSelectedradio2(result);
 
-    // I have not received the real data from the server yet, so I am filling it with fake data for now to avoid errors
-    const dataa = JSON.parse(JSON.stringify(opticalroutUpdateTestsetupDetail));
-    dataa.test_program = {
-      starting_date: {},
-      end_date: {},
-      period_time: {},
-    };
-    dispatch(setopticalroutUpdateTestsetupDetail(dataa));
   }, []);
 
   const formik = useFormik({
     initialValues: {
       startingdateStart: seperatedate(
-        opticalrouteTestSetupDetail?.data?.test_program?.starting_date.start,
+        opticalroutUpdateTestsetupDetail?.test_program?.starting_date.start,
       ).datePart,
       startingdateStarttime: seperatedate(
-        opticalrouteTestSetupDetail?.data?.test_program?.starting_date.start,
+        opticalroutUpdateTestsetupDetail?.test_program?.starting_date.start,
       ).timePart,
       immediately:
-        opticalrouteTestSetupDetail?.data?.test_program?.starting_date
+        opticalroutUpdateTestsetupDetail?.test_program?.starting_date
           ?.immediately,
       enddateEnd: seperatedate(
-        opticalrouteTestSetupDetail?.data?.test_program?.end_date?.end,
+        opticalroutUpdateTestsetupDetail?.test_program?.end_date?.end,
       ).datePart,
       enddateEndtime: seperatedate(
-        opticalrouteTestSetupDetail?.data?.test_program?.end_date?.end,
+        opticalroutUpdateTestsetupDetail?.test_program?.end_date?.end,
       ).timePart,
       periodtimevalue:
-        opticalrouteTestSetupDetail?.data?.period_time?.value.toString(),
+        opticalroutUpdateTestsetupDetail?.period_time?.value.toString(),
       periodtimePeriodtime:
-        opticalrouteTestSetupDetail?.data?.period_time?.period_time,
+        opticalroutUpdateTestsetupDetail?.period_time?.period_time,
     },
 
     onSubmit: () => {},
   });
-
 
   function RadioButton({name}: RadioButton) {
     const onclickbtn = () => {

@@ -137,11 +137,14 @@ const OpticalRouteTestSetupPage: FC = () => {
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex  flex-grow flex-col gap-y-4 pr-16">
-        <BsPlusLg
+      <Link to={'create'}>
+      <BsPlusLg
           size={25}
           color="#18C047"
           className=" absolute right-[30px]"
         />
+      </Link>
+    
         <Table
           cols={columns}
           items={allitems}
@@ -153,6 +156,8 @@ const OpticalRouteTestSetupPage: FC = () => {
           }}
           dynamicColumns={['details', 'delete']}
           renderDynamicColumn={({key, value}) => {    
+            console.log(value,'value');
+            
             if (key === 'details')
               return (
                 <Link to={value.detail}>
