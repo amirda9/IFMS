@@ -1048,6 +1048,7 @@ export type ResponseListType = {
   opticalrouteCreateTestSetup:T.opticalrouteCreateTestSetupDetailtype;
   opticalrouteTestSetup: T.opticalrouteTestSetup[];
   opticalrouteRoute: T.opticalrouteRoute[];
+   opticalrouteUpdate:T.opticalrouteUpdateType;
   rtuUpdate:T.rtuupdateType;
   mapDetail: T.MapType;
   regionUpdate: T.RegionType;

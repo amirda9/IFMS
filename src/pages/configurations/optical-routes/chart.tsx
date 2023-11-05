@@ -419,7 +419,7 @@ function Chart() {
     left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
     top: Math.min(startY, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
     border: '1px solid red', // حاشیه قرمز رنگ
-    position: 'absolute', // موقعیت نسبی به div container
+   // موقعیت نسبی به div container
   };
 
   // تعریف تابع برای ذخیره مختصات شروع وقتی دکمه موس فشار داده شود
@@ -577,12 +577,6 @@ function Chart() {
                 ref={svgRef}
                 onMouseMove={(point, event) => {
                   console.log(point, 'point');
-
-                  handleMouseMove2(event);
-                  // console.log(event, 'point');
-
-                  handleMouseMove(event);
-                  //  const xValue = xxScale.invert(event.nativeEvent.clientX);
                 }}
                 lineWidth={3}
                 useMesh={!mousecursor}
@@ -752,7 +746,7 @@ function Chart() {
         </div>
       </div>
       {rectangelzoom == true && startdraw == true ? (
-        <div onMouseUp={() => setStartDraw(false)} style={rectangleStyle}></div>
+        <div className='absolute' onMouseUp={() => setStartDraw(false)} style={rectangleStyle}></div>
       ) : null}
     </div>
   );
