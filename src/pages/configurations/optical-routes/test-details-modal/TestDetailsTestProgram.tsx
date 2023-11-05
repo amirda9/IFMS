@@ -132,7 +132,20 @@ const TestDetailsTestProgram: FC = () => {
                 'periodtimePeriodtime',
                 name.toLocaleLowerCase(),
               );
-            dataa.test_program.period_time.period_time = name.toLowerCase();
+              let Name=name.toLowerCase()
+              console.log(Name,'Name');
+              let newName;
+              if(Name == "every"){
+                newName ="every"
+              }else if(Name == "daily"){
+                newName ="day"
+              }else {
+                newName=Name.slice(0,-2)
+              }
+              console.log(newName,'newName');
+              
+            dataa.test_program.period_time.period_time = newName;
+
             dispatch(setopticalroutUpdateTestsetupDetail(dataa));
           }}
           className="flex h-[20px] w-[20px] items-center justify-center rounded-[10px] bg-[#ffffff]">
@@ -161,7 +174,7 @@ const TestDetailsTestProgram: FC = () => {
               dataa.startdatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            defaultValue={formik.values.startingdateStart}
+            value={opticalroutUpdateTestsetupDetail.startdatePart}
             ref={firstdateref}
             type="date"
             className="ml-6 h-8 w-48 rounded-md border border-black px-2"
@@ -180,7 +193,7 @@ const TestDetailsTestProgram: FC = () => {
               dataa.starttimePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            defaultValue={formik.values.startingdateStarttime}
+            value={opticalroutUpdateTestsetupDetail.starttimePart}
             className="mr-[30px]"
             type="time"
           />
@@ -198,7 +211,7 @@ const TestDetailsTestProgram: FC = () => {
               dataa.enddatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            defaultValue={formik.values.enddateEnd}
+            value={opticalroutUpdateTestsetupDetail.enddatePart}
             ref={secenddateref}
             type="date"
             className="ml-6 h-8 w-48 rounded-md border border-black px-2"
@@ -217,7 +230,7 @@ const TestDetailsTestProgram: FC = () => {
               dataa.endtimePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            defaultValue={formik.values.enddateEndtime}
+            value={opticalroutUpdateTestsetupDetail.endtimePart}
             className="mr-[30px]"
             type="time"
           />
@@ -240,10 +253,10 @@ const TestDetailsTestProgram: FC = () => {
                 JSON.stringify(opticalroutUpdateTestsetupDetail),
               );
               formik.setFieldValue('periodtimevalue', e.target.value);
-              dataa.test_program.period_time.value = e.target.value;
+              dataa.test_program.period_time.value =Number(e.target.value) ;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            defaultValue={formik.values.periodtimevalue}
+            value={opticalroutUpdateTestsetupDetail.test_program.period_time.value}
             type="number"
             className="mx-4 w-16"
           />

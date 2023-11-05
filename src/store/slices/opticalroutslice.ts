@@ -12,6 +12,7 @@ const initialState = {
     station_id: "",
     station_name: "",
     init_rtu_id: "",
+    init_rtu_name: "",
     startdatePart:"",
     starttimePart:"",
     enddatePart:"",

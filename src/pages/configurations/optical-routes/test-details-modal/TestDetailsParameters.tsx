@@ -63,30 +63,33 @@ const TestDetailsParameters: FC = () => {
 
   const Detail = opticalrouteTestSetupDetail?.data || {};
   useEffect(() => {
-    const dataa = JSON.parse(JSON.stringify(Detail));
-    dataa.station_id = dataa?.station?.id;
-    (dataa.init_rtu_id = dataa?.rtu?.id),
-      dataa.startdatePart ==
-        seperatedate(dataa?.test_program?.starting_date?.start).datePart,
-      dataa.starttimePart ==
-        seperatedate(dataa?.test_program?.starting_date?.start).timePart,
-      dataa.enddatePart ==
-        seperatedate(dataa?.test_program?.end_date?.end).datePart,
-      dataa.starttimePart ==
-        seperatedate(dataa?.test_program?.end_date?.end).timePart,
-      delete dataa['station'];
-    delete dataa['rtu'];
-    dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+    if (params.testId == 'create') {
+    } else {
+      const dataa = JSON.parse(JSON.stringify(Detail));
+      dataa.station_id = dataa?.station?.id;
+      (dataa.init_rtu_id = dataa?.rtu?.id),
+        dataa.startdatePart ==
+          seperatedate(dataa?.test_program?.starting_date?.start).datePart,
+        dataa.starttimePart ==
+          seperatedate(dataa?.test_program?.starting_date?.start).timePart,
+        dataa.enddatePart ==
+          seperatedate(dataa?.test_program?.end_date?.end).datePart,
+        dataa.starttimePart ==
+          seperatedate(dataa?.test_program?.end_date?.end).timePart,
+        delete dataa['station'];
+      delete dataa['rtu'];
+      dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+    }
   }, []);
 
   const formik = useFormik({
     initialValues: {
-      name: opticalrouteTestSetupDetail?.data?.name || '',
+      name: opticalroutUpdateTestsetupDetail?.name || '',
       station: opticalroutUpdateTestsetupDetail?.station_name,
       stationId: opticalroutUpdateTestsetupDetail?.station_id,
       type: opticalroutUpdateTestsetupDetail?.parameters?.type,
-      rtu: opticalroutUpdateTestsetupDetail?.rtu?.name,
-      rtuID: opticalroutUpdateTestsetupDetail?.rtu?.id,
+      init_rtu_name: opticalroutUpdateTestsetupDetail?.init_rtu_name,
+      init_rtu_id: opticalroutUpdateTestsetupDetail?.init_rtu_id,
       enabled: opticalroutUpdateTestsetupDetail?.parameters?.enabled,
       Wavelength: opticalroutUpdateTestsetupDetail?.parameters?.wavelength,
       BreakStrategy:
@@ -129,6 +132,17 @@ const TestDetailsParameters: FC = () => {
     onSubmit: () => {},
   });
 
+  useEffect(() => {
+    const getrtu = async () => {
+      const allrtu = await $GET(
+        `otdr/station/${opticalroutUpdateTestsetupDetail?.station_id.toString()}/rtus`,
+      );
+      setRtulist(allrtu);
+    };
+    if (opticalroutUpdateTestsetupDetail?.station_id.length > 0) {
+      getrtu();
+    }
+  }, []);
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -138,7 +152,13 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Name">
             <InputFormik
-              onchange={e => console.log(e, 'rrtt')}
+              onchange={e => {
+                const dataa = JSON.parse(
+                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                );
+                dataa.name = e.target.value;
+                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+              }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
               name="name"
@@ -235,11 +255,9 @@ const TestDetailsParameters: FC = () => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
                 );
-
-                dataa.parameters.station_name = e.target.value
-                  .split('_')[0]
-                  .toString();
-                dataa.parameters.id = e.target.value.split('_')[1].toString();
+                dataa.station_name = e.target.value.split('_')[0].toString();
+                dataa.station_id = e.target.value.split('_')[1].toString();
+                console.log(e.target.value.split('_')[0].toString(), '🥶');
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                 const allrtu = await $GET(
                   `otdr/station/${e.target.value
@@ -271,24 +289,36 @@ const TestDetailsParameters: FC = () => {
             className="flex justify-between"
             labelClassName="flex-grow"
             label="RTU">
-            {/* <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName="w-full"
-              name="rtu"
-            /> */}
             <Select
-              onChange={e =>
-                formik.setFieldValue('rtu', e.target.value.toString())
-              }
+              onChange={e => {
+                const dataa = JSON.parse(
+                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                );
+                formik.setFieldValue(
+                  'init_rtu_id',
+                  e.target.value.split('_')[1].toString(),
+                );
+                formik.setFieldValue(
+                  'init_rtu_name',
+                  e.target.value.split('_')[0].toString(),
+                );
+                dataa.init_rtu_name = e.target.value.split('_')[0].toString();
+                dataa.init_rtu_id = e.target.value.split('_')[1].toString();
+                console.log(e.target.value.split('_')[0].toString(), '🥶');
+                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+              }}
+              value={opticalroutUpdateTestsetupDetail.init_rtu_name}
               className="basis-96">
               <option value="" className="hidden">
-                {formik.values.rtu}
+                {formik.values.init_rtu_name}
               </option>
               <option value={undefined} className="hidden">
-                {formik.values.rtu}
+                {formik.values.init_rtu_name}
               </option>
+
               {rtulist.map((data, index) => (
                 <option
+                  value={`${data.name}_${data.id}`}
                   key={index}
                   className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   {data.name}
@@ -681,7 +711,7 @@ const TestDetailsParameters: FC = () => {
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
-              name="RBS (dB)"
+              name="RBS"
               type="number"
             />
           </Description>

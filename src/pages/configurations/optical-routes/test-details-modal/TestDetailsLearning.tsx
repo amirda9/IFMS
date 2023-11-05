@@ -7,6 +7,13 @@ import {InputFormik} from '~/container';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 const TestDetailsLearning: FC = () => {
+ const convertperiod=(str:string)=>{
+  let firstLetter = str.charAt(0);
+  let firstLetterUpper = firstLetter.toUpperCase();
+  let restOfStr = str.slice(1);
+  let result = firstLetterUpper + restOfStr+"s";
+  return result
+  }
   const dispatch = useDispatch();
   const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
   const {opticalroutUpdateTestsetupDetail} = useSelector(
@@ -112,6 +119,7 @@ const TestDetailsLearning: FC = () => {
     );
   }
 
+console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.maximum_coun,'yyytt');
 
 
   return (
@@ -130,6 +138,7 @@ const TestDetailsLearning: FC = () => {
                 dataa.learning_data.targeted_count_per_cycle = e.target.value;
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
+              value={opticalroutUpdateTestsetupDetail.learning_data.targeted_count_per_cycle}
               name="count-per-cycle"
               type="number"
             />
@@ -152,6 +161,7 @@ const TestDetailsLearning: FC = () => {
                     dataa.learning_data.start_cycle_time.time = e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
+                  value={opticalroutUpdateTestsetupDetail.learning_data.start_cycle_time.time}
                   type="date"
                   className="ml-6 h-8 w-48 rounded-md border border-black px-2"
                 />
@@ -164,6 +174,7 @@ const TestDetailsLearning: FC = () => {
               <div className="flex flex-row items-center gap-x-4">
                 <RadioButton name="Every" />
                 <TextInput
+                type='number'
                   onChange={e => {
                     formik.setFieldValue(
                       'periodicoptionsvalue',
@@ -173,10 +184,10 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.start_cycle_time.periodic_options.value =
-                      e.target.value;
+                     Number(e.target.value) ;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  defaultValue={2}
+               value={opticalroutUpdateTestsetupDetail.learning_data.start_cycle_time.periodic_options.value}
                   className="w-16"
                 />
                 <Select
@@ -188,13 +199,16 @@ const TestDetailsLearning: FC = () => {
                     let dataa: any = JSON.parse(
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
-                    dataa.learning_data.start_cycle_time.periodic_options.period_tim =
-                      e.target.value;
+                    dataa.learning_data.start_cycle_time.periodic_options.period_time =
+                      e.target.value.toLowerCase().slice(0,-1);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
+                  value={convertperiod(opticalroutUpdateTestsetupDetail.learning_data.start_cycle_time.periodic_options.period_time)}
                   className="w-26">
                   <option>Months</option>
                   <option>Days</option>
+                  <option>Years</option>
+                  <option>Hours</option>
                 </Select>
               </div>
             </div>
@@ -206,6 +220,7 @@ const TestDetailsLearning: FC = () => {
               <span className="flex items-center gap-x-2">
                 <span>Increase Target by</span>
                 <TextInput
+                type='number'
                   onChange={e => {
                     formik.setFieldValue(
                       'increasecountoptionscount',
@@ -215,9 +230,10 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.increase_count_options.count =
-                      e.target.value;
+                      Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
+                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.count}
                   className="w-16"
                 />
               </span>
@@ -240,6 +256,7 @@ const TestDetailsLearning: FC = () => {
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
                   ref={secenddateref}
+                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.timing.time}
                   type="date"
                   className="ml-6 h-8 w-48 rounded-md border border-black px-2"
                 />
@@ -253,6 +270,7 @@ const TestDetailsLearning: FC = () => {
                 <RadioButton2 name="Every" />
 
                 <TextInput
+                type='number'
                   onChange={e => {
                     formik.setFieldValue(
                       'increaseperiodicoptionsvalue',
@@ -262,10 +280,10 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.increase_count_options.timing.periodic_options.value =
-                      e.target.value;
+                      Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  defaultValue={2}
+                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.timing.periodic_options.value}
                   className="w-16"
                 />
                 <Select
@@ -278,15 +296,19 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.increase_count_options.timing.periodic_options.period_time =
-                      e.target.value;
+                    e.target.value.toLowerCase().slice(0,-1);;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
+                  value={convertperiod(opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.timing.periodic_options.period_time)}
                   className="w-26">
                   <option>Months</option>
                   <option>Days</option>
+                  <option>Years</option>
+                  <option>Hours</option>
                 </Select>
                 <span>Up to Max.</span>
                 <TextInput
+                type='number'
                   onChange={e => {
                     formik.setFieldValue(
                       'increasecountoptionsmaximumcount',
@@ -296,9 +318,10 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.increase_count_options.maximum_count =
-                      e.target.value;
+                      Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
+                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.maximum_count}
                   className="w-16"
                 />
                 <span>traces</span>

@@ -134,6 +134,7 @@ const OpticalRouteTestSetupPage: FC = () => {
     request("opticalrouteDeletTestsetup",{params:{optical_route_id:params.opticalRouteId || ''},data:alldelets});
     setAlldelets([])
   }
+  
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex  flex-grow flex-col gap-y-4 pr-16">
@@ -156,8 +157,7 @@ const OpticalRouteTestSetupPage: FC = () => {
           }}
           dynamicColumns={['details', 'delete']}
           renderDynamicColumn={({key, value}) => {    
-            console.log(value,'value');
-            
+       
             if (key === 'details')
               return (
                 <Link to={value.detail}>

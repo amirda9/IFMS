@@ -94,6 +94,7 @@ type RequestKeys =
   | 'opticalrouteTestSetup'
   | 'opticalrouteDeletTestsetup'
   | 'opticalrouteTestSetupDetail'
+  | 'opticalrouteCreateTestSetup'
   ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
@@ -520,6 +521,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  opticalrouteCreateTestSetup: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteCreateTestSetup,
+    method: 'put',
+    auth: true,
+  },
 };
 
 export type RequestListTypes = {
@@ -747,6 +753,73 @@ export type RequestListTypes = {
   opticalrouteRoute: {params: {optical_route_id: string}};
   opticalrouteDeletTestsetup:{params: {optical_route_id: string},data:string[]};
   opticalrouteTestSetupDetail:{params: {optical_route_id: string,test_setup_id:string}};
+  opticalrouteCreateTestSetup:{params: {optical_route_id: string,test_setup_id:string},data:{
+
+      name: string,
+      station_id: string,
+      init_rtu_id: string,
+      parameters: {
+        enabled: boolean,
+        type: string,
+        wavelength: string,
+        break_strategy: string,
+        date_save_policy:string,
+        test_mode:string,
+        run_mode: string,
+        distance_mode: string,
+        range: number,
+        pulse_width_mode:string,
+        pulse_width:number,
+        sampling_mode:string,
+        sampling_duration:number,
+        IOR:number,
+        RBS: number,
+        event_loss_threshold:number,
+        event_reflection_threshold:number,
+        fiber_end_threshold:number,
+        total_loss_threshold:number,
+        section_loss_threshold:number,
+        injection_level_threshold:number
+      },
+      learning_data: {
+        targeted_count_per_cycle:number,
+        start_cycle_time: {
+          type: string,
+          time:string,
+          periodic_options: {
+            value:number,
+            period_time:string
+          }
+        },
+        increase_count_options: {
+          count:number,
+          timing: {
+            type:number,
+            time:string,
+            periodic_options: {
+              value:number,
+              period_time:string
+            }
+          },
+          maximum_count:number
+        }
+      },
+      test_program: {
+        starting_date: {
+          start: string,
+          immediately: boolean
+        },
+        end_date: {
+          end:string,
+          indefinite:boolean
+        },
+        period_time: {
+          value:number,
+          period_time: string
+        }
+      }
+    }
+  };
   opticalrouteUpdate: {params: {optical_route_id: string},data:
   {
   name: string,
@@ -972,6 +1045,7 @@ export type ResponseListType = {
   opticalrouteDetail: T.opticalrouteDetailType;
   opticalrouteDeletTestsetup: string;
   opticalrouteTestSetupDetail:T.opticalrouteTestSetupDetail;
+  opticalrouteCreateTestSetup:T.opticalrouteCreateTestSetupDetailtype;
   opticalrouteTestSetup: T.opticalrouteTestSetup[];
   opticalrouteRoute: T.opticalrouteRoute[];
   rtuUpdate:T.rtuupdateType;
