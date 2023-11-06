@@ -313,6 +313,14 @@ export type opticalrouteTestSetup = {
 
 //  };
 
+
+export type opticalrouteCreateRoute={
+    link_id: string,
+    cable: string,
+    core: number
+    id: string
+}
+
 export type opticalrouteRoute = {
   link_id: string;
   cable: string;

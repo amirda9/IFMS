@@ -1,5 +1,6 @@
 import * as T from '~/types';
 import * as api from '~/constant/api';
+import {number} from 'yup';
 
 export const excludeList = ['categoryList'];
 export type RequestKeyExclude = keyof Omit<RequestListTypes, 'uploadFile'>;
@@ -91,11 +92,13 @@ type RequestKeys =
   | 'opticalrouteDetail'
   | 'opticalrouteUpdate'
   | 'opticalrouteRoute'
+  | 'opticalrouteCreateRoute'
+  | 'opticalrouteUpdateRoute'
+  | 'opticalrouteDeleteRoute'
   | 'opticalrouteTestSetup'
   | 'opticalrouteDeletTestsetup'
   | 'opticalrouteTestSetupDetail'
-  | 'opticalrouteCreateTestSetup'
-  ;
+  | 'opticalrouteCreateTestSetup';
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -501,6 +504,21 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+  opticalrouteUpdateRoute: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteUpdateRoute,
+    method: 'put',
+    auth: true,
+  },
+  opticalrouteDeleteRoute: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteDeleteRoute,
+    method: 'delete',
+    auth: true,
+  },
+  opticalrouteCreateRoute: {
+    url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteCreateRoute,
+    method: 'post',
+    auth: true,
+  },
   opticalrouteUpdate: {
     url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteUpdate,
     method: 'put',
@@ -710,125 +728,142 @@ export type RequestListTypes = {
 
   rtuCreate: {
     data: {
-      name: string,
-      model: string,
-      station_id: string,
-      contact_person_id: string,
-      otdr_ip: string,
-      otdr_port: number,
-      switch_ip: string,
-      switch_port: number,
-      subnet_mask: string,
-      default_gateway: string
+      name: string;
+      model: string;
+      station_id: string;
+      contact_person_id: string;
+      otdr_ip: string;
+      otdr_port: number;
+      switch_ip: string;
+      switch_port: number;
+      subnet_mask: string;
+      default_gateway: string;
     };
   };
   rtuUpdate: {
     params: {rtu_id: string};
-    data: { 
-      name: string,
-      model: string,
-      station_id: string,
-      contact_person_id: string,
-      otdr_ip: string,
-      otdr_port: number,
-      switch_ip: string,
-      switch_port: number,
-      subnet_mask: string,
-      default_gateway: string
-  };
+    data: {
+      name: string;
+      model: string;
+      station_id: string;
+      contact_person_id: string;
+      otdr_ip: string;
+      otdr_port: number;
+      switch_ip: string;
+      switch_port: number;
+      subnet_mask: string;
+      default_gateway: string;
+    };
   };
 
   opticalrouteCreate: {
     data: {
-      name: string,
-      comment: string,
-      test_ready: boolean,
-      type:string,
-      avg_hellix_factor: number,
-      network_id: string
+      name: string;
+      comment: string;
+      test_ready: boolean;
+      type: string;
+      avg_hellix_factor: number;
+      network_id: string;
     };
   };
   opticalrouteDetail: {params: {optical_route_id: string}};
   opticalrouteTestSetup: {params: {optical_route_id: string}};
   opticalrouteRoute: {params: {optical_route_id: string}};
-  opticalrouteDeletTestsetup:{params: {optical_route_id: string},data:string[]};
-  opticalrouteTestSetupDetail:{params: {optical_route_id: string,test_setup_id:string}};
-  opticalrouteCreateTestSetup:{params: {optical_route_id: string,test_setup_id:string},data:{
-
-      name: string,
-      station_id: string,
-      init_rtu_id: string,
+  opticalrouteUpdateRoute: {
+    params: {optical_route_id: string};
+    data: {link_id: string; cable: string; core: number; id: string}[];
+  };
+  opticalrouteDeleteRoute: {params: {optical_route_id: string}; data: string[]};
+  opticalrouteCreateRoute: {
+    params: {optical_route_id: string};
+    data: {link_id: string; cable: string; core: number}[];
+  };
+  opticalrouteDeletTestsetup: {
+    params: {optical_route_id: string};
+    data: string[];
+  };
+  opticalrouteTestSetupDetail: {
+    params: {optical_route_id: string; test_setup_id: string};
+  };
+  opticalrouteCreateTestSetup: {
+    params: {optical_route_id: string; test_setup_id: string};
+    data: {
+      name: string;
+      station_id: string;
+      init_rtu_id: string;
       parameters: {
-        enabled: boolean,
-        type: string,
-        wavelength: string,
-        break_strategy: string,
-        date_save_policy:string,
-        test_mode:string,
-        run_mode: string,
-        distance_mode: string,
-        range: number,
-        pulse_width_mode:string,
-        pulse_width:number,
-        sampling_mode:string,
-        sampling_duration:number,
-        IOR:number,
-        RBS: number,
-        event_loss_threshold:number,
-        event_reflection_threshold:number,
-        fiber_end_threshold:number,
-        total_loss_threshold:number,
-        section_loss_threshold:number,
-        injection_level_threshold:number
-      },
+        enabled: boolean;
+        type: string;
+        wavelength: string;
+        break_strategy: string;
+        date_save_policy: string;
+        test_mode: string;
+        run_mode: string;
+        distance_mode: string;
+        range: number;
+        pulse_width_mode: string;
+        pulse_width: number;
+        sampling_mode: string;
+        sampling_duration: number;
+        IOR: number;
+        RBS: number;
+        event_loss_threshold: number;
+        event_reflection_threshold: number;
+        fiber_end_threshold: number;
+        total_loss_threshold: number;
+        section_loss_threshold: number;
+        injection_level_threshold: number;
+      };
       learning_data: {
-        targeted_count_per_cycle:number,
+        targeted_count_per_cycle: number;
         start_cycle_time: {
-          type: string,
-          time:string,
+          type: string;
+          time: string;
           periodic_options: {
-            value:number,
-            period_time:string
-          }
-        },
+            value: number;
+            period_time: string;
+          };
+        };
         increase_count_options: {
-          count:number,
+          count: number;
           timing: {
-            type:number,
-            time:string,
+            type: number;
+            time: string;
             periodic_options: {
-              value:number,
-              period_time:string
-            }
-          },
-          maximum_count:number
-        }
-      },
+              value: number;
+              period_time: string;
+            };
+          };
+          maximum_count: number;
+        };
+      };
       test_program: {
         starting_date: {
-          start: string,
-          immediately: boolean
-        },
+          start: string;
+          immediately: boolean;
+        };
         end_date: {
-          end:string,
-          indefinite:boolean
-        },
+          end: string;
+          indefinite: boolean;
+        };
         period_time: {
-          value:number,
-          period_time: string
-        }
-      }
-    }
+          value: number;
+          period_time: string;
+        };
+      };
+    };
   };
-  opticalrouteUpdate: {params: {optical_route_id: string},data:
-  {
-  name: string,
-  comment: string,
-  test_ready: boolean,
-  type: string,
-  avg_hellix_factor: number
-}}
-  networkOpticallist:{params: {network_id: string}};
+  opticalrouteUpdate: {
+    params: {optical_route_id: string};
+    data: {
+      name: string;
+      comment: string;
+      test_ready: boolean;
+      type: string;
+      avg_hellix_factor: number;
+    };
+  };
+  networkOpticallist: {params: {network_id: string}};
 
   rtuDetail: {params: {rtu_Id: string}};
   rtuPorts: {params: {rtu_id: string}};
@@ -853,7 +888,7 @@ export type RequestListTypes = {
     };
   };
 
- removeregionStationList: {
+  removeregionStationList: {
     params: {region_id: string};
     data: {
       stations_id: string[];
@@ -1044,19 +1079,22 @@ export type ResponseListType = {
   networkOpticallist: T.opticalroutecreateType[];
   opticalrouteDetail: T.opticalrouteDetailType;
   opticalrouteDeletTestsetup: string;
-  opticalrouteTestSetupDetail:T.opticalrouteTestSetupDetail;
-  opticalrouteCreateTestSetup:T.opticalrouteCreateTestSetupDetailtype;
+  opticalrouteTestSetupDetail: T.opticalrouteTestSetupDetail;
+  opticalrouteCreateTestSetup: T.opticalrouteCreateTestSetupDetailtype;
   opticalrouteTestSetup: T.opticalrouteTestSetup[];
   opticalrouteRoute: T.opticalrouteRoute[];
-   opticalrouteUpdate:T.opticalrouteUpdateType;
-  rtuUpdate:T.rtuupdateType;
+  opticalrouteUpdateRoute: T.opticalrouteCreateRoute[];
+  opticalrouteDeleteRoute: string;
+  opticalrouteCreateRoute: T.opticalrouteCreateRoute[];
+  opticalrouteUpdate: T.opticalrouteUpdateType;
+  rtuUpdate: T.rtuupdateType;
   mapDetail: T.MapType;
   regionUpdate: T.RegionType;
   regionAccessList: {users: T.AccessListType[]};
   regionAccessUpdate: {count: number};
   regionStationList: T.regionstationlist[];
   updateregionStationList: T.regionstationlist[];
- addregionStationList: T.regionstationlist[];
+  addregionStationList: T.regionstationlist[];
   removeregionStationList: T.regionstationlist[];
   updateregionLinkList: T.regionlinklist[];
   addregionLinkList: T.regionlinklist[];
@@ -1071,7 +1109,7 @@ export type ResponseListType = {
   stationAddadmin: string;
   stationDetail: T.StationType;
   stationUpdate: T.StationListType;
-  stationrtuList:T.stationrtulisttype[]
+  stationrtuList: T.stationrtulisttype[];
   stationAccessUpdate: {count: number};
   stationDelete: {count: number};
   networkStationList: T.StationListType[];
