@@ -82,6 +82,8 @@ const TestDetailsParameters: FC = () => {
     }
   }, []);
 
+  console.log(opticalroutUpdateTestsetupDetail,'opticalroutUpdateTestsetupDetail😄');
+  
   const formik = useFormik({
     initialValues: {
       name: opticalroutUpdateTestsetupDetail?.name || '',
@@ -139,7 +141,7 @@ const TestDetailsParameters: FC = () => {
       );
       setRtulist(allrtu);
     };
-    if (opticalroutUpdateTestsetupDetail?.station_id.length > 0) {
+    if (opticalroutUpdateTestsetupDetail?.station_id?.length > 0) {
       getrtu();
     }
   }, []);

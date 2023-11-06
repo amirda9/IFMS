@@ -256,7 +256,7 @@ const TestDetailsTestProgram: FC = () => {
               dataa.test_program.period_time.value =Number(e.target.value) ;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            value={opticalroutUpdateTestsetupDetail.test_program.period_time.value}
+            value={opticalroutUpdateTestsetupDetail?.test_program?.period_time?.value}
             type="number"
             className="mx-4 w-16"
           />

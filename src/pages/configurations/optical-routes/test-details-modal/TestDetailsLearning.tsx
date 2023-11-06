@@ -119,7 +119,7 @@ const TestDetailsLearning: FC = () => {
     );
   }
 
-console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.maximum_coun,'yyytt');
+// console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.maximum_coun,'yyytt');
 
 
   return (
@@ -138,7 +138,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                 dataa.learning_data.targeted_count_per_cycle = e.target.value;
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
-              value={opticalroutUpdateTestsetupDetail.learning_data.targeted_count_per_cycle}
+              value={opticalroutUpdateTestsetupDetail?.learning_data?.targeted_count_per_cycle}
               name="count-per-cycle"
               type="number"
             />
@@ -161,7 +161,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                     dataa.learning_data.start_cycle_time.time = e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail.learning_data.start_cycle_time.time}
+                  value={opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.time}
                   type="date"
                   className="ml-6 h-8 w-48 rounded-md border border-black px-2"
                 />
@@ -187,7 +187,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                      Number(e.target.value) ;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-               value={opticalroutUpdateTestsetupDetail.learning_data.start_cycle_time.periodic_options.value}
+               value={opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.periodic_options.value}
                   className="w-16"
                 />
                 <Select
@@ -203,7 +203,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                       e.target.value.toLowerCase().slice(0,-1);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={convertperiod(opticalroutUpdateTestsetupDetail.learning_data.start_cycle_time.periodic_options.period_time)}
+                  value={convertperiod(opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.periodic_options?.period_time || "")}
                   className="w-26">
                   <option>Months</option>
                   <option>Days</option>
@@ -233,7 +233,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                       Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.count}
+                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.count}
                   className="w-16"
                 />
               </span>
@@ -256,7 +256,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
                   ref={secenddateref}
-                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.timing.time}
+                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing.time}
                   type="date"
                   className="ml-6 h-8 w-48 rounded-md border border-black px-2"
                 />
@@ -283,7 +283,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                       Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.timing.periodic_options.value}
+                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing?.periodic_options?.value}
                   className="w-16"
                 />
                 <Select
@@ -299,7 +299,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                     e.target.value.toLowerCase().slice(0,-1);;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={convertperiod(opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.timing.periodic_options.period_time)}
+                  value={convertperiod(opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing?.periodic_options?.period_time || "")}
                   className="w-26">
                   <option>Months</option>
                   <option>Days</option>
@@ -321,7 +321,7 @@ console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_option
                       Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.maximum_count}
+                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.maximum_count}
                   className="w-16"
                 />
                 <span>traces</span>
