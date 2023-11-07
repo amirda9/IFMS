@@ -102,6 +102,7 @@ type RequestKeys =
   | 'SettingsGet'
   | 'SettingsUpdateopticalroute'
   | 'SettingsUpdatesystem'
+  | 'SettingsUpdatethreshold_setting'
   ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
@@ -560,6 +561,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     auth: true,
   },
   SettingsUpdatesystem: {
+    url: api.BASE_URL + api.URLS.otdr.setting.SettingsGet,
+    method: 'put',
+    auth: true,
+  },
+  SettingsUpdatethreshold_setting: {
     url: api.BASE_URL + api.URLS.otdr.setting.SettingsGet,
     method: 'put',
     auth: true,
@@ -1083,6 +1089,16 @@ export type RequestListTypes = {
     data_save_policy: string,
     test_type: string
   }, }};
+
+
+  SettingsUpdatethreshold_setting:{data:{ threshold_setting: {
+    wavelength:string,
+    total_loss: number,
+    section_loss: number,
+    event_loss:number,
+    event_reflectance: number,
+    injection_level: number
+  } }};
 };
 
 export type ResponseListType = {
@@ -1134,6 +1150,7 @@ export type ResponseListType = {
   SettingsGet: T.settinggettype;
   SettingsUpdateopticalroute: T.settinggettype;
   SettingsUpdatesystem: T.settinggettype;
+  SettingsUpdatethreshold_setting: T.settinggettype;
   opticalrouteUpdateRoute: T.opticalrouteCreateRoute[];
   opticalrouteDeleteRoute: string;
   opticalrouteCreateRoute: T.opticalrouteCreateRoute[];
