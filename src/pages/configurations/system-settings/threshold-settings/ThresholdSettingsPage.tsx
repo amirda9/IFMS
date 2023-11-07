@@ -50,12 +50,12 @@ const ThresholdSettingsPage = () => {
 
   const [threshold_setting, setThreshold_setting] = useState<thresholdsetting>(
     SettingsGet?.data?.threshold_setting || {
-      event_loss: 0.1,
-      event_reflectance: 1,
-      injection_level: 1,
-      section_loss: 0.1,
-      total_loss: 1,
-      wavelength: '1550',
+      event_loss: 0,
+      event_reflectance: 0,
+      injection_level: 0,
+      section_loss: 0,
+      total_loss: 0,
+      wavelength: '',
     },
   );
   console.log(threshold_setting, 'SettingsGetSettingsGet');
