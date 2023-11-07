@@ -177,19 +177,19 @@ const MonitoringTestPage: FC = () => {
 
   const [monitoring_test_setting, setMonitoring_test_setting] = useState<monitoring_test_settingtype>(
     SettingsGet?.data?.monitoring_test_setting || {
-      IOR: 1.476,
-      RBS: -79,
-      distance_mode: 'manual',
-      event_loss_threshold: 0.05,
-      event_reflection_threshold: -40,
-      fiber_end_threshold: 5,
-      pulse_width: 3,
-      pulse_width_mode: 'manual',
-      range: 3,
-      run_mode: 'average',
-      sampling_duration: 4,
-      sampling_mode: 'duration',
-      test_mode: 'fast',
+      IOR: 0,
+      RBS:0,
+      distance_mode: '',
+      event_loss_threshold: 0,
+      event_reflection_threshold: 0,
+      fiber_end_threshold: 0,
+      pulse_width:0 ,
+      pulse_width_mode: '',
+      range: 0,
+      run_mode: '',
+      sampling_duration: 0,
+      sampling_mode: '',
+      test_mode: '',
     },
   );
   console.log(monitoring_test_setting, 'monitoring_test_setting');
