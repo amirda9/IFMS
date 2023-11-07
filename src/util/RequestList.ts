@@ -98,7 +98,11 @@ type RequestKeys =
   | 'opticalrouteTestSetup'
   | 'opticalrouteDeletTestsetup'
   | 'opticalrouteTestSetupDetail'
-  | 'opticalrouteCreateTestSetup';
+  | 'opticalrouteCreateTestSetup'
+  | 'SettingsGet'
+  | 'SettingsUpdateopticalroute'
+  | 'SettingsUpdatesystem'
+  ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   login: {
@@ -504,6 +508,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'get',
     auth: true,
   },
+
   opticalrouteUpdateRoute: {
     url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteUpdateRoute,
     method: 'put',
@@ -541,6 +546,21 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   opticalrouteCreateTestSetup: {
     url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteCreateTestSetup,
+    method: 'put',
+    auth: true,
+  },
+  SettingsGet: {
+    url: api.BASE_URL + api.URLS.otdr.setting.SettingsGet,
+    method: 'get',
+    auth: true,
+  },
+  SettingsUpdateopticalroute: {
+    url: api.BASE_URL + api.URLS.otdr.setting.SettingsGet,
+    method: 'put',
+    auth: true,
+  },
+  SettingsUpdatesystem: {
+    url: api.BASE_URL + api.URLS.otdr.setting.SettingsGet,
     method: 'put',
     auth: true,
   },
@@ -1035,6 +1055,34 @@ export type RequestListTypes = {
     };
   };
   regionDelete: {params: {region_id: string}};
+
+  SettingsGet:undefined;
+  
+  SettingsUpdateopticalroute:{data:{optical_route: {
+    fiber_type:string,
+    helix_factor:number,
+    wavelengths: {
+      IOR: {
+        1310:number,
+        1490: number,
+        1550:number,
+        1625:number
+      },
+      RBS: {
+        1310:number,
+        1490: number,
+        1550: number,
+        1625: number
+      }
+    }
+  }}};
+
+  SettingsUpdatesystem:{data:{system:{
+    break_strategy: string,
+    fiber_test_setup_definition_strategy: string,
+    data_save_policy: string,
+    test_type: string
+  }, }};
 };
 
 export type ResponseListType = {
@@ -1083,6 +1131,9 @@ export type ResponseListType = {
   opticalrouteCreateTestSetup: T.opticalrouteCreateTestSetupDetailtype;
   opticalrouteTestSetup: T.opticalrouteTestSetup[];
   opticalrouteRoute: T.opticalrouteRoute[];
+  SettingsGet: T.settinggettype;
+  SettingsUpdateopticalroute: T.settinggettype;
+  SettingsUpdatesystem: T.settinggettype;
   opticalrouteUpdateRoute: T.opticalrouteCreateRoute[];
   opticalrouteDeleteRoute: string;
   opticalrouteCreateRoute: T.opticalrouteCreateRoute[];

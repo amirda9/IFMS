@@ -12,3 +12,4 @@ export * from './LinkType';
 export * from './mapType';
 export * from './RtuTypes';
 export * from './opticalrouteType';
+export * from './Setting';
