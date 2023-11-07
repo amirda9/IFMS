@@ -1,6 +1,11 @@
-import {FC, Fragment} from 'react';
+import {FC, Fragment, ReactNode} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {Description, Select, TextInput} from '~/components';
+
+type Rowinputtype = {
+  name: string;
+  children: ReactNode;
+};
 
 type SelectInputType = {
   type: 'select';
@@ -165,39 +170,45 @@ const inputs: (SelectInputType | NumberInputType)[] = [
   },
 ];
 
-const ProactiveMaintenanceTestPage: FC = () => {
+
+const Rowinput = ({name, children}: Rowinputtype) => {
+  return (
+    <div className="flex w-[800px] flex-row justify-between">
+      <span className="w-[320px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+        {name}
+      </span>
+      <div className="flex w-[350px]">{children}</div>
+    </div>
+  );
+};
+
+
+function ProactiveMaintenanceTestPage() {
   return (
     <SystemSettingsMain contentClassName='w-2/5'>
-      {inputs.map((input, i) =>
-        input.type === 'select' ? (
-          <Description
-            key={input.type + '__' + input.label}
-            labelClassName="w-[18rem]"
-            label={input.label}>
-            <Select className="flex-grow">
-              {input.options.map(opt => (
-                <option key={'OPT__' + opt}>{opt}</option>
-              ))}
-            </Select>
-          </Description>
-        ) : input.type === 'number' ? (
-          <Description
-            key={input.type + '__' + input.label}
-            labelClassName="w-[18rem]"
-            label={input.label}>
-            <TextInput
-              className="flex-grow"
-              max={input.maxValue}
-              min={input.minValue}
-              defaultValue={input.defaultValue.toFixed(input.precision)}
-            />
-          </Description>
-        ) : (
-          <Fragment key={'FRAG__' + i} />
-        ),
+      {inputs.map((input, i) => input.type === 'select' ? (
+        <Rowinput name={input.label}>
+          <Select
+           className="w-[350px] flex-grow text-[20px] font-light leading-[24.2px] text-[#000000]">
+            {input.options.map(opt => (
+              <option key={'OPT__' + opt}>{opt}</option>
+            ))}
+          </Select>
+        </Rowinput>
+      ) : input.type === 'number' ? (
+        <Rowinput name={input.label}>
+           <TextInput
+           className="flex-grow"
+         max={input.maxValue}
+         min={input.minValue}
+        defaultValue={input.defaultValue.toFixed(input.precision)} />
+      </Rowinput>
+      ) : (
+        <Fragment key={'FRAG__' + i} />
+      )
       )}
     </SystemSettingsMain>
   );
-};
+}
 
 export default ProactiveMaintenanceTestPage;
