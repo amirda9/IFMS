@@ -104,6 +104,7 @@ type RequestKeys =
   | 'SettingsUpdatesystem'
   | 'SettingsUpdatethreshold_setting'
   | 'SettingsUpdatemonitoring_test_setting'
+  | 'SettingsUpdatesetmaintenance_test_setting'
   ;
 
 export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
@@ -567,6 +568,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     auth: true,
   },
   SettingsUpdatemonitoring_test_setting: {
+    url: api.BASE_URL + api.URLS.otdr.setting.SettingsGet,
+    method: 'put',
+    auth: true,
+  },
+  SettingsUpdatesetmaintenance_test_setting: {
     url: api.BASE_URL + api.URLS.otdr.setting.SettingsGet,
     method: 'put',
     auth: true,
@@ -1113,6 +1119,22 @@ export type RequestListTypes = {
     fiber_end_threshold: number
   }, }};
 
+  SettingsUpdatesetmaintenance_test_setting:{data:{maintenance_test_setting: {
+    test_mode:string,
+    run_mode: string,
+    distance_mode:string,
+    range: number,
+    pulse_width_mode:string,
+    pulse_width: number,
+    sampling_mode:string,
+    sampling_duration: number,
+    IOR: number,
+    RBS: number,
+    event_loss_threshold: number,
+    event_reflection_threshold:number,
+    fiber_end_threshold: number
+  }, }};
+
 
   SettingsUpdatethreshold_setting:{data:{ threshold_setting: {
     wavelength:string,
@@ -1174,6 +1196,7 @@ export type ResponseListType = {
   SettingsUpdateopticalroute: T.settinggettype;
   SettingsUpdatesystem: T.settinggettype;
   SettingsUpdatemonitoring_test_setting: T.settinggettype;
+  SettingsUpdatesetmaintenance_test_setting: T.settinggettype;
   SettingsUpdatethreshold_setting: T.settinggettype;
   opticalrouteUpdateRoute: T.opticalrouteCreateRoute[];
   opticalrouteDeleteRoute: string;
