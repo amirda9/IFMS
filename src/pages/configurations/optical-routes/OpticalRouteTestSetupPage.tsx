@@ -4,6 +4,7 @@ import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {Link, Outlet, useParams} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
+import {$GET} from '~/util/requestapi';
 
 const columns = {
   name: {label: 'Name', size: 'w-[20%]', sort: true},
@@ -60,15 +61,14 @@ const OpticalRouteTestSetupPage: FC = () => {
     }[]
   >([]);
 
-
   const [selectedTab, setSelectedtab] = useState('Name');
   const {
     request,
-    state: {opticalrouteTestSetup,opticalrouteDeletTestsetup},
+    state: {opticalrouteTestSetup, opticalrouteDeletTestsetup},
   } = useHttpRequest({
     selector: state => ({
       opticalrouteTestSetup: state.http.opticalrouteTestSetup,
-      opticalrouteDeletTestsetup:state.http.opticalrouteDeletTestsetup
+      opticalrouteDeletTestsetup: state.http.opticalrouteDeletTestsetup,
     }),
     initialRequests: request => {
       request('opticalrouteTestSetup', {
@@ -87,19 +87,26 @@ const OpticalRouteTestSetupPage: FC = () => {
     },
   });
 
-console.log(opticalrouteTestSetup,'opticalrouteTestSetup🤡');
 
   useEffect(() => {
-    const all = opticalrouteTestSetup?.data?.map(data => ({
-      name: data.name,
-      type: data.type,
-      wavelength: data.wavelength,
-      rtu: data.rtu.name,
-      station: data.station.name,
-      detail:data.station.id,
-      delete:data.station.id,
-    })) || [];
-    setAllitems(all);
+    const getsetup = async () => {
+      const getdata = await $GET(
+        `otdr/optical-route/${params.opticalRouteId}/test-setups`,
+      );
+      console.log(getdata, 'getdata');
+      const all =
+        getdata?.map((data: any) => ({
+          name: data.name,
+          type: data.type,
+          wavelength: data.wavelength,
+          rtu: data.rtu.name,
+          station: data.station.name,
+          detail: data.id,
+          delete: data.id,
+        })) || [];
+      setAllitems(all);
+    };
+    getsetup();
   }, []);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
@@ -129,24 +136,26 @@ console.log(opticalrouteTestSetup,'opticalrouteTestSetup🤡');
       setAlldelets(prev => [...prev, id]);
     }
   };
- 
-  
-  const save=()=>{
-    request("opticalrouteDeletTestsetup",{params:{optical_route_id:params.opticalRouteId || ''},data:alldelets});
-    setAlldelets([])
-  }
-  
+
+  const save = () => {
+    request('opticalrouteDeletTestsetup', {
+      params: {optical_route_id: params.opticalRouteId || ''},
+      data: alldelets,
+    });
+    setAlldelets([]);
+  };
+
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex  flex-grow flex-col gap-y-4 pr-16">
-      <Link to={'create'}>
-      <BsPlusLg
-          size={25}
-          color="#18C047"
-          className=" absolute right-[30px]"
-        />
-      </Link>
-    
+        <Link to={'create'}>
+          <BsPlusLg
+            size={25}
+            color="#18C047"
+            className=" absolute right-[30px]"
+          />
+        </Link>
+
         <Table
           cols={columns}
           items={allitems}
@@ -157,8 +166,7 @@ console.log(opticalrouteTestSetup,'opticalrouteTestSetup🤡');
             setSelectedtab(tabname);
           }}
           dynamicColumns={['details', 'delete']}
-          renderDynamicColumn={({key, value}) => {    
-       
+          renderDynamicColumn={({key, value}) => {
             if (key === 'details')
               return (
                 <Link to={value.detail}>

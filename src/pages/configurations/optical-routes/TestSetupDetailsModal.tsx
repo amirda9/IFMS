@@ -15,7 +15,7 @@ const TestSetupDetailsModal: FC = () => {
   const {opticalroutUpdateTestsetupDetail} = useSelector(
     (state: any) => state.opticalroute,
   );
-  console.log(opticalroutUpdateTestsetupDetail,'🥵😄');
+   console.log(opticalroutUpdateTestsetupDetail,'🥵😄');
 
 
   const {
@@ -48,7 +48,7 @@ const TestSetupDetailsModal: FC = () => {
     // },
   });
 
-  console.log(params,'params');
+  // console.log(params,'params');
   // opticalRouteId
   // testId
  const createtestaetup=()=>{

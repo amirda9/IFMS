@@ -3,7 +3,13 @@ import {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {setopticalroutUpdateTestsetupDetail} from './../../../../store/slices/opticalroutslice';
-import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
+import {
+  ControlledSelect,
+  Description,
+  Select,
+  SimpleBtn,
+  TextInput,
+} from '~/components';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {$GET} from '~/util/requestapi';
@@ -26,6 +32,8 @@ const TestDetailsParameters: FC = () => {
   const [mount, setMount] = useState(false);
   const [rtulist, setRtulist] = useState<{name: string; id: string}[]>([]);
   const params = useParams();
+
+
   const dispatch = useDispatch();
   const {opticalroutUpdateTestsetupDetail} = useSelector(
     (state: any) => state.opticalroute,
@@ -61,30 +69,127 @@ const TestDetailsParameters: FC = () => {
     // },
   });
 
-  const Detail = opticalrouteTestSetupDetail?.data || {};
+
+
   useEffect(() => {
+    //First we check whether we want to create a testsetup or get the specifications of a testsetup.
     if (params.testId == 'create') {
+      dispatch(
+        setopticalroutUpdateTestsetupDetail({
+          name: '',
+          station_id: '',
+          station_name: '',
+          init_rtu_id: '',
+          init_rtu_name: '',
+          startdatePart: '',
+          starttimePart: '',
+          enddatePart: '',
+          endtimePart: '',
+          parameters: {
+            enabled: true,
+            type: 'monitoring',
+            wavelength: '1625',
+            break_strategy: 'skip',
+            date_save_policy: 'save',
+            test_mode: 'fast',
+            run_mode: 'average',
+            distance_mode: 'manual',
+            range: 3,
+            pulse_width_mode: 'manual',
+            pulse_width: 3,
+            sampling_mode: 'duration',
+            sampling_duration: 4,
+            IOR: 1.476,
+            RBS: -79,
+            event_loss_threshold: 0.05,
+            event_reflection_threshold: -40,
+            fiber_end_threshold: 5,
+            total_loss_threshold: 5,
+            section_loss_threshold: 5,
+            injection_level_threshold: 5,
+          },
+          learning_data: {
+            targeted_count_per_cycle: 30,
+            start_cycle_time: {
+              type: 'fixed',
+              time: '',
+              periodic_options: {
+                value: 0,
+                period_time: 'day',
+              },
+            },
+            increase_count_options: {
+              count: 2,
+              timing: {
+                type: 'fixed',
+                time: '',
+                periodic_options: {
+                  value: 0,
+                  period_time: 'day',
+                },
+              },
+              maximum_count: 60,
+            },
+          },
+          test_program: {
+            starting_date: {
+              immediately: false,
+            },
+            end_date: {
+              indefinite: true,
+            },
+            period_time: {
+              value: 0,
+              period_time: 'day',
+            },
+          },
+        }),
+      );
     } else {
-      const dataa = JSON.parse(JSON.stringify(Detail));
-      dataa.station_id = dataa?.station?.id;
-      (dataa.init_rtu_id = dataa?.rtu?.id),
-        dataa.startdatePart ==
-          seperatedate(dataa?.test_program?.starting_date?.start).datePart,
-        dataa.starttimePart ==
-          seperatedate(dataa?.test_program?.starting_date?.start).timePart,
-        dataa.enddatePart ==
-          seperatedate(dataa?.test_program?.end_date?.end).datePart,
-        dataa.starttimePart ==
-          seperatedate(dataa?.test_program?.end_date?.end).timePart,
-        delete dataa['station'];
-      delete dataa['rtu'];
-      dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+      const getdata = async () => {
+        const dataa = await $GET(
+          `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
+        );
+        console.log(dataa, 'dataadataadataa');
+
+        //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
+        const getrtu = async () => {
+          const allrtu = await $GET(`otdr/station/${dataa?.station?.id}/rtus`);
+          setRtulist(allrtu);
+        };
+
+        getrtu();
+
+        dataa.station_id = dataa?.station?.id;
+        (dataa.init_rtu_id = dataa?.rtu?.id),
+          //Because we do not have the name of the rtu, we have to find the desired rtu among the rtus and get its name because we need its name.
+          (dataa.init_rtu_name = rtulist.find(data => data.id == dataa?.rtu?.id)
+            ?.name);
+        dataa.station_name = stations?.data?.find(
+          data => data.id == dataa?.station?.id,
+        )?.name;
+        (dataa.startdatePart = seperatedate(
+          dataa?.test_program?.starting_date?.start,
+        ).datePart),
+          (dataa.starttimePart = seperatedate(
+            dataa?.test_program?.starting_date?.start,
+          ).timePart),
+          (dataa.enddatePart = seperatedate(
+            dataa?.test_program?.end_date?.end,
+          ).datePart),
+          (dataa.starttimePart = seperatedate(
+            dataa?.test_program?.end_date?.end,
+          ).timePart),
+          delete dataa['station'];
+        delete dataa['rtu'];
+        dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+      };
+      getdata();
     }
   }, []);
 
-  console.log(opticalroutUpdateTestsetupDetail,'opticalroutUpdateTestsetupDetail😄');
-  
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       name: opticalroutUpdateTestsetupDetail?.name || '',
       station: opticalroutUpdateTestsetupDetail?.station_name,
@@ -134,17 +239,7 @@ const TestDetailsParameters: FC = () => {
     onSubmit: () => {},
   });
 
-  useEffect(() => {
-    const getrtu = async () => {
-      const allrtu = await $GET(
-        `otdr/station/${opticalroutUpdateTestsetupDetail?.station_id.toString()}/rtus`,
-      );
-      setRtulist(allrtu);
-    };
-    if (opticalroutUpdateTestsetupDetail?.station_id?.length > 0) {
-      getrtu();
-    }
-  }, []);
+  // ###################################################################################
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -154,6 +249,7 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Name">
             <InputFormik
+              defaultValue={opticalroutUpdateTestsetupDetail?.name}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -180,10 +276,7 @@ const TestDetailsParameters: FC = () => {
                 dataa.parameters.enabled = e.target.value;
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
-              value={
-                opticalroutUpdateTestsetupDetail?.data?.parameters?.enabled ||
-                false
-              }
+              value={formik.values.enabled || false}
               className="basis-96">
               <option value="" className="hidden">
                 {opticalrouteTestSetupDetail?.data?.parameters?.enabled ||
@@ -216,7 +309,7 @@ const TestDetailsParameters: FC = () => {
                 dataa.parameters.type = e.target.value;
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
-              value={opticalroutUpdateTestsetupDetail?.parameters?.type}
+              value={formik.values.type}
               className="basis-96">
               <option value="" className="hidden">
                 {formik.values.type}
@@ -238,13 +331,8 @@ const TestDetailsParameters: FC = () => {
             className="flex justify-between"
             labelClassName="flex-grow"
             label="Station">
-            {/* <InputFormik
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName="w-full"
-              name="station"
-            /> */}
             <Select
-              value={opticalroutUpdateTestsetupDetail?.parameters?.station_name}
+              value={formik.values.station}
               onChange={async e => {
                 formik.setFieldValue(
                   'station',
@@ -259,7 +347,6 @@ const TestDetailsParameters: FC = () => {
                 );
                 dataa.station_name = e.target.value.split('_')[0].toString();
                 dataa.station_id = e.target.value.split('_')[1].toString();
-                console.log(e.target.value.split('_')[0].toString(), '🥶');
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                 const allrtu = await $GET(
                   `otdr/station/${e.target.value
@@ -276,7 +363,7 @@ const TestDetailsParameters: FC = () => {
                 {formik.values.station}
               </option>
 
-              {stations?.data?.map((data, index) => (
+              {stations?.data?.map((data, index: number) => (
                 <option
                   value={`${data.name}_${data.id}`}
                   key={index}
@@ -306,7 +393,6 @@ const TestDetailsParameters: FC = () => {
                 );
                 dataa.init_rtu_name = e.target.value.split('_')[0].toString();
                 dataa.init_rtu_id = e.target.value.split('_')[1].toString();
-                console.log(e.target.value.split('_')[0].toString(), '🥶');
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
               value={opticalroutUpdateTestsetupDetail.init_rtu_name}
@@ -816,6 +902,7 @@ const TestDetailsParameters: FC = () => {
               type="number"
             />
           </Description>
+
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
