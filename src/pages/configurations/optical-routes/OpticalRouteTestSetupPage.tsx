@@ -87,6 +87,7 @@ const OpticalRouteTestSetupPage: FC = () => {
     },
   });
 
+console.log(opticalrouteTestSetup,'opticalrouteTestSetup🤡');
 
   useEffect(() => {
     const all = opticalrouteTestSetup?.data?.map(data => ({
@@ -98,7 +99,7 @@ const OpticalRouteTestSetupPage: FC = () => {
       detail:data.station.id,
       delete:data.station.id,
     })) || [];
-    setAllitems(items);
+    setAllitems(all);
   }, []);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {

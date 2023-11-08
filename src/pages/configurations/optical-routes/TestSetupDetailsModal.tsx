@@ -64,7 +64,7 @@ const TestSetupDetailsModal: FC = () => {
   delete newdata.init_rtu_name,
 console.log(newdata,'newdata');
 
- request("opticalrouteCreateTestSetup",{params:{optical_route_id:params.opticalRouteId || "",test_setup_id:params.testId || ""},data:newdata})
+ request("opticalrouteCreateTestSetup",{params:{optical_route_id:params.opticalRouteId || ""},data:newdata})
  }
 
   return (

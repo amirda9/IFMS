@@ -549,7 +549,7 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   },
   opticalrouteCreateTestSetup: {
     url: api.BASE_URL + api.URLS.otdr.opticalroute.opticalrouteCreateTestSetup,
-    method: 'put',
+    method: 'post',
     auth: true,
   },
   SettingsGet: {
@@ -824,7 +824,7 @@ export type RequestListTypes = {
     params: {optical_route_id: string; test_setup_id: string};
   };
   opticalrouteCreateTestSetup: {
-    params: {optical_route_id: string; test_setup_id: string};
+    params: {optical_route_id: string};
     data: {
       name: string;
       station_id: string;

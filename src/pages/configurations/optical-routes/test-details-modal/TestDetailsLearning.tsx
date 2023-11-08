@@ -66,7 +66,7 @@ const TestDetailsLearning: FC = () => {
   });
 
   function RadioButton({name}: any) {
-    let data = name == 'On' ? 'fixed' : '';
+    let data = name == 'On' ? 'fixed' : 'periodic';
     return (
       <div className="flex flex-row items-center">
         <button
@@ -93,7 +93,7 @@ const TestDetailsLearning: FC = () => {
   }
 
   function RadioButton2({name}: any) {
-    let data = name == 'On' ? 'fixed' : '';
+    let data = name == 'On' ? 'fixed' : 'periodic';
     return (
       <div className="flex flex-row items-center">
         <button
