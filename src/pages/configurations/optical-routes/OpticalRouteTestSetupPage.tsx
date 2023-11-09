@@ -64,31 +64,17 @@ const OpticalRouteTestSetupPage: FC = () => {
   const [selectedTab, setSelectedtab] = useState('Name');
   const {
     request,
-    state: {opticalrouteTestSetup, opticalrouteDeletTestsetup},
+    state
   } = useHttpRequest({
     selector: state => ({
-      opticalrouteTestSetup: state.http.opticalrouteTestSetup,
-      opticalrouteDeletTestsetup: state.http.opticalrouteDeletTestsetup,
     }),
     initialRequests: request => {
-      request('opticalrouteTestSetup', {
-        params: {optical_route_id: params.opticalRouteId || ''},
-      });
+
     },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.opticalrouteDeletTestsetup?.httpRequestStatus === 'loading' &&
-        state.opticalrouteDeletTestsetup!.httpRequestStatus === 'success'
-      ) {
-        request('opticalrouteTestSetup', {
-          params: {optical_route_id: params.opticalRouteId || ''},
-        });
-      }
-    },
+ 
   });
 
-
-  useEffect(() => {
+  const Getsetup=()=>{
     const getsetup = async () => {
       const getdata = await $GET(
         `otdr/optical-route/${params.opticalRouteId}/test-setups`,
@@ -107,6 +93,10 @@ const OpticalRouteTestSetupPage: FC = () => {
       setAllitems(all);
     };
     getsetup();
+  }
+
+  useEffect(() => {
+    Getsetup()
   }, []);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
@@ -143,6 +133,7 @@ const OpticalRouteTestSetupPage: FC = () => {
       data: alldelets,
     });
     setAlldelets([]);
+    Getsetup()
   };
 
   return (
@@ -186,7 +177,7 @@ const OpticalRouteTestSetupPage: FC = () => {
           bordered
         />
       </div>
-      <div className="flex flex-row gap-x-4 self-end">
+      <div className="flex flex-row gap-x-4 self-end mt-[20px]">
         <SimpleBtn onClick={save}>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
