@@ -26,26 +26,28 @@ const TestSetupDetailsModal: FC = () => {
       stationrtulist: state.http.stationrtuList,
       stations: state.http.allStations,
       opticalrouteTestSetupDetail: state.http.opticalrouteTestSetupDetail,
+      opticalrouteCreateTestSetup: state.http.opticalrouteCreateTestSetup,
+      
     }),
     initialRequests: request => {
-      // request('opticalrouteTestSetupDetail', {
-      //   params: {
-      //     optical_route_id: params.opticalRouteId || '',
-      //     test_setup_id: params.testId || '',
-      //   },
-      // });
+      request('opticalrouteTestSetupDetail', {
+        params: {
+          optical_route_id: params.opticalRouteId || '',
+          test_setup_id: params.testId || '',
+        },
+      });
 
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.opticalrouteDeletTestsetup?.httpRequestStatus === 'loading' &&
-    //     state.opticalrouteDeletTestsetup!.httpRequestStatus === 'success'
-    //   ) {
-    //     request('opticalrouteTestSetup', {
-    //       params: {optical_route_id: params.opticalRouteId || ''},
-    //     });
-    //   }
-    // },
+    onUpdate: (lastState, state) => {
+      if (
+        lastState.opticalrouteCreateTestSetup?.httpRequestStatus === 'loading' &&
+        state.opticalrouteCreateTestSetup!.httpRequestStatus === 'success'
+      ) {
+        request('opticalrouteTestSetup', {
+          params: {optical_route_id: params.opticalRouteId || ''},
+        });
+      }
+    },
   });
 
   // console.log(params,'params');

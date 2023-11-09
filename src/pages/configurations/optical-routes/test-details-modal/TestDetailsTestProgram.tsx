@@ -46,22 +46,32 @@ const TestDetailsTestProgram: FC = () => {
       setSelectedradio(prev => [...prev, 'Indefinite']);
     }
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
-    let a = opticalrouteTestSetupDetail?.data?.test_program?.period_time || '';
-    var firstLetter = a.charAt(0);
-    var firstLetterUpper = firstLetter.toUpperCase();
-    var restOfStr = a.slice(1);
-    var result = firstLetterUpper + restOfStr;
+    let a = opticalrouteTestSetupDetail?.data?.test_program?.period_time?.period_time.toString() || '';
+    let result;
+    if(a == "month"){
+      result="Monthly"
+    }else if(a == "year"){
+      result ="Yearly"
+    }else if (a == "day"){
+      result="Daily"
+    }else if (a == "hour"){
+      result="Hourly"
+    }else{
+      result="Every"
+    }
     setSelectedradio2(result);
 
   }, []);
+console.log(selectedradio2,'selectedradio2🤩');
 
   const formik = useFormik({
+    enableReinitialize:true,
     initialValues: {
       startingdateStart: seperatedate(
-        opticalroutUpdateTestsetupDetail?.test_program?.starting_date.start,
+        opticalroutUpdateTestsetupDetail?.test_program?.starting_date?.start,
       ).datePart,
       startingdateStarttime: seperatedate(
-        opticalroutUpdateTestsetupDetail?.test_program?.starting_date.start,
+        opticalroutUpdateTestsetupDetail?.test_program?.starting_date?.start,
       ).timePart,
       immediately:
         opticalroutUpdateTestsetupDetail?.test_program?.starting_date
@@ -161,6 +171,8 @@ const TestDetailsTestProgram: FC = () => {
     );
   }
 
+  console.log(opticalroutUpdateTestsetupDetail,'💝');
+  
   return (
     <div className="flex flex-col gap-y-8">
       <Description label="Starting Date">

@@ -15,6 +15,7 @@ import {useHttpRequest} from '~/hooks';
 import {$GET} from '~/util/requestapi';
 
 const seperatedate = (time: string) => {
+  //this func get full date and seoerate data and time
   let date = new Date(time);
   let year = date?.getFullYear(); // year = 2023
   let month = date?.getMonth() + 1; // month = 11
@@ -150,7 +151,7 @@ const TestDetailsParameters: FC = () => {
         const dataa = await $GET(
           `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
         );
-        console.log(dataa, 'dataadataadataa');
+        console.log(dataa, 'dataadataadataallll');
 
         //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
         const getrtu = async () => {
@@ -168,18 +169,25 @@ const TestDetailsParameters: FC = () => {
         dataa.station_name = stations?.data?.find(
           data => data.id == dataa?.station?.id,
         )?.name;
+
         (dataa.startdatePart = seperatedate(
           dataa?.test_program?.starting_date?.start,
         ).datePart),
+
           (dataa.starttimePart = seperatedate(
             dataa?.test_program?.starting_date?.start,
           ).timePart),
+
+          (dataa.endtimePart = seperatedate(
+            dataa?.test_program?.end_date
+            ?.end,
+          ).timePart),
+
           (dataa.enddatePart = seperatedate(
             dataa?.test_program?.end_date?.end,
           ).datePart),
-          (dataa.starttimePart = seperatedate(
-            dataa?.test_program?.end_date?.end,
-          ).timePart),
+
+  
           delete dataa['station'];
         delete dataa['rtu'];
         dispatch(setopticalroutUpdateTestsetupDetail(dataa));

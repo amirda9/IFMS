@@ -7,6 +7,7 @@ import {InputFormik} from '~/container';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 const TestDetailsLearning: FC = () => {
+  //This function changes the period that comes from the backend, for example, it changes month to Monthly
  const convertperiod=(str:string)=>{
   let firstLetter = str.charAt(0);
   let firstLetterUpper = firstLetter.toUpperCase();
@@ -24,6 +25,21 @@ const TestDetailsLearning: FC = () => {
   const [selectedradio2, setSelectedradio2] = useState('On');
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
+  useEffect(()=>{
+    const incresetype=opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing?.type
+
+    const starttype=opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.type
+    if(starttype != "periodic"){
+    setSelectedradio("On")
+    }else{
+      setSelectedradio("Every")
+    }
+    if(incresetype != "periodic"){
+      setSelectedradio2("On")
+    }else{
+      setSelectedradio2("Every")
+    }
+    },[])
 
   const formik = useFormik({
     initialValues: {
@@ -119,7 +135,6 @@ const TestDetailsLearning: FC = () => {
     );
   }
 
-// console.log(opticalroutUpdateTestsetupDetail.learning_data.increase_count_options.maximum_coun,'yyytt');
 
 
   return (
