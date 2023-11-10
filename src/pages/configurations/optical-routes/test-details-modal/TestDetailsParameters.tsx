@@ -14,6 +14,7 @@ import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {$GET} from '~/util/requestapi';
 
+
 const seperatedate = (time: string) => {
   //this func get full date and seoerate data and time
   let date = new Date(time);
@@ -33,7 +34,6 @@ const TestDetailsParameters: FC = () => {
   const [mount, setMount] = useState(false);
   const [rtulist, setRtulist] = useState<{name: string; id: string}[]>([]);
   const params = useParams();
-
 
   const dispatch = useDispatch();
   const {opticalroutUpdateTestsetupDetail} = useSelector(
@@ -71,88 +71,26 @@ const TestDetailsParameters: FC = () => {
   });
 
 
-
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
     if (params.testId == 'create') {
-      dispatch(
-        setopticalroutUpdateTestsetupDetail({
-          name: '',
-          station_id: '',
-          station_name: '',
-          init_rtu_id: '',
-          init_rtu_name: '',
-          startdatePart: '',
-          starttimePart: '',
-          enddatePart: '',
-          endtimePart: '',
-          parameters: {
-            enabled: true,
-            type: 'monitoring',
-            wavelength: '1625',
-            break_strategy: 'skip',
-            date_save_policy: 'save',
-            test_mode: 'fast',
-            run_mode: 'average',
-            distance_mode: 'manual',
-            range: 3,
-            pulse_width_mode: 'manual',
-            pulse_width: 3,
-            sampling_mode: 'duration',
-            sampling_duration: 4,
-            IOR: 1.476,
-            RBS: -79,
-            event_loss_threshold: 0.05,
-            event_reflection_threshold: -40,
-            fiber_end_threshold: 5,
-            total_loss_threshold: 5,
-            section_loss_threshold: 5,
-            injection_level_threshold: 5,
-          },
-          learning_data: {
-            targeted_count_per_cycle: 30,
-            start_cycle_time: {
-              type: 'fixed',
-              time: '',
-              periodic_options: {
-                value: 0,
-                period_time: 'day',
-              },
-            },
-            increase_count_options: {
-              count: 2,
-              timing: {
-                type: 'fixed',
-                time: '',
-                periodic_options: {
-                  value: 0,
-                  period_time: 'day',
-                },
-              },
-              maximum_count: 60,
-            },
-          },
-          test_program: {
-            starting_date: {
-              immediately: false,
-            },
-            end_date: {
-              indefinite: true,
-            },
-            period_time: {
-              value: 0,
-              period_time: 'day',
-            },
-          },
-        }),
-      );
+    
     } else {
       const getdata = async () => {
         const dataa = await $GET(
           `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
         );
-        console.log(dataa, 'dataadataadataallll');
-
+   
+        let checkstartend = Number(
+          seperatedate(dataa?.test_program?.end_date?.end).timePart.split(
+            ':',
+          )[0],
+        );
+        let checkstartstart = Number(
+          seperatedate(
+            dataa?.test_program?.starting_date?.start,
+          ).timePart.split(':')[0],
+        );
         //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
         const getrtu = async () => {
           const allrtu = await $GET(`otdr/station/${dataa?.station?.id}/rtus`);
@@ -173,21 +111,28 @@ const TestDetailsParameters: FC = () => {
         (dataa.startdatePart = seperatedate(
           dataa?.test_program?.starting_date?.start,
         ).datePart),
-
-          (dataa.starttimePart = seperatedate(
-            dataa?.test_program?.starting_date?.start,
-          ).timePart),
-
-          (dataa.endtimePart = seperatedate(
-            dataa?.test_program?.end_date
-            ?.end,
-          ).timePart),
-
+          //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
+          (dataa.starttimePart =
+            checkstartstart < 10
+              ? `0${checkstartstart}:${
+                  seperatedate(
+                    dataa?.test_program?.starting_date?.start,
+                  ).timePart.split(':')[1]
+                }`
+              : seperatedate(dataa?.test_program?.starting_date?.start)
+                  .timePart),
+          //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
+          (dataa.endtimePart =
+            checkstartend < 10
+              ? `0${checkstartend}:${
+                  seperatedate(
+                    dataa?.test_program?.end_date?.end,
+                  ).timePart.split(':')[1]
+                }`
+              : seperatedate(dataa?.test_program?.end_date?.end).timePart),
           (dataa.enddatePart = seperatedate(
             dataa?.test_program?.end_date?.end,
           ).datePart),
-
-  
           delete dataa['station'];
         delete dataa['rtu'];
         dispatch(setopticalroutUpdateTestsetupDetail(dataa));

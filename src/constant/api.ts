@@ -91,7 +91,9 @@ export const URLS = {
       opticalrouteTestSetup:"/otdr/optical-route/{optical_route_id}/test-setups",
       opticalrouteDeletTestsetup:"/otdr/optical-route/{optical_route_id}/test-setups",
       opticalrouteTestSetupDetail:"/otdr/optical-route/{optical_route_id}/test-setups/{test_setup_id}",
-      opticalrouteCreateTestSetup:"/otdr/optical-route/{optical_route_id}/test-setups"
+      opticalrouteCreateTestSetup:"/otdr/optical-route/{optical_route_id}/test-setups",
+      opticalrouteUpdateTestSetup:"/otdr/optical-route/{optical_route_id}/test-setups/{test_setup_id}",
+
     },
     setting:{
       SettingsGet:'/otdr/settings/app-settings',

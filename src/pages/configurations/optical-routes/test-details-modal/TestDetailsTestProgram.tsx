@@ -37,8 +37,7 @@ const TestDetailsTestProgram: FC = () => {
 
   useEffect(() => {
     if (
-      opticalrouteTestSetupDetail?.data?.test_program?.starting_date
-        ?.immediately
+      opticalroutUpdateTestsetupDetail?.test_program?.starting_date?.immediately
     ) {
       setSelectedradio(prev => [...prev, 'As Soon As Possible']);
     }
@@ -46,7 +45,7 @@ const TestDetailsTestProgram: FC = () => {
       setSelectedradio(prev => [...prev, 'Indefinite']);
     }
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
-    let a = opticalrouteTestSetupDetail?.data?.test_program?.period_time?.period_time.toString() || '';
+    let a = opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time.toString() || '';
     let result;
     if(a == "month"){
       result="Monthly"
@@ -62,7 +61,7 @@ const TestDetailsTestProgram: FC = () => {
     setSelectedradio2(result);
 
   }, []);
-console.log(selectedradio2,'selectedradio2🤩');
+
 
   const formik = useFormik({
     enableReinitialize:true,
@@ -143,7 +142,7 @@ console.log(selectedradio2,'selectedradio2🤩');
                 name.toLocaleLowerCase(),
               );
               let Name=name.toLowerCase()
-              console.log(Name,'Name');
+        
               let newName;
               if(Name == "every"){
                 newName ="every"
@@ -152,7 +151,7 @@ console.log(selectedradio2,'selectedradio2🤩');
               }else {
                 newName=Name.slice(0,-2)
               }
-              console.log(newName,'newName');
+          
               
             dataa.test_program.period_time.period_time = newName;
 
@@ -171,7 +170,7 @@ console.log(selectedradio2,'selectedradio2🤩');
     );
   }
 
-  console.log(opticalroutUpdateTestsetupDetail,'💝');
+
   
   return (
     <div className="flex flex-col gap-y-8">
