@@ -1,5 +1,5 @@
 import {Form, FormikProvider, useFormik} from 'formik';
-
+import * as Yup from 'yup';
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
 import {
@@ -13,6 +13,15 @@ import Checkbox from '~/components/checkbox/checkbox';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
+
+const rtuSchema = Yup.object().shape({
+  name: Yup.string().required('Please enter name'),
+  OTDRFIRST:Yup.string().required('Please enter OTDR IP'),
+  SWITCHFIRST:Yup.string().required('Please enter Switch IP'),
+  SubnetMask:Yup.string().required('Please enter Subnet Mask'),
+  DefaultGateway:Yup.string().required('Please enter Default Gateway'),
+});
+
 type Rowtext = {
   name: string;
   value: string;
@@ -31,7 +40,6 @@ const Rowtext = ({name, value}: Rowtext) => {
 
 const RtuDetailsPage: FC = () => {
   const params = useParams();
-  console.log(params.rtuId, 'idd');
 
   const {
     state: {rtuDetail, users},
@@ -45,8 +53,7 @@ const RtuDetailsPage: FC = () => {
     initialRequests: request => {
       request('rtuDetail', {params: {rtu_Id: params.rtuId || ''}});
 
-        request('userList', undefined);
-
+      request('userList', undefined);
     },
     onUpdate: (lastState, state) => {
       if (
@@ -56,21 +63,12 @@ const RtuDetailsPage: FC = () => {
         request('rtuDetail', {params: {rtu_Id: params.rtuId || ''}});
       }
     },
-    // onUpdate: lastState => {
-    //   if (
-    //     lastState.create?.httpRequestStatus === 'loading' &&
-    //     create?.httpRequestStatus === 'success'
-    //   ) {
-    //     request('allLinks', undefined);
-    //     // navigate('../' + create?.data?.link_id);
-    //   }
-    // },
   });
 
-  console.log(rtuDetail?.data, 'rtuDetailrtuDetail');
 
   const formik = useFormik({
-    enableReinitialize:true,
+    validationSchema:rtuSchema,
+    enableReinitialize: true,
     initialValues: {
       name: rtuDetail?.data?.name || '',
       OTDRSECEND: rtuDetail?.data?.otdr_port || 0,
@@ -89,23 +87,24 @@ const RtuDetailsPage: FC = () => {
       } || {id: '', username: ''},
     },
     onSubmit: () => {
-   
-      request("rtuUpdate",{ params: {rtu_id: params.rtuId || ''},
-    data:{
-      name:formik.values.name,
-      model: formik.values.model,
-      station_id:rtuDetail?.data?.station_id || "",
-      contact_person_id:rtuDetail?.data?.contact_person_id || "",
-      otdr_ip:formik.values.OTDRFIRST,
-      otdr_port: formik.values.OTDRSECEND,
-      switch_ip: formik.values.SWITCHFIRST,
-      switch_port: formik.values.SWITCHSECEND,
-      subnet_mask: formik.values.SubnetMask,
-      default_gateway: formik.values.DefaultGateway
-    }})
+      request('rtuUpdate', {
+        params: {rtu_id: params.rtuId || ''},
+        data: {
+          name: formik.values.name,
+          model: formik.values.model,
+          station_id: rtuDetail?.data?.station_id || '',
+          contact_person_id: rtuDetail?.data?.contact_person_id || '',
+          otdr_ip: formik.values.OTDRFIRST,
+          otdr_port: formik.values.OTDRSECEND,
+          switch_ip: formik.values.SWITCHFIRST,
+          switch_port: formik.values.SWITCHSECEND,
+          subnet_mask: formik.values.SubnetMask,
+          default_gateway: formik.values.DefaultGateway,
+        },
+      });
     },
   });
-  console.log(formik.values, 'fff');
+
   const Users = users?.data || [];
   return (
     <div className="flex flex-grow">
@@ -124,16 +123,14 @@ const RtuDetailsPage: FC = () => {
             <Description
               labelClassName="text-[18px] font-light leading-[24.2px] mb-[4px]"
               label="Model">
-                <Select
-                onChange={e =>
-                  formik.setFieldValue('model', e.target.value)
-                }
+              <Select
+                onChange={e => formik.setFieldValue('model', e.target.value)}
                 className="w-[400px]">
                 <option value="" className="hidden">
-                {rtuDetail?.data?.model || ""}
+                  {rtuDetail?.data?.model || ''}
                 </option>
                 <option value={undefined} className="hidden">
-                {rtuDetail?.data?.model || ""}
+                  {rtuDetail?.data?.model || ''}
                 </option>
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   model1
@@ -141,9 +138,7 @@ const RtuDetailsPage: FC = () => {
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   model2
                 </option>
-            
               </Select>
-
             </Description>
             <Description
               labelClassName="text-[18px] font-light leading-[24.2px] mb-[4px]"
@@ -154,29 +149,21 @@ const RtuDetailsPage: FC = () => {
                 }
                 className="w-[400px]">
                 <option value="" className="hidden">
-                {rtuDetail?.data?.contact_person?.username || ""}
+                  {rtuDetail?.data?.contact_person?.username || ''}
                 </option>
                 <option value={undefined} className="hidden">
-                {rtuDetail?.data?.contact_person?.username || ""}
+                  {rtuDetail?.data?.contact_person?.username || ''}
                 </option>
                 {Users.map((data, index) => (
                   <option
-                  key={index}
+                    key={index}
                     value={data.id}
                     className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                     {data.username}
                   </option>
                 ))}
               </Select>
-              {/* <ControlledSelect
-              defaultValue={"uu"}
-              placeholder='lll'
-                options={[{label: 'User2rr'},{label: 'User2'}]}
-                onChange={value => {
-                  formik.setFieldValue('contactUser', value);
-                }}
-                className="w-[400px] text-[18px] font-light leading-[24.2px]"
-              /> */}
+     
             </Description>
             <div className="mb-[4px] flex w-full flex-row">
               <div className="flex w-[50%] flex-row xl:w-[500px]">
@@ -226,10 +213,9 @@ const RtuDetailsPage: FC = () => {
                   label="Subnet Mask">
                   <InputFormik
                     defaultValue={formik.values.SubnetMask}
-                    name="Subnet Mask"
+                    name="SubnetMask"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                     onChange={value => {
-                      console.log(value);
                       formik.setFieldValue('SubnetMask', value);
                     }}
                   />
