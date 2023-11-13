@@ -1,19 +1,81 @@
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {Select, SimpleBtn} from '~/components';
-import RouteItem from './RouteItem';
 import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
-import {ControlledSelect} from '~/components';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
-import Selectbox from '~/components/selectbox/selectbox';
-import {number} from 'yup';
+import {$GET} from '~/util/requestapi';
+// ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
   classname: string;
   onclick: Function;
 };
+type allroutestype = {
+  index: number;
+  new: boolean;
+  link_id: string;
+  cable: string;
+  core: number | string;
+  id: string;
+  source: {
+    id: string;
+    name: string;
+  };
+  destination: {
+    id: string;
+    name: string;
+  };
+};
+type allselectedsourcetype = {
+  index: number;
+  sourceId: string;
+  linkId: string;
+  cableid: string;
+  data: {
+    id: string;
+    name: string;
+    network_id: string;
+    version_id: string;
+    time_created: string;
+    time_updated: string;
+    region_id: string;
+    source: {
+      id: string;
+      name: string;
+    };
+    destination: {
+      id: string;
+      name: string;
+    };
+  }[];
+  cableandducts: {
+    cables: null | {id: string; number_of_cores: number}[];
+    ducts:
+      | null
+      | {
+          id: string;
+          mini_ducts: {id: string; number_of_fibers: number}[];
+        }[];
+  };
+};
+type allcreatedroutestype = {
+  index: number;
+  link_id: string;
+  cable: string;
+  core: number;
+};
+
+type allupdatedroutestype = {
+  index: number;
+  link_id: string;
+  id: string;
+  cable: string;
+  core: number;
+};
+
+// ---- component ------ component -----------------component-------------------------------
 const Addbox = ({classname, onclick}: Iprops) => {
   return (
     <div
@@ -27,41 +89,65 @@ const Addbox = ({classname, onclick}: Iprops) => {
     </div>
   );
 };
+
+
+// ------------main ---------------main -------------------main ------------main -----------
 const OpticalRouteRoutePage: FC = () => {
   const params = useParams();
   const networkId = Cookies.get(networkExplored);
-  const [allroutes, setAllroutes] = useState<
-    {
-      index:number;
-      new:boolean;
-      link_id: string;
-      cable: string;
-      core: number;
-      id: string;
-      source: {
-        id: string;
-        name: string;
-      };
-      destination: {
-        id: string;
-        name: string;
-      };
-    }[]
-  >([]);
+
+  const [allroutes, setAllroutes] = useState<allroutestype[]>([]);
   const [alldeleteroutes, setAllDeleteroutes] = useState<string[]>([]);
 
   const [allselectedsource, setAllselectedsource] = useState<
-    {index: number; id: string; data: {}}[]
+    allselectedsourcetype[]
   >([]);
+
   const [allcreatedroutes, setAllCreatedroutes] = useState<
-    {
-      index: number;
-      link_id: string;
-      cable: string;
-      core: number;
-    }[]
+    allcreatedroutestype[]
   >([]);
-  const [allupdatedroutes, setAllUpdatedroutes] = useState<string[]>([]);
+  const [allupdatedroutes, setAllUpdatedroutes] = useState<
+    allupdatedroutestype[]
+  >([]);
+  // -------------------- func ------------------------ func -------------------------- func ------------
+  const fndseletedsource = (index: number) => {
+    const data = allselectedsource?.find((data: any) => data.index == index);
+    return data;
+  };
+
+  const fndseletedsourceIndex = (index: number) => {
+    const data = allselectedsource?.findIndex(
+      (data: any) => data.index == index,
+    );
+    return data;
+  };
+
+  const finrouteIndex = (index: number) => {
+    const data = allroutes?.findIndex((data: any) => data.index == index);
+    return data;
+  };
+  const finroute = (index: number) => {
+    const data = allroutes?.find((data: any) => data.index == index);
+    return data;
+  };
+
+  const findcreatedroutindex = (index: number) => {
+    const data = allcreatedroutes.findIndex(data => data.index == index);
+    return data;
+  };
+  const findupdatedindex = (index: number) => {
+    const data = allupdatedroutes.findIndex(data => data.index == index);
+    return data;
+  };
+  const createlistocore = (x: number) => {
+    let data = [];
+    for (let i = 1; i < x + 1; i++) {
+      data.push(i);
+    }
+    return data;
+  };
+  // ------------------------------------------------------------
+
   const {
     request,
     state: {opticalrouteRoute, stations},
@@ -71,54 +157,473 @@ const OpticalRouteRoutePage: FC = () => {
       stations: state.http.allStations,
     }),
     initialRequests: request => {
-      // if (list?.httpRequestStatus !== 'success') {
-      request('opticalrouteRoute', {
-        params: {optical_route_id: params.opticalRouteId || ''},
-      });
       if (networkId) {
         request('allStations', undefined);
       }
-      // }
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.deleteRequest?.httpRequestStatus === 'loading' &&
-    //     state.deleteRequest!.httpRequestStatus === 'success'
-    //   ) {
-    //     request('networkList', undefined);
-    //   }
-    // },
   });
-  // console.log(opticalrouteRoute, 'opticalrouteRoute😵‍💫');
 
-  const add = (index:number) => {
-    setAllroutes(prev => [...prev,    {
-      index:index,
-      new:true,
-      link_id: "",
-      cable: "",
-      core: 0,
-      id: "",
-      source: {
-        id: "",
-        name: "",
+  const add = (index: number) => {
+    setAllroutes(prev => [
+      ...prev,
+      {
+        index: index,
+        new: true,
+        link_id: '',
+        cable: '',
+        core: 0,
+        id: '',
+        source: {
+          id: '',
+          name: '',
+        },
+        destination: {
+          id: '',
+          name: '',
+        },
       },
-      destination: {
-        id: "",
-        name: ""
-      }
-    }]);
+    ]);
   };
 
-  const deleteroute = (id: string) => {
-    let finddataindex = alldeleteroutes.findIndex(data => data == id);
-    if (finddataindex > -1) {
+  const deleteroute = (index: number, id: string) => {
+    const old = JSON.parse(JSON.stringify(allroutes));
+    const findroute = finrouteIndex(index);
+    if (old[findroute].new) {
+      //first check if the route is new we dont need to send delete request api and we just delete that from front
+      const newroutsdata = old.filter((data: any) => data.index != index);
+      setAllroutes(newroutsdata);
+      // ------------------------
+      const oldcreated = JSON.parse(JSON.stringify(allcreatedroutes));
+      const newdata = oldcreated.filter((data: any) => data.index != index);
+      setAllCreatedroutes(newdata);
     } else {
-      setAllDeleteroutes(prev => [...prev, id]);
+      let finddataindex = alldeleteroutes.findIndex(data => data == id);
+      if (finddataindex > -1) {
+      } else {
+        setAllDeleteroutes(prev => [...prev, id]);
+      }
     }
   };
 
-  console.log(stations, 'params😵‍💫🤑');
+  const onclicksource = async (id: string, index: number, name: string) => {
+    // ---------------------------------------------------------------------------------
+    // We first find the desired route among all the routes and change the name of its source station
+    const finddataaallroutesindex = finrouteIndex(index);
+    let oldallroutesindex = JSON.parse(JSON.stringify(allroutes));
+    oldallroutesindex[finddataaallroutesindex].source.name = name;
+    setAllroutes(oldallroutesindex);
+    // ---------------------------------------------------------------------------------------
+    //Here we save the source and the links related to this source.
+    const finddataaindex = fndseletedsourceIndex(index);
+    if (finddataaindex > -1) {
+      let old = JSON.parse(JSON.stringify(allselectedsource));
+      old[finddataaindex] = {
+        index: index,
+        sourceId: id,
+        linkId: '',
+        data: [],
+        cableid: '',
+        cableandducts: {},
+      };
+      setAllselectedsource(old);
+    } else {
+      setAllselectedsource(prev => [
+        ...prev,
+        {
+          cableid: '',
+          index: index,
+          sourceId: id,
+          linkId: '',
+          data: [],
+          cableandducts: {cables: null, ducts: null},
+        },
+      ]);
+    }
+    // ----------------------------------------------------------
+    //firse find the route among allroutese
+    const findroute = finroute(index);
+    //we chek that this route is new rout or not
+    if (findroute?.new) {
+      //If this route was new, we would add it to the list of routes that need to be created.
+      const findincreatedrouteid = findcreatedroutindex(index);
+
+      if (findincreatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallcreatedroutes = [...allcreatedroutes];
+        oldallcreatedroutes[findincreatedrouteid] = {
+          index: index,
+          link_id: '',
+          cable: '',
+          core: 0,
+        };
+        setAllCreatedroutes(oldallcreatedroutes);
+      } else {
+        setAllCreatedroutes(prev => [
+          ...prev,
+          {
+            index: index,
+            link_id: '',
+            cable: '',
+            core: 0,
+          },
+        ]);
+      }
+    } else {
+      //If this route was not new, we would add it to the list of routes that need to be updated.
+      const findinupdatedrouteid = findupdatedindex(index);
+
+      if (findinupdatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallupdatedroutes = [...allupdatedroutes];
+        oldallupdatedroutes[findinupdatedrouteid] = {
+          id: allupdatedroutes[findinupdatedrouteid].id,
+          index: index,
+          link_id: '',
+          cable: '',
+          core: 0,
+        };
+        setAllUpdatedroutes(oldallupdatedroutes);
+      } else {
+        setAllUpdatedroutes(prev => [
+          ...prev,
+          {
+            id: oldallroutesindex[finddataaallroutesindex].id,
+            index: index,
+            link_id: '',
+            cable: '',
+            core: 0,
+          },
+        ]);
+      }
+    }
+  };
+
+  const onclickdestination = async (index: number) => {
+    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const findroute = fndseletedsourceIndex(index);
+    if (findroute > -1) {
+      //We first get the list of links that have the same source as the desired source.
+      const getdata = await $GET(
+        `otdr/link/network/${networkId}?source_id=${old[findroute].sourceId}`,
+      );
+
+      old[findroute].data = getdata;
+      setAllselectedsource(old);
+    }
+  };
+
+  const onclickcabel = async (index: number) => {
+    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const findroute = fndseletedsourceIndex(index);
+    if (findroute > -1) {
+      //We get the link specifications because we need the cable and duct specifications of it.
+      const getdata = await $GET(`otdr/link/${old[findroute].linkId}`);
+      let cables =
+        getdata?.data?.cables == null
+          ? null
+          : getdata.data.cables.map((data: any) => ({
+              id: data.id,
+              number_of_cores: data.number_of_cores,
+            }));
+      let ducts =
+        getdata.data.ducts == null
+          ? null
+          : getdata.data.ducts.map((data: any) => ({
+              id: data.id,
+              mini_ducts: data.mini_ducts,
+            }));
+      old[findroute].cableandducts = {cables: cables, ducts: ducts};
+      setAllselectedsource(old);
+    }
+  };
+
+  const onchangecabel = (index: number, value: string) => {
+    // ----------1 ------------------------1 ------------------
+    // We first find the desired route among all the routes and change the name of its cabel
+    const finddataaallroutesindex = finrouteIndex(index);
+    let oldallroutesindex = JSON.parse(JSON.stringify(allroutes));
+    oldallroutesindex[finddataaallroutesindex].cable = value;
+    setAllroutes(oldallroutesindex);
+    // -----------------2-------------------2-------------------2-----
+    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const findselectedroute = fndseletedsourceIndex(index);
+    old[findselectedroute].cableid = value;
+    console.log(old, 'oldold');
+
+    setAllselectedsource(old);
+    // ------------ 3------------------------- 3-----------
+    //firse find the route among allroutese
+    const findroute = finroute(index);
+    //we chek that this route is new rout or not
+    if (findroute?.new) {
+      //If this route was new, we would add it to the list of routes that need to be created.
+      const findincreatedrouteid = findcreatedroutindex(index);
+
+      if (findincreatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallcreatedroutes = [...allcreatedroutes];
+        oldallcreatedroutes[findincreatedrouteid] = {
+          index: index,
+          link_id: allcreatedroutes[findincreatedrouteid].link_id,
+          cable: value,
+          core: allcreatedroutes[findincreatedrouteid].core,
+        };
+        setAllCreatedroutes(oldallcreatedroutes);
+      } else {
+        setAllCreatedroutes(prev => [
+          ...prev,
+          {
+            index: index,
+            link_id: '',
+            cable: value,
+            core: 0,
+          },
+        ]);
+      }
+    } else {
+      //If this route was not new, we would add it to the list of routes that need to be updated.
+      const findinupdatedrouteid = findupdatedindex(index);
+
+      if (findinupdatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallupdatedroutes = [...allupdatedroutes];
+        oldallupdatedroutes[findinupdatedrouteid] = {
+          id: allupdatedroutes[findinupdatedrouteid].id,
+          index: index,
+          link_id: allupdatedroutes[findinupdatedrouteid].link_id,
+          cable: value,
+          core: allupdatedroutes[findinupdatedrouteid].core,
+        };
+        setAllUpdatedroutes(oldallupdatedroutes);
+      } else {
+        setAllUpdatedroutes(prev => [
+          ...prev,
+          {
+            id: oldallroutesindex[finddataaallroutesindex].id,
+            index: index,
+            link_id: oldallroutesindex[finddataaallroutesindex].link_id,
+            cable: value,
+            core: oldallroutesindex[finddataaallroutesindex].core,
+          },
+        ]);
+      }
+    }
+  };
+
+  const onchangedestination = async (index: number, id: string) => {
+    // --------------------------1-------------------1 -----------------
+    // We first find the desired route among all the routes and change the name of its destination station
+    const finddataaallroutesindex = finrouteIndex(index);
+    console.log(finddataaallroutesindex, 'find');
+
+    let oldallroutesindex = JSON.parse(JSON.stringify(allroutes));
+    oldallroutesindex[finddataaallroutesindex].destination.name =
+      id.split('_')[1];
+    setAllroutes(oldallroutesindex);
+    // --------------------------2------------------2------------------
+    let olddata = JSON.parse(JSON.stringify(allselectedsource));
+    let finselected = fndseletedsourceIndex(index);
+
+    olddata[finselected] = {
+      index: index,
+      sourceId: olddata[finselected]?.sourceId,
+      linkId: id.split('_')[0],
+      data: olddata[finselected]?.data,
+      cableandducts: olddata[finselected]?.cableandducts,
+    };
+    // console.log(id.split('_')[1], 'uuuuoooooo');
+
+    setAllselectedsource(olddata);
+    // --------3-----------------------3------------------3---------------3----
+    //firse find the route among allroutese
+    const findroute = finroute(index);
+    //we chek that this route is new rout or not
+    if (findroute?.new) {
+      //If this route was new, we would add it to the list of routes that need to be created.
+      const findincreatedrouteid = findcreatedroutindex(index);
+
+      if (findincreatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallcreatedroutes = [...allcreatedroutes];
+        oldallcreatedroutes[findincreatedrouteid] = {
+          index: index,
+          link_id: id.split('_')[0],
+          cable: '',
+          core: 0,
+        };
+        setAllCreatedroutes(oldallcreatedroutes);
+      } else {
+        setAllCreatedroutes(prev => [
+          ...prev,
+          {
+            index: index,
+            link_id: id.split('_')[0],
+            cable: '',
+            core: 0,
+          },
+        ]);
+      }
+    } else {
+      //If this route was not new, we would add it to the list of routes that need to be updated.
+      const findinupdatedrouteid = findupdatedindex(index);
+
+      if (findinupdatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallupdatedroutes = [...allupdatedroutes];
+        oldallupdatedroutes[findinupdatedrouteid] = {
+          id: allupdatedroutes[findinupdatedrouteid].id,
+          index: index,
+          link_id: id.split('_')[0],
+          cable: '',
+          core: 0,
+        };
+        setAllUpdatedroutes(oldallupdatedroutes);
+      } else {
+        setAllUpdatedroutes(prev => [
+          ...prev,
+          {
+            id: oldallroutesindex[finddataaallroutesindex].id,
+            index: index,
+            link_id: id.split('_')[0],
+            cable: '',
+            core: 0,
+          },
+        ]);
+      }
+    }
+  };
+
+  const onclickcore = async (index: number) => {
+    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const findroute = fndseletedsourceIndex(index);
+    if (findroute > -1) {
+      //We get the link specifications because we need the cable and duct specifications of it.
+      const getdata = await $GET(`otdr/link/${old[findroute].linkId}`);
+      let cables =
+        getdata.data.cables == null
+          ? null
+          : getdata.data.cables.map((data: any) => ({
+              id: data.id,
+              number_of_cores: data.number_of_cores,
+            }));
+      let ducts =
+        getdata.data.ducts == null
+          ? null
+          : getdata.data.ducts.map((data: any) => ({
+              id: data.id,
+              mini_ducts: data.mini_ducts,
+            }));
+      old[findroute].cableandducts = {cables: cables, ducts: ducts};
+      setAllselectedsource(old);
+    }
+  };
+  const onchangecore = async (index: number, value: string) => {
+    const old = JSON.parse(JSON.stringify(allroutes));
+    const findrouteindex = finrouteIndex(index);
+    old[findrouteindex].core = value;
+    setAllroutes(old);
+    const findroute = finroute(index);
+    //we chek that this route is new rout or not
+    if (findroute?.new) {
+      //If this route was new, we would add it to the list of routes that need to be created.
+      const findincreatedrouteid = findcreatedroutindex(index);
+
+      if (findincreatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallcreatedroutes = [...allcreatedroutes];
+        oldallcreatedroutes[findincreatedrouteid] = {
+          index: index,
+          link_id: allcreatedroutes[findincreatedrouteid].link_id,
+          cable: allcreatedroutes[findincreatedrouteid].cable,
+          core:
+            value.indexOf('-') > -1
+              ? Number(value.split('-')[1])
+              : Number(value),
+        };
+        setAllCreatedroutes(oldallcreatedroutes);
+      } else {
+        setAllCreatedroutes(prev => [
+          ...prev,
+          {
+            index: index,
+            link_id: '',
+            cable: '',
+            core:
+              value.indexOf('-') > -1
+                ? Number(value.split('-')[1])
+                : Number(value),
+          },
+        ]);
+      }
+    } else {
+      //If this route was not new, we would add it to the list of routes that need to be updated.
+      const findinupdatedrouteid = findupdatedindex(index);
+
+      if (findinupdatedrouteid > -1) {
+        //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
+        let oldallupdatedroutes = [...allupdatedroutes];
+        oldallupdatedroutes[findinupdatedrouteid] = {
+          id: allupdatedroutes[findinupdatedrouteid].id,
+          index: index,
+          link_id: allupdatedroutes[findinupdatedrouteid].link_id,
+          cable: allupdatedroutes[findinupdatedrouteid].cable,
+          core:
+            value.indexOf('-') > -1
+              ? Number(value.split('-')[1])
+              : Number(value),
+        };
+        setAllUpdatedroutes(oldallupdatedroutes);
+      } else {
+        setAllUpdatedroutes(prev => [
+          ...prev,
+          {
+            id: '',
+            index: index,
+            link_id: '',
+            cable: '',
+            core:
+              value.indexOf('-') > -1
+                ? Number(value.split('-')[1])
+                : Number(value),
+          },
+        ]);
+      }
+    }
+  };
+
+  const getallroute = async () => {
+    const allroutes = await $GET(
+      `otdr/optical-route/${params.opticalRouteId || ''}/routes`,
+    );
+    setAllroutes(
+      allroutes.map((data: any, index: any) => ({
+        index: Number(index),
+        ...data,
+      })),
+    );
+    setAllselectedsource([]);
+    for (let i = 0; i < allroutes.length; i++) {
+      setAllselectedsource(prev => [
+        ...prev,
+        {
+          index: Number(i),
+          sourceId: allroutes[i].source.id,
+          linkId: allroutes[i].link_id,
+          cableid: allroutes[i].cable,
+          data: [],
+          cableandducts: {
+            cables: null,
+            ducts: null,
+          },
+        },
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    getallroute();
+  }, []);
+
   const save = () => {
     if (alldeleteroutes.length > 0) {
       request('opticalrouteDeleteRoute', {
@@ -126,72 +631,31 @@ const OpticalRouteRoutePage: FC = () => {
         data: alldeleteroutes,
       });
     }
-  };
-
-  const setallupdatedroutid = (id: string) => {
-    const findupdated = allupdatedroutes.findIndex(data => data == id);
-    if (findupdated > -1) {
-    } else {
-      setAllUpdatedroutes(prev => [...prev]);
-    }
-  };
-
-  const onclicksource = (id: string, index: number,name:string) => {
-    const finddataaallroutesindex = allroutes.findIndex(
-      data => data.index == index,
-    );
-    let oldallroutesindex=JSON.parse(JSON.stringify(allroutes))
-    oldallroutesindex[finddataaallroutesindex].source.name=name
-    setAllroutes(oldallroutesindex)
-
-
-    const finddataaindex = allselectedsource.findIndex(
-      data => data.index == index,
-    );
-    if (finddataaindex > -1) {
-      let old = JSON.parse(JSON.stringify(allselectedsource));
-      old[finddataaindex] = {index: index, id: id, data: {}};
-      setAllselectedsource(old);
-    } else {
-      setAllselectedsource(prev => [...prev, {index: index, id: id, data: {}}]);
-    }
-  };
-
-  console.log(allroutes,'allroutesallroutesallroutes');
-  
-  const onclickdestination = (index: number) => {
-    const finddataaindex = allselectedsource.findIndex(
-      data => data.index == index,
-    );
-    if (finddataaindex > -1) {
+    if (allcreatedroutes.length > 0) {
+      request('opticalrouteCreateRoute', {
+        params: {optical_route_id: params.opticalRouteId || ''},
+        data: allcreatedroutes.map(data => ({
+          link_id: data.link_id,
+          cable: data.cable,
+          core: data.core,
+        })),
+      });
     }
 
-
-    const findincreatedrouteid = allcreatedroutes.findIndex(
-      data => data.index == index,
-    );
-
-    if (findincreatedrouteid > -1) {
-      let oldallcreatedroutes = [...allcreatedroutes];
-      oldallcreatedroutes[findincreatedrouteid] = {
-        index: index,
-        link_id: '',
-        cable: '',
-        core: 0,
-      };
-      setAllCreatedroutes(oldallcreatedroutes);
-    } else {
-      setAllCreatedroutes(prev => [
-        ...prev,
-        {
-          index: index,
-          link_id: '',
-          cable: '',
-          core: 0,
-        },
-      ]);
+    if (allupdatedroutes.length > 0) {
+      request('opticalrouteUpdateRoute', {
+        params: {optical_route_id: params.opticalRouteId || ''},
+        data: allupdatedroutes.map(data => ({
+          link_id: data.link_id,
+          cable: data.cable,
+          core: data.core,
+          id: data.id,
+        })),
+      });
     }
+    getallroute();
   };
+  // ###################################################################################################
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex w-10/12 flex-grow flex-col gap-y-4">
@@ -212,74 +676,128 @@ const OpticalRouteRoutePage: FC = () => {
           <span className="basis-10"></span>
         </div>
         {allroutes.map((data, index) => (
-          <div className="flex items-center gap-x-4 rounded-lg bg-arioCyan p-4">
-            <span className="basis-10">{index}</span>
+          <div
+            key={index}
+            className="flex items-center gap-x-4 rounded-lg bg-arioCyan p-4">
+            <span className="basis-10">{index+1}</span>
             <div className="flex-1">
               <Select
-                onChange={e => onclicksource(e.target.value.split("_")[0], index,e.target.value.split("_")[1])}
+                onChange={e =>
+                  onclicksource(
+                    e.target.value.split('_')[0],
+                    index,
+                    e.target.value.split('_')[1],
+                  )
+                }
                 className="w-full text-[20px] leading-[24.2px]">
                 <option value="" className="hidden">
-                  select
+                  {data.source.name}
                 </option>
                 <option value={undefined} className="hidden">
-                  select
+                  {data.source.name}
                 </option>
                 {stations?.data?.map(data => (
                   <option value={`${data.id}_${data.name}`}>{data.name}</option>
                 ))}
               </Select>
             </div>
+
             <div className="flex-1">
               <Select
                 onClick={() => onclickdestination(index)}
-                onChange={e => {}}
+                onChange={e => onchangedestination(index, e.target.value)}
                 className="w-full text-[20px] leading-[24.2px]">
                 <option value="" className="hidden">
-                  select
+                  {fndseletedsource(index)?.linkId == ''
+                    ? ''
+                    : data.destination.name}
                 </option>
                 <option value={undefined} className="hidden">
-                  select
+                  {fndseletedsource(index)?.linkId == ''
+                    ? ''
+                    : data.destination.name}{' '}
                 </option>
 
-                {[{label: 'Station 1'}, {label: 'Station 2'}].map(data => (
-                  <option>{data.label}</option>
+                {fndseletedsource(index)?.data.map(data => (
+                  <option value={`${data.id}_${data?.destination.name}`}>
+                    {data?.destination.name}
+                  </option>
                 ))}
               </Select>
             </div>
+
             <div className="flex-1">
               <Select
-                onChange={e => {}}
+                defaultValue="kklklk"
+                onClick={() => onclickcabel(index)}
+                onChange={e => onchangecabel(index, e.target.value)}
                 className="w-full text-[20px] leading-[24.2px]">
                 <option value="" className="hidden">
-                  select
+                  {findupdatedindex(index) > -1
+                    ? allupdatedroutes[index].cable
+                    : findcreatedroutindex(index) > -1
+                    ? allcreatedroutes[index]?.cable
+                    : data?.cable}{' '}
                 </option>
                 <option value={undefined} className="hidden">
-                  select
+                  {findupdatedindex(index) > -1
+                    ? allupdatedroutes[index].cable
+                    : findcreatedroutindex(index) > -1
+                    ? allcreatedroutes[index]?.cable
+                    : data?.cable}
                 </option>
-                {[{label: 'Cable 1'}, {label: 'Cable 2'}].map(data => (
-                  <option>{data.label}</option>
-                ))}
+
+                {fndseletedsource(index)?.cableandducts?.cables == null
+                  ? fndseletedsource(index)?.cableandducts?.cables?.map(
+                      data => <option value={data.id}>{data.id}</option>,
+                    )
+                  : fndseletedsource(index)?.cableandducts?.ducts?.map(data => (
+                      <option value={data.id}>{data.id}</option>
+                    ))}
               </Select>
             </div>
+
             <div className="basis-30">
               <Select
-                onChange={e => {}}
+                onClick={() => onclickcore(index)}
+                onChange={e => onchangecore(index, e.target.value)}
                 className="w-full text-[20px] leading-[24.2px]">
                 <option value="" className="hidden">
-                  select
+                  {findupdatedindex(index) > -1
+                    ? allupdatedroutes[index].core
+                    : findcreatedroutindex(index) > -1
+                    ? allcreatedroutes[index]?.core
+                    : data?.core}
                 </option>
                 <option value={undefined} className="hidden">
-                  select
+                  {findupdatedindex(index) > -1
+                    ? allupdatedroutes[index].core
+                    : findcreatedroutindex(index) > -1
+                    ? allcreatedroutes[index]?.core
+                    : data?.core}
                 </option>
-                {[{label: 'Fiber 1'}, {label: 'Fiber 2'}].map(data => (
-                  <option>{data.label}</option>
-                ))}
+                {fndseletedsource(index)?.cableandducts?.cables == null
+                  ? createlistocore(
+                      Number(
+                        fndseletedsource(index)?.cableandducts?.cables?.find(
+                          data => data.id == fndseletedsource(index)?.cableid,
+                        )?.number_of_cores,
+                      ),
+                    ).map(data => <option>{data}</option>)
+                  : fndseletedsource(index)
+                      ?.cableandducts?.ducts?.find(
+                        data => data.id == fndseletedsource(index)?.cableid,
+                      )
+                      ?.mini_ducts.map(data => (
+                        <option
+                          value={`${data.id}-${data.number_of_fibers}`}>{`${data.id}-${data.number_of_fibers}`}</option>
+                      ))}
               </Select>
             </div>
             <div className="basis-10">
               <IoTrashOutline
-                onClick={() => deleteroute(index.toString())}
-                className="text-red-500"
+                onClick={() => deleteroute(index, data.id)}
+                className="cursor-pointer text-red-500"
                 size={24}
               />
             </div>
