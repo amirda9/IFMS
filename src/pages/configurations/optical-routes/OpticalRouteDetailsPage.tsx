@@ -1,11 +1,17 @@
 import dayjs from 'dayjs';
-import {Form, FormikProvider, useFormik} from 'formik';
+import {Form, FormikProvider, useFormik, validateYupSchema} from 'formik';
 import {FC} from 'react';
+import * as Yup from 'yup';
 import {useParams} from 'react-router-dom';
 import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
+
+const Schema = Yup.object().shape({
+  name: Yup.string().required('Please enter name'),
+  avg_hellix_factor: Yup.string().required('Please enter avg_hellix_factor'),
+});
 
 const OpticalRouteDetailsPage: FC = () => {
   const params = useParams();
@@ -24,17 +30,10 @@ const OpticalRouteDetailsPage: FC = () => {
       });
       // }
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.deleteRequest?.httpRequestStatus === 'loading' &&
-    //     state.deleteRequest!.httpRequestStatus === 'success'
-    //   ) {
-    //     request('networkList', undefined);
-    //   }
-    // },
   });
-  // console.log(opticalrouteDetail?.data,'opticalrouteDetail');
+
   const formik = useFormik({
+    validationSchema:Schema,
     enableReinitialize: true,
     initialValues: {
       name: opticalrouteDetail?.data?.name,
@@ -51,6 +50,7 @@ const OpticalRouteDetailsPage: FC = () => {
       time_updated: opticalrouteDetail?.data?.time_updated,
     },
     onSubmit: () => {
+      
       request('opticalrouteUpdate', {
         params: {optical_route_id: params.opticalRouteId || ''},
         data: {
@@ -64,7 +64,6 @@ const OpticalRouteDetailsPage: FC = () => {
     },
   });
 
-  console.log(formik.values, 'uuu');
 
   return (
     <div className="flex flex-grow flex-col">
@@ -126,6 +125,9 @@ const OpticalRouteDetailsPage: FC = () => {
             <div className="flex flex-row items-center">
               <Description label="Avg. Helix Factor">
                 <InputFormik
+                  min={1}
+                  max={1.5}
+                  step={0.01}
                   name="avg_hellix_factor"
                   className="w-[13rem]"
                   type="number"
