@@ -349,10 +349,10 @@ const TestDetailsParameters: FC = () => {
               value={opticalroutUpdateTestsetupDetail.init_rtu_name}
               className="basis-96">
               <option value="" className="hidden">
-                {formik.values.init_rtu_name}
+                {opticalroutUpdateTestsetupDetail?.init_rtu_name}
               </option>
               <option value={undefined} className="hidden">
-                {formik.values.init_rtu_name}
+                {opticalroutUpdateTestsetupDetail?.init_rtu_name}
               </option>
 
               {rtulist.map((data, index) => (

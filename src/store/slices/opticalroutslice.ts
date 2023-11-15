@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType'
-import { object } from 'yup';
+import { object, string } from 'yup';
 type veiwerlists = {
   payload: opticalrouteUpdateTestSetupDetailtype | {};
   type: string;
@@ -65,9 +65,11 @@ const initialState = {
     },
     test_program: {
       starting_date: {
+        start:"",
         immediately: false
       },
       end_date: {
+        end:"",
         indefinite: true
       },
       period_time: {

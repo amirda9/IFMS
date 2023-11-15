@@ -54,6 +54,12 @@ const [validateeror,setvalidateeror]=useState(false)
     const newdata = JSON.parse(
       JSON.stringify(opticalroutUpdateTestsetupDetail),
     );
+   if(opticalroutUpdateTestsetupDetail?.parameters?.distance_mode != "manual"){
+delete newdata?.parameters?.range
+   }
+   if(opticalroutUpdateTestsetupDetail?.parameters?.pulse_width_mode != "manual"){
+    delete newdata?.parameters?.pulse_width
+   }
     newdata.test_program.starting_date.start = convertDate(
       newdata?.startdatePart,
       newdata?.starttimePart,
@@ -116,6 +122,8 @@ const [validateeror,setvalidateeror]=useState(false)
    
   };
 
+  console.log(opticalrouteTestSetupDetail,'opticalrouteTestSetupDetail');
+  
   return (
     <AppDialog
       footerClassName="flex justify-end"
