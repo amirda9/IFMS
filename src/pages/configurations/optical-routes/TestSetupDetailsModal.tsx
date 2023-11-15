@@ -60,6 +60,9 @@ delete newdata?.parameters?.range
    if(opticalroutUpdateTestsetupDetail?.parameters?.pulse_width_mode != "manual"){
     delete newdata?.parameters?.pulse_width
    }
+   if(opticalroutUpdateTestsetupDetail?.parameters?.sampling_mode == "automatic"){
+    delete newdata?.parameters?.sampling_duration
+   }
     newdata.test_program.starting_date.start = convertDate(
       newdata?.startdatePart,
       newdata?.starttimePart,
@@ -92,8 +95,7 @@ delete newdata?.parameters?.range
       newdata.learning_data.increase_count_options.timing.type == '' ||
       newdata.learning_data.increase_count_options.timing.periodic_options
         .period_time == '' ||
-      !newdata.learning_data.increase_count_options.timing.periodic_options
-        .value ||  newdata.test_program.end_date.end == "" ||newdata.test_program.period_time.period_time == "" || !newdata.test_program.period_time.value
+        newdata.test_program.end_date.end == "" ||newdata.test_program.period_time.period_time == "" || !newdata.test_program.period_time.value
         || newdata.test_program.starting_date.start == "" || !newdata.parameters.injection_level_threshold ||
         !newdata.parameters.section_loss_threshold || !newdata.parameters.total_loss_threshold || !newdata.parameters.fiber_end_threshold
         || !newdata.parameters.event_reflection_threshold || !newdata.parameters.event_loss_threshold || !newdata.parameters.RBS || !newdata.parameters.IOR
