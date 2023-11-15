@@ -131,6 +131,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name="Helix Factor">
         <TextInput
+        min={1}
+        max={1.5}
+        step={0.01}
           value={helixfactor}
           onChange={e => setHelixfactor(Number(e.target.value))}
           className="w-full"
@@ -141,6 +144,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name={`IOR for 1310 nm wavelength`}>
         <TextInput
+           min={1.3}
+           max={1.8}
+           step={0.000001}
           onChange={e => {
             const old = {...ior};
             old[1310] = Number(e.target.value);
@@ -156,6 +162,9 @@ const OpticalRoutePage = () => {
       </Rowinput>
       <Rowinput name={`IOR for 1490 nm wavelength`}>
         <TextInput
+          min={-90}
+          max={-40}
+          step={0.01}
           onChange={e => {
             const old = {...ior};
             old[1490] = Number(e.target.value);

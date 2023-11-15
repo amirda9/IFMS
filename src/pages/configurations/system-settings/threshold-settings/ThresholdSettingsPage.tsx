@@ -113,6 +113,9 @@ const ThresholdSettingsPage = () => {
         </Rowinput>
         <Rowinput name="Total Loss (dB)">
           <TextInput
+           min={0}
+           max={40}
+           step={0.01}
             value={threshold_setting.total_loss}
             onChange={e => {
               let old = {...threshold_setting};
@@ -127,6 +130,9 @@ const ThresholdSettingsPage = () => {
 
         <Rowinput name="Section Loss (dB)">
           <TextInput
+           min={0}
+           max={40}
+           step={0.01}
             value={threshold_setting.section_loss}
             onChange={e => {
               let old = {...threshold_setting};
@@ -140,6 +146,9 @@ const ThresholdSettingsPage = () => {
         </Rowinput>
         <Rowinput name="Event Loss (dB)">
           <TextInput
+           min={0}
+           max={9.99}
+           step={0.1}
             value={threshold_setting.event_loss}
             onChange={e => {
               let old = {...threshold_setting};
@@ -153,6 +162,9 @@ const ThresholdSettingsPage = () => {
         </Rowinput>
         <Rowinput name="Event Reflectance (dB)">
           <TextInput
+              min={-65}
+              max={-14}
+              step={0.1}
             value={threshold_setting.event_reflectance}
             onChange={e => {
               let old = {...threshold_setting};
@@ -166,6 +178,8 @@ const ThresholdSettingsPage = () => {
         </Rowinput>
         <Rowinput name="Injection Level (dB)">
           <TextInput
+             min={0}
+             step={0.01}
             value={threshold_setting.injection_level}
             onChange={e => {
               let old = {...threshold_setting};
