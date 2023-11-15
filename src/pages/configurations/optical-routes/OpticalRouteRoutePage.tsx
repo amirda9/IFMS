@@ -49,7 +49,7 @@ type allselectedsourcetype = {
       id: string;
       name: string;
     };
-  }[];
+  }[] | [];
   cableandducts: {
     cables: null | {id: string; number_of_cores: number}[];
     ducts:
@@ -58,7 +58,7 @@ type allselectedsourcetype = {
           id: string;
           mini_ducts: {id: string; number_of_fibers: number}[];
         }[];
-  };
+  } | {cables:null,ducts:null};
 };
 type allcreatedroutestype = {
   index: number;
@@ -90,7 +90,6 @@ const Addbox = ({classname, onclick}: Iprops) => {
   );
 };
 
-
 // ------------main ---------------main -------------------main ------------main -----------
 const OpticalRouteRoutePage: FC = () => {
   const params = useParams();
@@ -109,6 +108,10 @@ const OpticalRouteRoutePage: FC = () => {
   const [allupdatedroutes, setAllUpdatedroutes] = useState<
     allupdatedroutestype[]
   >([]);
+
+  console.log(allselectedsource, 'allselectedsourceallselectedsource');
+  console.log(allroutes, 'allroutes');
+
   // -------------------- func ------------------------ func -------------------------- func ------------
   const fndseletedsource = (index: number) => {
     const data = allselectedsource?.find((data: any) => data.index == index);
@@ -174,8 +177,16 @@ const OpticalRouteRoutePage: FC = () => {
         core: 0,
         id: '',
         source: {
-          id: '',
-          name: '',
+          id:
+            index == 0
+              ? ''
+              : allroutes?.find(data => data.index == index - 1)?.destination
+                  ?.id || '',
+          name:
+            index == 0
+              ? ''
+              : allroutes?.find(data => data.index == index - 1)?.destination
+                  ?.name || '',
         },
         destination: {
           id: '',
@@ -183,6 +194,24 @@ const OpticalRouteRoutePage: FC = () => {
         },
       },
     ]);
+    if (allroutes.length > 0) {
+      setAllselectedsource(prev => [
+        ...prev,
+        {
+          index: index,
+          cableid:"",
+          sourceId:
+            index == 0
+              ? ''
+              : allroutes?.find(data => data.index == index - 1)?.destination
+                  ?.id || '',
+          linkId: '',
+          data: [],
+          cableandducts: {cables:null,ducts:null},
+          
+        }
+      ]);
+    }
   };
 
   const deleteroute = (index: number, id: string) => {
@@ -419,6 +448,14 @@ const OpticalRouteRoutePage: FC = () => {
     let oldallroutesindex = JSON.parse(JSON.stringify(allroutes));
     oldallroutesindex[finddataaallroutesindex].destination.name =
       id.split('_')[1];
+      oldallroutesindex[finddataaallroutesindex].destination.id =
+      id.split('_')[2];
+    if (allroutes.length > index + 1) {
+      oldallroutesindex[finddataaallroutesindex + 1].source.id =
+        id.split('_')[2];
+      oldallroutesindex[finddataaallroutesindex + 1].source.name =
+        id.split('_')[1];
+    }
     setAllroutes(oldallroutesindex);
     // --------------------------2------------------2------------------
     let olddata = JSON.parse(JSON.stringify(allselectedsource));
@@ -431,6 +468,17 @@ const OpticalRouteRoutePage: FC = () => {
       data: olddata[finselected]?.data,
       cableandducts: olddata[finselected]?.cableandducts,
     };
+    if (allroutes.length > index + 1) {
+      let finselectednext = fndseletedsourceIndex(index + 1);
+      olddata[index + 1] = {
+        index: index + 1,
+        sourceId: id.split('_')[2],
+        linkId: olddata[index + 1]?.link_id || '',
+        data: olddata[index + 1]?.data,
+        cableandducts: olddata[index + 1]?.cableandducts,
+      };
+    }
+
     // console.log(id.split('_')[1], 'uuuuoooooo');
 
     setAllselectedsource(olddata);
@@ -658,7 +706,7 @@ const OpticalRouteRoutePage: FC = () => {
   // ###################################################################################################
   return (
     <div className="flex flex-grow flex-col">
-      <div className="relative flex w-10/12 flex-grow flex-col gap-y-4">
+      <div className="relative flex w-11/12 flex-grow flex-col gap-y-4">
         <div className="flex gap-x-4 px-4">
           <span className="basis-10"></span>
           <span className="flex-1 text-[20px] leading-[24.2px]">
@@ -679,15 +727,19 @@ const OpticalRouteRoutePage: FC = () => {
           <div
             key={index}
             className="flex items-center gap-x-4 rounded-lg bg-arioCyan p-4">
-            <span className="basis-10">{index+1}</span>
-            <div className="flex-1">
+            <span className="basis-10">{index + 1}</span>
+            <div className="w-[25%]">
               <Select
-                onChange={e =>
-                  onclicksource(
-                    e.target.value.split('_')[0],
-                    index,
-                    e.target.value.split('_')[1],
-                  )
+                onChange={
+                  index == 0
+                    ? e => {
+                        onclicksource(
+                          e.target.value.split('_')[0],
+                          index,
+                          e.target.value.split('_')[1],
+                        );
+                      }
+                    : () => {}
                 }
                 className="w-full text-[20px] leading-[24.2px]">
                 <option value="" className="hidden">
@@ -696,13 +748,16 @@ const OpticalRouteRoutePage: FC = () => {
                 <option value={undefined} className="hidden">
                   {data.source.name}
                 </option>
-                {stations?.data?.map(data => (
-                  <option value={`${data.id}_${data.name}`}>{data.name}</option>
-                ))}
+                {index == 0 &&
+                  stations?.data?.map(data => (
+                    <option value={`${data.id}_${data.name}`}>
+                      {data.name}
+                    </option>
+                  ))}
               </Select>
             </div>
 
-            <div className="flex-1">
+            <div className="w-[25%]">
               <Select
                 onClick={() => onclickdestination(index)}
                 onChange={e => onchangedestination(index, e.target.value)}
@@ -718,15 +773,16 @@ const OpticalRouteRoutePage: FC = () => {
                     : data.destination.name}{' '}
                 </option>
 
-                {fndseletedsource(index)?.data.map(data => (
-                  <option value={`${data.id}_${data?.destination.name}`}>
+                {fndseletedsource(index)?.data?.map(data => (
+                  <option
+                    value={`${data.id}_${data?.destination.name}_${data?.destination.id}`}>
                     {data?.destination.name}
                   </option>
                 ))}
               </Select>
             </div>
 
-            <div className="flex-1">
+            <div className="w-[25%]">
               <Select
                 defaultValue="kklklk"
                 onClick={() => onclickcabel(index)}
@@ -757,7 +813,7 @@ const OpticalRouteRoutePage: FC = () => {
               </Select>
             </div>
 
-            <div className="basis-30">
+            <div className="w-[150px]">
               <Select
                 onClick={() => onclickcore(index)}
                 onChange={e => onchangecore(index, e.target.value)}
@@ -794,7 +850,7 @@ const OpticalRouteRoutePage: FC = () => {
                       ))}
               </Select>
             </div>
-            <div className="basis-10">
+            <div className="w-[150px]">
               <IoTrashOutline
                 onClick={() => deleteroute(index, data.id)}
                 className="cursor-pointer text-red-500"
