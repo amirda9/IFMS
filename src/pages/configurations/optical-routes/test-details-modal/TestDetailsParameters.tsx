@@ -14,7 +14,6 @@ import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {$GET} from '~/util/requestapi';
 
-
 const seperatedate = (time: string) => {
   //this func get full date and seoerate data and time
   let date = new Date(time);
@@ -70,17 +69,15 @@ const TestDetailsParameters: FC = () => {
     // },
   });
 
-
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
     if (params.testId == 'create') {
-    
     } else {
       const getdata = async () => {
         const dataa = await $GET(
           `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
         );
-   
+
         let checkstartend = Number(
           seperatedate(dataa?.test_program?.end_date?.end).timePart.split(
             ':',
@@ -191,7 +188,8 @@ const TestDetailsParameters: FC = () => {
 
     onSubmit: () => {},
   });
-
+  const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
+  const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
   // ###################################################################################
   return (
     <FormikProvider value={formik}>
@@ -566,36 +564,36 @@ const TestDetailsParameters: FC = () => {
             </Select>
           </Description>
 
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Range (km)">
-            <Select
-              onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
-                );
-                formik.setFieldValue('Range', e.target.value.toString());
-                dataa.parameters.range = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-              }}
-              value={opticalroutUpdateTestsetupDetail?.parameters?.range}
-              className="basis-96">
-              <option value="" className="hidden">
-                {formik.values.Range}
-              </option>
-              <option value={undefined} className="hidden">
-                {formik.values.Range}
-              </option>
-
-              <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                3
-              </option>
-              <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                4
-              </option>
-            </Select>
-          </Description>
+          {formik.values.DistanceMode == 'manual' ? (
+            <Description
+              className="flex justify-between"
+              labelClassName="flex-grow"
+              label="Range (km)">
+              <Select
+                onChange={e => {
+                  const dataa = JSON.parse(
+                    JSON.stringify(opticalroutUpdateTestsetupDetail),
+                  );
+                  formik.setFieldValue('Range', e.target.value.toString());
+                  dataa.parameters.range = e.target.value;
+                  dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                }}
+                value={opticalroutUpdateTestsetupDetail?.parameters?.range}
+                className="basis-96">
+                <option value="" className="hidden">
+                  {formik.values.Range}
+                </option>
+                <option value={undefined} className="hidden">
+                  {formik.values.Range}
+                </option>
+                {rangeoptions.map(data => (
+                  <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    {data}
+                  </option>
+                ))}
+              </Select>
+            </Description>
+          ) : null}
 
           <Description
             className="flex justify-between"
@@ -632,37 +630,41 @@ const TestDetailsParameters: FC = () => {
               </option>
             </Select>
           </Description>
-
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Pulse Width (ns)">
-            <Select
-              onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
-                );
-                formik.setFieldValue('PulseWidthns', e.target.value.toString());
-                dataa.parameters.pulse_width = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-              }}
-              value={opticalroutUpdateTestsetupDetail?.parameters?.pulse_width}
-              className="basis-96">
-              <option value="" className="hidden">
-                {formik.values.PulseWidthns}
-              </option>
-              <option value={undefined} className="hidden">
-                {formik.values.PulseWidthns}
-              </option>
-
-              <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                3
-              </option>
-              <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                4
-              </option>
-            </Select>
-          </Description>
+          {formik.values.PulseWidthMode == 'manual' ? (
+            <Description
+              className="flex justify-between"
+              labelClassName="flex-grow"
+              label="Pulse Width (ns)">
+              <Select
+                onChange={e => {
+                  const dataa = JSON.parse(
+                    JSON.stringify(opticalroutUpdateTestsetupDetail),
+                  );
+                  formik.setFieldValue(
+                    'PulseWidthns',
+                    e.target.value.toString(),
+                  );
+                  dataa.parameters.pulse_width = e.target.value;
+                  dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                }}
+                value={
+                  opticalroutUpdateTestsetupDetail?.parameters?.pulse_width
+                }
+                className="basis-96">
+                <option value="" className="hidden">
+                  {formik.values.PulseWidthns}
+                </option>
+                <option value={undefined} className="hidden">
+                  {formik.values.PulseWidthns}
+                </option>
+                {pluswidthoptions.map(data => (
+                  <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    {data}
+                  </option>
+                ))}
+              </Select>
+            </Description>
+          ) : null}
 
           <Description
             className="flex justify-between"
@@ -700,30 +702,39 @@ const TestDetailsParameters: FC = () => {
             </Select>
           </Description>
 
-          <Description
-            className="flex justify-between"
-            labelClassName="flex-grow"
-            label="Sampling Duration (s)">
-            <InputFormik
-              onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
-                );
-                dataa.parameters.sampling_duration = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-              }}
-              outerClassName="!flex-grow-0 w-96"
-              wrapperClassName="w-full"
-              name="samplingduration"
-              type="number"
-            />
-          </Description>
+          {formik.values.SamplingMode == 'automatic' ? null : (
+            <Description
+              className="flex justify-between"
+              labelClassName="flex-grow"
+              label={
+                formik.values.SamplingMode == 'repetition'
+                  ? 'Sampling repetition (s)'
+                  : 'Sampling Duration (s)'
+              }>
+              <InputFormik
+                onchange={e => {
+                  const dataa = JSON.parse(
+                    JSON.stringify(opticalroutUpdateTestsetupDetail),
+                  );
+                  dataa.parameters.sampling_duration = e.target.value;
+                  dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                }}
+                outerClassName="!flex-grow-0 w-96"
+                wrapperClassName="w-full"
+                name="samplingduration"
+                type="number"
+              />
+            </Description>
+          )}
 
           <Description
             className="flex justify-between"
             labelClassName="flex-grow"
             label="IOR">
             <InputFormik
+              min={1.3}
+              max={1.8}
+              step={0.000001}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -743,6 +754,9 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="RBS (dB)">
             <InputFormik
+              min={-90}
+              max={-40}
+              step={0.01}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -762,6 +776,9 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Event Loss threshold (dB)">
             <InputFormik
+              min={0}
+              max={9.99}
+              step={0.01}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -781,6 +798,9 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Event Reflection Threshold (dB)">
             <InputFormik
+              min={-65}
+              max={-14}
+              step={0.1}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -802,6 +822,9 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Fiber End Threshold (dB)">
             <InputFormik
+              min={0.01}
+              max={9.99}
+              step={0.01}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -821,6 +844,9 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Total Loss Threshold (dB)">
             <InputFormik
+              min={0}
+              max={40}
+              step={0.01}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -840,6 +866,9 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Section Loss Threshold (dB)">
             <InputFormik
+              min={0}
+              max={40}
+              step={0.01}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
@@ -861,6 +890,8 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Injection Level Threshold (dB)">
             <InputFormik
+              min={0}
+              step={0.01}
               onchange={e => {
                 const dataa = JSON.parse(
                   JSON.stringify(opticalroutUpdateTestsetupDetail),
