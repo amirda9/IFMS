@@ -702,6 +702,9 @@ const OpticalRouteRoutePage: FC = () => {
       });
     }
     getallroute();
+    setAllCreatedroutes([])
+    setAllUpdatedroutes([])
+    setAllDeleteroutes([])
   };
   // ###################################################################################################
   return (
