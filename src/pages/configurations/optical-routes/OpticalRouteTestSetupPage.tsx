@@ -2,7 +2,7 @@ import {FC, useEffect, useState} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import {Link, Outlet, useNavigate, useParams} from 'react-router-dom';
+import {Link, Outlet, useNavigate, useParams,useLocation } from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import { setopticalroutUpdateTestsetupDetail } from '~/store/slices/opticalroutslice';
@@ -50,6 +50,7 @@ const items = [
 
 const OpticalRouteTestSetupPage: FC = () => {
   const params = useParams();
+  const { pathname} = useLocation()
   const [alldelets, setAlldelets] = useState<string[]>([]);
   const [allitems, setAllitems] = useState<
     {
@@ -99,7 +100,7 @@ const OpticalRouteTestSetupPage: FC = () => {
 
   useEffect(() => {
     Getsetup()
-  }, []);
+  }, [pathname]);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
     const items2 = JSON.parse(JSON.stringify(allitems));
@@ -246,7 +247,7 @@ const OpticalRouteTestSetupPage: FC = () => {
               return (
                 <IoTrashOutline
                   onClick={() => deletetest(value.delete)}
-                  className="mx-auto text-red-500"
+                  className="mx-auto text-red-500 cursor-pointer"
                   size={22}
                 />
               );

@@ -77,7 +77,7 @@ const TestDetailsParameters: FC = () => {
         const dataa = await $GET(
           `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
         );
-
+  
         let checkstartend = Number(
           seperatedate(dataa?.test_program?.end_date?.end).timePart.split(
             ':',
@@ -190,7 +190,7 @@ const TestDetailsParameters: FC = () => {
   });
   const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
-  // ###################################################################################
+
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">

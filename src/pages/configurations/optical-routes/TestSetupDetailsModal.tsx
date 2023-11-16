@@ -12,12 +12,11 @@ const convertDate = (date: string, time: string) => {
 };
 const TestSetupDetailsModal: FC = () => {
   const params = useParams();
-
-const [validateeror,setvalidateeror]=useState(false)
+  const navigate = useNavigate();
+  const [validateeror, setvalidateeror] = useState(false);
   const {opticalroutUpdateTestsetupDetail} = useSelector(
     (state: any) => state.opticalroute,
   );
-
 
   const {
     request,
@@ -54,15 +53,21 @@ const [validateeror,setvalidateeror]=useState(false)
     const newdata = JSON.parse(
       JSON.stringify(opticalroutUpdateTestsetupDetail),
     );
-   if(opticalroutUpdateTestsetupDetail?.parameters?.distance_mode != "manual"){
-delete newdata?.parameters?.range
-   }
-   if(opticalroutUpdateTestsetupDetail?.parameters?.pulse_width_mode != "manual"){
-    delete newdata?.parameters?.pulse_width
-   }
-   if(opticalroutUpdateTestsetupDetail?.parameters?.sampling_mode == "automatic"){
-    delete newdata?.parameters?.sampling_duration
-   }
+    if (
+      opticalroutUpdateTestsetupDetail?.parameters?.distance_mode != 'manual'
+    ) {
+      delete newdata?.parameters?.range;
+    }
+    if (
+      opticalroutUpdateTestsetupDetail?.parameters?.pulse_width_mode != 'manual'
+    ) {
+      delete newdata?.parameters?.pulse_width;
+    }
+    if (
+      opticalroutUpdateTestsetupDetail?.parameters?.sampling_mode == 'automatic'
+    ) {
+      delete newdata?.parameters?.sampling_duration;
+    }
     newdata.test_program.starting_date.start = convertDate(
       newdata?.startdatePart,
       newdata?.starttimePart,
@@ -79,7 +84,6 @@ delete newdata?.parameters?.range
     delete newdata.endtimePart;
     delete newdata.init_rtu_name;
 
-   
     if (
       newdata.enddatePart == '' ||
       newdata.endtimePart == '' ||
@@ -95,56 +99,62 @@ delete newdata?.parameters?.range
       newdata.learning_data.increase_count_options.timing.type == '' ||
       newdata.learning_data.increase_count_options.timing.periodic_options
         .period_time == '' ||
-        newdata.test_program.end_date.end == "" ||newdata.test_program.period_time.period_time == "" || !newdata.test_program.period_time.value
-        || newdata.test_program.starting_date.start == "" || !newdata.parameters.injection_level_threshold ||
-        !newdata.parameters.section_loss_threshold || !newdata.parameters.total_loss_threshold || !newdata.parameters.fiber_end_threshold
-        || !newdata.parameters.event_reflection_threshold || !newdata.parameters.event_loss_threshold || !newdata.parameters.RBS || !newdata.parameters.IOR
-        || !newdata.parameters.sampling_duration
-        ){
-
-      setvalidateeror(true)
+      newdata.test_program.end_date.end == '' ||
+      newdata.test_program.period_time.period_time == '' ||
+      !newdata.test_program.period_time.value ||
+      newdata.test_program.starting_date.start == '' ||
+      !newdata.parameters.injection_level_threshold ||
+      !newdata.parameters.section_loss_threshold ||
+      !newdata.parameters.total_loss_threshold ||
+      !newdata.parameters.fiber_end_threshold ||
+      !newdata.parameters.event_reflection_threshold ||
+      !newdata.parameters.event_loss_threshold ||
+      !newdata.parameters.RBS ||
+      !newdata.parameters.IOR ||
+      !newdata.parameters.sampling_duration
+    ) {
+      setvalidateeror(true);
     } else {
-      setvalidateeror(false)
-       //We first check whether we want to create a testsetup or update it
-    if (params.testId == 'create') {
-      request('opticalrouteCreateTestSetup', {
-        params: {optical_route_id: params.opticalRouteId || ''},
-        data: newdata,
-      });
-    } else {
-      request('opticalrouteUpdateTestSetup', {
-        params: {
-          optical_route_id: params.opticalRouteId || '',
-          test_setup_id: params.testId || '',
-        },
-        data: newdata,
-      });
+      setvalidateeror(false);
+      //We first check whether we want to create a testsetup or update it
+      if (params.testId == 'create') {
+        request('opticalrouteCreateTestSetup', {
+          params: {optical_route_id: params.opticalRouteId || ''},
+          data: newdata,
+        });
+      } else {
+        request('opticalrouteUpdateTestSetup', {
+          params: {
+            optical_route_id: params.opticalRouteId || '',
+            test_setup_id: params.testId || '',
+          },
+          data: newdata,
+        });
+      }
+      navigate(`/config/optical-routes/${params.opticalRouteId}/test-setup`);
     }
-    }
-   
   };
 
-  console.log(opticalrouteTestSetupDetail,'opticalrouteTestSetupDetail');
-  
   return (
     <AppDialog
       footerClassName="flex justify-end"
       footer={
-        <div className='flex flex-col'>
-          {validateeror?
-               <span className='text-[20px] text-[red] font-bold mb-[10px]'>لطفا همه ی فیلدها را پر کنید</span>
-        :null}
-     
-<div className="flex gap-x-4">
-          <SimpleBtn onClick={() => createtestaetup()} type="button">
-            Save
-          </SimpleBtn>
-          <SimpleBtn link to="..">
-            Cancel
-          </SimpleBtn>
+        <div className="flex flex-col">
+          {validateeror ? (
+            <span className="mb-[10px] text-[20px] font-bold text-[red]">
+              لطفا همه ی فیلدها را پر کنید
+            </span>
+          ) : null}
+
+          <div className="flex gap-x-4">
+            <SimpleBtn onClick={() => createtestaetup()} type="button">
+              Save
+            </SimpleBtn>
+            <SimpleBtn className='cursor-pointer' link to="..">
+              Cancel
+            </SimpleBtn>
+          </div>
         </div>
-        </div>
-        
       }>
       <div className="flex h-full w-full flex-col">
         <div className="mb-8 flex h-fit [&_*]:mx-[0.5px]">
