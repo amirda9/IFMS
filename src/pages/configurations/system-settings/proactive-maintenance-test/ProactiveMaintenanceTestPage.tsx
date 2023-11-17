@@ -1,7 +1,8 @@
-import {FC, Fragment, ReactNode, useState} from 'react';
+import {FC, Fragment, ReactNode, useEffect, useState} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {Description, Select, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
+import {$GET} from '~/util/requestapi';
 
 type Rowinputtype = {
   name: string;
@@ -100,6 +101,16 @@ function ProactiveMaintenanceTestPage() {
         test_mode: '',
       },
     );
+  const getdate = async () => {
+    const getdata = await $GET(`otdr/settings/app-settings`);
+    console.log(getdata, 'getdatagetdata');
+
+    setmaintenance_test_setting(getdata?.maintenance_test_setting);
+  };
+
+  useEffect(() => {
+    getdate();
+  }, []);
 
   const onSaveButtonClick = () => {
     let data: any = JSON.parse(JSON.stringify(maintenance_test_setting));
@@ -279,7 +290,6 @@ function ProactiveMaintenanceTestPage() {
               className="flex-grow"
               max={input.maxValue}
               min={input.minValue}
-              defaultValue={input.defaultValue.toFixed(input.precision)}
             />
           </Rowinput>
         ) : (

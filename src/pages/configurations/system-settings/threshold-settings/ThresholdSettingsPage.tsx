@@ -48,6 +48,8 @@ const ThresholdSettingsPage = () => {
     },
   });
 
+  console.log(SettingsGet?.data?.threshold_setting,'😍');
+  
   const [threshold_setting, setThreshold_setting] = useState<thresholdsetting>(
     SettingsGet?.data?.threshold_setting || {
       event_loss: 0,
@@ -116,7 +118,7 @@ const ThresholdSettingsPage = () => {
            min={0}
            max={40}
            step={0.01}
-            value={threshold_setting.total_loss}
+           defaultValue={SettingsGet?.data?.threshold_setting?.total_loss}
             onChange={e => {
               let old = {...threshold_setting};
               old.total_loss = Number(e.target.value);
@@ -124,7 +126,7 @@ const ThresholdSettingsPage = () => {
             }}
             type="number"
             className="w-full"
-            defaultValue={1}
+            // defaultValue={1}
           />
         </Rowinput>
 
@@ -133,7 +135,7 @@ const ThresholdSettingsPage = () => {
            min={0}
            max={40}
            step={0.01}
-            value={threshold_setting.section_loss}
+           defaultValue={SettingsGet?.data?.threshold_setting?.section_loss}
             onChange={e => {
               let old = {...threshold_setting};
               old.section_loss = Number(e.target.value);
@@ -141,7 +143,7 @@ const ThresholdSettingsPage = () => {
             }}
             type="number"
             className="w-full"
-            defaultValue={0.1}
+            // defaultValue={0.1}
           />
         </Rowinput>
         <Rowinput name="Event Loss (dB)">
@@ -149,7 +151,7 @@ const ThresholdSettingsPage = () => {
            min={0}
            max={9.99}
            step={0.1}
-            value={threshold_setting.event_loss}
+           defaultValue={SettingsGet?.data?.threshold_setting.event_loss}
             onChange={e => {
               let old = {...threshold_setting};
               old.event_loss = Number(e.target.value);
@@ -157,7 +159,7 @@ const ThresholdSettingsPage = () => {
             }}
             type="number"
             className="w-full"
-            defaultValue={0.1}
+         
           />
         </Rowinput>
         <Rowinput name="Event Reflectance (dB)">
@@ -165,7 +167,7 @@ const ThresholdSettingsPage = () => {
               min={-65}
               max={-14}
               step={0.1}
-            value={threshold_setting.event_reflectance}
+              defaultValue={SettingsGet?.data?.threshold_setting.event_reflectance}
             onChange={e => {
               let old = {...threshold_setting};
               old.event_reflectance = Number(e.target.value);
@@ -173,14 +175,13 @@ const ThresholdSettingsPage = () => {
             }}
             type="number"
             className="w-full"
-            defaultValue={1}
           />
         </Rowinput>
         <Rowinput name="Injection Level (dB)">
           <TextInput
              min={0}
              step={0.01}
-            value={threshold_setting.injection_level}
+             defaultValue={SettingsGet?.data?.threshold_setting.injection_level}
             onChange={e => {
               let old = {...threshold_setting};
               old.injection_level = Number(e.target.value);
@@ -188,7 +189,6 @@ const ThresholdSettingsPage = () => {
             }}
             type="number"
             className="w-full"
-            defaultValue={1}
           />
         </Rowinput>
       </div>

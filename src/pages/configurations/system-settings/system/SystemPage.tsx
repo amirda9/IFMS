@@ -1,7 +1,8 @@
 import {Description, Select} from '~/components';
 import SystemSettingsMain from '../SystemSettingsMain';
-import {ReactNode, useState} from 'react';
+import {ReactNode, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
+import {$GET} from '~/util/requestapi';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -42,33 +43,42 @@ const SystemPage = () => {
     },
   });
 
-  const [system, setSystem] = useState(
-    SettingsGet?.data?.system || {
-      break_strategy: 'skip',
-      fiber_test_setup_definition_strategy: 'both',
-      data_save_policy: 'do_not_save',
-      test_type: 'monitoring',
-    },
-  );
+  const [system, setSystem] = useState({
+    break_strategy: 'skip',
+    fiber_test_setup_definition_strategy: 'both',
+    data_save_policy: 'do_not_save',
+    test_type: 'monitoring',
+  });
 
   const onSaveButtonClick = () => {
     request('SettingsUpdatesystem', {data: {system: system}});
   };
+  const getdate = async () => {
+    const getdata = await $GET(`otdr/settings/app-settings`);
+    console.log(getdata, 'getdatagetdata');
 
-  const onResetButtonClick=()=>{
+    setSystem(getdata?.system);
+  };
+
+  useEffect(() => {
+    getdate();
+  }, []);
+  const onResetButtonClick = () => {
     setSystem({
       break_strategy: 'skip',
       fiber_test_setup_definition_strategy: 'both',
       data_save_policy: 'do_not_save',
       test_type: 'monitoring',
-    })
-  }
+    });
+  };
   return (
-    <SystemSettingsMain onResetButtonClick={onResetButtonClick}  onSaveButtonClick={onSaveButtonClick}>
+    <SystemSettingsMain
+      onResetButtonClick={onResetButtonClick}
+      onSaveButtonClick={onSaveButtonClick}>
       <div className="flex flex-col gap-y-4">
         <Rowinput name="Break Strategy">
           <Select
-           value={system.break_strategy}
+            value={system.break_strategy}
             onChange={e => {
               let old = {...system};
               old.break_strategy = e.target.value.toLowerCase();
@@ -88,7 +98,7 @@ const SystemPage = () => {
 
         <Rowinput name="Fiber Test Setup Definition Strategy">
           <Select
-           value={system.fiber_test_setup_definition_strategy}
+            value={system.fiber_test_setup_definition_strategy}
             onChange={e => {
               let old = {...system};
               old.fiber_test_setup_definition_strategy =
@@ -110,7 +120,7 @@ const SystemPage = () => {
 
         <Rowinput name="Data Save Policy">
           <Select
-          value={system.data_save_policy}
+            value={system.data_save_policy}
             onChange={e => {
               let old = {...system};
               old.data_save_policy = e.target.value.toLowerCase();
@@ -123,7 +133,7 @@ const SystemPage = () => {
             <option value={undefined} className="hidden">
               {system.data_save_policy}
             </option>
-            
+
             <option>do_not_save</option>
             <option>save</option>
           </Select>
@@ -131,7 +141,7 @@ const SystemPage = () => {
 
         <Rowinput name="Test Type">
           <Select
-          value={system.test_type}
+            value={system.test_type}
             onChange={e => {
               let old = {...system};
               old.test_type = e.target.value.toLowerCase();

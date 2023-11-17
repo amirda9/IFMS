@@ -1,7 +1,8 @@
-import {FC, Fragment, ReactNode, useState} from 'react';
+import {FC, Fragment, ReactNode, useEffect, useState} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {Description, Select, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
+import {$GET} from '~/util/requestapi';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -84,24 +85,31 @@ const MonitoringTestPage: FC = () => {
   });
 
   const [monitoring_test_setting, setMonitoring_test_setting] =
-    useState<monitoring_test_settingtype>(
-      SettingsGet?.data?.monitoring_test_setting || {
-        IOR: 0,
-        RBS: 0,
-        distance_mode: '',
-        event_loss_threshold: 0,
-        event_reflection_threshold: 0,
-        fiber_end_threshold: 0,
-        pulse_width: 0,
-        pulse_width_mode: '',
-        range: 0,
-        run_mode: '',
-        sampling_duration: 0,
-        sampling_mode: '',
-        test_mode: '',
-      },
-    );
+    useState<monitoring_test_settingtype>({
+      IOR: 0,
+      RBS: 0,
+      distance_mode: '',
+      event_loss_threshold: 0,
+      event_reflection_threshold: 0,
+      fiber_end_threshold: 0,
+      pulse_width: 0,
+      pulse_width_mode: '',
+      range: 0,
+      run_mode: '',
+      sampling_duration: 0,
+      sampling_mode: '',
+      test_mode: '',
+    });
+  const getdate = async () => {
+    const getdata = await $GET(`otdr/settings/app-settings`);
+    console.log(getdata, 'getdatagetdata');
 
+    setMonitoring_test_setting(getdata?.monitoring_test_setting);
+  };
+
+  useEffect(() => {
+    getdate();
+  }, []);
 
   const onSaveButtonClick = () => {
     request('SettingsUpdatemonitoring_test_setting', {
@@ -289,11 +297,7 @@ const MonitoringTestPage: FC = () => {
             <TextInput
               step={input.step || 1}
               type="number"
-              value={
-                (monitoring_test_setting &&
-                  monitoring_test_setting[input.name]) ||
-                ''
-              }
+              value={monitoring_test_setting[input.name]}
               onChange={e => {
                 let old: any = {...monitoring_test_setting};
                 old[input.name] = Number(e.target.value);
@@ -302,7 +306,6 @@ const MonitoringTestPage: FC = () => {
               className={`w-[350px] flex-grow text-[20px] font-light leading-[24.2px] text-[#000000]`}
               max={input.maxValue}
               min={input.minValue}
-              defaultValue={input.defaultValue.toFixed(input.precision)}
             />
           </Rowinput>
         ) : (

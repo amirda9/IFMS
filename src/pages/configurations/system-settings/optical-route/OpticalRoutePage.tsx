@@ -23,18 +23,19 @@ const OpticalRoutePage = () => {
   const [errortext, setErrortext] = useState('');
   const {
     request,
-    state: {SettingsGet},
+    state: {SettingsGet, SettingsUpdateopticalroute},
   } = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
+      SettingsUpdateopticalroute: state.http.SettingsUpdateopticalroute,
     }),
     initialRequests: request => {
       request('SettingsGet', undefined);
     },
     onUpdate: (lastState, state) => {
       if (
-        lastState.SettingsGet?.httpRequestStatus === 'loading' &&
-        state.SettingsGet?.httpRequestStatus === 'success'
+        lastState.SettingsUpdateopticalroute?.httpRequestStatus === 'loading' &&
+        state.SettingsUpdateopticalroute?.httpRequestStatus === 'success'
       ) {
         request('SettingsGet', undefined);
       }
@@ -102,6 +103,7 @@ const OpticalRoutePage = () => {
       });
     }
   };
+  console.log(SettingsGet, 'SettingsGetSettingsGetSettingsGet');
 
   const onResetButtonClick = () => {
     setHelixfactor(1.02);
@@ -131,10 +133,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name="Helix Factor">
         <TextInput
-        min={1}
-        max={1.5}
-        step={0.01}
-          value={helixfactor}
+          min={1}
+          max={1.5}
+          step={0.01}
           onChange={e => setHelixfactor(Number(e.target.value))}
           className="w-full"
           type="number"
@@ -144,9 +145,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name={`IOR for 1310 nm wavelength`}>
         <TextInput
-           min={1.3}
-           max={1.8}
-           step={0.000001}
+          min={1.3}
+          max={1.8}
+          step={0.000001}
           onChange={e => {
             const old = {...ior};
             old[1310] = Number(e.target.value);
@@ -154,7 +155,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={ior[1310]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1310]
           }
@@ -172,7 +172,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={ior[1490]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1490]
           }
@@ -188,7 +187,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={ior[1550]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1550]
           }
@@ -204,7 +202,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={ior[1625]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1625]
           }
@@ -220,7 +217,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={rbs[1310]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1310]
           }
@@ -236,7 +232,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={rbs[1490]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1490]
           }
@@ -252,7 +247,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={rbs[1550]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1550]
           }
@@ -267,7 +261,6 @@ const OpticalRoutePage = () => {
           }}
           className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
           type="number"
-          value={rbs[1625]}
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1625]
           }
