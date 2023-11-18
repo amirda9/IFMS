@@ -27,6 +27,20 @@ export const $POST =async(url:string,data:any)=>{
   }).then(res => res.json());
  } 
 
+
+ export const $DELETE =async(url:string,data=null)=>{
+  return await fetch(`${BASE_URL}/${url}`, {
+   method: "delete",
+   body:data,
+   headers: {
+     Authorization: `Bearer ${accesstoken}`,
+     Accept: 'application.json',
+     'Content-Type': 'application/json',
+   },
+  }).then(res => res.json());
+ } 
+
+
  export const $PUT =async(url:string,data:any)=>{
   return await fetch(`${BASE_URL}/${url}`, {
    method: "post",

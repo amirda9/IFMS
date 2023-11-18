@@ -1,18 +1,33 @@
 import dayjs from 'dayjs';
 import {Form, FormikProvider, useFormik} from 'formik';
-import {FC} from 'react';
-import { useParams } from 'react-router-dom';
+import {FC, useEffect} from 'react';
+import {networkExplored} from '~/constant';
+import { useParams,useNavigate } from 'react-router-dom';
 import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
+import {setNetworkselectedlist,setNetworkoptical} from './../../../store/slices/opticalroutslice'
+import { useDispatch, useSelector } from 'react-redux';
+import { $GET } from '~/util/requestapi';
+import Cookies from 'js-cookie';
+
 
 const OpticalRouteCreatePage: FC = () => {
   const params = useParams();
+  let navigate=useNavigate()
+  const dispatch = useDispatch();
+  const {networkselectedlist,networkoptical} = useSelector(
+    (state: any) => state.opticalroute,
+  );
   const {state, request} = useHttpRequest({
     selector: state => ({
     }),
   });
 
+
+  useEffect(()=>{
+
+  },[])
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -22,7 +37,7 @@ const OpticalRouteCreatePage: FC = () => {
       avg_hellix_factor: 0,
       network_id: '',
     },
-    onSubmit: (values) => {
+    onSubmit: async(values) => {
       request('opticalrouteCreate', {
         data: {
           name: values.name,
@@ -33,6 +48,27 @@ const OpticalRouteCreatePage: FC = () => {
           network_id:params.id || "",
         },
       });
+setTimeout(async()=>{
+  const findopt = networkoptical.findIndex((data:any) => data.networkid == params.id);
+  const opticals = await $GET(`otdr/optical-route/?network_id=${params.id}`);
+ 
+  if (findopt > -1) {
+    let old = [...networkoptical];
+    let newdata=old.filter(data => data.networkid != params.id)
+    newdata.push({networkid: params.id, opticalrouts:opticals})
+   dispatch(setNetworkoptical(newdata));
+  } else {
+    let old = [...networkoptical];
+    const opticals = await $GET(`otdr/optical-route/?network_id=${params.id}`);
+    old.push({networkid: params.id, opticalrouts:opticals})
+   dispatch(setNetworkoptical(old)) ;
+  }
+  // navigate(opticals[opticals.length-1].id)
+},200)
+  
+
+
+
     },
   });
 

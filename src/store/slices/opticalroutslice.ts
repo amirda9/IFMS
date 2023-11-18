@@ -6,7 +6,24 @@ type veiwerlists = {
   type: string;
 };
 
+type networkselectedlisttype={
+  payload: string[];
+  type: string;
+}
 
+type networkopticaltype={
+  payload: {networkid: string; opticalrouts: {name: string; id: string}[]}[];
+  type: string;
+}
+type alldeleteopticalroutetype={
+  payload:{networkid: string; opticalrouts: {id: string}[]};
+  type: string;
+}
+
+type allcheckednetworktype={
+  payload:string[];
+  type: string;
+}
 const initialState = {
   opticalroutUpdateTestsetupDetail:{    name: "",
     station_id: "",
@@ -76,8 +93,11 @@ const initialState = {
         value: 0,
         period_time: "day"
       }
-    }}
-  
+    }},
+    networkselectedlist:[],
+    networkoptical:[],
+    alldeleteopticalroute:[],
+    allcheckednetwork:[],
 } as any;
 
 const opticalroute = createSlice({
@@ -87,11 +107,27 @@ const opticalroute = createSlice({
     setopticalroutUpdateTestsetupDetail: (state, action: veiwerlists) => {
       state.opticalroutUpdateTestsetupDetail = action.payload;
     },
+    setNetworkselectedlist: (state, action: networkselectedlisttype) => {
+      state.networkselectedlist = action.payload;
+    },
+    setNetworkoptical: (state, action: networkopticaltype) => {
+      state.networkoptical = action.payload;
+    },
+    setAlldeleteopticalroute: (state, action: alldeleteopticalroutetype) => {
+      state.alldeleteopticalroute = action.payload;
+    },
+    setAllcheckednetwork: (state, action: allcheckednetworktype) => {
+      state.allcheckednetwork = action.payload;
+    },
   },
 });
 
 export const {
-  setopticalroutUpdateTestsetupDetail
+  setopticalroutUpdateTestsetupDetail,
+  setNetworkselectedlist,
+  setNetworkoptical,
+  setAlldeleteopticalroute,
+  setAllcheckednetwork
 } = opticalroute.actions;
 
 export default opticalroute.reducer;

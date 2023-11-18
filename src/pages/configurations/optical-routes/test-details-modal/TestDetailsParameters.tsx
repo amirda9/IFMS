@@ -77,6 +77,7 @@ const TestDetailsParameters: FC = () => {
         const dataa = await $GET(
           `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
         );
+  console.log(dataa,'👿');
   
         let checkstartend = Number(
           seperatedate(dataa?.test_program?.end_date?.end).timePart.split(
