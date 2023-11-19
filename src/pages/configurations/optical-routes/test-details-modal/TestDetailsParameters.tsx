@@ -74,11 +74,11 @@ const TestDetailsParameters: FC = () => {
     if (params.testId == 'create') {
     } else {
       const getdata = async () => {
-        const dataa = await $GET(
+        const getdataa = await $GET(
           `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
         );
-  console.log(dataa,'👿');
-  
+        const dataa = JSON.parse(JSON.stringify(getdataa));
+
         let checkstartend = Number(
           seperatedate(dataa?.test_program?.end_date?.end).timePart.split(
             ':',
@@ -96,14 +96,14 @@ const TestDetailsParameters: FC = () => {
         };
 
         getrtu();
-
-        dataa.station_id = dataa?.station?.id;
-        (dataa.init_rtu_id = dataa?.rtu?.id),
+       
+        dataa.station_id = getdataa?.station?.id;
+        (dataa.init_rtu_id = getdataa?.rtu?.id),
           //Because we do not have the name of the rtu, we have to find the desired rtu among the rtus and get its name because we need its name.
-          (dataa.init_rtu_name = rtulist.find(data => data.id == dataa?.rtu?.id)
-            ?.name);
+          // (dataa.init_rtu_name = rtulist.find(data => data.id == dataa?.rtu?.id)
+          (dataa.init_rtu_name = getdataa?.rtu?.name);
         dataa.station_name = stations?.data?.find(
-          data => data.id == dataa?.station?.id,
+          data => (data.id = dataa?.station?.id),
         )?.name;
 
         (dataa.startdatePart = seperatedate(
@@ -132,7 +132,7 @@ const TestDetailsParameters: FC = () => {
             dataa?.test_program?.end_date?.end,
           ).datePart),
           delete dataa['station'];
-        delete dataa['rtu'];
+          delete dataa['rtu'];
         dispatch(setopticalroutUpdateTestsetupDetail(dataa));
       };
       getdata();
@@ -191,6 +191,11 @@ const TestDetailsParameters: FC = () => {
   });
   const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
+
+  console.log(
+    opticalroutUpdateTestsetupDetail,
+    'opticalroutUpdateTestsetupDetail🤑',
+  );
 
   return (
     <FormikProvider value={formik}>
@@ -347,7 +352,7 @@ const TestDetailsParameters: FC = () => {
                 dataa.init_rtu_id = e.target.value.split('_')[1].toString();
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
-              value={opticalroutUpdateTestsetupDetail.init_rtu_name}
+              value={opticalroutUpdateTestsetupDetail?.rtu?.name}
               className="basis-96">
               <option value="" className="hidden">
                 {opticalroutUpdateTestsetupDetail?.init_rtu_name}

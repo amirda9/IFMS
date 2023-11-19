@@ -213,7 +213,7 @@ const OpticalRouteLayout: FC = () => {
 
   const deletenetworkoptical=(id:string)=>{
     let oldoptical:any =JSON.parse(JSON.stringify(alldeleteopticalroute));
-    const finddata=oldoptical.find((data:any)=> data.networkid == id) 
+    const finddata=oldoptical.find((data:any)=> data.networkid == id)
   }
   const lastnetwork =
     (list?.data && list?.data[list?.data?.length - 1].id) || '';
