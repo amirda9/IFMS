@@ -13,6 +13,17 @@ export const $GET =async(url:string)=>{
  }).then(res => res.json());
 } 
 
+export const $Get =async(url:string)=>{
+  return await fetch(`${BASE_URL}/${url}`, {
+   method: "GET",
+   headers: {
+     Authorization: `Bearer ${accesstoken}`,
+     Accept: 'application.json',
+     'Content-Type': 'application/json',
+   },
+  });
+ } 
+
 
 
 export const $POST =async(url:string,data:any)=>{
@@ -39,6 +50,19 @@ export const $POST =async(url:string,data:any)=>{
    },
   }).then(res => res.json());
  } 
+
+ export const $Delete =async(url:string,data:any=null)=>{
+  return await fetch(`${BASE_URL}/${url}`, {
+   method: "delete",
+   body:JSON.stringify(data),
+   headers: {
+     Authorization: `Bearer ${accesstoken}`,
+     Accept: 'application.json',
+     'Content-Type': 'application/json',
+   },
+  });
+ } 
+
 
 
  export const $PUT =async(url:string,data:any)=>{

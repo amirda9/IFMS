@@ -22,7 +22,7 @@ const SidebarLayout: FC<PropsType> = ({
   return (
     <>
       {!hideSidebar && (
-        <div className="flex w-1/4 h-[calc(100vh-120px)] overflow-y-auto flex-col border-r-2  border-g p-4">
+        <div className="flex w-1/4 min-h-[calc(100vh-120px)] overflow-y-auto flex-col border-r-2  border-g p-4">
           {searchOnChange ? (
             <div className="flex flex-row items-center">
               <label htmlFor="search" className="mr-2">
