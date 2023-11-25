@@ -75,6 +75,7 @@ const RtuLayout: FC = () => {
     leftbarStationcheckboxlist,
     leftbarcheckboxlist,
   } = useSelector((state: RootState) => state.rtu);
+console.log(stationsrtu,'🤩');
 
   const {
     request,
@@ -418,11 +419,13 @@ const RtuLayout: FC = () => {
   const onclickstation = async (id: string) => {
     setStationid(id);
     const dataa = await $GET(`otdr/station/${id}/rtus`);
-    // console.log(dataa, 'ppp');
+     console.log(dataa, 'ppp');
 
     const findstation = stationsrtu.findIndex(data => data.stationid == id);
     if (findstation < 0 && dataa.length > 0) {
       let old = deepcopy(stationsrtu);
+      console.log(old,'😛');
+      
       old.push({stationid: id, rtues: dataa});
       dispatch(setStationsrtu(old));
     }
@@ -536,7 +539,6 @@ const RtuLayout: FC = () => {
 
    
     if (!findregiondata || findregiondata?.check == false) {
-      alert('kkj')
       try {
         const getregionrtues = await $Get(`otdr/rtu?region_id=${regionid}`);
 
@@ -971,6 +973,7 @@ const RtuLayout: FC = () => {
   };
 
   const onclickregion = async (id: string,networkid:string) => {
+
     let old = deepcopy(regionstations);
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if(allstation.status === 200){

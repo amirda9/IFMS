@@ -1,22 +1,22 @@
 import {Form, FormikProvider, useFormik} from 'formik';
-
-import {FC} from 'react';
-import {useSearchParams, useParams} from 'react-router-dom';
-import {
-  ControlledSelect,
-  Description,
-  SimpleBtn,
-  TextInput,
-  Select,
-} from '~/components';
+import * as Yup from 'yup';
+import {setStationsrtu} from './../../../store/slices/rtu';
+import {FC, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import {Description, SimpleBtn, Select} from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
+import {$Post} from '~/util/requestapi';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '~/store';
+import {deepcopy} from '~/util';
+// ----- type ----------- type --------------- type ------------
 type Rowtext = {
   name: string;
   value: string;
 };
-
+// --------------- component ---------------- component ------------- component -------
 const Rowtext = ({name, value}: Rowtext) => {
   return (
     <div className="mb-[4px] flex flex-row">
@@ -28,41 +28,36 @@ const Rowtext = ({name, value}: Rowtext) => {
   );
 };
 
+const rtuSchema = Yup.object().shape({
+  name: Yup.string().required('Please enter name'),
+  OTDRSECEND: Yup.string().required('Please enter Port'),
+  OTDRFIRST: Yup.string().required('Please enter OTDR IP'),
+  SWITCHSECEND: Yup.string().required('Please enter port'),
+  SWITCHFIRST: Yup.string().required('Please enter ip'),
+  ContactPerson: Yup.string().required('Please enter Contact Person'),
+  DefaultGateway: Yup.string().required('Please enter Default Gateway'),
+  model: Yup.string().required('Please enter model'),
+  SubnetMask: Yup.string().required('Please enter Subnet Mask'),
+});
+// ------ main -------------------- main --------main -------------- main -----
 const RtuCreatePage: FC = () => {
   const params = useParams();
-
+  const [errortext, setErrortext] = useState('');
+  const {stationsrtu} = useSelector((state: RootState) => state.rtu);
+  const dispatch = useDispatch();
   const {
-    state: {create, stations, users},
+    state: {users},
     request,
   } = useHttpRequest({
     selector: state => ({
-      create: state.http.linkCreate,
       users: state.http.userList,
-      // allLinks: state.http.allLinks,
-      stations: state.http.allStations,
     }),
     initialRequests: request => {
       request('userList', undefined);
     },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.create?.httpRequestStatus === 'loading' &&
-        state.create?.httpRequestStatus === 'success'
-      ) {
-        request('allLinks', undefined);
-      }
-    },
-    // onUpdate: lastState => {
-    //   if (
-    //     lastState.create?.httpRequestStatus === 'loading' &&
-    //     create?.httpRequestStatus === 'success'
-    //   ) {
-    //     request('allLinks', undefined);
-    //     // navigate('../' + create?.data?.link_id);
-    //   }
-    // },
   });
   const formik = useFormik({
+    validationSchema: rtuSchema,
     initialValues: {
       name: '',
       OTDRSECEND: '',
@@ -75,9 +70,9 @@ const RtuCreatePage: FC = () => {
       DefaultGateway: '',
     },
 
-    onSubmit: values => {
-      request('rtuCreate', {
-        data: {
+    onSubmit: async values => {
+      try {
+        const creatertu = await $Post(`otdr/rtu/`, {
           name: values.name,
           model: values.model,
           station_id: params.id || '',
@@ -88,11 +83,35 @@ const RtuCreatePage: FC = () => {
           switch_port: Number(values.SWITCHSECEND),
           subnet_mask: values.SubnetMask,
           default_gateway: values.DefaultGateway,
-        },
-      });
+        });
+        const getdata = await creatertu.json();
+        if (creatertu.status == 201) {
+          const stationsrtuCopy = deepcopy(stationsrtu);
+
+          const findrtu = stationsrtuCopy.findIndex(
+            (data: any) => data.stationid == getdata.station_id,
+          );
+          if (findrtu > -1) {
+            stationsrtuCopy[findrtu].rtues.push({
+              name: getdata.name,
+              id: getdata.id,
+            });
+          } else {
+            stationsrtuCopy.push({
+              stationid: getdata.stationid,
+              rtues: [{name: getdata.name, id: getdata.id}],
+            });
+          }
+          dispatch(setStationsrtu(stationsrtuCopy));
+        } else {
+          setErrortext(getdata.detail[0].msg);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
   });
-  console.log(formik.values, 'fff');
+
   const Users = users?.data || [];
   return (
     <div className="flex flex-grow">
@@ -118,7 +137,7 @@ const RtuCreatePage: FC = () => {
                   select
                 </option>
                 <option value={undefined} className="hidden">
-                select
+                  select
                 </option>
 
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
@@ -128,13 +147,6 @@ const RtuCreatePage: FC = () => {
                   model2
                 </option>
               </Select>
-              {/* <ControlledSelect
-                options={[{label: 'Model1'},{label: 'Model2'}]}
-                onChange={value => {
-                  formik.setFieldValue('model', value);
-                }}
-                className="w-[400px] text-[18px] font-light leading-[24.2px]"
-              /> */}
             </Description>
 
             <Description
@@ -153,7 +165,7 @@ const RtuCreatePage: FC = () => {
                 </option>
                 {Users.map((data, index) => (
                   <option
-                  key={index}
+                    key={index}
                     value={data.id}
                     className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                     {data.name}
@@ -208,7 +220,6 @@ const RtuCreatePage: FC = () => {
                     name="SubnetMask"
                     wrapperClassName="w-[206px] text-[18px] font-light leading-[24.2px]"
                     onChange={value => {
-                      console.log(value);
                       formik.setFieldValue('SubnetMask', value);
                     }}
                   />
@@ -260,9 +271,15 @@ const RtuCreatePage: FC = () => {
 
             {/* --------------------------------------------------- */}
           </div>
-          <div className="flex gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
-            <SimpleBtn>Cancel</SimpleBtn>
+          <div className="flex flex-col">
+            {errortext.length > 0 ? (
+              <span className="text-[20px] text-[red]">{errortext}</span>
+            ) : null}
+
+            <div className="flex gap-x-4 self-end">
+              <SimpleBtn type="submit">Save</SimpleBtn>
+              <SimpleBtn>Cancel</SimpleBtn>
+            </div>
           </div>
         </Form>
       </FormikProvider>
