@@ -51,7 +51,7 @@ const RtuDetailsPage: FC = () => {
       update: state.http.rtuUpdate,
     }),
     initialRequests: request => {
-      request('rtuDetail', {params: {rtu_Id: params.rtuId || ''}});
+      request('rtuDetail', {params: {rtu_Id: params?.rtuId?.split("_")[0] || ''}});
 
       request('userList', undefined);
     },
@@ -60,7 +60,7 @@ const RtuDetailsPage: FC = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update?.httpRequestStatus === 'success'
       ) {
-        request('rtuDetail', {params: {rtu_Id: params.rtuId || ''}});
+        request('rtuDetail', {params: {rtu_Id: params?.rtuId?.split("_")[0] || ''}});
       }
     },
   });
@@ -88,7 +88,7 @@ const RtuDetailsPage: FC = () => {
     },
     onSubmit: () => {
       request('rtuUpdate', {
-        params: {rtu_id: params.rtuId || ''},
+        params: {rtu_id:params?.rtuId?.split("_")[0] || ''},
         data: {
           name: formik.values.name,
           model: formik.values.model,

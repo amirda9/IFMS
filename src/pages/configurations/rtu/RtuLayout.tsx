@@ -1206,7 +1206,7 @@ console.log(stationsrtu,'🤩');
                                                             enabelcheck={true}
                                                             className="w-[200px]"
                                                             name={dataaa.name}
-                                                            to={dataaa.id}
+                                                            to={`${dataaa.id}_${datt.id}`}
                                                           />
                                                         </div>
                                                       );
