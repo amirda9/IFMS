@@ -123,7 +123,7 @@ const allcurve = [
 
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
-  const svgRef = useRef(null);
+  const svgRef = useRef<HTMLDivElement> (null);
   const [leftbartabselected, setLeftbartabselected] = useState('');
   const [leftverticaltab, setLeftverticaltab] = useState<string>('');
   const [allchart, setAllchart] = useState<string[]>([]);
@@ -143,8 +143,11 @@ function Chart() {
   const [basescale, setbasescale] = useState(2);
   const [xScale, setXScale] = useState<any>({
     type: 'linear',
+    min:0
     // tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
   });
+  console.log(xScale,'xScalexScale');
+  
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
   });
@@ -157,6 +160,34 @@ function Chart() {
     ];
     setVerticalLines(prev => [...prev, ...dataa]);
   };
+
+  
+  const getchartcoordinate=(event:any) =>{
+
+  // گرفتن مختصات موس نسبت به صفحه مرورگر
+  const mouseX = event.clientX;
+  const mouseY = event.clientY;
+  
+  // گرفتن مرجع به المنت مربع
+  const square =svgRef;
+  
+  // گرفتن مختصات مربع نسبت به صفحه مرورگر
+  const rect:any = square.current.getBoundingClientRect();
+  //  console.log((rect.width-rect.x)/11,'hgjgjgh');
+  
+  const squareX = rect.left;
+  const squareY = rect.bottom;
+  
+  // محاسبه مختصات موس نسبت به مربع
+  const x= mouseX -157.8;
+  const y = mouseY - squareY;
+
+ console.log('🤬',(x/((rect.width-rect.x)/(11-xScale.min)))+xScale.min);
+  // console.log('😴',y);
+  // const xx = event;
+  // console.log(squareX,'xxx');
+  
+  }
 
   const Trace = () => {
     setLeftverticaltab('Trace');
@@ -559,9 +590,14 @@ function Chart() {
               onMouseDown={handleMouseDown2}
               // onMouseMove={handleMouseMove2}
               onMouseUp={handleMouseUp2}
+              ref={svgRef}
+              onMouseMove={(e) => 
+                getchartcoordinate(e)
+                // console.log(point, 'point');
+              }
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
-              } h-full  w-[calc(100vw-510px)] bg-[#ffff]`}>
+              } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
               <ResponsiveLine
                 // tooltip={tooltip}
                 data={allcurveline}
@@ -574,10 +610,11 @@ function Chart() {
                 enableSlices={false}
                 debugSlices={false}
                 enableCrosshair={false}
-                ref={svgRef}
-                onMouseMove={(point, event) => {
-                  console.log(point, 'point');
-                }}
+                // ref={svgRef}
+                // onMouseMove={(point, event) => {
+                //   getchartcoordinate
+                //   // console.log(point, 'point');
+                // }}
                 lineWidth={3}
                 useMesh={!mousecursor}
                 layers={[
@@ -590,7 +627,7 @@ function Chart() {
 
                   'points',
                   'slices',
-                  'mesh',
+                  // 'mesh',
                   'legends',
                   VerticalLine, // اضافه کردن تابع VerticalLine به لایه ها
                 ]}
@@ -753,3 +790,63 @@ function Chart() {
 }
 
 export default Chart;
+
+// ------------------------------------------------------
+// import React, { Component } from "react";
+
+// class App extends Component {
+// constructor(props) {
+// super(props);
+// this.state = {
+// x: 0,
+// y: 0,
+// };
+// this.handleMouseMove = this.handleMouseMove.bind(this);
+// }
+
+// handleMouseMove(event) {
+// // گرفتن مختصات موس نسبت به صفحه مرورگر
+// const mouseX = event.clientX;
+// const mouseY = event.clientY;
+
+// // گرفتن مرجع به المنت مربع
+// const square = this.refs.square;
+
+// // گرفتن مختصات مربع نسبت به صفحه مرورگر
+// const rect = square.getBoundingClientRect();
+// const squareX = rect.left;
+// const squareY = rect.bottom;
+
+// // محاسبه مختصات موس نسبت به مربع
+// const x = mouseX - squareX;
+// const y = mouseY - squareY;
+
+// // به روز کردن state با مختصات جدید
+// this.setState({
+// x: x,
+// y: y,
+// });
+// }
+
+// render() {
+// return (
+// <div>
+// <div
+// ref="square"
+// style={{
+// width: 200,
+// height: 200,
+// backgroundColor: "red",
+// margin: 50,
+// }}
+// onMouseMove={this.handleMouseMove}
+// ></div>
+// <p>
+// مختصات موس نسبت به مربع: ({this.state.x}, {this.state.y})
+// </p>
+// </div>
+// );
+// }
+// }
+
+// export default App;
