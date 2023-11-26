@@ -102,7 +102,7 @@ const MonitoringTestPage: FC = () => {
     });
   const getdate = async () => {
     const getdata = await $GET(`otdr/settings/app-settings`);
-    console.log(getdata, 'getdatagetdata');
+
 
     setMonitoring_test_setting(getdata?.monitoring_test_setting);
   };
@@ -282,7 +282,7 @@ const MonitoringTestPage: FC = () => {
                 monitoring_test_setting && monitoring_test_setting[input.name]
               }
               onChange={e => {
-                let old: any = {...monitoring_test_setting};
+                let old: monitoring_test_settingtype = {...monitoring_test_setting};
                 old[input.name] = e.target.value;
                 setMonitoring_test_setting(old);
               }}
@@ -299,7 +299,7 @@ const MonitoringTestPage: FC = () => {
               type="number"
               value={monitoring_test_setting[input.name]}
               onChange={e => {
-                let old: any = {...monitoring_test_setting};
+                let old: monitoring_test_settingtype = {...monitoring_test_setting};
                 old[input.name] = Number(e.target.value);
                 setMonitoring_test_setting(old);
               }}

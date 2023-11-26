@@ -48,8 +48,6 @@ const ThresholdSettingsPage = () => {
     },
   });
 
-  console.log(SettingsGet?.data?.threshold_setting,'😍');
-  
   const [threshold_setting, setThreshold_setting] = useState<thresholdsetting>(
     SettingsGet?.data?.threshold_setting || {
       event_loss: 0,
@@ -60,7 +58,6 @@ const ThresholdSettingsPage = () => {
       wavelength: '',
     },
   );
-  console.log(threshold_setting, 'SettingsGetSettingsGet');
   const onSaveButtonClick = () => {
     request('SettingsUpdatethreshold_setting', {
       data: {threshold_setting: threshold_setting},

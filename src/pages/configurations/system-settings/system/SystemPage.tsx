@@ -55,8 +55,6 @@ const SystemPage = () => {
   };
   const getdate = async () => {
     const getdata = await $GET(`otdr/settings/app-settings`);
-    console.log(getdata, 'getdatagetdata');
-
     setSystem(getdata?.system);
   };
 

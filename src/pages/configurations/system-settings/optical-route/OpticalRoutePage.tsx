@@ -103,7 +103,7 @@ const OpticalRoutePage = () => {
       });
     }
   };
-  console.log(SettingsGet, 'SettingsGetSettingsGetSettingsGet');
+
 
   const onResetButtonClick = () => {
     setHelixfactor(1.02);

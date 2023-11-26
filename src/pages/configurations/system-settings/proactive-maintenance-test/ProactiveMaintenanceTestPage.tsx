@@ -103,8 +103,6 @@ function ProactiveMaintenanceTestPage() {
     );
   const getdate = async () => {
     const getdata = await $GET(`otdr/settings/app-settings`);
-    console.log(getdata, 'getdatagetdata');
-
     setmaintenance_test_setting(getdata?.maintenance_test_setting);
   };
 
