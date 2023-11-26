@@ -4,7 +4,6 @@ import {useParams} from 'react-router-dom';
 import {$Delete, $Get, $Put} from '~/util/requestapi';
 import classNames from '~/util/classNames';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import {ControlledSelect} from '~/components';
 import {deepcopy} from '~/util';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
@@ -82,7 +81,7 @@ let allfakeoptions = [
 const RtuPortsPage: FC = () => {
   const params = useParams();
   const networkId = Cookies.get(networkExplored);
-  const [allrtuports, setAllrtuports] = useState<allportstype>(allfakedata);
+  const [allrtuports, setAllrtuports] = useState<allportstype>([]);
   const [errortext, setErrortext] = useState('');
   const [selectedboxoptions, setSelectedboxoptions] =
     useState<opticalroutlistType>([]);
@@ -91,14 +90,38 @@ const RtuPortsPage: FC = () => {
   );
   const [alldeletedports, setAlldeletedports] = useState<string[]>([]);
 
+
   const getrtuports = async () => {
     try {
       //get rtu ports
       const getdata = await $Get(
         `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
       );
+      const allrtuports: allportstype = await getdata.json();
+      let rtuports: allportstype = deepcopy(allrtuports);
+
+      if (allrtuports.length < 8) {
+        for (let i = 0; i < 8 - allrtuports.length; i++) {
+          rtuports.push({
+            optical_route_id: '',
+            state: '',
+            index: 0,
+            id: '',
+            new: false,
+            end_station: {
+              id: '',
+              name: '',
+            },
+            optical_route: {
+              id: '',
+              name: '',
+            },
+            length: 0,
+          });
+        }
+      }
+
       if (getdata.status == 200) {
-        const rtuports: allportstype = await getdata.json();
         setAllrtuports(
           rtuports.map((data, index: number) => ({
             ...data,
@@ -111,8 +134,10 @@ const RtuPortsPage: FC = () => {
             '_',
           )[1]}&network_id=${networkId}`,
         );
+
         const getopticaldata: opticalroutlistType =
           await getrtuopticalrote.json();
+
         if (getrtuopticalrote.status == 200) {
           // remove the optical-routes of the ports from the list of optical-routes that should be shown in the select boxes. Because the selected optical routes should not be repeated.
           let data: opticalroutlistType = [];
@@ -131,6 +156,7 @@ const RtuPortsPage: FC = () => {
               });
             }
           }
+
           setSelectedboxoptions(data);
         } else {
         }
@@ -141,28 +167,7 @@ const RtuPortsPage: FC = () => {
   };
 
   useEffect(() => {
-    // getrtuports();
-
-    //این کد موقتیست و برای استفاده از داده های فیک است
-    let data: opticalroutlistType = [];
-    for (let i = 0; i < allfakeoptions.length; i++) {
-      let findopticalroute = allfakedata.findIndex(
-        dataa => dataa.optical_route_id == allfakeoptions[i].id,
-      );
-
-      if (
-        allfakedata.findIndex(
-          dataa => dataa.optical_route_id == allfakeoptions[i].id,
-        ) < 0
-      ) {
-        data.push({
-          id: allfakeoptions[i].id,
-          name: allfakeoptions[i].name,
-        });
-      }
-    }
-
-    setSelectedboxoptions(data);
+    getrtuports();
   }, []);
 
   const save = async () => {
@@ -208,11 +213,13 @@ const RtuPortsPage: FC = () => {
     const selectedboxoptionsCopy = selectedboxoptions.filter(
       data => data.id != id,
     );
+    if (allportsCopy[findportIndex].optical_route_id.length > 0) {
+      selectedboxoptionsCopy.push({
+        id: allportsCopy[findportIndex].optical_route_id,
+        name: allportsCopy[findportIndex].optical_route.name,
+      });
+    }
 
-    selectedboxoptionsCopy.push({
-      id: allportsCopy[findportIndex].optical_route_id,
-      name: allportsCopy[findportIndex].optical_route.name,
-    });
     setSelectedboxoptions(selectedboxoptionsCopy);
     // -------------------------------------------------------------------
     //We first update the data that we have mapped on the page.
@@ -220,6 +227,9 @@ const RtuPortsPage: FC = () => {
     allportsCopy[findportIndex].optical_route_id = id;
     allportsCopy[findportIndex].optical_route.name = name;
     allportsCopy[findportIndex].optical_route.id = id;
+    if (allportsCopy[findportIndex].state == '') {
+      allportsCopy[findportIndex].state = 'deactivated';
+    }
     setAllrtuports(allportsCopy);
     // ------------------------------------------------------------------
     const allupdatesportsCopy = deepcopy(allupdatesports);
@@ -308,7 +318,7 @@ const RtuPortsPage: FC = () => {
                   ? 'bg-[#ADE2BC]'
                   : 'bg-[#E59D9D]',
               )}>
-              <span className="basis-16">{index}</span>
+              <span className="basis-16">{index + 1}</span>
               <div className="basis-64 pr-[20px]">
                 <Select
                   value={data.optical_route.name}
@@ -330,7 +340,6 @@ const RtuPortsPage: FC = () => {
                       ? 'select'
                       : data.optical_route.name}
                   </option>
-                  {/* {opticalRouteOptions.map((data, index) => ( */}
                   {selectedboxoptions.map((data, index) => (
                     <option
                       value={`${data.id}_${data.name}`}
@@ -347,24 +356,30 @@ const RtuPortsPage: FC = () => {
                   <span className="basis-32">{data.length}</span>
                   <div className="basis-40">
                     {data.state != 'deactivate' && (
-                      <ControlledSelect
-                        className="h-10 w-[80%]"
+                      <Select
                         value={
                           data.state == 'activated'
                             ? 'Activated'
-                            : data.state == 'deactivated'
-                            ? 'Deactivated'
-                            : data.state
+                            : 'Deactivated'
                         }
-                        options={[
-                          {label: 'Activated', payload: {active: true}},
-                          {label: 'Deactivated', payload: {active: true}},
-                        ]}
                         onChange={e =>
-                          changestate(index, e.toString().toLowerCase())
+                          changestate(
+                            index,
+                            e.target.value.toString().toLowerCase(),
+                          )
                         }
-                        setValueProp={option => option.label}
-                      />
+                        className="h-10 w-full">
+                        {[{label: 'Activated'}, {label: 'Deactivated'}].map(
+                          (data, index) => (
+                            <option
+                              value={`${data.label}`}
+                              key={index}
+                              className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                              {data.label}
+                            </option>
+                          ),
+                        )}
+                      </Select>
                     )}
                   </div>
                   <div className="flex basis-40 flex-row justify-around gap-x-4">
