@@ -3,16 +3,11 @@ import {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {setopticalroutUpdateTestsetupDetail} from './../../../../store/slices/opticalroutslice';
-import {
-  ControlledSelect,
-  Description,
-  Select,
-  SimpleBtn,
-  TextInput,
-} from '~/components';
+import {Description, Select} from '~/components';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {$GET} from '~/util/requestapi';
+import {deepcopy} from '~/util';
 
 const seperatedate = (time: string) => {
   //this func get full date and seoerate data and time
@@ -74,66 +69,71 @@ const TestDetailsParameters: FC = () => {
     if (params.testId == 'create') {
     } else {
       const getdata = async () => {
-        const getdataa = await $GET(
+        const gettestSetupParameters = await $GET(
           `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
         );
-        const dataa = JSON.parse(JSON.stringify(getdataa));
+        const testSetupParametCopy = deepcopy(gettestSetupParameters);
 
         let checkstartend = Number(
-          seperatedate(dataa?.test_program?.end_date?.end).timePart.split(
-            ':',
-          )[0],
+          seperatedate(
+            testSetupParametCopy?.test_program?.end_date?.end,
+          ).timePart.split(':')[0],
         );
         let checkstartstart = Number(
           seperatedate(
-            dataa?.test_program?.starting_date?.start,
+            testSetupParametCopy?.test_program?.starting_date?.start,
           ).timePart.split(':')[0],
         );
         //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
         const getrtu = async () => {
-          const allrtu = await $GET(`otdr/station/${dataa?.station?.id}/rtus`);
+          const allrtu = await $GET(
+            `otdr/station/${testSetupParametCopy?.station?.id}/rtus`,
+          );
           setRtulist(allrtu);
         };
 
         getrtu();
-       
-        dataa.station_id = getdataa?.station?.id;
-        (dataa.init_rtu_id = getdataa?.rtu?.id),
+
+        testSetupParametCopy.station_id = gettestSetupParameters?.station?.id;
+        (testSetupParametCopy.init_rtu_id = gettestSetupParameters?.rtu?.id),
           //Because we do not have the name of the rtu, we have to find the desired rtu among the rtus and get its name because we need its name.
-          // (dataa.init_rtu_name = rtulist.find(data => data.id == dataa?.rtu?.id)
-          (dataa.init_rtu_name = getdataa?.rtu?.name);
-        dataa.station_name = stations?.data?.find(
-          data => (data.id = dataa?.station?.id),
+          // (testSetupParametCopy.init_rtu_name = rtulist.find(data => data.id == testSetupParametCopy?.rtu?.id)
+          (testSetupParametCopy.init_rtu_name =
+            gettestSetupParameters?.rtu?.name);
+        testSetupParametCopy.station_name = stations?.data?.find(
+          data => (data.id = testSetupParametCopy?.station?.id),
         )?.name;
 
-        (dataa.startdatePart = seperatedate(
-          dataa?.test_program?.starting_date?.start,
+        (testSetupParametCopy.startdatePart = seperatedate(
+          testSetupParametCopy?.test_program?.starting_date?.start,
         ).datePart),
           //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
-          (dataa.starttimePart =
+          (testSetupParametCopy.starttimePart =
             checkstartstart < 10
               ? `0${checkstartstart}:${
                   seperatedate(
-                    dataa?.test_program?.starting_date?.start,
+                    testSetupParametCopy?.test_program?.starting_date?.start,
                   ).timePart.split(':')[1]
                 }`
-              : seperatedate(dataa?.test_program?.starting_date?.start)
-                  .timePart),
+              : seperatedate(
+                  testSetupParametCopy?.test_program?.starting_date?.start,
+                ).timePart),
           //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
-          (dataa.endtimePart =
+          (testSetupParametCopy.endtimePart =
             checkstartend < 10
               ? `0${checkstartend}:${
                   seperatedate(
-                    dataa?.test_program?.end_date?.end,
+                    testSetupParametCopy?.test_program?.end_date?.end,
                   ).timePart.split(':')[1]
                 }`
-              : seperatedate(dataa?.test_program?.end_date?.end).timePart),
-          (dataa.enddatePart = seperatedate(
-            dataa?.test_program?.end_date?.end,
+              : seperatedate(testSetupParametCopy?.test_program?.end_date?.end)
+                  .timePart),
+          (testSetupParametCopy.enddatePart = seperatedate(
+            testSetupParametCopy?.test_program?.end_date?.end,
           ).datePart),
-          delete dataa['station'];
-          delete dataa['rtu'];
-        dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+          delete testSetupParametCopy['station'];
+        delete testSetupParametCopy['rtu'];
+        dispatch(setopticalroutUpdateTestsetupDetail(testSetupParametCopy));
       };
       getdata();
     }
@@ -192,11 +192,6 @@ const TestDetailsParameters: FC = () => {
   const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
 
-  console.log(
-    opticalroutUpdateTestsetupDetail,
-    'opticalroutUpdateTestsetupDetail🤑',
-  );
-
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -208,11 +203,12 @@ const TestDetailsParameters: FC = () => {
             <InputFormik
               defaultValue={opticalroutUpdateTestsetupDetail?.name}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const setupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.name = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+
+                setupDetailCopy.name = e.target.value;
+                dispatch(setopticalroutUpdateTestsetupDetail(setupDetailCopy));
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -226,12 +222,15 @@ const TestDetailsParameters: FC = () => {
             label="Enabled">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
+
                 formik.setFieldValue('enabled', e.target.value);
-                dataa.parameters.enabled = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.enabled = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={formik.values.enabled || false}
               className="basis-96">
@@ -259,12 +258,14 @@ const TestDetailsParameters: FC = () => {
             label="Type">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('type', e.target.value.toString());
-                dataa.parameters.type = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.type = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={formik.values.type}
               className="basis-96">
@@ -299,12 +300,18 @@ const TestDetailsParameters: FC = () => {
                   'stationId',
                   e.target.value.split('_')[1].toString(),
                 );
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.station_name = e.target.value.split('_')[0].toString();
-                dataa.station_id = e.target.value.split('_')[1].toString();
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.station_name = e.target.value
+                  .split('_')[0]
+                  .toString();
+                testsetupDetailCopy.station_id = e.target.value
+                  .split('_')[1]
+                  .toString();
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
                 const allrtu = await $GET(
                   `otdr/station/${e.target.value
                     .split('_')[1]
@@ -337,8 +344,8 @@ const TestDetailsParameters: FC = () => {
             label="RTU">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue(
                   'init_rtu_id',
@@ -348,9 +355,15 @@ const TestDetailsParameters: FC = () => {
                   'init_rtu_name',
                   e.target.value.split('_')[0].toString(),
                 );
-                dataa.init_rtu_name = e.target.value.split('_')[0].toString();
-                dataa.init_rtu_id = e.target.value.split('_')[1].toString();
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.init_rtu_name = e.target.value
+                  .split('_')[0]
+                  .toString();
+                testsetupDetailCopy.init_rtu_id = e.target.value
+                  .split('_')[1]
+                  .toString();
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={opticalroutUpdateTestsetupDetail?.rtu?.name}
               className="basis-96">
@@ -378,12 +391,14 @@ const TestDetailsParameters: FC = () => {
             label="Wavelength (nm)">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('Wavelength', e.target.value.toString());
-                dataa.parameters.wavelength = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.wavelength = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={opticalroutUpdateTestsetupDetail?.parameters?.wavelength}
               className="basis-96">
@@ -415,12 +430,14 @@ const TestDetailsParameters: FC = () => {
             label="Break Strategy">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('BreakStrategy', e.target.value);
-                dataa.parameters.break_strategy = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.break_strategy = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={
                 opticalroutUpdateTestsetupDetail?.parameters?.break_strategy
@@ -448,12 +465,15 @@ const TestDetailsParameters: FC = () => {
             label="Data Save Policy">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('DataSavePolicy', e.target.value);
-                dataa.parameters.date_save_policy = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.date_save_policy =
+                  e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={
                 opticalroutUpdateTestsetupDetail?.parameters?.date_save_policy
@@ -481,12 +501,14 @@ const TestDetailsParameters: FC = () => {
             label="Test Mode">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('TestMode', e.target.value);
-                dataa.parameters.test_mode = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.test_mode = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={opticalroutUpdateTestsetupDetail?.parameters?.test_mode}
               className="basis-96">
@@ -512,12 +534,14 @@ const TestDetailsParameters: FC = () => {
             label="Run Mode">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('RunMode', e.target.value);
-                dataa.parameters.run_mode = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.run_mode = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={opticalroutUpdateTestsetupDetail?.parameters?.run_mode}
               className="basis-96">
@@ -543,12 +567,14 @@ const TestDetailsParameters: FC = () => {
             label="Distance Mode">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('DistanceMode', e.target.value);
-                dataa.parameters.distance_mode = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.distance_mode = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={
                 opticalroutUpdateTestsetupDetail?.parameters?.distance_mode
@@ -577,12 +603,14 @@ const TestDetailsParameters: FC = () => {
               label="Range (km)">
               <Select
                 onChange={e => {
-                  const dataa = JSON.parse(
-                    JSON.stringify(opticalroutUpdateTestsetupDetail),
+                  const testsetupDetailCopy = deepcopy(
+                    opticalroutUpdateTestsetupDetail,
                   );
                   formik.setFieldValue('Range', e.target.value.toString());
-                  dataa.parameters.range = e.target.value;
-                  dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                  testsetupDetailCopy.parameters.range = e.target.value;
+                  dispatch(
+                    setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                  );
                 }}
                 value={opticalroutUpdateTestsetupDetail?.parameters?.range}
                 className="basis-96">
@@ -607,15 +635,18 @@ const TestDetailsParameters: FC = () => {
             label="Pulse Width Mode">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue(
                   'PulseWidthMode',
                   e.target.value.toString(),
                 );
-                dataa.parameters.pulse_width_mode = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.pulse_width_mode =
+                  e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={
                 opticalroutUpdateTestsetupDetail?.parameters?.pulse_width_mode
@@ -643,15 +674,17 @@ const TestDetailsParameters: FC = () => {
               label="Pulse Width (ns)">
               <Select
                 onChange={e => {
-                  const dataa = JSON.parse(
-                    JSON.stringify(opticalroutUpdateTestsetupDetail),
+                  const testsetupDetailCopy = deepcopy(
+                    opticalroutUpdateTestsetupDetail,
                   );
                   formik.setFieldValue(
                     'PulseWidthns',
                     e.target.value.toString(),
                   );
-                  dataa.parameters.pulse_width = e.target.value;
-                  dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                  testsetupDetailCopy.parameters.pulse_width = e.target.value;
+                  dispatch(
+                    setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                  );
                 }}
                 value={
                   opticalroutUpdateTestsetupDetail?.parameters?.pulse_width
@@ -678,12 +711,14 @@ const TestDetailsParameters: FC = () => {
             label="Sampling Mode">
             <Select
               onChange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
                 formik.setFieldValue('SamplingMode', e.target.value.toString());
-                dataa.parameters.sampling_mode = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.sampling_mode = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               value={
                 opticalroutUpdateTestsetupDetail?.parameters?.sampling_mode
@@ -719,11 +754,14 @@ const TestDetailsParameters: FC = () => {
               }>
               <InputFormik
                 onchange={e => {
-                  const dataa = JSON.parse(
-                    JSON.stringify(opticalroutUpdateTestsetupDetail),
+                  const testsetupDetailCopy = deepcopy(
+                    opticalroutUpdateTestsetupDetail,
                   );
-                  dataa.parameters.sampling_duration = e.target.value;
-                  dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                  testsetupDetailCopy.parameters.sampling_duration =
+                    e.target.value;
+                  dispatch(
+                    setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                  );
                 }}
                 outerClassName="!flex-grow-0 w-96"
                 wrapperClassName="w-full"
@@ -742,11 +780,13 @@ const TestDetailsParameters: FC = () => {
               max={1.8}
               step={0.000001}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.IOR = e.target.value;
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.IOR = e.target.value;
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -764,11 +804,13 @@ const TestDetailsParameters: FC = () => {
               max={-40}
               step={0.01}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.RBS = Number(e.target.value);
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.RBS = Number(e.target.value);
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -786,11 +828,15 @@ const TestDetailsParameters: FC = () => {
               max={9.99}
               step={0.01}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.event_loss_threshold = Number(e.target.value);
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.event_loss_threshold = Number(
+                  e.target.value,
+                );
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -808,13 +854,14 @@ const TestDetailsParameters: FC = () => {
               max={-14}
               step={0.1}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.event_reflection_threshold = Number(
-                  e.target.value,
+                testsetupDetailCopy.parameters.event_reflection_threshold =
+                  Number(e.target.value);
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
                 );
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -832,11 +879,15 @@ const TestDetailsParameters: FC = () => {
               max={9.99}
               step={0.01}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.fiber_end_threshold = Number(e.target.value);
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.fiber_end_threshold = Number(
+                  e.target.value,
+                );
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -854,11 +905,15 @@ const TestDetailsParameters: FC = () => {
               max={40}
               step={0.01}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.total_loss_threshold = Number(e.target.value);
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                testsetupDetailCopy.parameters.total_loss_threshold = Number(
+                  e.target.value,
+                );
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -876,13 +931,15 @@ const TestDetailsParameters: FC = () => {
               max={40}
               step={0.01}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.section_loss_threshold = Number(
+                testsetupDetailCopy.parameters.section_loss_threshold = Number(
                   e.target.value,
                 );
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
+                );
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
@@ -899,13 +956,14 @@ const TestDetailsParameters: FC = () => {
               min={0}
               step={0.01}
               onchange={e => {
-                const dataa = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
+                const testsetupDetailCopy = deepcopy(
+                  opticalroutUpdateTestsetupDetail,
                 );
-                dataa.parameters.injection_level_threshold = Number(
-                  e.target.value,
+                testsetupDetailCopy.parameters.injection_level_threshold =
+                  Number(e.target.value);
+                dispatch(
+                  setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
                 );
-                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
               outerClassName="!flex-grow-0 w-96"
               wrapperClassName="w-full"
