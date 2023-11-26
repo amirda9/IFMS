@@ -135,10 +135,13 @@ function Chart() {
   const [lineX, setLineX] = useState(5);
   const [isDragging, setIsDragging] = useState(false);
   const [rectangelzoom, setRectangelzoom] = useState(false);
+  const [mousecoordinate,setMousecoordinate]=useState()
+  const [scrollValue, setScrollValue] = useState(0);
   const [startdraw, setStartDraw] = useState(false);
   const [verticalLines, setVerticalLines] = useState<{x: number; y: number}[]>(
     [],
   );
+  const [yvalue,setYvalue]=useState("")
   const [mouseCoords, setMouseCoords] = useState({x: null, y: null});
   const [basescale, setbasescale] = useState(2);
   const [xScale, setXScale] = useState<any>({
@@ -146,7 +149,7 @@ function Chart() {
     min:0
     // tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
   });
-  console.log(xScale,'xScalexScale');
+  // console.log(scrollValue,'scrollValue');
   
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
@@ -172,22 +175,33 @@ function Chart() {
   const square =svgRef;
   
   // گرفتن مختصات مربع نسبت به صفحه مرورگر
-  const rect:any = square.current.getBoundingClientRect();
+  const rect:any = square?.current?.getBoundingClientRect();
   //  console.log((rect.width-rect.x)/11,'hgjgjgh');
   
   const squareX = rect.left;
   const squareY = rect.bottom;
+  console.log(rect,'uuuuuuuuuu');
+  console.log(mouseY,'wwwwwwwwwww');
   
   // محاسبه مختصات موس نسبت به مربع
   const x= mouseX -157.8;
-  const y = mouseY - squareY;
+  const y = ((mouseY-60));
+  // console.log((((y+scrollValue)-60))/35,'yyyttttt');
+  // setYvalue(((mouseY-503)))
+//  console.log('🤬',(x/((rect.width-rect.x)/(11-xScale.min)))+xScale.min);
+// 
 
- console.log('🤬',(x/((rect.width-rect.x)/(11-xScale.min)))+xScale.min);
   // console.log('😴',y);
   // const xx = event;
   // console.log(squareX,'xxx');
   
   }
+  const getScrollValue = () => {
+    setScrollValue(window.pageYOffset);
+    };
+  useEffect(()=>{
+    window.addEventListener("scroll", getScrollValue);
+  },[])
 
   const Trace = () => {
     setLeftverticaltab('Trace');
@@ -200,7 +214,7 @@ function Chart() {
   const LinkView = () => {
     setLeftverticaltab('LinkView');
   };
-
+  // console.log(window.scrollY,'yyy');
   const zoom = (x: boolean, y: number) => {
     setXScale({
       type: 'linear',
@@ -509,7 +523,7 @@ function Chart() {
       // onClick={()=>{rectangelzoom?setStartDraw(!startdraw):{}}}
 
       className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
-      <span>{change}</span>
+      <span>{(yvalue)}</span>
       <div className="flex h-[540px] w-full flex-row">
         {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
         <div className="flex h-full w-[87px] flex-col">
@@ -587,9 +601,9 @@ function Chart() {
         <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
-              onMouseDown={handleMouseDown2}
+              // onMouseDown={handleMouseDown2}
               // onMouseMove={handleMouseMove2}
-              onMouseUp={handleMouseUp2}
+              // onMouseUp={handleMouseUp2}
               ref={svgRef}
               onMouseMove={(e) => 
                 getchartcoordinate(e)
@@ -850,3 +864,19 @@ export default Chart;
 // }
 
 // export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
