@@ -2,10 +2,10 @@ import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
 import {setStationsrtu} from './../../../store/slices/rtu';
 import {FC, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import {Description, SimpleBtn, Select} from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
-import {InputFormik} from '~/container';
+import {InputFormik, SelectFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
 import {$Post} from '~/util/requestapi';
 import {useDispatch, useSelector} from 'react-redux';
@@ -45,6 +45,7 @@ const RtuCreatePage: FC = () => {
   const [errortext, setErrortext] = useState('');
   const {stationsrtu} = useSelector((state: RootState) => state.rtu);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     state: {users},
     request,
@@ -71,6 +72,7 @@ const RtuCreatePage: FC = () => {
     },
 
     onSubmit: async values => {
+      //create an rtu for station
       try {
         const creatertu = await $Post(`otdr/rtu/`, {
           name: values.name,
@@ -85,12 +87,15 @@ const RtuCreatePage: FC = () => {
           default_gateway: values.DefaultGateway,
         });
         const getdata = await creatertu.json();
+
         if (creatertu.status == 201) {
           const stationsrtuCopy = deepcopy(stationsrtu);
 
-          const findrtu = stationsrtuCopy.findIndex(
-            (data: any) => data.stationid == getdata.station_id,
+          const findrtu = stationsrtu.findIndex(
+            (data: any) => data.stationid == params.id,
           );
+          //Then we update the list of rtus of the station so that we can see the updated list of rtus in the left bar.
+
           if (findrtu > -1) {
             stationsrtuCopy[findrtu].rtues.push({
               name: getdata.name,
@@ -98,11 +103,13 @@ const RtuCreatePage: FC = () => {
             });
           } else {
             stationsrtuCopy.push({
-              stationid: getdata.stationid,
+              stationid: params.id,
               rtues: [{name: getdata.name, id: getdata.id}],
+              deletertues: [],
             });
           }
           dispatch(setStationsrtu(stationsrtuCopy));
+          navigate(`../../remote-test-units/${getdata.id}_${params.id}`);
         } else {
           setErrortext(getdata.detail[0].msg);
         }
@@ -112,7 +119,7 @@ const RtuCreatePage: FC = () => {
     },
   });
 
-  const Users = users?.data || [];
+
   return (
     <div className="flex flex-grow">
       <FormikProvider value={formik}>
@@ -130,29 +137,48 @@ const RtuCreatePage: FC = () => {
             <Description
               labelClassName=" text-[18px] font-light leading-[24.2px] mb-[4px]"
               label="Model">
-              <Select
-                onChange={e => formik.setFieldValue('model', e.target.value)}
+              <SelectFormik
+                placeholder="select"
+                name="model"
                 className="w-[400px]">
-                <option value="" className="hidden">
-                  select
-                </option>
-                <option value={undefined} className="hidden">
-                  select
-                </option>
+                <option value="select" label="" className="hidden" />
+                <option value={undefined} label="select" className="hidden" />
 
-                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                <option
+                  key={0}
+                  label={'model1'}
+                  className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   model1
                 </option>
-                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                <option
+                  key={2}
+                  label={'model2'}
+                  className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   model2
                 </option>
-              </Select>
+              </SelectFormik>
             </Description>
 
             <Description
               labelClassName="text-[18px] font-light leading-[24.2px] mb-[4px]"
               label="Contact Person">
-              <Select
+              <SelectFormik
+                placeholder="select"
+                name="ContactPerson"
+                className="w-[400px]">
+                <option value="select" label="" className="hidden" />
+                <option value={undefined} label="select" className="hidden" />
+                {users && users.data?.map((data, index) => (
+                  <option
+                    key={index}
+                    value={data.id}
+                    label={data.username}
+                    className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    {data.username}
+                  </option>
+                ))}
+              </SelectFormik>
+              {/* <Select
                 onChange={e =>
                   formik.setFieldValue('ContactPerson', e.target.value)
                 }
@@ -171,7 +197,7 @@ const RtuCreatePage: FC = () => {
                     {data.name}
                   </option>
                 ))}
-              </Select>
+              </Select> */}
             </Description>
 
             <div className="mb-[4px] flex w-full flex-row">

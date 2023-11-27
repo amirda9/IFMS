@@ -16,10 +16,10 @@ import {getPrettyDateTime} from '~/util/time';
 
 const rtuSchema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
-  OTDRFIRST:Yup.string().required('Please enter OTDR IP'),
-  SWITCHFIRST:Yup.string().required('Please enter Switch IP'),
-  SubnetMask:Yup.string().required('Please enter Subnet Mask'),
-  DefaultGateway:Yup.string().required('Please enter Default Gateway'),
+  OTDRFIRST: Yup.string().required('Please enter OTDR IP'),
+  SWITCHFIRST: Yup.string().required('Please enter Switch IP'),
+  SubnetMask: Yup.string().required('Please enter Subnet Mask'),
+  DefaultGateway: Yup.string().required('Please enter Default Gateway'),
 });
 
 type Rowtext = {
@@ -51,7 +51,9 @@ const RtuDetailsPage: FC = () => {
       update: state.http.rtuUpdate,
     }),
     initialRequests: request => {
-      request('rtuDetail', {params: {rtu_Id: params?.rtuId?.split("_")[0] || ''}});
+      request('rtuDetail', {
+        params: {rtu_Id: params?.rtuId?.split('_')[0] || ''},
+      });
 
       request('userList', undefined);
     },
@@ -60,14 +62,15 @@ const RtuDetailsPage: FC = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update?.httpRequestStatus === 'success'
       ) {
-        request('rtuDetail', {params: {rtu_Id: params?.rtuId?.split("_")[0] || ''}});
+        request('rtuDetail', {
+          params: {rtu_Id: params?.rtuId?.split('_')[0] || ''},
+        });
       }
     },
   });
 
-
   const formik = useFormik({
-    validationSchema:rtuSchema,
+    validationSchema: rtuSchema,
     enableReinitialize: true,
     initialValues: {
       name: rtuDetail?.data?.name || '',
@@ -88,7 +91,7 @@ const RtuDetailsPage: FC = () => {
     },
     onSubmit: () => {
       request('rtuUpdate', {
-        params: {rtu_id:params?.rtuId?.split("_")[0] || ''},
+        params: {rtu_id: params?.rtuId?.split('_')[0] || ''},
         data: {
           name: formik.values.name,
           model: formik.values.model,
@@ -105,7 +108,7 @@ const RtuDetailsPage: FC = () => {
     },
   });
 
-  const Users = users?.data || [];
+
   return (
     <div className="flex flex-grow">
       <FormikProvider value={formik}>
@@ -154,16 +157,16 @@ const RtuDetailsPage: FC = () => {
                 <option value={undefined} className="hidden">
                   {rtuDetail?.data?.contact_person?.username || ''}
                 </option>
-                {Users.map((data, index) => (
+                {users && users.data?.map((data, index) => (
                   <option
                     key={index}
                     value={data.id}
+                    label={data.username}
                     className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                     {data.username}
                   </option>
                 ))}
               </Select>
-     
             </Description>
             <div className="mb-[4px] flex w-full flex-row">
               <div className="flex w-[50%] flex-row xl:w-[500px]">

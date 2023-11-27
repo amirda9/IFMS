@@ -13,7 +13,7 @@ type PropsType = {
   className?: string;
   enabelcheck?: boolean;
   checkstatus?: boolean;
-  onclick?: (e: boolean) => void;
+  onclickcheckbox?: (e: boolean) => void;
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -24,7 +24,7 @@ const SidebarItem: FC<PropsType> = ({
   className,
   enabelcheck = false,
   checkstatus = false,
-  onclick = () => {},
+  onclickcheckbox = () => {},
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -48,14 +48,14 @@ const SidebarItem: FC<PropsType> = ({
       {enabelcheck ? (
         <Checkbox
           checkstatus={checkstatus}
-          onclick={e => onclick(e)}
+          onclick={e => onclickcheckbox(e)}
           iconclassnam="w-[15px] h-[15px] ml-[1px] mt-[1px]"
           classname={
             'absolute z-10 left-[4px] top-[4.5px] w-[20px] h-[20px] mr-[4px] mt-[5px] border-[1px] border-[#000000]'
           }
         />
       ) : null}
-      {(onDelete && result > -1) || checkstatus ? (
+      {(onDelete && result > -1)  ? (
         <button
           className={`ml-[-4px] rounded-r-lg px-[4px] ${
             result > -1 ? 'bg-cyan-200' : 'white'

@@ -43,7 +43,7 @@ export type regionstationstype = {
 };
 
 export type allstationsrtutype=
-  {stationid: string; rtues: {name: string; id: string}[]}
+  {stationid: string; rtues: {name: string; id: string}[];deletertues: string[]}
   
 export type stationsrtutype = {
   payload: allstationsrtutype[];
@@ -58,14 +58,8 @@ export  type allnetworkregionstype= {
 
 export type allregionstationstype={regionid: string; stations: {name: string; id: string}[]}
 
-
-type leftbarNetworkcheckboxlisttype={length:number,networkid:string,rtues:string[]}[]
-type leftbarRegioncheckboxlist={length:number,regionid:string,rtues:string[]}[]
 type leftbarStationcheckboxlist={length:number,stationid:string,rtues:string[]}[]
 export type initialStatetype={
-  leftbarcheckboxlist:rtuleftbar[]
-  leftbarNetworkcheckboxlist:leftbarNetworkcheckboxlisttype
-  leftbarRegioncheckboxlist:leftbarRegioncheckboxlist
   leftbarStationcheckboxlist:leftbarStationcheckboxlist
   networkregions:allnetworkregionstype[]
   regionstations:allregionstationstype[]
@@ -74,9 +68,6 @@ export type initialStatetype={
   allLeftbar:allLeftbartype[]
 }
 const initialState:initialStatetype = {
-  leftbarcheckboxlist: [],
-  leftbarNetworkcheckboxlist: [],
-  leftbarRegioncheckboxlist: [],
   leftbarStationcheckboxlist: [],
   networkregions: [],
   regionstations: [],
@@ -96,15 +87,6 @@ const rtu = createSlice({
     setallLeftbar: (state, action: {type:string,payload:allLeftbartype[]}) => {
       state.allLeftbar = action.payload;
     },
-    setleftbarcheckboxlist: (state, action: leftbarcheckboxlisttype) => {
-      state.leftbarcheckboxlist = action.payload;
-    },
-    setleftbarNetworkcheckboxlist: (state, action: {payload:leftbarNetworkcheckboxlisttype,type:string}) => {
-     state.leftbarNetworkcheckboxlist = action.payload;
-   },
-   setleftbarRegioncheckboxlist: (state, action: {payload:leftbarRegioncheckboxlist,type:string}) => {
-    state.leftbarRegioncheckboxlist = action.payload;
-  },
   setleftbarStationcheckboxlist: (state, action: {payload:leftbarStationcheckboxlist,type:string}) => {
    state.leftbarStationcheckboxlist = action.payload;
  },
@@ -120,6 +102,6 @@ const rtu = createSlice({
   },
 });
 
-export const {setNetworkregions,setleftbarcheckboxlist, setRegionstations,setStationsrtu,setleftbarNetworkcheckboxlist,setleftbarRegioncheckboxlist,setleftbarStationcheckboxlist,setallLeftbar} = rtu.actions;
+export const {setNetworkregions, setRegionstations,setStationsrtu,setleftbarStationcheckboxlist,setallLeftbar} = rtu.actions;
 
 export default rtu.reducer;
