@@ -5,14 +5,14 @@ type veiwerlists = {
   payload: opticalrouteUpdateTestSetupDetailtype;
   type: string;
 };
-
+export type networkopticaltype={networkid: string; opticalrouts: {name: string; id: string}[]}[]
 type networkselectedlisttype={
   payload: string[];
   type: string;
 }
 
-type networkopticaltype={
-  payload: {networkid: string; opticalrouts: {name: string; id: string}[]}[];
+type networkopticaltypeAction={
+  payload:networkopticaltype;
   type: string;
 }
 export  type alldeleteopticalroutetype={
@@ -24,6 +24,7 @@ type alldeleteopticalroutetypeAction={
   payload:alldeleteopticalroutetype;
   type: string;
 }
+
 
 type initialStatetype={
   opticalroutUpdateTestsetupDetail:opticalrouteUpdateTestSetupDetailtype
@@ -116,7 +117,7 @@ const opticalroute = createSlice({
     setNetworkselectedlist: (state, action: networkselectedlisttype) => {
       state.networkselectedlist = action.payload;
     },
-    setNetworkoptical: (state, action: networkopticaltype) => {
+    setNetworkoptical: (state, action: networkopticaltypeAction) => {
       state.networkoptical = action.payload;
     },
     setAlldeleteopticalroute: (state, action: alldeleteopticalroutetypeAction) => {
