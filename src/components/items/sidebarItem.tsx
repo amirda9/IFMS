@@ -14,6 +14,8 @@ type PropsType = {
   enabelcheck?: boolean;
   checkstatus?: boolean;
   onclickcheckbox?: (e: boolean) => void;
+  onclick?: () => void;
+  selected?:boolean
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -25,6 +27,8 @@ const SidebarItem: FC<PropsType> = ({
   enabelcheck = false,
   checkstatus = false,
   onclickcheckbox = () => {},
+  onclick=()=>{},
+  selected=false
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -32,11 +36,10 @@ const SidebarItem: FC<PropsType> = ({
 
   var result = location.pathname.search(to);
 
-  const [selected, setSelected] = useState(false);
   return (
     <div className={'relative my-1 flex flex-row ' + className}>
       <NavLink
-        onClick={() => setSelected(!selected)}
+        onClick={() => {onclick()}}
         to={to}
         className={({isActive}) =>
           ` flex h-10 flex-grow items-center rounded-lg pl-[28px]  ${
@@ -55,7 +58,7 @@ const SidebarItem: FC<PropsType> = ({
           }
         />
       ) : null}
-      {(onDelete && result > -1)  ? (
+      {(onDelete && result > -1) && selected  ? (
         <button
           className={`ml-[-4px] rounded-r-lg px-[4px] ${
             result > -1 ? 'bg-cyan-200' : 'white'

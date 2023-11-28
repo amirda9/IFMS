@@ -1,17 +1,19 @@
-import dayjs from 'dayjs';
+
+import * as Yup from 'yup';
 import {Form, FormikProvider, useFormik} from 'formik';
-import {FC, useEffect} from 'react';
-import {networkExplored} from '~/constant';
+import {FC} from 'react';
 import { useParams,useNavigate } from 'react-router-dom';
-import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
-import {InputFormik, TextareaFormik} from '~/container';
-import {useHttpRequest} from '~/hooks';
-import {setNetworkselectedlist,setNetworkoptical} from './../../../store/slices/opticalroutslice'
+import {ControlledSelect, Description, SimpleBtn} from '~/components';
+import {InputFormik, SelectFormik, TextareaFormik} from '~/container';
+import {setNetworkoptical} from './../../../store/slices/opticalroutslice'
 import { useDispatch, useSelector } from 'react-redux';
-import { $GET } from '~/util/requestapi';
-import Cookies from 'js-cookie';
+import {$Get, $Post } from '~/util/requestapi';
+import { deepcopy } from '~/util';
 
-
+const rtuSchema = Yup.object().shape({
+  name: Yup.string().required('Please enter name'),
+  type: Yup.string().required('Please enter type'),
+});
 const OpticalRouteCreatePage: FC = () => {
   const params = useParams();
   let navigate=useNavigate()
@@ -19,16 +21,12 @@ const OpticalRouteCreatePage: FC = () => {
   const {networkselectedlist,networkoptical} = useSelector(
     (state: any) => state.opticalroute,
   );
-  const {state, request} = useHttpRequest({
-    selector: state => ({
-    }),
-  });
 
 
-  useEffect(()=>{
 
-  },[])
+
   const formik = useFormik({
+    validationSchema: rtuSchema,
     initialValues: {
       name: '',
       comment: '',
@@ -38,37 +36,37 @@ const OpticalRouteCreatePage: FC = () => {
       network_id: '',
     },
     onSubmit: async(values) => {
-      request('opticalrouteCreate', {
-        data: {
+      try {
+        const createoptical=await $Post(`otdr/optical-route/`,{
           name: values.name,
           comment: values.comment,
           test_ready: values.test_ready,
           type: values.type,
           avg_hellix_factor:values.avg_hellix_factor,
           network_id:params.id || "",
-        },
-      });
-setTimeout(async()=>{
-  const findopt = networkoptical.findIndex((data:any) => data.networkid == params.id);
-  const opticals = await $GET(`otdr/optical-route/?network_id=${params.id}`);
- 
-  if (findopt > -1) {
-    let old = [...networkoptical];
-    let newdata=old.filter(data => data.networkid != params.id)
-    newdata.push({networkid: params.id, opticalrouts:opticals})
-   dispatch(setNetworkoptical(newdata));
-  } else {
-    let old = [...networkoptical];
-    const opticals = await $GET(`otdr/optical-route/?network_id=${params.id}`);
-    old.push({networkid: params.id, opticalrouts:opticals})
-   dispatch(setNetworkoptical(old)) ;
-  }
-  // navigate(opticals[opticals.length-1].id)
-},200)
+        })
+        const createopticaldata=await createoptical.json();
+        if(createoptical.status == 201){
+          const findopt = networkoptical.findIndex((data:any) => data.networkid == params.id);
+          const opticals = await $Get(`otdr/optical-route/?network_id=${params.id}`);
+          const opticaldata=await opticals.json();
+         if(opticals.status == 200){
+           let networkopticalCopy =deepcopy(networkoptical);
+           if (findopt > -1) {
+            let newdata=networkopticalCopy.filter((data:any) => data.networkid != params.id)
+            newdata.push({networkid: params.id, opticalrouts:opticaldata})           
+           dispatch(setNetworkoptical(newdata));
+          } else {
+            networkopticalCopy.push({networkid: params.id, opticalrouts:opticaldata})
+           dispatch(setNetworkoptical(networkopticalCopy)) ;
+          }
+            navigate(`../../${createopticaldata.id}`)
+         }
+        }
   
-
-
-
+      } catch (error) {
+        
+      }
     },
   });
 
@@ -97,23 +95,27 @@ setTimeout(async()=>{
             </Description>
 
             <Description label="Type">
-            <Select
-                onChange={e => formik.setFieldValue('type', e.target.value)}
-                className="min-w-[13rem]">
-                <option value="" className="hidden">
-                  select
-                </option>
-                <option value={undefined} className="hidden">
-                select
-                </option>
+            <SelectFormik
+                placeholder="select"
+                name="type"
+                className="w-[400px]">
+                <option value="select" label="" className="hidden" />
+                <option value={undefined} label="select" className="hidden" />
 
-                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                dark
+                <option
+                  key={0}
+                  label={'dark'}
+                  className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                 dark
                 </option>
-                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  light
+                <option
+                  key={2}
+                  label={'light'}
+                  className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    light
                 </option>
-              </Select>
+              </SelectFormik>
+          
        
             </Description>
 

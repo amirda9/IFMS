@@ -1,8 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType'
-import { object, string } from 'yup';
+
 type veiwerlists = {
-  payload: opticalrouteUpdateTestSetupDetailtype | {};
+  payload: opticalrouteUpdateTestSetupDetailtype;
   type: string;
 };
 
@@ -15,16 +15,23 @@ type networkopticaltype={
   payload: {networkid: string; opticalrouts: {name: string; id: string}[]}[];
   type: string;
 }
-type alldeleteopticalroutetype={
-  payload:{networkid: string; opticalrouts: {id: string}[]};
+export  type alldeleteopticalroutetype={
+  networkid: string; opticalrouts:string[];
+}[]
+
+
+type alldeleteopticalroutetypeAction={
+  payload:alldeleteopticalroutetype;
   type: string;
 }
 
-type allcheckednetworktype={
-  payload:string[];
-  type: string;
+type initialStatetype={
+  opticalroutUpdateTestsetupDetail:opticalrouteUpdateTestSetupDetailtype
+  networkselectedlist:string[]
+  networkoptical:{networkid: string; opticalrouts: {name: string; id: string}[]}[]
+  alldeleteopticalroute:alldeleteopticalroutetype
 }
-const initialState = {
+const initialState:initialStatetype = {
   opticalroutUpdateTestsetupDetail:{    name: "",
     station_id: "",
     station_name: "",
@@ -97,8 +104,7 @@ const initialState = {
     networkselectedlist:[],
     networkoptical:[],
     alldeleteopticalroute:[],
-    allcheckednetwork:[],
-} as any;
+};
 
 const opticalroute = createSlice({
   name: 'type',
@@ -113,12 +119,10 @@ const opticalroute = createSlice({
     setNetworkoptical: (state, action: networkopticaltype) => {
       state.networkoptical = action.payload;
     },
-    setAlldeleteopticalroute: (state, action: alldeleteopticalroutetype) => {
+    setAlldeleteopticalroute: (state, action: alldeleteopticalroutetypeAction) => {
       state.alldeleteopticalroute = action.payload;
     },
-    setAllcheckednetwork: (state, action: allcheckednetworktype) => {
-      state.allcheckednetwork = action.payload;
-    },
+
   },
 });
 
@@ -127,7 +131,6 @@ export const {
   setNetworkselectedlist,
   setNetworkoptical,
   setAlldeleteopticalroute,
-  setAllcheckednetwork
 } = opticalroute.actions;
 
 export default opticalroute.reducer;
