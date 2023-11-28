@@ -4,11 +4,9 @@ import {useNavigate} from 'react-router-dom';
 import {SidebarItem, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
-import {$Delete, $GET, $Get} from '~/util/requestapi';
+import {$Delete, $Get} from '~/util/requestapi';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  allstationsrtutype,
-} from './../../../store/slices/rtu';
+import {allstationsrtutype} from './../../../store/slices/rtu';
 import {deepcopy} from './../../../util/deepcopy';
 import {
   setNetworkregions,
@@ -18,6 +16,7 @@ import {
 } from './../../../store/slices/rtu';
 import {IoTrashOutline} from 'react-icons/io5';
 import {RootState} from '~/store';
+import Swal from 'sweetalert2';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -32,6 +31,8 @@ type Itemstationbtntype = {
   classname?: string;
   onclick?: () => void;
   canAdd?: boolean;
+  regionid: string;
+  networkid: string;
 };
 type Itemregionbtntype = {
   name: string;
@@ -41,19 +42,42 @@ type Itemregionbtntype = {
   canAdd?: boolean;
   netWorkid: string;
 };
+type getallrtuestype = {
+  id: string;
+  name: string;
+  station: {
+    id: string;
+    name: string;
+    network: {
+      id: string;
+      name: string;
+    };
+  };
+  connection: string;
+  last_comm: string;
+  last_successful_comm: string;
+}[];
+
 // -------------------- main ------------------------ main ------------------- main -----------------
+const swalsetting: any = {
+  title: 'Are you sure you want to delete these components?',
+  // text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!',
+};
+
 const RtuLayout: FC = () => {
   const dispatch = useDispatch();
   const [mount, setMount] = useState(false);
   const [networkId, setNetworkId] = useState('');
   const [selectedtabId, setSelectedtabid] = useState('');
   const navigate = useNavigate();
-  const {
-    stationsrtu,
-    regionstations,
-    networkregions,
-    leftbarStationcheckboxlist,
-  } = useSelector((state: RootState) => state.rtu);
+  const {stationsrtu, regionstations, networkregions} = useSelector(
+    (state: RootState) => state.rtu,
+  );
 
   const {
     request,
@@ -85,129 +109,154 @@ const RtuLayout: FC = () => {
   };
   // ***************************
 
-  const onclickstation = async (id: string) => {
-    const dataa = await $GET(`otdr/station/${id}/rtus`);
-    const findstation = stationsrtu.findIndex(data => data.stationid == id);
-    if (findstation < 0 && dataa.length > 0) {
-      let old = deepcopy(stationsrtu);
+  const onclickstation = async (
+    id: string,
+    regionid: string,
+    networkid: string,
+  ) => {
+    const stationrtues = await $Get(`otdr/station/${id}/rtus`);
+    try {
+      if (stationrtues.status == 200) {
+        const stationrtuesdata = await stationrtues.json();
+        const findstation = stationsrtu.findIndex(data => data.stationid == id);
+        if (findstation < 0 && stationrtuesdata.length > 0) {
+          let stationsrtuCopy = deepcopy(stationsrtu);
 
-      old.push({
-        stationid: id,
-        rtues: dataa,
-        deletertues: [...(old.deletertues || [])],
-      });
-      dispatch(setStationsrtu(old));
+          stationsrtuCopy.push({
+            regionid: regionid,
+            networkid: networkid,
+            stationid: id,
+            rtues: stationrtuesdata,
+            deletertues: [...(stationsrtuCopy.deletertues || [])],
+          });
+          dispatch(setStationsrtu(stationsrtuCopy));
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
+
     // ------------------------------------
-    let oldleftbarStationcheckboxlist = deepcopy(leftbarStationcheckboxlist);
-    let findstatininstationrtu = leftbarStationcheckboxlist.findIndex(
-      data => data.stationid == id,
-    );
-    if (findstatininstationrtu < 0) {
-      oldleftbarStationcheckboxlist.push({
-        length: oldleftbarStationcheckboxlist.length,
-        stationid: id,
-        rtues: dataa.map((data: {id: string; name: string}) => data.id),
-      });
-      dispatch(setleftbarStationcheckboxlist(oldleftbarStationcheckboxlist));
-    }
   };
 
   const ondeletenetworkrtu = async (id: string) => {
-    let oldstationrtu = deepcopy(stationsrtu);
-    //first get the network rtues
-    try {
-      const getnetworlrtues = await $Get(`otdr/rtu?network_id=${id}`);
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        let oldstationrtu = deepcopy(stationsrtu);
+        //first get the network rtues
+        try {
+          const getnetworlrtues = await $Get(`otdr/rtu?network_id=${id}`);
 
-      if (getnetworlrtues.status == 200) {
-        const networlrtues = await getnetworlrtues.json();
-        if (networlrtues.length > 0) {
-          //then delete network rtues
-          const deleteNetworkRtues = await $Delete(`otdr/rtu/batch_delete`, [
-            networlrtues?.map((data: any) => data.id),
-          ]);
-          if (deleteNetworkRtues.status == 200) {
-            let alldeletedrtu = deepcopy(
-              networlrtues?.map((data: any) => data.id),
-            );
-            for (let i = 0; i < stationsrtu.length; i++) {
-              let result = stationsrtu[i].rtues.filter(
-                data => !alldeletedrtu.includes(data.id),
+          if (getnetworlrtues.status == 200) {
+            const networlrtues: getallrtuestype = await getnetworlrtues.json();
+            if (networlrtues.length > 0) {
+              //then delete network rtues
+              const deleteNetworkRtues = await $Delete(
+                `otdr/rtu/batch_delete`,
+                [networlrtues?.map(data => data.id)],
               );
-              oldstationrtu[i].rtues = result;
+              if (deleteNetworkRtues.status == 200) {
+                for (let i = 0; i < stationsrtu.length; i++) {
+                  if (stationsrtu[i].networkid == id) {
+                    oldstationrtu[i].rtues = [];
+                    oldstationrtu[i].deletertues = [];
+                  }
+                }
+                dispatch(setStationsrtu(oldstationrtu));
+                // for (let i = 0; i < stationsrtu.length; i++) {
+                //   let result = stationsrtu[i].rtues.filter(
+                //     data => !alldeletedrtu.includes(data.id),
+                //   );
+                //   oldstationrtu[i].rtues = result;
+                // }
+                // dispatch(setStationsrtu(oldstationrtu));
+              }
             }
-            dispatch(setStationsrtu(oldstationrtu));
           }
+        } catch (error) {
+          console.log(error);
         }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
   };
 
   const onclickdeleteregion = async (regionid: string, netWorkid: string) => {
-    let oldstationrtu = deepcopy(stationsrtu);
-    try {
-      const getregionrtues = await $Get(`otdr/rtu?region_id=${regionid}`);
-
-      if (getregionrtues.status == 200) {
-        const regionrtues = await getregionrtues.json();
-
-        if (regionrtues.length > 0) {
-          const deleteregionRtues = await $Delete(
-            `otdr/rtu/batch_delete`,
-            regionrtues?.map((data: any) => data.id),
-          );
-
-          if (deleteregionRtues.status == 201) {
-            let alldeletedrtu = deepcopy(
-              regionrtues?.map((data: any) => data.id),
-            );
-            for (let i = 0; i < stationsrtu.length; i++) {
-              let result = stationsrtu[i].rtues.filter(
-                data => !alldeletedrtu.includes(data.id),
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        let oldstationrtu = deepcopy(stationsrtu);
+        try {
+          //get region rtues
+          const getregionrtues = await $Get(`otdr/rtu?region_id=${regionid}`);
+          if (getregionrtues.status == 200) {
+            const regionrtues: getallrtuestype = await getregionrtues.json();
+            if (regionrtues.length > 0) {
+              //delete region rtues
+              const deleteregionRtues = await $Delete(
+                `otdr/rtu/batch_delete`,
+                regionrtues?.map(data => data.id),
               );
-              oldstationrtu[i].rtues = result;
+
+              if (deleteregionRtues.status == 201) {
+                //update station rtues
+                for (let i = 0; i < stationsrtu.length; i++) {
+                  if (stationsrtu[i].regionid == regionid) {
+                    oldstationrtu[i].rtues = [];
+                    oldstationrtu[i].deletertues = [];
+                  }
+                }
+                dispatch(setStationsrtu(oldstationrtu));
+              }
             }
-            dispatch(setStationsrtu(oldstationrtu));
           }
+        } catch (error) {
+          console.log(error);
         }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
   };
 
   const ondeleteStaionrtu = async (stationid: string) => {
-    let oldstationrtu = deepcopy(stationsrtu);
-    try {
-      const getstationrtues = await $Get(`otdr/station/${stationid}/rtus`);
-      if (getstationrtues.status == 200) {
-        const stationallrtues = await getstationrtues.json();
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        let oldstationrtu = deepcopy(stationsrtu);
+        const findstationrtu = stationsrtu.findIndex(
+          data => data.stationid == stationid,
+        );
+        try {
+          //get station rtues
+          const getstationrtues = await $Get(`otdr/station/${stationid}/rtus`);
+          if (getstationrtues.status == 200) {
+            const stationallrtues: {id: string; name: string}[] =
+              await getstationrtues.json();
 
-        if (stationallrtues.length > 0) {
-          const deletestationRtues = await $Delete(
-            `otdr/rtu/batch_delete`,
-            stationallrtues?.map((data: any) => data.id),
-          );
-
-          if (deletestationRtues.status == 201) {
-            let alldeletedrtu = deepcopy(
-              stationallrtues?.map((data: any) => data.id),
-            );
-            for (let i = 0; i < stationsrtu.length; i++) {
-              let result = stationsrtu[i].rtues.filter(
-                data => !alldeletedrtu.includes(data.id),
+            if (stationallrtues.length > 0) {
+              //delete station rtues
+              const deletestationRtues = await $Delete(
+                `otdr/rtu/batch_delete`,
+                stationallrtues?.map(data => data.id),
               );
-              oldstationrtu[i].rtues = result;
+
+              if (deletestationRtues.status == 201) {
+                let alldeletedrtu = deepcopy(
+                  stationallrtues?.map(data => data.id),
+                );
+                //update station rtu list
+                for (let i = 0; i < stationsrtu.length; i++) {
+                  let result = stationsrtu[i].rtues.filter(
+                    data => !alldeletedrtu.includes(data.id),
+                  );
+                  oldstationrtu[i].rtues = result;
+                }
+                oldstationrtu[findstationrtu].deletertues = [];
+                dispatch(setStationsrtu(oldstationrtu));
+              }
             }
-            dispatch(setStationsrtu(oldstationrtu));
           }
+        } catch (error) {
+          console.log(error);
         }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
   };
 
   const Itembtn = ({
@@ -320,6 +369,8 @@ const RtuLayout: FC = () => {
     name,
     id,
     classname,
+    networkid,
+    regionid,
     onclick = () => {},
     canAdd = false,
   }: Itemstationbtntype) => {
@@ -346,7 +397,9 @@ const RtuLayout: FC = () => {
           <>
             {networkselectedlist.indexOf(id) > -1 ? (
               <BsPlusLg
-                onClick={() => navigate(`create/${id}`)}
+                onClick={() =>
+                  navigate(`create/${id}_${regionid}_${networkid}`)
+                }
                 color="#18C047"
                 className="ml-[10px] cursor-pointer"
               />
@@ -386,12 +439,15 @@ const RtuLayout: FC = () => {
     let old = deepcopy(regionstations);
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if (allstation.status === 200) {
-      let dataa = await allstation.json();
+      let allstationdata = await allstation.json();
       const finddata = regionstations.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
-      if (dataa.length > 0 && finddata < 0) {
-        for (let i = 0; i < dataa?.length; i++) {
-          allregionsid.push({id: dataa[i].id, name: dataa[i].name});
+      if (allstationdata.length > 0 && finddata < 0) {
+        for (let i = 0; i < allstationdata?.length; i++) {
+          allregionsid.push({
+            id: allstationdata[i].id,
+            name: allstationdata[i].name,
+          });
         }
         old.push({regionid: id, stations: allregionsid});
       }
@@ -424,34 +480,43 @@ const RtuLayout: FC = () => {
   }, [regions]);
 
   const ondeletesinglertu = async (rtuid: string, stationid: string) => {
-    let StationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
-    let findstation = StationsrtuCopy.findIndex(
-      data => data.stationid == stationid,
-    );
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        let StationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
+        let findstation = StationsrtuCopy.findIndex(
+          data => data.stationid == stationid,
+        );
 
-    try {
-      //We delete all the rtus related to the station that have their checkboxes checked.
-      const deletestationRtues = await $Delete(
-        `otdr/rtu/batch_delete`,
-        StationsrtuCopy[findstation]?.deletertues,
-      );
-      if (deletestationRtues.status == 201) {
-        //then update the station rtu list
-        let newstationreues = [];
-        for (let i = 0; i < StationsrtuCopy[findstation]!.rtues!.length; i++) {
-          let findrtu = StationsrtuCopy[findstation]!.deletertues.findIndex(
-            data => data == StationsrtuCopy[findstation]!.rtues[i].id,
+        try {
+          //We delete all the rtus related to the station that have their checkboxes checked.
+          const deletestationRtues = await $Delete(
+            `otdr/rtu/batch_delete`,
+            StationsrtuCopy[findstation]?.deletertues,
           );
-          if (findrtu < 0) {
-            newstationreues.push(StationsrtuCopy[findstation]!.rtues[i]);
+          if (deletestationRtues.status == 201) {
+            //then update the station rtu list
+            let newstationreues = [];
+            for (
+              let i = 0;
+              i < StationsrtuCopy[findstation]!.rtues!.length;
+              i++
+            ) {
+              let findrtu = StationsrtuCopy[findstation]!.deletertues.findIndex(
+                data => data == StationsrtuCopy[findstation]!.rtues[i].id,
+              );
+              if (findrtu < 0) {
+                newstationreues.push(StationsrtuCopy[findstation]!.rtues[i]);
+              }
+            }
+            StationsrtuCopy[findstation].rtues = newstationreues;
+            StationsrtuCopy[findstation].deletertues = [];
+            dispatch(setStationsrtu(StationsrtuCopy));
           }
+        } catch (error) {
+          console.log(error);
         }
-        StationsrtuCopy[findstation].rtues = newstationreues;
-        dispatch(setStationsrtu(StationsrtuCopy));
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
   };
 
   const onclickCheckbox = (rtuId: string, stationId: string) => {
@@ -459,7 +524,7 @@ const RtuLayout: FC = () => {
     const findstations = stationsrtuCopy.findIndex(
       data => data.stationid == stationId,
     );
-    console.log(stationId, 'findstationdeletertues');
+
     let findstationdeletertues = stationsrtuCopy[findstations].deletertues.find(
       data => data == rtuId,
     );
@@ -474,6 +539,7 @@ const RtuLayout: FC = () => {
     }
     dispatch(setStationsrtu(stationsrtuCopy));
   };
+
   // ############################################################
   return (
     <SidebarLayout createTitle="">
@@ -503,25 +569,26 @@ const RtuLayout: FC = () => {
         {openall ? (
           <div
             className={` mt-[-10px] w-full  border-l-[1px] border-dotted border-[#000000]`}>
-            {list?.data?.map((data, index) => (
+            {list?.data?.map((networkdata, index) => (
               <div key={index} className="flex flex-col">
                 <Itembtn
                   onclick={() => {
-                    onclicknetwork(data.id), () => setNetworkId(data.id);
+                    onclicknetwork(networkdata.id),
+                      () => setNetworkId(networkdata.id);
                   }}
-                  id={data.id}
-                  name={data.name}
+                  id={networkdata.id}
+                  name={networkdata.name}
                 />
 
                 <div className=" relative ml-[17px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
-                  {networkselectedlist.indexOf(data.id) > -1 ? (
+                  {networkselectedlist.indexOf(networkdata.id) > -1 ? (
                     <div className="absolute left-[-1px] top-[-23px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                   ) : null}
 
                   {list?.data && index == list.data.length - 1 ? (
                     <div
                       className={`absolute left-[-1px] ${
-                        networkselectedlist.indexOf(data.id) > -1
+                        networkselectedlist.indexOf(networkdata.id) > -1
                           ? 'top-[-29px]'
                           : 'top-[-29px]'
                       }  left-[-20px] z-10 h-[calc(100%+100px)] w-[5px] bg-[#E7EFF7]`}></div>
@@ -529,52 +596,59 @@ const RtuLayout: FC = () => {
 
                   <div
                     className={`absolute left-[-1px] ${
-                      networkselectedlist.indexOf(data.id) > -1
+                      networkselectedlist.indexOf(networkdata.id) > -1
                         ? 'bottom-[-11px]'
                         : 'bottom-[-16px]'
                     }  z-10 h-[40px] w-[5px] bg-[#E7EFF7]`}></div>
-                  {networkselectedlist.indexOf(data.id) > -1 ? (
+                  {networkselectedlist.indexOf(networkdata.id) > -1 ? (
                     <>
                       {networkregions
-                        .find(dataa => dataa.networkid == data.id)
-                        ?.regions.map((dat: any, index: number) => {
+                        .find(
+                          networkregionsdata =>
+                            networkregionsdata.networkid == networkdata.id,
+                        )
+                        ?.regions.map((regionsdata, index: number) => {
                           return (
                             <div key={index} className="w-full">
                               <div className="flex w-full flex-row items-center">
                                 <ItembtnRegion
                                   onclick={() => {
-                            
-                                    onclickregion(dat.id);
+                                    onclickregion(regionsdata.id);
                                   }}
-                                  netWorkid={data.id}
-                                  id={dat.id}
-                                  name={dat.name}
+                                  netWorkid={networkdata.id}
+                                  id={regionsdata.id}
+                                  name={regionsdata.name}
                                 />
                               </div>
-                              {networkselectedlist.indexOf(dat.id) > -1 ? (
+                              {networkselectedlist.indexOf(regionsdata.id) >
+                              -1 ? (
                                 <div className="relative w-full">
                                   <div className="absolute left-[16px] top-[-28.5px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                                   <div className="absolute bottom-[-11px]  left-[14px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div>
                                   {networkregions.find(
-                                    dataa => dataa.networkid == data.id,
+                                    dataa => dataa.networkid == networkdata.id,
                                   )?.regions.length ==
                                   index + 1 ? (
                                     <div
                                       className={`absolute left-[-1px] ${
-                                        networkselectedlist.indexOf(dat.id) > -1
+                                        networkselectedlist.indexOf(
+                                          regionsdata.id,
+                                        ) > -1
                                           ? 'top-[-31px]'
                                           : 'top-[-29px]'
                                       }  left-[-2px] z-30 h-full w-[5px] bg-[#E7EFF7]`}></div>
                                   ) : null}
 
                                   {regionstations
-                                    .find(dataa => dataa.regionid == dat.id)
+                                    .find(
+                                      dataa => dataa.regionid == regionsdata.id,
+                                    )
                                     ?.stations.map(
-                                      (datt: any, index: number) => {
+                                      (satationdata, index: number) => {
                                         let findrtu =
                                           stationsrtu?.find(
-                                            (data: any) =>
-                                              data.stationid == datt.id,
+                                            data =>
+                                              data.stationid == satationdata.id,
                                           )?.rtues || [];
                                         return (
                                           <div
@@ -590,16 +664,21 @@ const RtuLayout: FC = () => {
                                               </span>
                                               <ItembtnStation
                                                 onclick={() => {
-                                          
-                                                    onclickstation(datt.id);
+                                                  onclickstation(
+                                                    satationdata.id,
+                                                    regionsdata.id,
+                                                    networkdata.id,
+                                                  );
                                                 }}
                                                 canAdd={true}
-                                                id={datt.id}
-                                                name={datt.name}
+                                                id={satationdata.id}
+                                                regionid={regionsdata.id}
+                                                networkid={networkdata.id}
+                                                name={satationdata.name}
                                               />
                                             </div>
                                             {networkselectedlist.indexOf(
-                                              datt.id,
+                                              satationdata.id,
                                             ) > -1 ? (
                                               <div
                                                 className={`relative ml-[28px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]`}>
@@ -609,11 +688,12 @@ const RtuLayout: FC = () => {
                                                 {stationsrtu
                                                   ?.find(
                                                     data =>
-                                                      data.stationid == datt.id,
+                                                      data.stationid ==
+                                                      satationdata.id,
                                                   )
                                                   ?.rtues.map(
                                                     (
-                                                      dataaa: any,
+                                                      rtudata,
                                                       index: number,
                                                     ) => {
                                                       return (
@@ -624,26 +704,37 @@ const RtuLayout: FC = () => {
                                                             .....
                                                           </span>
                                                           <SidebarItem
+                                                            onclick={() =>
+                                                              setSelectedtabid(
+                                                                rtudata.id,
+                                                              )
+                                                            }
+                                                            selected={
+                                                              selectedtabId ==
+                                                              rtudata.id
+                                                                ? true
+                                                                : false
+                                                            }
                                                             checkstatus={findstationdeletertuid(
-                                                              datt.id,
-                                                              dataaa.id,
+                                                              satationdata.id,
+                                                              rtudata.id,
                                                             )}
                                                             onclickcheckbox={() =>
                                                               onclickCheckbox(
-                                                                dataaa.id,
-                                                                datt.id,
+                                                                rtudata.id,
+                                                                satationdata.id,
                                                               )
                                                             }
                                                             onDelete={() =>
                                                               ondeletesinglertu(
-                                                                dataaa.id,
-                                                                datt.id,
+                                                                rtudata.id,
+                                                                satationdata.id,
                                                               )
                                                             }
                                                             enabelcheck={true}
                                                             className="w-[200px]"
-                                                            name={dataaa.name}
-                                                            to={`${dataaa.id}_${datt.id}`}
+                                                            name={rtudata.name}
+                                                            to={`${rtudata.id}_${satationdata.id}`}
                                                           />
                                                         </div>
                                                       );

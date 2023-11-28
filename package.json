@@ -33,6 +33,7 @@
     "redux": "^4.2.1",
     "redux-saga": "^1.2.3",
     "styled-components": "^5.3.10",
+    "sweetalert2": "^11.10.1",
     "typescript": "^5.0.4",
     "yup": "^1.2.0"
   },

@@ -43,7 +43,7 @@ export type regionstationstype = {
 };
 
 export type allstationsrtutype=
-  {stationid: string; rtues: {name: string; id: string}[];deletertues: string[]}
+  {stationid: string; regionid:string,networkid:string,rtues: {name: string; id: string}[];deletertues: string[]}
   
 export type stationsrtutype = {
   payload: allstationsrtutype[];

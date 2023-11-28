@@ -77,7 +77,7 @@ const RtuCreatePage: FC = () => {
         const creatertu = await $Post(`otdr/rtu/`, {
           name: values.name,
           model: values.model,
-          station_id: params.id || '',
+          station_id: params!.id!.split("_")[0] || '',
           contact_person_id: values.ContactPerson,
           otdr_ip: values.OTDRFIRST,
           otdr_port: Number(values.OTDRSECEND),
@@ -92,7 +92,7 @@ const RtuCreatePage: FC = () => {
           const stationsrtuCopy = deepcopy(stationsrtu);
 
           const findrtu = stationsrtu.findIndex(
-            (data: any) => data.stationid == params.id,
+            (data: any) => data.stationid == params!.id!.split("_")[0],
           );
           //Then we update the list of rtus of the station so that we can see the updated list of rtus in the left bar.
 
@@ -103,13 +103,15 @@ const RtuCreatePage: FC = () => {
             });
           } else {
             stationsrtuCopy.push({
-              stationid: params.id,
+              stationid: params!.id!.split("_")[0],
+              networkid:params!.id!.split("_")[2],
+              regionid:params!.id!.split("_")[1],
               rtues: [{name: getdata.name, id: getdata.id}],
               deletertues: [],
             });
           }
           dispatch(setStationsrtu(stationsrtuCopy));
-          navigate(`../../remote-test-units/${getdata.id}_${params.id}`);
+          navigate(`../../remote-test-units/${getdata.id}_${params!.id!.split("_")[0]}`);
         } else {
           setErrortext(getdata.detail[0].msg);
         }
