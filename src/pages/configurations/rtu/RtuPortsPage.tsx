@@ -26,6 +26,11 @@ type allportstype = {
 type opticalroutlistType = {
   id: string;
   name: string;
+  end_station: {
+    id: string;
+    name: string;
+  } | null;
+  length: number;
 }[];
 
 type allupdatesportstype = {
@@ -36,60 +41,18 @@ type allupdatesportstype = {
 };
 
 // -------- main ------------------ main -------------------- main -------------main --------
-let allfakedata = [
-  {
-    optical_route_id: '11',
-    state: 'activated',
-    index: 0,
-    id: 'fff',
-    new: false,
-    end_station: {
-      id: 'gg1',
-      name: 'gffdsdds2',
-    },
-    optical_route: {
-      id: '11',
-      name: '11',
-    },
-    length: 1,
-  },
-  {
-    optical_route_id: '22',
-    state: 'deactivated',
-    index: 1,
-    id: 'aasdsdsd',
-    new: false,
-    end_station: {
-      id: 'aaaaa',
-      name: 'aaaa',
-    },
-    optical_route: {
-      id: '22',
-      name: '22',
-    },
-    length: 2,
-  },
-];
 
-let allfakeoptions = [
-  {id: '11', name: '11'},
-  {id: '22', name: '22'},
-  {id: '33', name: '33'},
-  {id: '44', name: '44'},
-  {id: '55', name: '55'},
-];
+
 const RtuPortsPage: FC = () => {
   const params = useParams();
   const networkId = Cookies.get(networkExplored);
   const [allrtuports, setAllrtuports] = useState<allportstype>([]);
-  const [errortext, setErrortext] = useState('');
   const [selectedboxoptions, setSelectedboxoptions] =
     useState<opticalroutlistType>([]);
   const [allupdatesports, setAllupdatesports] = useState<allupdatesportstype[]>(
     [],
   );
   const [alldeletedports, setAlldeletedports] = useState<string[]>([]);
-
 
   const getrtuports = async () => {
     try {
@@ -129,12 +92,12 @@ const RtuPortsPage: FC = () => {
           })),
         );
         //get allrtu  optical routes
+        // rtu_station_id=${params?.rtuId?.split(
+        //   '_',
+        // )[1]}&
         const getrtuopticalrote = await $Get(
-          `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
-            '_',
-          )[1]}&network_id=${networkId}`,
+          `otdr/optical-route?network_id=${params?.rtuId?.split('_')[2]}`,
         );
-
         const getopticaldata: opticalroutlistType =
           await getrtuopticalrote.json();
 
@@ -142,9 +105,6 @@ const RtuPortsPage: FC = () => {
           // remove the optical-routes of the ports from the list of optical-routes that should be shown in the select boxes. Because the selected optical routes should not be repeated.
           let data: opticalroutlistType = [];
           for (let i = 0; i < getopticaldata.length; i++) {
-            let findopticalroute = rtuports.findIndex(
-              dataa => dataa.optical_route_id == getopticaldata[i].id,
-            );
             if (
               rtuports.findIndex(
                 dataa => dataa.optical_route_id == getopticaldata[i].id,
@@ -153,6 +113,8 @@ const RtuPortsPage: FC = () => {
               data.push({
                 id: getopticaldata[i].id,
                 name: getopticaldata[i].name,
+                end_station: getopticaldata[i].end_station || null,
+                length: getopticaldata[i].length,
               });
             }
           }
@@ -170,6 +132,7 @@ const RtuPortsPage: FC = () => {
     getrtuports();
   }, []);
 
+
   const save = async () => {
     if (allupdatesports && allupdatesports?.length > 0) {
       try {
@@ -177,33 +140,33 @@ const RtuPortsPage: FC = () => {
           `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
           allupdatesports,
         );
-        if (sendupdates.status != 201) {
-          const errormessage = await sendupdates.json();
-          setErrortext(errormessage.detail[0].msg);
-        } else {
-          setErrortext('');
-        }
       } catch (error) {
-        console.log(error);
+        console.log(error,'error');
       }
     }
     // ممکن است بجای آپتیکال روت بیایم پورت رو حذف کنیم این کد موقتیست
     if (alldeletedports.length > 0) {
-      const deletports = await $Delete(
-        `otdr/optical-route/batch_delete`,
-        alldeletedports,
-      );
-      if (deletports.status != 201) {
-        const errormessage = await deletports.json();
-        setErrortext(errormessage.detail[0].msg);
-      } else {
-        setErrortext('');
+      try {
+        const deletports = await $Delete(
+          `otdr/optical-route/batch_delete`,
+          alldeletedports,
+        );
+      } catch (error) {
+        
       }
+   
+     
     }
     getrtuports();
   };
 
-  const changeupticalroute = (index: number, id: string, name: string) => {
+  const changeupticalroute = (
+    index: number,
+    id: string,
+    name: string,
+    end_station: {id: string; name: string},
+    length: number,
+  ) => {
     const allportsCopy = deepcopy(allrtuports);
     const findportIndex = allportsCopy.findIndex(
       (data: any) => data.index == index,
@@ -217,6 +180,8 @@ const RtuPortsPage: FC = () => {
       selectedboxoptionsCopy.push({
         id: allportsCopy[findportIndex].optical_route_id,
         name: allportsCopy[findportIndex].optical_route.name,
+        length: allportsCopy[findportIndex].length,
+        end_station: (allportsCopy[findportIndex].end_station = end_station),
       });
     }
 
@@ -227,8 +192,10 @@ const RtuPortsPage: FC = () => {
     allportsCopy[findportIndex].optical_route_id = id;
     allportsCopy[findportIndex].optical_route.name = name;
     allportsCopy[findportIndex].optical_route.id = id;
+    allportsCopy[findportIndex].end_station = end_station;
+    allportsCopy[findportIndex].length = length;
     if (allportsCopy[findportIndex].state == '') {
-      allportsCopy[findportIndex].state = 'deactivated';
+      allportsCopy[findportIndex].state = 'deactivate';
     }
     setAllrtuports(allportsCopy);
     // ------------------------------------------------------------------
@@ -312,13 +279,14 @@ const RtuPortsPage: FC = () => {
             <div
               className={classNames(
                 'flex items-center rounded-lg p-4',
-                data.state == 'deactivated'
+                data.state == 'deactivate'
                   ? 'bg-[#B8B8B8]'
-                  : data.state == 'activated'
+                  : data.state == 'activate'
                   ? 'bg-[#ADE2BC]'
                   : 'bg-[#E59D9D]',
               )}>
               <span className="basis-16">{index + 1}</span>
+
               <div className="basis-64 pr-[20px]">
                 <Select
                   value={data.optical_route.name}
@@ -327,6 +295,8 @@ const RtuPortsPage: FC = () => {
                       index,
                       e.target.value.split('_')[0],
                       e.target.value.split('_')[1],
+                      JSON.parse(e.target.value.split('_')[2]),
+                      Number(e.target.value.split('_')[3]),
                     )
                   }
                   className="h-10 w-full">
@@ -342,7 +312,7 @@ const RtuPortsPage: FC = () => {
                   </option>
                   {selectedboxoptions.map((data, index) => (
                     <option
-                      value={`${data.id}_${data.name}`}
+                      value={`${data.id}_${data.name}_${data.end_station}_${data.length}`}
                       key={index}
                       className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                       {data.name}
@@ -350,18 +320,21 @@ const RtuPortsPage: FC = () => {
                   ))}
                 </Select>
               </div>
+
               {data.optical_route_id.length > 0 ? (
                 <>
-                  <span className="basis-44 ">{data.end_station.name}</span>
+                  <span className="basis-44 ">
+                    {data.end_station?.name || null}
+                  </span>
+
                   <span className="basis-32">{data.length}</span>
+
                   <div className="basis-40">
-                    {data.state != 'deactivate' && (
+                    {/* {data.state != 'deactivate' && ( */}
                       <Select
-                        value={
-                          data.state == 'activated'
-                            ? 'Activated'
-                            : 'Deactivated'
-                        }
+                        // value={
+                        //   data.state == 'activate' ? 'Activate' : 'Deactivate'
+                        // }
                         onChange={e =>
                           changestate(
                             index,
@@ -369,7 +342,13 @@ const RtuPortsPage: FC = () => {
                           )
                         }
                         className="h-10 w-full">
-                        {[{label: 'Activated'}, {label: 'Deactivated'}].map(
+                        <option value="" className="hidden">
+                          {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                        </option>
+                        <option value={undefined} className="hidden">
+                          {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                        </option>
+                        {[{label: 'Activate'}, {label: 'Deactivate'}].map(
                           (data, index) => (
                             <option
                               value={`${data.label}`}
@@ -380,10 +359,10 @@ const RtuPortsPage: FC = () => {
                           ),
                         )}
                       </Select>
-                    )}
+                    {/* // )} */}
                   </div>
                   <div className="flex basis-40 flex-row justify-around gap-x-4">
-                    {data.state != 'deactivate' && (
+                    {/* {data.state != 'deactivate' && ( */}
                       <>
                         <IoOpenOutline size={30} />
                         <IoTrashOutline
@@ -394,7 +373,7 @@ const RtuPortsPage: FC = () => {
                           size={30}
                         />
                       </>
-                    )}
+                    {/* )} */}
                   </div>
                 </>
               ) : null}
@@ -402,9 +381,9 @@ const RtuPortsPage: FC = () => {
           ))}
       </div>
       <div className="flex flex-col ">
-        {errortext.length > 0 ? (
+        {/* {errortext.length > 0 ? (
           <span className="my-[4px] text-[20px] text-[red]">{errortext}</span>
-        ) : null}
+        ) : null} */}
         <div className="flex gap-x-4 self-end">
           <SimpleBtn type="button" onClick={save}>
             Save

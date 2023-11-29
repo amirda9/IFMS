@@ -12,7 +12,6 @@ import {
   setNetworkregions,
   setRegionstations,
   setStationsrtu,
-  setleftbarStationcheckboxlist,
 } from './../../../store/slices/rtu';
 import {IoTrashOutline} from 'react-icons/io5';
 import {RootState} from '~/store';
@@ -734,7 +733,7 @@ const RtuLayout: FC = () => {
                                                             enabelcheck={true}
                                                             className="w-[200px]"
                                                             name={rtudata.name}
-                                                            to={`${rtudata.id}_${satationdata.id}`}
+                                                            to={`${rtudata.id}_${satationdata.id}_${networkdata.id}`}
                                                           />
                                                         </div>
                                                       );
