@@ -1,7 +1,7 @@
 import {FC, useEffect, useState} from 'react';
 import {Select, SimpleBtn} from '~/components';
 import {useParams} from 'react-router-dom';
-import {$Delete, $Get, $Put} from '~/util/requestapi';
+import {$Delete, $Get, $Post, $Put} from '~/util/requestapi';
 import classNames from '~/util/classNames';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {deepcopy} from '~/util';
@@ -40,8 +40,11 @@ type allupdatesportstype = {
   id: string;
 };
 
+type allcreateports = {
+  optical_route_id: string;
+  state: string;
+}[];
 // -------- main ------------------ main -------------------- main -------------main --------
-
 
 const RtuPortsPage: FC = () => {
   const params = useParams();
@@ -52,6 +55,7 @@ const RtuPortsPage: FC = () => {
   const [allupdatesports, setAllupdatesports] = useState<allupdatesportstype[]>(
     [],
   );
+  const [allcreateport, setAllcreateport] = useState<allcreateports>([]);
   const [alldeletedports, setAlldeletedports] = useState<string[]>([]);
 
   const getrtuports = async () => {
@@ -62,7 +66,6 @@ const RtuPortsPage: FC = () => {
       );
       const allrtuports: allportstype = await getdata.json();
       let rtuports: allportstype = deepcopy(allrtuports);
-
       if (allrtuports.length < 8) {
         for (let i = 0; i < 8 - allrtuports.length; i++) {
           rtuports.push({
@@ -132,32 +135,45 @@ const RtuPortsPage: FC = () => {
     getrtuports();
   }, []);
 
-
   const save = async () => {
-    if (allupdatesports && allupdatesports?.length > 0) {
+    if (allcreateport.length > 0) {
       try {
-        const sendupdates = await $Put(
+        await $Post(
           `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
-          allupdatesports,
+          allcreateport,
         );
       } catch (error) {
-        console.log(error,'error');
+        console.log(error, 'error');
       }
     }
-    // ممکن است بجای آپتیکال روت بیایم پورت رو حذف کنیم این کد موقتیست
+    if (allupdatesports && allupdatesports?.length > 0) {
+      try {
+        await $Put(
+          `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
+          allupdatesports.map(data => ({
+            id: data.id,
+            state: data.state,
+            optical_route_id: data.optical_route_id,
+          })),
+        );
+      } catch (error) {
+        console.log(error, 'error');
+      }
+    }
+
     if (alldeletedports.length > 0) {
       try {
-        const deletports = await $Delete(
-          `otdr/optical-route/batch_delete`,
+        await $Delete(
+          `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
           alldeletedports,
         );
       } catch (error) {
-        
+        console.log(error);
       }
-   
-     
     }
     getrtuports();
+    setAllcreateport([]);
+    setAllupdatesports([]);
   };
 
   const changeupticalroute = (
@@ -200,29 +216,50 @@ const RtuPortsPage: FC = () => {
     setAllrtuports(allportsCopy);
     // ------------------------------------------------------------------
     const allupdatesportsCopy = deepcopy(allupdatesports);
-    const find = allupdatesportsCopy.findIndex(
-      (data: any) => data.index == index,
-    );
-    if (find > -1) {
-      //If this port was among the updated ports, we would update this port in the list of updated ports.
-      allupdatesportsCopy[find].optical_route_id = id;
-      setAllupdatesports(allupdatesportsCopy);
+
+    if (allportsCopy[findportIndex].id.length > 0) {
+      const find = allupdatesportsCopy.findIndex(
+        (data: any) => data.index == index,
+      );
+      if (find > -1) {
+        //If this port was among the updated ports, we would update this port in the list of updated ports.
+        allupdatesportsCopy[find].optical_route_id = id;
+        setAllupdatesports(allupdatesportsCopy);
+      } else {
+        //else we add this port in the list of updated ports
+        setAllupdatesports(prev => [
+          ...prev,
+          {
+            index: index,
+            optical_route_id: id,
+            state: allportsCopy[findportIndex].state,
+            id: allportsCopy[findportIndex].id,
+          },
+        ]);
+      }
     } else {
-      //else we add this port in the list of updated ports
-      setAllupdatesports(prev => [
-        ...prev,
-        {
-          index: index,
-          optical_route_id: id,
-          state: allportsCopy[findportIndex].state,
-          id: allportsCopy[findportIndex].id,
-        },
-      ]);
+      const allcreateportCopy = deepcopy(allcreateport);
+      const findcreateports = allcreateport.findIndex(
+        data => data.optical_route_id == id,
+      );
+      if (findcreateports > -1) {
+        allcreateportCopy[findcreateports].optical_route_id = id;
+      } else {
+        setAllcreateport(prev => [
+          ...prev,
+          {
+            optical_route_id: id,
+            state: 'deactivate',
+          },
+        ]);
+      }
     }
+    // ----------------------------------------------------------------------
+
     // ----------------------------------------------------------------------------
   };
 
-  const changestate = (index: number, state: string) => {
+  const changestate = (index: number, state: string, opticalroutid: string) => {
     //We first update the data that we have mapped on the page.
     const oldallports = deepcopy(allrtuports);
     const findportIndex = oldallports.findIndex(
@@ -231,34 +268,94 @@ const RtuPortsPage: FC = () => {
     oldallports[findportIndex].state = state;
     setAllrtuports(oldallports);
     // ------------------------------------------------------------------
-
-    const oldupdates = deepcopy(allupdatesports);
-    const find = oldupdates.findIndex((data: any) => data.index == index);
-    if (find > -1) {
-      //If this port was among the updated ports, we would update this port in the list of updated ports.
-      oldupdates[find].state = state;
-      setAllupdatesports(oldupdates);
+    if (oldallports[findportIndex].id.length > 0) {
+      const oldupdates = deepcopy(allupdatesports);
+      const find = oldupdates.findIndex((data: any) => data.index == index);
+      if (find > -1) {
+        //If this port was among the updated ports, we would update this port in the list of updated ports.
+        oldupdates[find].state = state;
+        setAllupdatesports(oldupdates);
+      } else {
+        //else we add this port in the list of updated ports
+        setAllupdatesports(prev => [
+          ...prev,
+          {
+            index: index,
+            optical_route_id: opticalroutid,
+            state: state,
+            id: oldallports[findportIndex].id,
+          },
+        ]);
+      }
     } else {
-      //else we add this port in the list of updated ports
-      setAllupdatesports(prev => [
-        ...prev,
-        {
-          index: index,
-          optical_route_id: oldallports[findportIndex].optical_route.id,
-          state: state,
-          id: oldallports[findportIndex].id,
-        },
-      ]);
+      const allcreateportCopy = deepcopy(allcreateport);
+      const findcreateports = allcreateport.findIndex(
+        data => data.optical_route_id == opticalroutid,
+      );
+
+      // if(findcreateports>-1){
+      allcreateportCopy[findcreateports].state = state;
+      // }else{
+      //   setAllcreateport(prev => [
+      //     ...prev,
+      //     {
+      //       optical_route_id: opticalroutid,
+      //       state:state,
+      //     },
+      //   ]);
+      // }
+      setAllcreateport(allcreateportCopy);
     }
   };
 
-  const deleteopticalroute = (optical_route_id: string) => {
-    const alldeletedportsCopy = deepcopy(alldeletedports);
-    const findid = alldeletedportsCopy.findIndex(
-      (data: any) => data == optical_route_id,
-    );
-    if (findid < 0) {
-      setAlldeletedports(prev => [...prev, optical_route_id]);
+  const deleteopticalroute = (id: string, opticalrouteid: string) => {
+    if (id == '') {
+      //
+      const allrtuportsCopy = deepcopy(allrtuports);
+      const findport = allrtuports.findIndex(
+        data => data.optical_route_id == opticalrouteid,
+      );
+      // --------------------------
+      const selectedoptionsCopy = deepcopy(selectedboxoptions);
+
+      selectedoptionsCopy.push({
+        id: opticalrouteid,
+        name: allrtuports[findport].optical_route.name,
+        end_station: {
+          id: allrtuports[findport]?.end_station?.id || null,
+          name: allrtuports[findport]?.end_station?.name || null,
+        },
+        length: allrtuports[findport].length,
+      });
+      setSelectedboxoptions(selectedoptionsCopy);
+      // --------------------------------------
+      allrtuportsCopy[findport] = {
+        optical_route_id: '',
+        state: '',
+        index: allrtuportsCopy[findport].index,
+        id: '',
+        new: false,
+        end_station: {
+          id: '',
+          name: '',
+        },
+        optical_route: {
+          id: '',
+          name: '',
+        },
+        length: 0,
+      };
+      setAllrtuports(allrtuportsCopy);
+      // -----------------------------
+      const newcreatedlist = allcreateport.filter(
+        data => data.optical_route_id != opticalrouteid,
+      );
+      setAllcreateport(newcreatedlist);
+    } else {
+      const findid = alldeletedports.findIndex(data => data == id);
+      if (findid < 0) {
+        setAlldeletedports(prev => [...prev, id]);
+      }
     }
   };
 
@@ -331,48 +428,49 @@ const RtuPortsPage: FC = () => {
 
                   <div className="basis-40">
                     {/* {data.state != 'deactivate' && ( */}
-                      <Select
-                        // value={
-                        //   data.state == 'activate' ? 'Activate' : 'Deactivate'
-                        // }
-                        onChange={e =>
-                          changestate(
-                            index,
-                            e.target.value.toString().toLowerCase(),
-                          )
-                        }
-                        className="h-10 w-full">
-                        <option value="" className="hidden">
-                          {data.state == 'activate' ? 'Activate' : 'Deactivate'}
-                        </option>
-                        <option value={undefined} className="hidden">
-                          {data.state == 'activate' ? 'Activate' : 'Deactivate'}
-                        </option>
-                        {[{label: 'Activate'}, {label: 'Deactivate'}].map(
-                          (data, index) => (
-                            <option
-                              value={`${data.label}`}
-                              key={index}
-                              className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                              {data.label}
-                            </option>
-                          ),
-                        )}
-                      </Select>
+                    <Select
+                      // value={
+                      //   data.state == 'activate' ? 'Activate' : 'Deactivate'
+                      // }
+                      onChange={e =>
+                        changestate(
+                          index,
+                          e.target.value.toString().toLowerCase(),
+                          data.optical_route_id,
+                        )
+                      }
+                      className="h-10 w-full">
+                      <option value="" className="hidden">
+                        {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                      </option>
+                      <option value={undefined} className="hidden">
+                        {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                      </option>
+                      {[{label: 'Activate'}, {label: 'Deactivate'}].map(
+                        (data, index) => (
+                          <option
+                            value={`${data.label}`}
+                            key={index}
+                            className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                            {data.label}
+                          </option>
+                        ),
+                      )}
+                    </Select>
                     {/* // )} */}
                   </div>
                   <div className="flex basis-40 flex-row justify-around gap-x-4">
                     {/* {data.state != 'deactivate' && ( */}
-                      <>
-                        <IoOpenOutline size={30} />
-                        <IoTrashOutline
-                          onClick={() =>
-                            deleteopticalroute(data.optical_route_id)
-                          }
-                          className="cursor-pointer text-red-500"
-                          size={30}
-                        />
-                      </>
+                    <>
+                      <IoOpenOutline size={30} />
+                      <IoTrashOutline
+                        onClick={() =>
+                          deleteopticalroute(data.id, data.optical_route_id)
+                        }
+                        className="cursor-pointer text-red-500"
+                        size={30}
+                      />
+                    </>
                     {/* )} */}
                   </div>
                 </>
