@@ -98,8 +98,8 @@ const RtuPortsPage: FC = () => {
         
         const getrtuopticalrote = await $Get(
           `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
-            '_',
-          )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
+          '_',
+        )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
         );
         const getopticaldata: opticalroutlistType =
           await getrtuopticalrote.json();

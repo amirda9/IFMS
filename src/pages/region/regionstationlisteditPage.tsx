@@ -40,20 +40,24 @@ const columns = {
 // *****************************************************************************
 const RegionstationlisteditPage = () => {
   const {network} = useSelector((state: any) => state);
+  const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {state} = useHttpRequest({
     selector: state => ({
       regionstationlist: state.http.regionStationList,
-      stations: state.http.allStations,
+      stations: state.http.networkstations,
     }),
     initialRequests: request => {
       request('regionStationList', {params: {region_id: params.regionId!}});
       if (networkId) {
-        request('allStations', undefined);
+        request('networkstations', {params: {network_id: networkId}});
       }
     },
   });
+
+  console.log(state.stations,'🤩');
+  
   const allstations =
     removeCommon(state?.stations?.data, state?.regionstationlist?.data)?.map(
       (data: any) => ({
@@ -71,7 +75,7 @@ const RegionstationlisteditPage = () => {
       longitude: '-',
     })) || [];
 
-  const networkId = Cookies.get(networkExplored);
+
   const params = useParams<{regionId: string}>();
   const [leftstationsorted, setLeftstationssorted] =
     useState<UserTableType[]>(allstations);
