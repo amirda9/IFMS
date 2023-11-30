@@ -562,7 +562,7 @@ const RtuLayout: FC = () => {
           )}
 
           <button onClick={() => setOpenall(!openall)}>
-            <span>Rtues</span>
+            <span>Rtu</span>
           </button>
         </div>
         {openall ? (

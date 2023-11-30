@@ -7,6 +7,7 @@ import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {deepcopy} from '~/util';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
+import Swal from 'sweetalert2';
 type allportstype = {
   optical_route_id: string;
   state: string;
@@ -45,7 +46,15 @@ type allcreateports = {
   state: string;
 }[];
 // -------- main ------------------ main -------------------- main -------------main --------
-
+const swalsetting: any = {
+  title: 'Are you sure you want to delete these components?',
+  // text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!',
+};
 const RtuPortsPage: FC = () => {
   const params = useParams();
   const networkId = Cookies.get(networkExplored);
@@ -98,8 +107,8 @@ const RtuPortsPage: FC = () => {
         
         const getrtuopticalrote = await $Get(
           `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
-          '_',
-        )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
+            '_',
+          )[1]}network_id=${params?.rtuId?.split('_')[2]}`,
         );
         const getopticaldata: opticalroutlistType =
           await getrtuopticalrote.json();
@@ -180,7 +189,8 @@ const RtuPortsPage: FC = () => {
     index: number,
     id: string,
     name: string,
-    end_station: {id: string; name: string},
+    end_station_name:string,
+    end_station_id:string,
     length: number,
     olid: string,
   ) => {
@@ -198,7 +208,7 @@ const RtuPortsPage: FC = () => {
         id: allportsCopy[findportIndex].optical_route_id,
         name: allportsCopy[findportIndex].optical_route.name,
         length: allportsCopy[findportIndex].length,
-        end_station: (allportsCopy[findportIndex].end_station = end_station),
+        end_station: (allportsCopy[findportIndex].end_station = {name:end_station_name,id:end_station_id}),
       });
     }
 
@@ -253,7 +263,7 @@ const RtuPortsPage: FC = () => {
     allportsCopy[findportIndex].optical_route_id = id;
     allportsCopy[findportIndex].optical_route.name = name;
     allportsCopy[findportIndex].optical_route.id = id;
-    allportsCopy[findportIndex].end_station = end_station;
+    allportsCopy[findportIndex].end_station = {name:end_station_name,id:end_station_id};
     allportsCopy[findportIndex].length = length;
     if (allportsCopy[findportIndex].state == '') {
       allportsCopy[findportIndex].state = 'deactivate';
@@ -324,12 +334,14 @@ const RtuPortsPage: FC = () => {
       selectedoptionsCopy.push({
         id: opticalrouteid,
         name: allrtuports[findport].optical_route.name,
+       
         end_station: {
-          id: allrtuports[findport]?.end_station?.id || null,
-          name: allrtuports[findport]?.end_station?.name || null,
+          id: allrtuports[findport]?.end_station?.id,
+          name: allrtuports[findport]?.end_station?.name,
         },
         length: allrtuports[findport].length,
       });
+    
       setSelectedboxoptions(selectedoptionsCopy);
       // --------------------------------------
       allrtuportsCopy[findport] = {
@@ -355,10 +367,15 @@ const RtuPortsPage: FC = () => {
       );
       setAllcreateport(newcreatedlist);
     } else {
-      const findid = alldeletedports.findIndex(data => data == id);
-      if (findid < 0) {
-        setAlldeletedports(prev => [...prev, id]);
-      }
+      Swal.fire(swalsetting).then(async result => {
+        if (result.isConfirmed) {
+          const findid = alldeletedports.findIndex(data => data == id);
+          if (findid < 0) {
+            setAlldeletedports(prev => [...prev, id]);
+          }
+
+        }})
+    
     }
   };
 
@@ -391,14 +408,17 @@ const RtuPortsPage: FC = () => {
                 <Select
                   value={data.optical_route.name}
                   onChange={e =>
+
                     changeupticalroute(
                       index,
                       e.target.value.split('_')[0],
                       e.target.value.split('_')[1],
-                      JSON.parse(e.target.value.split('_')[2]),
-                      Number(e.target.value.split('_')[3]),
+                      e.target.value.split('_')[2],
+                      e.target.value.split('_')[3],
+                      Number(e.target.value.split('_')[4]),
                       data.optical_route.id,
                     )
+     
                   }
                   className="h-10 w-full">
                   <option value="" className="hidden">
@@ -413,7 +433,7 @@ const RtuPortsPage: FC = () => {
                   </option>
                   {selectedboxoptions.map((data, index) => (
                     <option
-                      value={`${data.id}_${data.name}_${data.end_station}_${data.length}`}
+                      value={`${data.id}_${data.name}_${data.end_station?.name || ""}_${data.end_station?.id || ""}_${data.length}`}
                       key={index}
                       className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                       {data.name}

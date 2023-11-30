@@ -291,7 +291,7 @@ const OpticalRouteLayout: FC = () => {
           )}
 
           <button onClick={() => setOpenall(!openall)}>
-            <span>Opticalroutes</span>
+            <span>Optical Routes</span>
           </button>
         </div>
 
