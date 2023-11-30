@@ -146,15 +146,17 @@ const RtuLayout: FC = () => {
         try {
           const getnetworlrtues = await $Get(`otdr/rtu?network_id=${id}`);
 
+
           if (getnetworlrtues.status == 200) {
             const networlrtues: getallrtuestype = await getnetworlrtues.json();
             if (networlrtues.length > 0) {
+              console.log('👽');
               //then delete network rtues
               const deleteNetworkRtues = await $Delete(
                 `otdr/rtu/batch_delete`,
-                [networlrtues?.map(data => data.id)],
+                networlrtues?.map(data => data.id),
               );
-              if (deleteNetworkRtues.status == 200) {
+              if (deleteNetworkRtues.status == 201) {
                 for (let i = 0; i < stationsrtu.length; i++) {
                   if (stationsrtu[i].networkid == id) {
                     oldstationrtu[i].rtues = [];
@@ -162,13 +164,7 @@ const RtuLayout: FC = () => {
                   }
                 }
                 dispatch(setStationsrtu(oldstationrtu));
-                // for (let i = 0; i < stationsrtu.length; i++) {
-                //   let result = stationsrtu[i].rtues.filter(
-                //     data => !alldeletedrtu.includes(data.id),
-                //   );
-                //   oldstationrtu[i].rtues = result;
-                // }
-                // dispatch(setStationsrtu(oldstationrtu));
+
               }
             }
           }
