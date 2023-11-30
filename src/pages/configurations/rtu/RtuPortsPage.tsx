@@ -95,11 +95,11 @@ const RtuPortsPage: FC = () => {
           })),
         );
         //get allrtu  optical routes
-        // rtu_station_id=${params?.rtuId?.split(
-        //   '_',
-        // )[1]}&
+        
         const getrtuopticalrote = await $Get(
-          `otdr/optical-route?network_id=${params?.rtuId?.split('_')[2]}`,
+          `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
+            '_',
+          )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
         );
         const getopticaldata: opticalroutlistType =
           await getrtuopticalrote.json();
@@ -182,6 +182,7 @@ const RtuPortsPage: FC = () => {
     name: string,
     end_station: {id: string; name: string},
     length: number,
+    olid: string,
   ) => {
     const allportsCopy = deepcopy(allrtuports);
     const findportIndex = allportsCopy.findIndex(
@@ -202,18 +203,7 @@ const RtuPortsPage: FC = () => {
     }
 
     setSelectedboxoptions(selectedboxoptionsCopy);
-    // -------------------------------------------------------------------
-    //We first update the data that we have mapped on the page.
 
-    allportsCopy[findportIndex].optical_route_id = id;
-    allportsCopy[findportIndex].optical_route.name = name;
-    allportsCopy[findportIndex].optical_route.id = id;
-    allportsCopy[findportIndex].end_station = end_station;
-    allportsCopy[findportIndex].length = length;
-    if (allportsCopy[findportIndex].state == '') {
-      allportsCopy[findportIndex].state = 'deactivate';
-    }
-    setAllrtuports(allportsCopy);
     // ------------------------------------------------------------------
     const allupdatesportsCopy = deepcopy(allupdatesports);
 
@@ -240,10 +230,12 @@ const RtuPortsPage: FC = () => {
     } else {
       const allcreateportCopy = deepcopy(allcreateport);
       const findcreateports = allcreateport.findIndex(
-        data => data.optical_route_id == id,
+        data => data.optical_route_id == olid,
       );
+
       if (findcreateports > -1) {
         allcreateportCopy[findcreateports].optical_route_id = id;
+        setAllcreateport(allcreateportCopy);
       } else {
         setAllcreateport(prev => [
           ...prev,
@@ -255,7 +247,18 @@ const RtuPortsPage: FC = () => {
       }
     }
     // ----------------------------------------------------------------------
+    // -------------------------------------------------------------------
+    //We first update the data that we have mapped on the page.
 
+    allportsCopy[findportIndex].optical_route_id = id;
+    allportsCopy[findportIndex].optical_route.name = name;
+    allportsCopy[findportIndex].optical_route.id = id;
+    allportsCopy[findportIndex].end_station = end_station;
+    allportsCopy[findportIndex].length = length;
+    if (allportsCopy[findportIndex].state == '') {
+      allportsCopy[findportIndex].state = 'deactivate';
+    }
+    setAllrtuports(allportsCopy);
     // ----------------------------------------------------------------------------
   };
 
@@ -394,6 +397,7 @@ const RtuPortsPage: FC = () => {
                       e.target.value.split('_')[1],
                       JSON.parse(e.target.value.split('_')[2]),
                       Number(e.target.value.split('_')[3]),
+                      data.optical_route.id,
                     )
                   }
                   className="h-10 w-full">

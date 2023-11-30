@@ -77,7 +77,7 @@ const RtuCreatePage: FC = () => {
         const creatertu = await $Post(`otdr/rtu/`, {
           name: values.name,
           model: values.model,
-          station_id: params!.id!.split("_")[0] || '',
+          station_id: params!.id!.split('_')[0] || '',
           contact_person_id: values.ContactPerson,
           otdr_ip: values.OTDRFIRST,
           otdr_port: Number(values.OTDRSECEND),
@@ -92,7 +92,7 @@ const RtuCreatePage: FC = () => {
           const stationsrtuCopy = deepcopy(stationsrtu);
 
           const findrtu = stationsrtu.findIndex(
-            (data: any) => data.stationid == params!.id!.split("_")[0],
+            (data: any) => data.stationid == params!.id!.split('_')[0],
           );
           //Then we update the list of rtus of the station so that we can see the updated list of rtus in the left bar.
 
@@ -103,15 +103,19 @@ const RtuCreatePage: FC = () => {
             });
           } else {
             stationsrtuCopy.push({
-              stationid: params!.id!.split("_")[0],
-              networkid:params!.id!.split("_")[2],
-              regionid:params!.id!.split("_")[1],
+              stationid: params!.id!.split('_')[0],
+              networkid: params!.id!.split('_')[2],
+              regionid: params!.id!.split('_')[1],
               rtues: [{name: getdata.name, id: getdata.id}],
               deletertues: [],
             });
           }
           dispatch(setStationsrtu(stationsrtuCopy));
-          navigate(`../../remote-test-units/${getdata.id}_${params!.id!.split("_")[0]}`);
+          navigate(
+            `../../remote-test-units/${getdata.id}_${
+              params!.id!.split('_')[0]
+            }`,
+          );
         } else {
           setErrortext(getdata.detail[0].msg);
         }
@@ -120,7 +124,6 @@ const RtuCreatePage: FC = () => {
       }
     },
   });
-
 
   return (
     <div className="flex flex-grow">
@@ -170,36 +173,17 @@ const RtuCreatePage: FC = () => {
                 className="w-[400px]">
                 <option value="select" label="" className="hidden" />
                 <option value={undefined} label="select" className="hidden" />
-                {users && users.data?.map((data, index) => (
-                  <option
-                    key={index}
-                    value={data.id}
-                    label={data.username}
-                    className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                    {data.username}
-                  </option>
-                ))}
+                {users &&
+                  users.data?.map((data, index) => (
+                    <option
+                      key={index}
+                      value={data.id}
+                      label={data.username}
+                      className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                      {data.username}
+                    </option>
+                  ))}
               </SelectFormik>
-              {/* <Select
-                onChange={e =>
-                  formik.setFieldValue('ContactPerson', e.target.value)
-                }
-                className="w-[400px]">
-                <option value="" className="hidden">
-                  select
-                </option>
-                <option value={undefined} className="hidden">
-                  select
-                </option>
-                {Users.map((data, index) => (
-                  <option
-                    key={index}
-                    value={data.id}
-                    className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                    {data.name}
-                  </option>
-                ))}
-              </Select> */}
             </Description>
 
             <div className="mb-[4px] flex w-full flex-row">

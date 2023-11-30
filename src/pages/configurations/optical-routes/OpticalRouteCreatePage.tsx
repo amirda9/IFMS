@@ -60,7 +60,7 @@ const OpticalRouteCreatePage: FC = () => {
             networkopticalCopy.push({networkid: params.id, opticalrouts:opticaldata})
            dispatch(setNetworkoptical(networkopticalCopy)) ;
           }
-            navigate(`../../${createopticaldata.id}`)
+           navigate(`../${createopticaldata.id}`)
          }
         }
   

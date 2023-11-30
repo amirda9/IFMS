@@ -94,7 +94,7 @@ export const $POST =async(url:string,data:any)=>{
 
  export const $Put =async(url:string,data:any)=>{
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "post",
+   method: "put",
    body:JSON.stringify(data),
    headers: {
      Authorization: `Bearer ${accesstoken}`,
