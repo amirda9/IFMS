@@ -2,7 +2,7 @@ import {Description, Select} from '~/components';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {ReactNode, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
-import {$GET} from '~/util/requestapi';
+import {$GET, $Get} from '~/util/requestapi';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -53,13 +53,17 @@ const SystemPage = () => {
   const onSaveButtonClick = () => {
     request('SettingsUpdatesystem', {data: {system: system}});
   };
-  const getdate = async () => {
-    const getdata = await $GET(`otdr/settings/app-settings`);
-    setSystem(getdata?.system);
+  const getAppsettingsdata = async () => {
+    const appsettings = await $Get(`otdr/settings/app-settings`);
+    if(appsettings.status == 200){
+      let appsettingsdata=await appsettings.json()
+      setSystem(appsettingsdata?.system);
+    }
+ 
   };
 
   useEffect(() => {
-    getdate();
+    getAppsettingsdata();
   }, []);
   const onResetButtonClick = () => {
     setSystem({

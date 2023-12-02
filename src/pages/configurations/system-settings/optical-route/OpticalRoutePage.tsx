@@ -124,7 +124,7 @@ const OpticalRoutePage = () => {
             {fiberType}
           </option>
           {FiberTypeoptions.map((data, index) => (
-            <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+            <option key={index} className="text-[20px] font-light leading-[24.2px] text-[#000000]">
               {data}
             </option>
           ))}

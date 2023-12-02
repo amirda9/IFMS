@@ -2,7 +2,8 @@ import {FC, Fragment, ReactNode, useEffect, useState} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {Description, Select, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import {$GET} from '~/util/requestapi';
+import { $Get} from '~/util/requestapi';
+import { deepcopy } from '~/util';
 
 type Rowinputtype = {
   name: string;
@@ -82,7 +83,7 @@ function ProactiveMaintenanceTestPage() {
       }
     },
   });
-
+ const [inputs,setInputs]=useState<(SelectInputType | NumberInputType)[]>([])
   const [maintenance_test_setting, setmaintenance_test_setting] =
     useState<maintenance_test_settingtype>(
       SettingsGet?.data?.maintenance_test_setting || {
@@ -101,17 +102,132 @@ function ProactiveMaintenanceTestPage() {
         test_mode: '',
       },
     );
-  const getdate = async () => {
-    const getdata = await $GET(`otdr/settings/app-settings`);
-    setmaintenance_test_setting(getdata?.maintenance_test_setting);
+  const getAppsettingsdata = async () => {
+    const getappsettings = await $Get(`otdr/settings/app-settings`);
+    if (getappsettings.status == 200) {
+      let getappsettingsdata = await getappsettings.json();
+      setmaintenance_test_setting(getappsettingsdata?.maintenance_test_setting);
+    }
   };
 
-  useEffect(() => {
-    getdate();
+  useEffect(() => { 
+    const inputsdata: (SelectInputType | NumberInputType)[] = [
+      {
+        display: 'flex',
+        type: 'select',
+        label: 'Test Mode',
+        options: ['fast', 'precision'],
+        defaultValue: 'fast',
+        name: 'test_mode',
+      },
+      {
+        display: 'flex',
+        type: 'select',
+        label: 'Run Mode',
+        options: ['average', 'realtime'],
+        defaultValue: 'Average',
+        name: 'run_mode',
+      },
+      {
+        display: 'flex',
+        type: 'select',
+        label: 'Distance Mode',
+        options: ['manual', 'automatic'],
+        defaultValue: 'manual',
+        name: 'distance_mode',
+      },
+      {
+        display:
+          maintenance_test_setting.distance_mode == 'manual' ? 'flex' : 'hidden',
+        type: 'select',
+        label: 'Range (km)',
+        options: [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200],
+        defaultValue: 3,
+        name: 'range',
+      },
+      {
+        display: 'flex',
+        type: 'select',
+        label: 'Pulse Width Mode',
+        options: ['manual', 'automatic'],
+        defaultValue: 'Manual',
+        name: 'pulse_width_mode',
+      },
+      {
+        display:
+          maintenance_test_setting.pulse_width_mode == 'manual'
+            ? 'flex'
+            : 'hidden',
+        type: 'select',
+        label: 'Pulse Width (ns)',
+        options: [3, 5, 10, 30, 50, 100, 275, 500, 1000],
+        defaultValue: 3,
+        name: 'pulse_width',
+      },
+      {
+        display: 'flex',
+        type: 'select',
+        label: 'Sampling Mode',
+        options: ['duration', 'automatic', 'repetition'],
+        defaultValue: 'Duration',
+        name: 'sampling_mode',
+      },
+      {
+        display:
+          maintenance_test_setting.sampling_mode == 'automatic'
+            ? 'hidden'
+            : 'flex',
+        type: 'number',
+        label:
+          maintenance_test_setting.sampling_mode == 'repetition'
+            ? 'Sampling Repetition (s)'
+            : 'Sampling Duration (s)',
+        defaultValue: 4,
+        name: 'sampling_duration',
+      },
+      {
+        display: 'flex',
+        type: 'number',
+        label: 'IOR',
+        defaultValue: 1.476,
+        name: 'IOR',
+      },
+      {
+        display: 'flex',
+        type: 'number',
+        label: 'RBS (dB)',
+        defaultValue: -79,
+        name: 'RBS',
+      },
+      {
+        display: 'flex',
+        type: 'number',
+        label: 'Event Loss threshold (dB)',
+        defaultValue: 0.05,
+        name: 'event_loss_threshold',
+      },
+      {
+        display: 'flex',
+        type: 'number',
+        label: 'Event Reflection Threshold (dB)',
+        defaultValue: -40,
+        name: 'event_reflection_threshold',
+      },
+      {
+        display: 'flex',
+        type: 'number',
+        label: 'Fiber End Threshold (dB)',
+        defaultValue: 5,
+        name: 'fiber_end_threshold',
+      },
+    ];
+    setInputs(inputsdata)
+    getAppsettingsdata();
+    
   }, []);
 
   const onSaveButtonClick = () => {
-    let data: any = JSON.parse(JSON.stringify(maintenance_test_setting));
+    let data = deepcopy(maintenance_test_setting);
     if (maintenance_test_setting.distance_mode != 'manual') {
       delete data.range;
     }
@@ -143,116 +259,7 @@ function ProactiveMaintenanceTestPage() {
       test_mode: 'fast',
     });
   };
-  const inputs: (SelectInputType | NumberInputType)[] = [
-    {
-      display: 'flex',
-      type: 'select',
-      label: 'Test Mode',
-      options: ['fast', 'precision'],
-      defaultValue: 'fast',
-      name: 'test_mode',
-    },
-    {
-      display: 'flex',
-      type: 'select',
-      label: 'Run Mode',
-      options: ['average', 'realtime'],
-      defaultValue: 'Average',
-      name: 'run_mode',
-    },
-    {
-      display: 'flex',
-      type: 'select',
-      label: 'Distance Mode',
-      options: ['manual', 'automatic'],
-      defaultValue: 'manual',
-      name: 'distance_mode',
-    },
-    {
-      display:
-        maintenance_test_setting.distance_mode == 'manual' ? 'flex' : 'hidden',
-      type: 'select',
-      label: 'Range (km)',
-      options: [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200],
-      defaultValue: 3,
-      name: 'range',
-    },
-    {
-      display: 'flex',
-      type: 'select',
-      label: 'Pulse Width Mode',
-      options: ['manual', 'automatic'],
-      defaultValue: 'Manual',
-      name: 'pulse_width_mode',
-    },
-    {
-      display:
-        maintenance_test_setting.pulse_width_mode == 'manual'
-          ? 'flex'
-          : 'hidden',
-      type: 'select',
-      label: 'Pulse Width (ns)',
-      options: [3, 5, 10, 30, 50, 100, 275, 500, 1000],
-      defaultValue: 3,
-      name: 'pulse_width',
-    },
-    {
-      display: 'flex',
-      type: 'select',
-      label: 'Sampling Mode',
-      options: ['duration', 'automatic', 'repetition'],
-      defaultValue: 'Duration',
-      name: 'sampling_mode',
-    },
-    {
-      display:
-        maintenance_test_setting.sampling_mode == 'automatic'
-          ? 'hidden'
-          : 'flex',
-      type: 'number',
-      label:
-        maintenance_test_setting.sampling_mode == 'repetition'
-          ? 'Sampling Repetition (s)'
-          : 'Sampling Duration (s)',
-      defaultValue: 4,
-      name: 'sampling_duration',
-    },
-    {
-      display: 'flex',
-      type: 'number',
-      label: 'IOR',
-      defaultValue: 1.476,
-      name: 'IOR',
-    },
-    {
-      display: 'flex',
-      type: 'number',
-      label: 'RBS (dB)',
-      defaultValue: -79,
-      name: 'RBS',
-    },
-    {
-      display: 'flex',
-      type: 'number',
-      label: 'Event Loss threshold (dB)',
-      defaultValue: 0.05,
-      name: 'event_loss_threshold',
-    },
-    {
-      display: 'flex',
-      type: 'number',
-      label: 'Event Reflection Threshold (dB)',
-      defaultValue: -40,
-      name: 'event_reflection_threshold',
-    },
-    {
-      display: 'flex',
-      type: 'number',
-      label: 'Fiber End Threshold (dB)',
-      defaultValue: 5,
-      name: 'fiber_end_threshold',
-    },
-  ];
+ 
 
   return (
     <SystemSettingsMain
@@ -261,7 +268,7 @@ function ProactiveMaintenanceTestPage() {
       contentClassName="w-2/5">
       {inputs.map((input, i) =>
         input.type === 'select' ? (
-          <Rowinput name={input.label} display={input.display}>
+          <Rowinput key={i} name={input.label} display={input.display}>
             <Select
               value={maintenance_test_setting[input.name]}
               onChange={e => {
@@ -276,7 +283,7 @@ function ProactiveMaintenanceTestPage() {
             </Select>
           </Rowinput>
         ) : input.type === 'number' ? (
-          <Rowinput name={input.label} display={input.display}>
+          <Rowinput key={i} name={input.label} display={input.display}>
             <TextInput
               type="number"
               value={maintenance_test_setting[input.name]}
