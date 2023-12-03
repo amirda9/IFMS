@@ -3,10 +3,11 @@ import {SimpleBtn, Table} from '~/components';
 import {BiChevronRight, BiChevronsLeft, BiChevronsRight} from 'react-icons/bi';
 import {BiChevronLeft} from 'react-icons/bi';
 import {AiOutlinePlus} from 'react-icons/ai';
-import {IoTrashOutline} from 'react-icons/io5';
+import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {Select} from '~/components';
 import Rectangle from '~/assets/icons/Rectangle 112.png';
 import Checkbox from '~/components/checkbox/checkbox';
+import { Link } from 'react-router-dom';
 
 const userList = [
   {
@@ -79,7 +80,7 @@ const topcolumns = {
   State: {label: 'State', size: 'w-[10%]'},
   lastmodified: {label: 'Last Modified', size: 'w-[16%]'},
   actinguser: {label: 'Acting User', size: 'w-[16%]'},
-  '': {label: 'chekbox', size: 'w-[5%]'},
+  'chekbox': {label: '', size: 'w-[5%]'},
 };
 const topitems = [
   {
@@ -300,8 +301,26 @@ function Alarms() {
             cols={topcolumns}
             tabicon={'Name'}
             items={topitems}
-            thclassname="pl-2"
+            thclassname="pl-[4px]"
+            tdclassname='pl-[4px] text-left'
             containerClassName="w-full min-h-[72px] text-left ml-[5px]  overflow-y-auto mt-[20px]"
+            dynamicColumns={['chekbox']}
+            renderDynamicColumn={({key, value}) => {
+              if (key === 'chekbox'){
+                return (
+              
+                  <IoTrashOutline
+                  onClick={() => {}}
+                  className="mx-auto text-red-500 cursor-pointer"
+                  size={22}
+                />
+           
+               );
+              }
+                
+         
+              else return <></>;
+            }}
             // dynamicColumns={'index'}
             // renderDynamicColumn={renderDynamicColumn('right')}
           />
