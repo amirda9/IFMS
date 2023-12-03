@@ -8,7 +8,7 @@ const Select: FC<PropsType> = ({className, ...props}) => {
   return (
     <select
       className={
-        'h-8 rounded-md border border-black bg-white px-2 ' + className
+        'h-8 rounded-md border border-black  px-2 ' + className
       }
       {...props}
     />

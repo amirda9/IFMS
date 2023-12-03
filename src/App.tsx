@@ -103,6 +103,16 @@ function App() {
             </Route>
           </Route>
 
+
+          <Route path="/monitoring">
+              <Route
+              path="alarms"
+              Component={pages.alarms}>
+
+          </Route>
+          </Route>
+
+
           <Route path="/config">
           <Route
               path="system-maintenance"

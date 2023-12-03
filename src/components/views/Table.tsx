@@ -32,7 +32,8 @@ type PropsType<
   bordered?: boolean;
   tabicon?: string;
   onclicktitle?: Function;
-  tdclassname?:string
+  tdclassname?:string;
+  thclassname?:string
 };
 const Table = <
   C extends string,
@@ -47,6 +48,7 @@ const Table = <
   containerClassName,
   loading,
   tdclassname,
+  thclassname,
   tabbodybg = [],
   keyExtractor,
   bordered,
@@ -78,6 +80,7 @@ const Table = <
           ? 'border-b border-r border-gray96 last:border-r-0'
           : 'border-[1px] border-r border-t-[0px] border-[#969696] first:border-l-[0px] last:border-r-[0px]',
         'relative cursor-pointer border-[1px] border-t-[0px] border-[#969696] bg-blueLight py-1 text-sm font-normal',
+        thclassname
       )}>
       {col.label}
       {tabicon == col.label ? (
@@ -99,10 +102,11 @@ const Table = <
         className={classNames(
           '[&_td]:py-1',
           bordered && 'border-b border-gray96 last:border-b-0',
+          'bg-[red]'
         )}
         key={keyExtractor ? keyExtractor(row) : Object.values(row).join('')}>
         {headerItems.map(([key]) => {
-            let BG =row.tabbodybg?.find((data: any) => data.name == key)?.bg || 'white';
+            let BG =row.tabbodybg?.find((data: any) => data.name == key)?.bg || row.tabrowbg || 'white';
           return (
             <td
             
@@ -144,10 +148,10 @@ const Table = <
             {headerItems.map(renderHeader)}
           </tr>
         </thead>
-        <tbody>
+        <tbody >
           {loading ? (
             <tr>
-              <td colSpan={headerItems.length}>
+              <td  colSpan={headerItems.length}>
                 <GeneralLoadingSpinner />
               </td>
             </tr>

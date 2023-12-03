@@ -45,7 +45,7 @@ export const navbarItems = [
     name: 'Monitoring',
     to: '/monitoring',
     items: [
-      {label: 'Alarms', to: '/alarms'},
+      {label: 'Alarms', to: 'monitoring/alarms'},
       {
         label: 'Status',
         to: '/status',
