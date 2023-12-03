@@ -85,23 +85,24 @@ function ProactiveMaintenanceTestPage() {
   });
  const [inputs,setInputs]=useState<(SelectInputType | NumberInputType)[]>([])
   const [maintenance_test_setting, setmaintenance_test_setting] =
-    useState<maintenance_test_settingtype>(
-      SettingsGet?.data?.maintenance_test_setting || {
-        IOR: 0,
-        RBS: 0,
-        distance_mode: '',
-        event_loss_threshold: 0,
-        event_reflection_threshold: 0,
-        fiber_end_threshold: 0,
-        pulse_width: 0,
-        pulse_width_mode: '',
-        range: 0,
-        run_mode: '',
-        sampling_duration: 4,
-        sampling_mode: '',
-        test_mode: '',
-      },
-    );
+    useState<maintenance_test_settingtype>();
+
+    // SettingsGet?.data?.maintenance_test_setting || {
+    //   IOR: 0,
+    //   RBS: 0,
+    //   distance_mode: '',
+    //   event_loss_threshold: 0,
+    //   event_reflection_threshold: 0,
+    //   fiber_end_threshold: 0,
+    //   pulse_width: 0,
+    //   pulse_width_mode: '',
+    //   range: 0,
+    //   run_mode: '',
+    //   sampling_duration: 4,
+    //   sampling_mode: '',
+    //   test_mode: '',
+    // },
+
   const getAppsettingsdata = async () => {
     const getappsettings = await $Get(`otdr/settings/app-settings`);
     if (getappsettings.status == 200) {
@@ -138,7 +139,7 @@ function ProactiveMaintenanceTestPage() {
       },
       {
         display:
-          maintenance_test_setting.distance_mode == 'manual' ? 'flex' : 'hidden',
+          maintenance_test_setting?.distance_mode == 'manual' ? 'flex' : 'hidden',
         type: 'select',
         label: 'Range (km)',
         options: [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200],
@@ -155,7 +156,7 @@ function ProactiveMaintenanceTestPage() {
       },
       {
         display:
-          maintenance_test_setting.pulse_width_mode == 'manual'
+          maintenance_test_setting?.pulse_width_mode == 'manual'
             ? 'flex'
             : 'hidden',
         type: 'select',
@@ -174,12 +175,12 @@ function ProactiveMaintenanceTestPage() {
       },
       {
         display:
-          maintenance_test_setting.sampling_mode == 'automatic'
+          maintenance_test_setting?.sampling_mode == 'automatic'
             ? 'hidden'
             : 'flex',
         type: 'number',
         label:
-          maintenance_test_setting.sampling_mode == 'repetition'
+          maintenance_test_setting?.sampling_mode == 'repetition'
             ? 'Sampling Repetition (s)'
             : 'Sampling Duration (s)',
         defaultValue: 4,
@@ -228,13 +229,13 @@ function ProactiveMaintenanceTestPage() {
 
   const onSaveButtonClick = () => {
     let data = deepcopy(maintenance_test_setting);
-    if (maintenance_test_setting.distance_mode != 'manual') {
+    if (maintenance_test_setting?.distance_mode != 'manual') {
       delete data.range;
     }
-    if (maintenance_test_setting.pulse_width_mode != 'manual') {
+    if (maintenance_test_setting?.pulse_width_mode != 'manual') {
       delete data.pulse_width;
     }
-    if (maintenance_test_setting.sampling_mode == 'automatic') {
+    if (maintenance_test_setting?.sampling_mode == 'automatic') {
       delete data.sampling_duration;
     }
     request('SettingsUpdatesetmaintenance_test_setting', {
@@ -270,9 +271,9 @@ function ProactiveMaintenanceTestPage() {
         input.type === 'select' ? (
           <Rowinput key={i} name={input.label} display={input.display}>
             <Select
-              value={maintenance_test_setting[input.name]}
+              value={maintenance_test_setting && maintenance_test_setting[input.name]}
               onChange={e => {
-                let old = {...maintenance_test_setting};
+                let old = {...maintenance_test_setting!};
                 old[input.name] = e.target.value;
                 setmaintenance_test_setting(old);
               }}
@@ -286,9 +287,9 @@ function ProactiveMaintenanceTestPage() {
           <Rowinput key={i} name={input.label} display={input.display}>
             <TextInput
               type="number"
-              value={maintenance_test_setting[input.name]}
+              value={maintenance_test_setting &&  maintenance_test_setting[input.name]}
               onChange={e => {
-                let old = {...maintenance_test_setting};
+                let old = {...maintenance_test_setting!};
                 old[input.name] = Number(e.target.value);
                 setmaintenance_test_setting(old);
               }}

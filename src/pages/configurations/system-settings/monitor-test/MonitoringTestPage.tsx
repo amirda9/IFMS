@@ -86,21 +86,24 @@ const MonitoringTestPage: FC = () => {
   
   const [inputs,setInputs]=useState<(SelectInputType | NumberInputType)[]>([])
   const [monitoring_test_setting, setMonitoring_test_setting] =
-    useState<monitoring_test_settingtype>({
-      IOR: 0,
-      RBS: 0,
-      distance_mode: '',
-      event_loss_threshold: 0,
-      event_reflection_threshold: 0,
-      fiber_end_threshold: 0,
-      pulse_width: 0,
-      pulse_width_mode: '',
-      range: 0,
-      run_mode: '',
-      sampling_duration: 0,
-      sampling_mode: '',
-      test_mode: '',
-    });
+    useState<monitoring_test_settingtype>();
+
+    // {
+    //   IOR: 0,
+    //   RBS: 0,
+    //   distance_mode: '',
+    //   event_loss_threshold: 0,
+    //   event_reflection_threshold: 0,
+    //   fiber_end_threshold: 0,
+    //   pulse_width: 0,
+    //   pulse_width_mode: '',
+    //   range: 0,
+    //   run_mode: '',
+    //   sampling_duration: 0,
+    //   sampling_mode: '',
+    //   test_mode: '',
+    // }
+
   const getdate = async () => {
     const getappsettings = await $Get(`otdr/settings/app-settings`);
   if(getappsettings.status == 200){
@@ -138,7 +141,7 @@ const MonitoringTestPage: FC = () => {
   
       {
         display:
-          monitoring_test_setting.distance_mode == 'manual' ? 'flex' : 'hidden',
+          monitoring_test_setting?.distance_mode == 'manual' ? 'flex' : 'hidden',
         type: 'select',
         label: 'Range (km)',
         options: [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200],
@@ -155,7 +158,7 @@ const MonitoringTestPage: FC = () => {
       },
       {
         display:
-          monitoring_test_setting.pulse_width_mode == 'manual'
+          monitoring_test_setting?.pulse_width_mode == 'manual'
             ? 'flex'
             : 'hidden',
         type: 'select',
@@ -176,12 +179,12 @@ const MonitoringTestPage: FC = () => {
         minValue: 1,
         maxValue: 1999,
         display:
-          monitoring_test_setting.sampling_mode == 'automatic'
+          monitoring_test_setting?.sampling_mode == 'automatic'
             ? 'hidden'
             : 'flex',
         type: 'number',
         label:
-          monitoring_test_setting.sampling_mode == 'repetition'
+          monitoring_test_setting?.sampling_mode == 'repetition'
             ? 'Sampling Repetition (s)'
             : 'Sampling Duration (s)',
         defaultValue: 4,
@@ -250,7 +253,7 @@ const MonitoringTestPage: FC = () => {
 
   const onSaveButtonClick = () => {
     request('SettingsUpdatemonitoring_test_setting', {
-      data: {monitoring_test_setting: monitoring_test_setting},
+      data: {monitoring_test_setting: monitoring_test_setting!},
     });
   };
 
@@ -286,7 +289,7 @@ const MonitoringTestPage: FC = () => {
                 monitoring_test_setting && monitoring_test_setting[input.name]
               }
               onChange={e => {
-                let old: monitoring_test_settingtype = {...monitoring_test_setting};
+                let old: monitoring_test_settingtype = {...monitoring_test_setting!};
                 old[input.name] = e.target.value;
                 setMonitoring_test_setting(old);
               }}
@@ -301,9 +304,9 @@ const MonitoringTestPage: FC = () => {
             <TextInput
               step={input.step || 1}
               type="number"
-              value={monitoring_test_setting[input.name]}
+              value={monitoring_test_setting && monitoring_test_setting[input.name]}
               onChange={e => {
-                let old: monitoring_test_settingtype = {...monitoring_test_setting};
+                let old: monitoring_test_settingtype = {...monitoring_test_setting!};
                 old[input.name] = Number(e.target.value);
                 setMonitoring_test_setting(old);
               }}

@@ -43,15 +43,15 @@ const SystemPage = () => {
     },
   });
 
-  const [system, setSystem] = useState({
-    break_strategy: 'skip',
-    fiber_test_setup_definition_strategy: 'both',
-    data_save_policy: 'do_not_save',
-    test_type: 'monitoring',
-  });
-
+  const [system, setSystem] = useState<{break_strategy:string,fiber_test_setup_definition_strategy:string,data_save_policy:string,test_type:string}>();
+  // {
+  //   break_strategy: 'skip',
+  //   fiber_test_setup_definition_strategy: 'both',
+  //   data_save_policy: 'do_not_save',
+  //   test_type: 'monitoring',
+  // }
   const onSaveButtonClick = () => {
-    request('SettingsUpdatesystem', {data: {system: system}});
+    request('SettingsUpdatesystem', {data: {system: system!}});
   };
   const getAppsettingsdata = async () => {
     const appsettings = await $Get(`otdr/settings/app-settings`);
@@ -80,18 +80,18 @@ const SystemPage = () => {
       <div className="flex flex-col gap-y-4">
         <Rowinput name="Break Strategy">
           <Select
-            value={system.break_strategy}
+            value={system?.break_strategy}
             onChange={e => {
-              let old = {...system};
+              let old = {...system!};
               old.break_strategy = e.target.value.toLowerCase();
               setSystem(old);
             }}
             className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden ">
-              {system.break_strategy}
+              {system?.break_strategy}
             </option>
             <option value={undefined} className="hidden">
-              {system.break_strategy}
+              {system?.break_strategy}
             </option>
             <option>Continue</option>
             <option>Skip</option>
@@ -100,19 +100,19 @@ const SystemPage = () => {
 
         <Rowinput name="Fiber Test Setup Definition Strategy">
           <Select
-            value={system.fiber_test_setup_definition_strategy}
+            value={system?.fiber_test_setup_definition_strategy}
             onChange={e => {
-              let old = {...system};
+              let old = {...system!};
               old.fiber_test_setup_definition_strategy =
                 e.target.value.toLowerCase();
               setSystem(old);
             }}
             className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden ">
-              {system.fiber_test_setup_definition_strategy}
+              {system?.fiber_test_setup_definition_strategy}
             </option>
             <option value={undefined} className="hidden">
-              {system.fiber_test_setup_definition_strategy}
+              {system?.fiber_test_setup_definition_strategy}
             </option>
             <option>none</option>
             <option>monitoring_only</option>
@@ -122,18 +122,18 @@ const SystemPage = () => {
 
         <Rowinput name="Data Save Policy">
           <Select
-            value={system.data_save_policy}
+            value={system?.data_save_policy}
             onChange={e => {
-              let old = {...system};
+              let old = {...system!};
               old.data_save_policy = e.target.value.toLowerCase();
               setSystem(old);
             }}
             className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden">
-              {system.data_save_policy}
+              {system?.data_save_policy}
             </option>
             <option value={undefined} className="hidden">
-              {system.data_save_policy}
+              {system?.data_save_policy}
             </option>
 
             <option>do_not_save</option>
@@ -143,18 +143,18 @@ const SystemPage = () => {
 
         <Rowinput name="Test Type">
           <Select
-            value={system.test_type}
+            value={system?.test_type}
             onChange={e => {
-              let old = {...system};
+              let old = {...system!};
               old.test_type = e.target.value.toLowerCase();
               setSystem(old);
             }}
             className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden">
-              {system.test_type}
+              {system?.test_type}
             </option>
             <option value={undefined} className="hidden">
-              {system.test_type}
+              {system?.test_type}
             </option>
             <option>monitoring</option>
             <option>maintenance</option>
