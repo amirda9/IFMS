@@ -110,6 +110,11 @@ function App() {
               Component={pages.alarms}>
 
           </Route>
+          <Route
+              path="status"
+              Component={pages.status}>
+
+          </Route>
           </Route>
 
 

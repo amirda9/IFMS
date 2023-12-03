@@ -48,7 +48,7 @@ export const navbarItems = [
       {label: 'Alarms', to: 'monitoring/alarms'},
       {
         label: 'Status',
-        to: '/status',
+        to: 'monitoring/status',
       },
       {
         label: 'RTU Logs',
