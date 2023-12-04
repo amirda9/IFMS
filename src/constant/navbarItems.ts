@@ -56,7 +56,7 @@ export const navbarItems = [
       },
       {
         label: 'Test on Demand',
-        to: '/test-on-demand',
+        to: 'monitoring/test-on-demand',
       },
     ],
   },

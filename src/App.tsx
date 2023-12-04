@@ -110,6 +110,13 @@ function App() {
               Component={pages.alarms}>
 
           </Route>
+
+          <Route
+              path="test-on-demand"
+              Component={pages.testondemand}>
+
+          </Route>
+
           <Route
               path="status"
               Component={pages.status}>
