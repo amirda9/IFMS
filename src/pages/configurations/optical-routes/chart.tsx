@@ -82726,7 +82726,7 @@ setMaxy(max_y)
   const x= mouseX -157.8;
   const y = ((mouseY));
   // console.log((((y+scrollValue)-60))/35,'yyyttttt');
-    setYvalue(((mouseY-540)/65)*10)
+    // setYvalue(((mouseY-540)/65)*10)
     // ****************
     // setYvalue((x/((rect.width-rect.x)/(11-xScale.min)))+xScale.min)
     // *****************
