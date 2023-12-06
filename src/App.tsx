@@ -54,7 +54,7 @@ function App() {
             path="/regions/:regionId/edit-stationlist"
             Component={pages.RegionstationlisteditPage}
           />
-             <Route
+          <Route
             path="/regions/:regionId/edit-linklist"
             Component={pages.RegionlinklisteditPage}
           />
@@ -87,7 +87,7 @@ function App() {
             Component={pages.LinkEditViewersPage}
           />
           <Route path="/links" Component={pages.LinksPage}>
-          <Route path="create" Component={pages.LinkCreatePage} />
+            <Route path="create" Component={pages.LinkCreatePage} />
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
               <Route path="access" Component={pages.LinkAccessPage} />
@@ -104,39 +104,22 @@ function App() {
           </Route>
 
 
-          <Route path="/monitoring">
-              <Route
-              path="alarms"
-              Component={pages.alarms}>
-
-          </Route>
-
-          <Route
-              path="test-on-demand"
-              Component={pages.testondemand}>
-
-          </Route>
-
-          <Route
-              path="status"
-              Component={pages.status}>
-
-          </Route>
-          </Route>
+           <Route path="/monitoring">
+          <Route path="status" Component={pages.status}/>
+          <Route path="test-on-demand" Component={pages.testondemand}/>
+          <Route path="alarms" Component={pages.alarms}/>
+          <Route path="status/:statusId" Component={pages.monitoringstatusDetail} />
+          </Route> 
 
 
           <Route path="/config">
-          <Route
+            <Route
               path="system-maintenance"
-              Component={pages.Systemmaintenance}>
+              Component={pages.Systemmaintenance}></Route>
 
-          </Route>
-
-              <Route
+            <Route
               path="all-rtu-status"
-              Component={pages.AllRTUsStatus}>
-
-              </Route>
+              Component={pages.AllRTUsStatus}></Route>
 
             <Route
               path="system-settings"
@@ -178,13 +161,15 @@ function App() {
             </Route>
 
             <Route path="optical-routes" Component={pages.OpticalRoutesLayout}>
-            <Route path="create/:id" Component={pages.OpticalRouteCreatePage} />
+              <Route
+                path="create/:id"
+                Component={pages.OpticalRouteCreatePage}
+              />
               <Route
                 path=":opticalRouteId"
                 Component={pages.SingleOpticalRouteLayout}>
-           
                 <Route index Component={pages.OpticalRouteDetailsPage} />
-       
+
                 <Route path="route" Component={pages.OpticalRouteRoutePage} />
                 <Route
                   path="test-setup"
@@ -209,17 +194,15 @@ function App() {
               </Route>
             </Route>
             <Route path="chart" Component={pages.Chart} />
+
             <Route path="remote-test-units" Component={pages.RtuLayout}>
-         
               <Route path=":rtuId" Component={pages.SingleRtuLayout}>
-            
                 <Route index Component={pages.RtuDetailsPage} />
                 <Route path="ports" Component={pages.RtuPortsPage} />
               </Route>
               <Route path="create/:id" Component={pages.RtuCreatepage} />
             </Route>
           </Route>
-
 
           <Route path="/users" Component={pages.UsersLayout}>
             <Route
