@@ -82679,10 +82679,10 @@ const max_y = Math.max (...allpointsdata.map ((o:any) => o.y))
 
 setMaxy(max_y)
 // setAllpoints({id: 'Cur',data:data})
-//  setAllcurveline( [{
-//    id: "Cur",
-//    data:allpointsdata
-//  }])
+ setAllcurveline( [{
+   id: "Cur",
+   data:allpointsdata
+ }])
 
 },[])
 // console.log(allcurveline,'allcurveline');
