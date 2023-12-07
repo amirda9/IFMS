@@ -12,6 +12,7 @@ type Props = {
   mainClassName?: string;
   contentClassName?: string;
   footerClassName?: string;
+  closefunc?:()=>void
 };
 
 const AppDialog: FC<Props> = ({
@@ -22,13 +23,19 @@ const AppDialog: FC<Props> = ({
   mainClassName,
   contentClassName,
   footerClassName,
+  closefunc
 }) => {
   const navigate = useNavigate();
   const [isOpen, setOpen] = useState(true);
 
   const handleClose = () => {
     setOpen(false);
-    navigate('..');
+    if(closefunc){
+      closefunc()
+    }else{
+      navigate('..');
+    }
+
   };
 
   return (

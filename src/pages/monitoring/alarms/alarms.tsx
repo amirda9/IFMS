@@ -249,41 +249,49 @@ function Alarms() {
         {/* ***************** top ********************* top *****************************top *************** */}
         <div className="w-[calc(100%-400px)]  pr-[10px] pt-[7px]">
           <div className="flex w-full flex-row items-center">
-            <span className="text-[20px] font-normal leading-6">
+            <span className="text-[18px] font-normal leading-6">
               Total Alarm(s)
             </span>
             <input
               type="number"
-              className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
             />
-            <SimpleBtn className="ml-6 py-[6px]" type="button">
-              View New/Updated Alarm(s)
+            <SimpleBtn className="ml-2 py-[6px]" type="button">
+             New/Updated Alarm(s)
             </SimpleBtn>
             <input
               type="number"
-              className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
             />
 
-            <SimpleBtn className="ml-6 px-[2px] py-[5px]" type="button">
+            <SimpleBtn className="ml-4 px-[2px] py-[5px]" type="button">
               <BiChevronsLeft size={20} />
             </SimpleBtn>
             <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
               <BiChevronLeft size={20} />
             </SimpleBtn>
-            <span className="ml-[2px] text-[20px] font-normal leading-6">
+            <span className="ml-[2px] text-18px] font-normal leading-6">
               page
             </span>
             <input
               type="number"
-              className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
             />
             <span className="ml-2">/5</span>
-            <SimpleBtn className="ml-4 px-[2px] py-[5px]" type="button">
+            <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
               <BiChevronRight size={20} />
             </SimpleBtn>
             <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
               <BiChevronsRight size={20} />
             </SimpleBtn>
+
+            <span className="ml-[2px] text-[18px] font-normal leading-6">
+            Rows Per Page
+            </span>
+            <input
+              type="number"
+              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+            />
           </div>
           {/* ***************** top tabel ********************* top tabel *****************************top tabel *************** */}
           <Table

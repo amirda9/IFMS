@@ -1,8 +1,10 @@
-import {FormikProvider, useFormik} from 'formik';
+
+import {Form, FormikProvider, useFormik, validateYupSchema} from 'formik';
+import * as Yup from 'yup';
 import React, {ReactNode} from 'react';
 import {FC, useState} from 'react';
 import {useSelector} from 'react-redux';
-import {Outlet, useNavigate, useParams} from 'react-router-dom';
+import { Outlet, useNavigate, useParams} from 'react-router-dom';
 import {SimpleBtn, TabItem} from '~/components';
 import AppDialog from '~/components/modals/AppDialog';
 import {InputFormik, SelectFormik} from '~/container';
@@ -14,7 +16,19 @@ type Iprops = {
 
 const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
 const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
+const rtuSchema = Yup.object().shape({
+  // name: Yup.string().required('Please enter name'),
+  // type: Yup.string().required('Please enter type'),
+  IOR:Yup.number().required('Please enter IOR'),
+  RBS:Yup.number().required('Please enter RBS'),
+  event_loss_threshold:Yup.number().required('Please enter event_loss_threshold'),
+  event_reflection_threshold:Yup.number().required('Please enter event_reflection_threshold'),
+   total_loss_threshold:Yup.number().required('Please enter total_loss_threshold'),
+  section_loss_threshold:Yup.number().required('Please enter section_loss_threshold'),
+  fiber_end_threshold:Yup.number().required('Please enter fiber_end_threshold'),
+  Injection_Level_Threshold:Yup.number().required('Please enter Injection_Level_Threshold'),
 
+});
 const Row = ({children, name}: Iprops) => {
   return (
     <div className="flex w-[700px] flex-row items-center  justify-between mb-[20px]">
@@ -29,7 +43,9 @@ const convertDate = (date: string, time: string) => {
   return datetime.toISOString();
 };
 const Detail: FC = () => {
+  const navigate=useNavigate()
   const formik = useFormik({
+    validationSchema:rtuSchema,
     initialValues: {
       type: '',
       station: '',
@@ -49,27 +65,32 @@ const Detail: FC = () => {
       event_loss_threshold:"",
       event_reflection_threshold:"",
       total_loss_threshold:"",
-      section_loss_threshold:""
+      section_loss_threshold:"",
+      fiber_end_threshold:"",
+      Injection_Level_Threshold:""
     },
     onSubmit: async values => {},
   });
 
   return (
     <AppDialog
+    closefunc={()=> navigate(-1)}
       footerClassName="flex justify-end"
-      footer={
-        <div className="flex flex-col">
-          <div className="flex gap-x-4">
-            <SimpleBtn onClick={() => {}} type="button">
-              Save
-            </SimpleBtn>
-            <SimpleBtn className="cursor-pointer " link to="..">
-              Cancel
-            </SimpleBtn>
-          </div>
-        </div>
-      }>
-      <FormikProvider value={formik}>
+      // footer={
+      //   <div className="flex flex-col">
+      //     <div className="flex gap-x-4">
+      //       <SimpleBtn onClick={() => formik} type="button">
+      //         Save
+      //       </SimpleBtn>
+      //       <SimpleBtn onClick={()=>navigate(-1)} className="cursor-pointer " >
+      //         Cancel
+      //       </SimpleBtn>
+      //     </div>
+      //   </div>
+      // }
+      >
+      <FormikProvider  value={formik}>
+      <Form className="flex h-full flex-col justify-between">
         <Row name="Type">
           <SelectFormik placeholder="select" name="type" className="w-[400px]">
             <option value="" className="hidden">
@@ -366,8 +387,6 @@ const Detail: FC = () => {
             />
         </Row>
 
-
-
         <Row name="RBS (dB)">
         <InputFormik
               min={-90}
@@ -383,8 +402,6 @@ const Detail: FC = () => {
             />
         </Row>
 
-
-
         <Row name="Event Loss threshold (dB)">
         <InputFormik
               min={0}
@@ -399,7 +416,6 @@ const Detail: FC = () => {
               type="number"
             />
         </Row>
-
 
         <Row name="Event Reflection Threshold (dB)">
         <InputFormik
@@ -456,16 +472,26 @@ const Detail: FC = () => {
               }}
               outerClassName="w-[400px] mt-0"
               wrapperClassName="w-[400px] mt-0"
-              name="Injection Level Threshold (dB)"
+              name="Injection_Level_Threshold"
               type="number"
             />
         </Row>
-
-
+        <div className='w-full flex justify-end pb-[20px]'>
+        <div className="flex gap-x-4">
+            <SimpleBtn  type="submit">
+              Save
+            </SimpleBtn>
+            <SimpleBtn onClick={()=>navigate(-1)} type='button' className="cursor-pointer " >
+              Cancel
+            </SimpleBtn>
+          </div>
+        </div>
+       
+</Form>
       </FormikProvider>
-      <div className="flex h-full w-full flex-col">
-        {/* <Outlet key={params.alarmId} /> */}
-      </div>
+      {/* <div className="flex h-full w-full flex-col">
+        <Outlet key={"status"} />
+      </div> */}
     </AppDialog>
   );
 };
