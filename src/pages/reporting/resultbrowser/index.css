@@ -1,0 +1,13 @@
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+ display: none;
+}
+
+input[type="datetime-local"]::-moz-calendar-picker-indicator {
+ display: none;
+}
+
+input[type="datetime-local"]::-ms-clear {
+ display: none;
+ width : 0;
+ height: 0;
+}

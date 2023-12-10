@@ -112,6 +112,14 @@ function App() {
           </Route> 
 
 
+          <Route path="/reporting">
+          <Route path="dashboard" Component={pages.dashboard}/>
+          <Route path="reports" Component={pages.reports}/>
+          <Route path="reportschedule" Component={pages.reportschedule}/>
+          <Route path="resultbrowser" Component={pages.resultbrowser} />
+          </Route> 
+
+
           <Route path="/config">
             <Route
               path="system-maintenance"

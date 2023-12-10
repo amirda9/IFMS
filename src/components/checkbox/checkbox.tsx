@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import checkimage from '~/assets/images/check.svg';
+import { HiMiniCheck } from "react-icons/hi2";
 type Iprops={
  onclick:(e:boolean)=>void,
  classname:string,
@@ -24,7 +25,7 @@ function Checkbox({onclick,classname,iconclassnam="w-[20px] h-[19.5px]",checksta
 
   return (
     <button onClick={()=>onclick(!check)} className={`w-[20px] h-[20px] bg-[#FFFFFF] ${classname}`}>
-      {check ? <img src={checkimage} className={`mb-4  ${iconclassnam}`} /> : null}
+      {check ? <HiMiniCheck  className='w-[23px] h-[25px] mt-[-4px] ml-[-3px]' />: null}
     </button>
   );
 }

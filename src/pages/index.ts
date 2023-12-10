@@ -8,3 +8,4 @@ export * from './users';
 export * from './user-groups';
 export * from './map';
 export * from './monitoring';
+export * from './reporting';

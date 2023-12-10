@@ -64,10 +64,10 @@ export const navbarItems = [
     name: 'Reporting',
     to: '/reporting',
     items: [
-      {label: 'Result Browser', to: '/result-browser'},
-      {label: 'Reports', to: '/reports'},
-      {label: 'Report Schedule', to: '/report-schedule'},
-      {label: 'Dashboard', to: '/dashboard'},
+      {label: 'Result Browser', to: 'reporting/resultbrowser'},
+      {label: 'Reports', to: 'reporting/reports'},
+      {label: 'Report Schedule', to: 'reporting/reportschedule'},
+      {label: 'Dashboard', to: 'reporting/dashboard'},
     ],
   },
   {
