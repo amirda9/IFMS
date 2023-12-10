@@ -114,7 +114,18 @@ function App() {
 
           <Route path="/reporting">
           <Route path="dashboard" Component={pages.dashboard}/>
-          <Route path="reports" Component={pages.reports}/>
+          <Route path="reports" Component={pages.reportsRoutesLayout}>
+          <Route path=":reportid" Component={pages.reports} />
+          <Route
+                path="reportsdata"
+                Component={pages.SinglereportsRouteLayout}>
+                     <Route index Component={pages.reportsDetailpage} />
+<Route path="Parameters" Component={pages.reportsparameters} />
+                </Route>                
+       
+         
+          </Route>
+          {/* <Route path="reports" Component={pages.reports}/> */}
           <Route path="reportschedule" Component={pages.reportschedule}/>
           <Route path="resultbrowser" Component={pages.resultbrowser} />
           </Route> 
