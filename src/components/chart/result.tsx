@@ -6,7 +6,10 @@ type Resultdata={
 }
 
 type Iprops={
-  onclick:(name:string)=>void
+  onclick:(name:string)=>void;
+  Length:string;
+  Loss:string;
+  AverageLoss:string
  }
  const options = [
    {value: 'Result', label: 'Result'},
@@ -26,7 +29,7 @@ const Resultdata=({name,value}:Resultdata)=>{
  </div>
  )
 }
-function Rightbar({onclick}:Iprops) {
+function Rightbar({onclick,Length,Loss,AverageLoss}:Iprops) {
   return (
    <div className="h-full w-full o bg-[#C6DFF8] p-[10px] box-border rounded-[10px]">
    <Selectbox
@@ -37,9 +40,9 @@ function Rightbar({onclick}:Iprops) {
      classname={'w-full h-[40px] rounded-[10px] mb-[25px]'}
    />
   <Resultdata name={'Date'} value={'2023/02/10'}  />
-  <Resultdata name={'Length'} value={'150 km'}  />
-  <Resultdata name={'Loss'} value={'5.42 dB'}  />
-  <Resultdata name={'Average Loss'} value={'0.215 dB/km'}  />
+  <Resultdata name={'Length'} value={`${Length} km`}  />
+  <Resultdata name={'Loss'} value={Loss}  />
+  <Resultdata name={'Average Loss'} value={AverageLoss}  />
   <Resultdata name={'ORL'} value={'32.46 dB'}  />
   <Resultdata name={'Average Splice Loss'} value={'0.285 dB'}  />
   <Resultdata name={'Max. Splice Loss'} value={'0.315 dB'}  />

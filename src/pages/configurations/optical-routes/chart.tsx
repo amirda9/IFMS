@@ -9842,7 +9842,24 @@ function Chart() {
         {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}
         <div className="w-[370px]">
           {reightbar == 'Result' ? (
-            <Resultdata onclick={e => setReightbar(e)} />
+            <Resultdata
+            AverageLoss={((
+              fakedata.result.key_events.events[
+                fakedata.result.key_events.events.length - 1
+              ].event_location.x / 1000
+            )/Number(fakedata.result.key_events.end_to_end_loss)).toString()
+            .substring(0, 5)}
+              Length={(
+                fakedata.result.key_events.events[
+                  fakedata.result.key_events.events.length - 1
+                ].event_location.x / 1000
+              )
+                .toString()
+                .substring(0, 5)}
+
+                Loss={fakedata.result.key_events.end_to_end_loss.toString().substring(0, 5)}
+              onclick={e => setReightbar(e)}
+            />
           ) : reightbar == 'Alarms' ? (
             <Alarms onclick={e => setReightbar(e)} />
           ) : (
