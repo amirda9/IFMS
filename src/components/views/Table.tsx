@@ -33,7 +33,7 @@ type PropsType<
   tabicon?: string;
   onclicktitle?: Function;
   tdclassname?:string;
-  thclassname?:string
+  thclassname?:string;
 };
 const Table = <
   C extends string,
@@ -109,7 +109,6 @@ const Table = <
             let BG =row.tabbodybg?.find((data: any) => data.name == key)?.bg || row.tabrowbg || 'white';
           return (
             <td
-            
               style={{backgroundColor: BG}}
               key={key}
               className={classNames(

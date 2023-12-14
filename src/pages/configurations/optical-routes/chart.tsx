@@ -5,9 +5,9 @@ import Resultdata from '~/components/chart/result';
 import Opticalroute from '~/components/chart/opticalroute';
 import Detailbox from '~/components/chart/detailbox';
 import Group from './../../../assets/icons/Group 29.png';
-import nonereflective from '~/assets/icons/Group 23.png'
-import reflecive from '~/assets/icons/Group 27.png'
-import startoffibeer from '~/assets/icons/startoffibeer.png'
+import nonereflective from '~/assets/icons/Group 23.png';
+import reflecive from '~/assets/icons/Group 27.png';
+import startoffibeer from '~/assets/icons/startoffibeer.png';
 import Alarms from '~/components/chart/alarms';
 import arrowupchart from '~/assets/icons/arrowupchart.png';
 import hand from '~/assets/icons/hand.png';
@@ -44,7 +44,7 @@ type tabelItemstype = {
   Peak: string;
   Attenuation: string;
   Cumulative: string;
-  event_code:string | undefined
+  event_code: string | undefined;
 };
 // ######################################################
 const fakedata = JSON.parse(
@@ -8868,7 +8868,7 @@ const allcurve = [
 function Chart() {
   const svgRef = useRef<HTMLDivElement>(null);
   const [leftbartabselected, setLeftbartabselected] = useState('');
-  const [leftverticaltab, setLeftverticaltab] = useState<string>('');
+  const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [mousecursor, setMousecursor] = useState(false);
   const [allcurveline, setAllcurveline] = useState<any>([]);
@@ -8880,18 +8880,22 @@ function Chart() {
   const [isDraggingname, setIsDraggingname] = useState<string | number>('');
   const [showeventdetail, setShoweventdetail] = useState(false);
   const [rectangelzoom, setRectangelzoom] = useState(false);
-  const [mousecoordinate, setMousecoordinate] = useState({x: null, y: null});
+  const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
+  const [charmousecoordinate, setCharmousecoordinate] = useState({x: 0, y: 0});
   const [scrollValue, setScrollValue] = useState(0);
   const [startdraw, setStartDraw] = useState(false);
   const [maxx, setMaxx] = useState(0);
   const [tabelItems, setTabelitems] = useState<tabelItemstype[]>([]);
   const [maxy, setMaxy] = useState(0);
+
   const [events, setEvents] = useState<
     {x: number; y: number; event_number?: number; type: string}[]
   >([]);
+
   const [arrowevents, setArrowevents] = useState<
     {x: number; y: number; event_number: number; location: string}[]
   >([]);
+
   const [verticalLines, setVerticalLines] = useState<
     {
       x: number;
@@ -8903,7 +8907,7 @@ function Chart() {
     }[]
   >([]);
 
-  console.log('😎🤩', arrowevents);
+  console.log('😎🤩', scrollValue);
 
   const [allpoints, setAllpoints] = useState<
     {id: string; data: {x: string; y: string}[]}[]
@@ -8927,12 +8931,12 @@ function Chart() {
     const max_y = Math.max(...allpointsdata.map((o: any) => o.y));
     setMaxy(max_y);
     // -----------------------
-    // setAllcurveline([
-    //   {
-    //     id: 'Cur',
-    //     data: allpointsdata,
-    //   },
-    // ]);
+    setAllcurveline([
+      {
+        id: 'Cur',
+        data: allpointsdata,
+      },
+    ]);
     // -----------------------------
     let Arrowevents = [];
     for (let i = 0; i < fakedata.result.key_events.events.length; i++) {
@@ -8965,13 +8969,17 @@ function Chart() {
       sumloss += Allevents[c].event_loss;
       items.push({
         index: c + 1,
-        Position:Allevents[c].event_location.x.toString().substring(0,7),
-        Loss: Allevents[c]?.event_loss?.toString().substring(0,7) || '',
-        Reflectance: Allevents[c].event_reflectance.toString().substring(0,7),
+        Position: (Allevents[c].event_location.x / 1000)
+          .toString()
+          .substring(0, 7),
+        Loss: Allevents[c]?.event_loss?.toString().substring(0, 7) || '',
+        Reflectance: Allevents[c].event_reflectance.toString().substring(0, 7),
         Peak: '',
         Attenuation: '',
-        Cumulative: sumloss.toString().substring(0,7),
-        event_code:Allevents[c].event_code || undefined
+        Cumulative: sumloss.toString().substring(0, 7),
+        event_code: Allevents[c].event_code || undefined,
+        onclickrow: () => onclickevent(Allevents[c].event_number),
+        // tabbodybg: [{name: "Position", onclick: ()=>alert("Position")}],
       });
       if (c < Allevents.length - 1) {
         sumloss +=
@@ -8979,20 +8987,34 @@ function Chart() {
             Allevents[c]?.event_location?.y || 0;
         items.push({
           index: '',
-          Position:(Allevents[c+1].event_location.x-Allevents[c].event_location.x).toString().substring(0,7),
+          Position: (
+            (Allevents[c + 1].event_location.x -
+              Allevents[c].event_location.x) /
+            1000
+          )
+            .toString()
+            .substring(0, 7),
           Loss:
             (
               Allevents[c + 1]?.event_location?.y -
               Allevents[c]?.event_location?.y
-            )?.toString().substring(0,7) || '---',
+            )
+              ?.toString()
+              .substring(0, 7) || '---',
           Reflectance: '',
           Peak: '',
-          Attenuation:( (
-            Allevents[c + 1]?.event_location?.y -
-            Allevents[c]?.event_location?.y
-          )/(Allevents[c+1].event_location.x-Allevents[c].event_location.x)).toString().substring(0,7),
-          Cumulative: sumloss.toString().substring(0,7),
-          event_code:undefined
+          Attenuation: (
+            (Allevents[c + 1]?.event_location?.y -
+              Allevents[c]?.event_location?.y) /
+            ((Allevents[c + 1].event_location.x -
+              Allevents[c].event_location.x) /
+              1000)
+          )
+            .toString()
+            .substring(0, 7),
+          Cumulative: sumloss.toString().substring(0, 7),
+          event_code: undefined,
+          tabrowbg: '#C6DFF8',
         });
       }
     }
@@ -9005,7 +9027,10 @@ function Chart() {
   // console.log("❎",allcurveline.data[0])
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
+    min: 0,
   });
+  console.log('🤠', yScale);
+
   // ---- func ------func --------------- func ---------------- func ------------- func --------
   const Events = () => {
     let allevents = fakedata.result.key_events.events.map((data: any) => ({
@@ -9053,43 +9078,31 @@ function Chart() {
 
     // گرفتن مختصات مربع نسبت به صفحه مرورگر
     const rect: any = square?.current?.getBoundingClientRect();
-    //  console.log((rect.width-rect.x)/11,'hgjgjgh');
-
-    const squareX = rect.left;
-    const squareY = rect.bottom;
-    // console.log(rect,'uuuuuuuuuu');
-    // console.log(mouseY,'wwwwwwwwwww');
-
-    // محاسبه مختصات موس نسبت به مربع
     const x = mouseX - 157.8;
     const y = mouseY;
-    // console.log((((y+scrollValue)-60))/35,'yyyttttt');
-    // setYvalue(((mouseY-540)/65)*10)
-    // ****************
-    // setYvalue((x/((rect.width-rect.x)/(11-xScale.min)))+xScale.min)
-    // *****************
-    //  console.log('🤬',(x/((rect.width-rect.x)/(maxx-xScale.min)))+xScale.min);
-    //
+    setYvalue(
+      -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min,
+    );
 
-    //  setYvalue((event.nativeEvent.clientY-rect.bottom)/65)
-    // const xx = event;
-    // console.log(squareX,'xxx');
-    // ##########################################
-    const mousecoordinateCopy = deepcopy(mousecoordinate);
     setMousecoordinate({
       x: x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min,
-      y: mousecoordinateCopy.y,
+      y:
+        -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
+        yScale.min,
     });
   };
+
   const getScrollValue = () => {
-    setScrollValue(window.pageYOffset);
+    setScrollValue(scrollY);
   };
+
   useEffect(() => {
     window.addEventListener('scroll', getScrollValue);
   }, []);
 
   const Trace = () => {
     setLeftverticaltab('Trace');
+    setShoweventdetail(false);
   };
 
   const Measure = () => {
@@ -9183,6 +9196,9 @@ function Chart() {
       );
       arroweventsCopy[findarroweventsdex].x =
         x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
+      arroweventsCopy[findarroweventsdex].y =
+        -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
+        yScale.min;
       setArrowevents(arroweventsCopy);
     }
   };
@@ -9204,19 +9220,21 @@ function Chart() {
       );
       verticalLinesCopy[findverticalindex].x =
         x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
+      verticalLinesCopy[findverticalindex].y =
+        -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
+        yScale.min;
       setVerticalLines(verticalLinesCopy);
     }
   };
 
   const Eventline = ({xScale, yScale}: any) => {
     let elements: any = [];
-    if (!showeventdetail) {
+    if (!showeventdetail && leftverticaltab == 'Events') {
       events.forEach((point, index) => {
         const X = xScale(point.x);
         const Y = yScale(point!.y!);
         elements.push(
           <line
-            strokeWidth={showeventdetail ? 0 : 20}
             onClick={() => onclickevent(point.event_number!)}
             key={index}
             x1={X}
@@ -9224,6 +9242,19 @@ function Chart() {
             x2={X}
             y2={Y - 70}
             stroke="red"
+          />,
+        );
+        elements.push(
+          <line
+            strokeWidth={20}
+            onClick={() => onclickevent(point.event_number!)}
+            key={index}
+            x1={X}
+            y1={Y + 70}
+            x2={X}
+            y2={Y - 70}
+            stroke="red"
+            style={{opacity: 0}}
           />,
         );
         elements.push(
@@ -9285,6 +9316,7 @@ function Chart() {
               y1={Y + 40}
               x2={X}
               y2={Y - 40}
+              style={{opacity: 0}}
               stroke="green"
               strokeWidth={isDraggingname === point.event_number ? 250 : 0}
             />,
@@ -9476,6 +9508,7 @@ function Chart() {
             x2={X}
             y2={-400}
             stroke="red"
+            style={{opacity: 0}}
             strokeWidth={isDraggingname === point.name ? 0 : 10}
             onMouseDown={() => handleMouseDown(point.name!)}
             onMouseUp={handleMouseUp}
@@ -9486,6 +9519,7 @@ function Chart() {
             y1={400}
             x2={X}
             y2={-400}
+            style={{opacity: 0}}
             stroke="green"
             strokeWidth={isDraggingname === point.name ? 250 : 0}
             onMouseMove={e => biglinehandleMouseMove(point.name!, e)}
@@ -9666,7 +9700,7 @@ function Chart() {
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
         {yvalue}
       </span>
-      <div className="flex h-[540px] w-full flex-row">
+      <div className="flex h-[540px]  w-full flex-row">
         {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
         <div className="flex h-full w-[87px] flex-col">
           <div className="flex h-[360px] w-full flex-row">
@@ -9782,7 +9816,7 @@ function Chart() {
 
                   'points',
                   'slices',
-                  'mesh',
+                  // 'mesh',
                   'legends',
                   VerticalLine, // اضافه کردن تابع VerticalLine به لایه ها
                   Eventline,
@@ -9819,175 +9853,219 @@ function Chart() {
 
       <div className="flex w-full flex-row justify-between">
         {/* ---- tabel ------- tabel ------------------ tabel ------------- tabel ------------- tabel ------------ */}
-        <Table
-          bordered={true}
-          onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
-          tabicon={'Name'}
-          cols={columns}
-          items={tabelItems}
-          dynamicColumns={['index']}
-          renderDynamicColumn={({key, value}) => {
-            console.log('🔫', value);
-
-            if (value.index == '') {
-              return (
-                <div className="flex  w-full flex-row justify-start items-center">
-                  <BiPlus />
-                  <img className='w-[16px] h-[8px] ml-[5px]' src={Group} />
+        {leftverticaltab == 'Measure' ? (
+          <>
+            <div className="ml-[80px] mt-[55px] flex w-[calc(100vw-504px)] flex-row justify-between">
+              <div className="box-border  flex  w-[35.4%] flex-col">
+                <div className="relative box-border h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px]">
+                  <div className="mb-[4px] flex w-full flex-row justify-between">
+                    <span className="2xl:tex-[25px] w-[68px] text-[20px]  leading-[36.31px] text-[#000000]">
+                      A:
+                    </span>
+                    <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
+                      4.124
+                    </span>
+                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                      km
+                    </span>
+                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                      dB
+                    </span>
+                  </div>
+                  <div className="mb-[4px] flex w-full flex-row justify-between">
+                    <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
+                      B:
+                    </span>
+                    <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
+                      4.124
+                    </span>
+                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                      km
+                    </span>
+                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                      dB
+                    </span>
+                  </div>
+                  <div className="flex w-full flex-row justify-between">
+                    <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
+                      A-B:
+                    </span>
+                    <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
+                      4.124
+                    </span>
+                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                      km
+                    </span>
+                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
+                      dB
+                    </span>
+                  </div>
                 </div>
-              );
-            } else  if(value.event_code == "Start of fiber"){
-                return (
-                  <div className="flex  w-full flex-row justify-start items-center">
-                   
-                    <BiPlus />
-                    <img className='w-[13px] h-[22px] ml-[5px]' src={startoffibeer} />
-                    <span className='text-[20px] font-normal leading-[24.2px] ml-[4px]'>{value.index}</span>
-                  </div>
-                );
-              }else if (value.event_code == "End of fiber"){
-                return (
-                  <div className="flex  w-full flex-row justify-start items-center">
-                    <BiPlus />
-                    <img className='w-[13px] rotate-180 h-[22px] ml-[5px]' src={startoffibeer} />
-                    <span className='text-[20px] font-normal leading-[24.2px] ml-[4px]'>{value.index}</span>
-                  </div>
-                );
-              }else if(value.event_code == "reflecive"){
-                return (
-                  <div className="flex  w-full flex-row justify-start items-center">
-                    <BiPlus />
-                    <img className='w-[13px] rotate-180 h-[22px] ml-[5px]' src={reflecive} />
-                    <span className='text-[20px] font-normal leading-[24.2px] ml-[4px]'>{value.index}</span>
-                  </div>
-                );
-              }else{
-                return (
-                  <div className="flex  w-full flex-row justify-start items-center">
-                    <BiPlus />
-                    <img className='w-[13px] rotate-180 h-[22px] ml-[5px]' src={nonereflective} />
-                    <span className='text-[20px] font-normal leading-[24.2px] ml-[4px]'>{value.index}</span>
-                  </div>
-                );
-              }
-             
-              
-             
-           
-          }}
-          containerClassName="w-[calc(100vw-504px)] ml-[80px] mt-[20px]"
-        />
-        {/* -------------------------------- */}
-        <Detailbox />
-      </div>
-      <div className="ml-[80px] mt-[20px] flex w-[calc(100vw-504px)] flex-row justify-between">
-        <div className="box-border  flex  w-[35.4%] flex-col">
-          <div className="relative box-border h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px]">
-            <div className="mb-[4px] flex w-full flex-row justify-between">
-              <span className="2xl:tex-[25px] w-[68px] text-[20px]  leading-[36.31px] text-[#000000]">
-                A:
-              </span>
-              <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
-                4.124
-              </span>
-              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                km
-              </span>
-              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                dB
-              </span>
-            </div>
-            <div className="mb-[4px] flex w-full flex-row justify-between">
-              <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
-                B:
-              </span>
-              <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
-                4.124
-              </span>
-              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                km
-              </span>
-              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                dB
-              </span>
-            </div>
-            <div className="flex w-full flex-row justify-between">
-              <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
-                A-B:
-              </span>
-              <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
-                4.124
-              </span>
-              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                km
-              </span>
-              <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                dB
-              </span>
-            </div>
-          </div>
-          <div className="mt-[10px] flex w-full flex-row justify-between">
-            <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
-              <MdOutlineArrowBackIos size={40} />
-            </button>
-            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
-              a
-            </button>
-            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
-              A
-            </button>
-            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
-              B
-            </button>
-            <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
-              b
-            </button>
-            <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
-              <MdOutlineArrowBackIos size={40} className="rotate-180" />
-            </button>
-          </div>
-        </div>
+                <div className="mt-[10px] flex w-full flex-row justify-between">
+                  <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
+                    <MdOutlineArrowBackIos size={40} />
+                  </button>
+                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                    a
+                  </button>
+                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                    A
+                  </button>
+                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                    B
+                  </button>
+                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                    b
+                  </button>
+                  <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
+                    <MdOutlineArrowBackIos size={40} className="rotate-180" />
+                  </button>
+                </div>
+              </div>
 
-        <div className="flex h-[195px] w-[63.9%] flex-col">
-          <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
-            <div className="flex h-full w-[265px] flex-col items-center justify-center">
-              <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                Four-Point Loss:
-              </span>
-              <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                0.384 dB
-              </span>
+              <div className="flex h-[195px] w-[63.9%] flex-col">
+                <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
+                  <div className="flex h-full w-[265px] flex-col items-center justify-center">
+                    <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                      Four-Point Loss:
+                    </span>
+                    <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                      0.384 dB
+                    </span>
+                  </div>
+                  <div className="flex h-full w-[265px] flex-col items-center justify-center">
+                    <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                      Four-Point Loss:
+                    </span>
+                    <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                      0.384 dB
+                    </span>
+                  </div>
+                  <div className="flex h-full w-[265px] flex-col items-center justify-center">
+                    <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                      Four-Point Loss:
+                    </span>
+                    <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                      0.384 dB
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-[10px] flex w-full flex-row justify-between">
+                  <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+                    Event
+                  </button>
+                  <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+                    Section
+                  </button>
+                  <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+                    ORL
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="flex h-full w-[265px] flex-col items-center justify-center">
-              <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                Four-Point Loss:
-              </span>
-              <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                0.384 dB
-              </span>
-            </div>
-            <div className="flex h-full w-[265px] flex-col items-center justify-center">
-              <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                Four-Point Loss:
-              </span>
-              <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                0.384 dB
-              </span>
-            </div>
+          </>
+        ) : (
+          <Table
+            bordered={true}
+            onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
+            tabicon={'Name'}
+            cols={columns}
+            items={tabelItems}
+            dynamicColumns={['index']}
+            renderDynamicColumn={({key, value}) => {
+              console.log('🔫', value);
+              if (key == 'index') {
+                if (value.index == '') {
+                  return (
+                    <div className="flex  w-full flex-row items-center justify-start">
+                      <BiPlus />
+                      <img className="ml-[5px] h-[8px] w-[16px]" src={Group} />
+                    </div>
+                  );
+                } else if (value.event_code == 'Start of fiber') {
+                  return (
+                    <div className="flex  w-full flex-row items-center justify-start">
+                      <BiPlus />
+                      <img
+                        className="ml-[5px] h-[22px] w-[13px]"
+                        src={startoffibeer}
+                      />
+                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                        {value.index}
+                      </span>
+                    </div>
+                  );
+                } else if (value.event_code == 'End of fiber') {
+                  return (
+                    <div className="flex  w-full flex-row items-center justify-start">
+                      <BiPlus />
+                      <img
+                        className="ml-[5px] h-[22px] w-[13px] rotate-180"
+                        src={startoffibeer}
+                      />
+                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                        {value.index}
+                      </span>
+                    </div>
+                  );
+                } else if (value.event_code == 'reflecive') {
+                  return (
+                    <div className="flex  w-full flex-row items-center justify-start">
+                      <BiPlus />
+                      <img
+                        className="ml-[5px] h-[22px] w-[13px] rotate-180"
+                        src={reflecive}
+                      />
+                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                        {value.index}
+                      </span>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="flex  w-full flex-row items-center justify-start">
+                      <BiPlus />
+                      <img
+                        className="ml-[5px] h-[22px] w-[13px] rotate-180"
+                        src={nonereflective}
+                      />
+                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                        {value.index}
+                      </span>
+                    </div>
+                  );
+                }
+              }
+
+              // if(key == 'Position'){
+              //   if(!value.event_code){
+
+              //   }
+              // }
+            }}
+            containerClassName="w-[calc(100vw-504px)] ml-[80px] mt-[20px]"
+          />
+        )}
+
+        {/* -------------------------------- */}
+        <div className={`flex flex-col `}>
+          <div
+            className={`w-auto ${
+              showeventdetail ? 'opacity-100' : 'opacity-0'
+            }`}>
+            <Detailbox />
           </div>
-          <div className="mt-[10px] flex w-full flex-row justify-between">
-            <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
-              Event
-            </button>
-            <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
-              Section
-            </button>
-            <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
-              ORL
-            </button>
+          <div className="flex w-[360px] flex-row">
+            <span className="ml-[25px] mr-[45px] text-[24px] font-normal text-[#000000]">
+              x:{mousecoordinate.x.toString().substring(0, 5)}
+            </span>
+            <span className="text-[24px] font-normal text-[#000000]">
+              y:{mousecoordinate.y.toString().substring(0, 5)}
+            </span>
           </div>
         </div>
       </div>
+
       {rectangelzoom == true && startdraw == true ? (
         <div
           className="absolute"
