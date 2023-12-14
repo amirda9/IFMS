@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
-import {ResponsiveLineCanvas, ResponsiveLine} from '@nivo/line';
+import {ResponsiveLine} from '@nivo/line';
 import Resultdata from '~/components/chart/result';
 import Opticalroute from '~/components/chart/opticalroute';
 import Detailbox from '~/components/chart/detailbox';
@@ -20,13 +20,9 @@ import Max from '~/assets/icons/Max.png';
 import Min from '~/assets/icons/Min.png';
 import Avg from '~/assets/icons/Avg.png';
 import {SimpleBtn, Table} from '~/components';
-import {Line} from '@nivo/line';
-import {MyResponsiveLineCanvas} from '~/components/chart';
 import {MdOutlineArrowBackIos} from 'react-icons/md';
 import {deepcopy} from '~/util';
-import {IoTrashOutline} from 'react-icons/io5';
-import {BiPlus} from 'react-icons/bi';
-// import {scaleLinear} from "d3-scale";
+import {BiPlus} from 'react-icons/bi';                                 
 type chatrtabtype = {
   name: string;
   src: string;
@@ -46,7 +42,7 @@ type tabelItemstype = {
   Cumulative: string;
   event_code: string | undefined;
 };
-// ######################################################
+
 const fakedata = JSON.parse(
   JSON.stringify({
     id: '5c916a58-2ad2-4788-a826-9de7d5fce2f7',
@@ -8773,7 +8769,6 @@ const fakedata = JSON.parse(
   }),
 );
 
-// ######################################################
 
 const columns = {
   index: {label: 'Index', size: 'w-[9%]'},
@@ -8783,7 +8778,6 @@ const columns = {
   Peak: {label: 'Peak Reflectance (dB)', size: 'w-[13%]'},
   Attenuation: {label: 'Attenuation (dB/km)', size: 'w-[13%]'},
   Cumulative: {label: 'Cumulative Loss (dB)', size: 'w-[13%]'},
-  // event_code:{label: '', size: 'w-[0%]'},
 };
 
 const allcurve = [
@@ -8867,21 +8861,15 @@ const allcurve = [
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
   const svgRef = useRef<HTMLDivElement>(null);
-  const [leftbartabselected, setLeftbartabselected] = useState('');
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [mousecursor, setMousecursor] = useState(false);
   const [allcurveline, setAllcurveline] = useState<any>([]);
-  const [allverticalline, setAllverticalline] = useState([]);
-  const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [reightbar, setReightbar] = useState('Result');
-  const [change, setChange] = useState(0);
-  const [lineX, setLineX] = useState(5);
   const [isDraggingname, setIsDraggingname] = useState<string | number>('');
   const [showeventdetail, setShoweventdetail] = useState(false);
   const [rectangelzoom, setRectangelzoom] = useState(false);
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
-  const [charmousecoordinate, setCharmousecoordinate] = useState({x: 0, y: 0});
   const [scrollValue, setScrollValue] = useState(0);
   const [startdraw, setStartDraw] = useState(false);
   const [maxx, setMaxx] = useState(0);
@@ -8907,20 +8895,17 @@ function Chart() {
     }[]
   >([]);
 
-  console.log('😎🤩', scrollValue);
 
-  const [allpoints, setAllpoints] = useState<
-    {id: string; data: {x: string; y: string}[]}[]
-  >([]);
+
+
   const [yvalue, setYvalue] = useState('');
-  const [mouseCoords, setMouseCoords] = useState({x: null, y: null});
   const [basescale, setbasescale] = useState(2);
   const [xScale, setXScale] = useState<any>({
     type: 'linear',
     min: 0,
     // tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
   });
-  // console.log(scrollValue,'scrollValue');
+
 
   useEffect(() => {
     let allpointsdata = fakedata.result.data_pts.data_points.map(
@@ -9021,15 +9006,11 @@ function Chart() {
     setTabelitems(items);
   }, []);
 
-  // console.log(allcurveline,'allcurveline');
 
-  // console.log('🦔',maxx)
-  // console.log("❎",allcurveline.data[0])
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
     min: 0,
   });
-  console.log('🤠', yScale);
 
   // ---- func ------func --------------- func ---------------- func ------------- func --------
   const Events = () => {
@@ -9039,7 +9020,7 @@ function Chart() {
       event_number: data.event_number,
       type: 'event',
     }));
-    console.log('😛', allevents);
+
 
     for (let i = 0; i < fakedata.result.key_events.events.length; i++) {
       if (fakedata.result.key_events.events[i].event_code == 'Start of fiber') {
@@ -9066,7 +9047,7 @@ function Chart() {
     // setVerticalLines(allevents);
   };
 
-  console.log(arrowevents, '👠');
+
 
   const getchartcoordinate = (event: any) => {
     // گرفتن مختصات موس نسبت به صفحه مرورگر
@@ -9112,7 +9093,7 @@ function Chart() {
   const LinkView = () => {
     setLeftverticaltab('LinkView');
   };
-  // console.log(window.scrollY,'yyy');
+
   const zoom = (x: boolean, y: number) => {
     setXScale({
       type: 'linear',
@@ -9173,11 +9154,7 @@ function Chart() {
     ]);
   };
 
-  const eventmousedown = (event_number: number) => {
-    // let fakedataCopy=deepcopy(fakedata)
-    // alert(event_number)
-    console.log('👽', event_number);
-  };
+
 
   const eventhandleMouseMove = (event_number: number, e: any) => {
     const mouseX = e.clientX;
@@ -9185,10 +9162,6 @@ function Chart() {
     const square = svgRef;
     const rect: any = square?.current?.getBoundingClientRect();
     const x = mouseX - 157.8;
-    const y = mouseY;
-
-    // const mousecoordinateCopy=deepcopy(mousecoordinate)
-    // setMousecoordinate({x:(x/((rect.width-rect.x)/(maxx-xScale.min)))+xScale.min,y:mousecoordinateCopy.y})
     if (isDraggingname == event_number) {
       const arroweventsCopy = deepcopy(arrowevents);
       const findarroweventsdex = arrowevents.findIndex(
@@ -9209,10 +9182,6 @@ function Chart() {
     const square = svgRef;
     const rect: any = square?.current?.getBoundingClientRect();
     const x = mouseX - 157.8;
-    const y = mouseY;
-
-    // const mousecoordinateCopy=deepcopy(mousecoordinate)
-    // setMousecoordinate({x:(x/((rect.width-rect.x)/(maxx-xScale.min)))+xScale.min,y:mousecoordinateCopy.y})
     if (isDraggingname == name) {
       const verticalLinesCopy = deepcopy(verticalLines);
       const findverticalindex = verticalLines.findIndex(
@@ -9308,9 +9277,7 @@ function Chart() {
 
             <line
               onMouseMove={e => eventhandleMouseMove(point.event_number!, e)}
-              // onMouseLeave={(e)=>eventhandleMouseMove(point.event_number!,e)}
               onMouseUp={handleMouseUp}
-              // onMouseDown={()=>eventmousedown(point.event_number!)}
               key={index}
               x1={X}
               y1={Y + 40}
@@ -9371,7 +9338,6 @@ function Chart() {
             />,
             // ----------------------------------------------------------------
             <line
-              // onMouseDown={() => alert('kkjjjj')}
               className="cursor-pointer opacity-0"
               key={index}
               x1={X}
@@ -9381,7 +9347,6 @@ function Chart() {
               stroke="red"
             />,
             <line
-              // onMouseDown={() => alert('kkjjjj')}
               className="cursor-pointer"
               key={index}
               x1={X}
@@ -9418,9 +9383,7 @@ function Chart() {
             />,
             <line
               onMouseMove={e => eventhandleMouseMove(point.event_number!, e)}
-              // onMouseLeave={(e)=>eventhandleMouseMove(point.event_number!,e)}
               onMouseUp={handleMouseUp}
-              // onMouseDown={()=>eventmousedown(point.event_number!)}
               key={index}
               x1={X}
               y1={Y + 40}
@@ -9483,7 +9446,8 @@ function Chart() {
       return elements;
     }
   };
-  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
   const VerticalLine = ({xScale, yScale}: any) => {
     const elements: any = [];
     if (showeventdetail) {
@@ -9525,23 +9489,7 @@ function Chart() {
             onMouseMove={e => biglinehandleMouseMove(point.name!, e)}
             onMouseUp={handleMouseUp}
           />,
-          // <svg
-          //   // some props
-          //  onMouseMove={handleMouseMove}
-          //   onMouseDown={handleMouseDown}
-          //   onMouseUp={handleMouseUp}>
-          //   <line
-          //     // onMouseUp={handleMouseUp}
-          //     strokeWidth={10}
-          //     // onMouseDown={handleMouseDown}
-          //     key={1}
-          //     x1={100}
-          //     y1={0}
-          //     x2={10}
-          //     y2={10}
-          //     stroke="red"
-          //   />
-          // </svg>,
+        
         );
         elements.push(
           <text
@@ -9562,26 +9510,8 @@ function Chart() {
   const handleMouseUp = () => {
     setIsDraggingname('');
   };
-  React.useEffect(() => {
-    const updateMousePosition = (ev: any) => {
-      setMousePosition({x: ev.clientX, y: ev.pageY});
-    };
-    window.addEventListener('mousemove', updateMousePosition);
-    return () => {
-      window.removeEventListener('mousemove', updateMousePosition);
-    };
-  }, []);
-  const markers = [
-    {
-      axis: 'x',
-      value: 5,
-      lineStyle: {stroke: 'black', strokeWidth: 2},
-      legend: 'vertical line at x = 5',
-      legendOrientation: 'vertical',
-      legendPosition: 'top-left',
-      legendOffsetY: -5,
-    },
-  ];
+
+
 
   // ------ component --------- component ------------ component --------------- component ------------------
   const Chatrtabtype = ({name, src, ...props}: chatrtabtype) => {
@@ -9658,44 +9588,8 @@ function Chart() {
     }
   };
 
-  // تعریف تابع برای ذخیره مختصات پایان وقتی دکمه موس رها شود
-  const handleMouseUp2 = (event: any) => {
-    setStartDraw(false);
-    setEndX(event.clientX);
-    setEndY(event.clientY);
-    // ---------------------------------------
-
-    //     const x = startX/2+endX/2;
-    // const y =endY/2+startY/2 ;
-    const x = event.clientX;
-    const y = event.clientY;
-    // تعریف حدود زوم
-    const zoomWidth = 0.2; // عرض زوم نسبت به xScale
-    const zoomHeight = 0.2; // ارتفاع زوم نسبت به yScale
-    // تعریف مقادیر min و max برای x و y
-    const xMin = Math.max(x - zoomWidth / 2, 0); // حداقل مقدار x برابر با صفر یا کمترین مقدار شروع و پایان در جهت افقی
-    const xMax = Math.min(x + zoomWidth / 2, 2); // حداکثر مقدار x برابر با چهار یا بیشترین مقدار شروع و پایان در جهت افقی
-    const yMin = Math.max(y - zoomHeight / 2, 0); // حداقل مقدار y برابر با صفر یا کمترین مقدار شروع و پایان در جهت عمودی
-    const yMax = Math.min(y + zoomHeight / 2, 2); // حداکثر مقدار y برابر با بیست یا بیشترین مقدار شروع و پایان در جهت عمودی
-    // زوم کردن به نقطه مورد نظر با استفاده از تابعهای setXScale و setYScale
-    setXScale({
-      type: 'linear',
-      min: x,
-      // max: xMax,
-    });
-    setYScale({
-      type: 'linear',
-      min: y,
-      // max: yMax,
-    });
-  };
-  // **************************************
-
-  // ##############################################################################################
   return (
     <div
-      // onClick={()=>{rectangelzoom?setStartDraw(!startdraw):{}}}
-
       className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
         {yvalue}
@@ -10053,12 +9947,6 @@ function Chart() {
                   );
                 }
               }
-
-              // if(key == 'Position'){
-              //   if(!value.event_code){
-
-              //   }
-              // }
             }}
             containerClassName="w-[calc(100vw-504px)] ml-[80px] mt-[20px]"
           />
@@ -10086,7 +9974,6 @@ function Chart() {
       {rectangelzoom == true && startdraw == true ? (
         <div
           className="absolute"
-          // onMouseUp={() => setStartDraw(false)}
           style={rectangleStyle}></div>
       ) : null}
     </div>
@@ -10094,63 +9981,3 @@ function Chart() {
 }
 
 export default Chart;
-
-// ------------------------------------------------------
-// import React, { Component } from "react";
-
-// class App extends Component {
-// constructor(props) {
-// super(props);
-// this.state = {
-// x: 0,
-// y: 0,
-// };
-// this.handleMouseMove = this.handleMouseMove.bind(this);
-// }
-
-// handleMouseMove(event) {
-// // گرفتن مختصات موس نسبت به صفحه مرورگر
-// const mouseX = event.clientX;
-// const mouseY = event.clientY;
-
-// // گرفتن مرجع به المنت مربع
-// const square = this.refs.square;
-
-// // گرفتن مختصات مربع نسبت به صفحه مرورگر
-// const rect = square.getBoundingClientRect();
-// const squareX = rect.left;
-// const squareY = rect.bottom;
-
-// // محاسبه مختصات موس نسبت به مربع
-// const x = mouseX - squareX;
-// const y = mouseY - squareY;
-
-// // به روز کردن state با مختصات جدید
-// this.setState({
-// x: x,
-// y: y,
-// });
-// }
-
-// render() {
-// return (
-// <div>
-// <div
-// ref="square"
-// style={{
-// width: 200,
-// height: 200,
-// backgroundColor: "red",
-// margin: 50,
-// }}
-// onMouseMove={this.handleMouseMove}
-// ></div>
-// <p>
-// مختصات موس نسبت به مربع: ({this.state.x}, {this.state.y})
-// </p>
-// </div>
-// );
-// }
-// }
-
-// export default App;
