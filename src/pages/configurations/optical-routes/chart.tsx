@@ -8875,6 +8875,7 @@ function Chart() {
   const [maxx, setMaxx] = useState(0);
   const [tabelItems, setTabelitems] = useState<tabelItemstype[]>([]);
   const [maxy, setMaxy] = useState(0);
+  const [selectedVerticalline,setSelectedVerticalline]=useState("")
 
   const [events, setEvents] = useState<
     {x: number; y: number; event_number?: number; type: string}[]
@@ -9177,6 +9178,7 @@ function Chart() {
   };
 
   const biglinehandleMouseMove = (name: string, e: any) => {
+    setSelectedVerticalline(name)
     const mouseX = e.clientX;
     const mouseY = e.clientY;
     const square = svgRef;
@@ -9774,7 +9776,7 @@ function Chart() {
                       A:
                     </span>
                     <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
-                      4.124
+                      {(verticalLines.find((data)=> data.name == "A")!.x!/1000).toString().substring(0,5)}
                     </span>
                     <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
                       km
@@ -9816,16 +9818,16 @@ function Chart() {
                   <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
                     <MdOutlineArrowBackIos size={40} />
                   </button>
-                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "a"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"}  text-[20px]`}>
                     a
                   </button>
-                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "A"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"} text-[20px]`}>
                     A
                   </button>
-                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "B"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"} text-[20px]`}>
                     B
                   </button>
-                  <button className="flex h-[50px] w-[50px] items-center justify-center bg-[#C6DFF8] text-[20px]">
+                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "b"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"} text-[20px]`}>
                     b
                   </button>
                   <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
