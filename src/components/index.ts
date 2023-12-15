@@ -5,3 +5,4 @@ export * from './other';
 export * from './buttons';
 export * from './views';
 export * from './icons';
+export * from './radipbutton';
