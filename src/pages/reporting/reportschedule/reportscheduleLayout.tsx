@@ -265,6 +265,7 @@ const ReportsRouteLayout: FC = () => {
 
   return (
     <SidebarLayout createTitle="" canAdd>
+
       <div className="flex flex-row items-center ">
         <label htmlFor="search" className="mr-2">
           Search
@@ -361,6 +362,7 @@ const ReportsRouteLayout: FC = () => {
           </>
         ) : null}
       </div>
+  
       {/* </div> */}
     </SidebarLayout>
   );
