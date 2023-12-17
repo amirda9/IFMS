@@ -103,34 +103,40 @@ function App() {
             </Route>
           </Route>
 
-
-           <Route path="/monitoring">
-          <Route path="status" Component={pages.status}/>
-          <Route path="test-on-demand" Component={pages.testondemand}/>
-          <Route path="alarms" Component={pages.alarms}/>
-          <Route path="status/:statusId" Component={pages.monitoringstatusDetail} />
-          </Route> 
-
+          <Route path="/monitoring">
+            <Route path="status" Component={pages.status} />
+            <Route path="test-on-demand" Component={pages.testondemand} />
+            <Route path="alarms" Component={pages.alarms} />
+            <Route
+              path="status/:statusId"
+              Component={pages.monitoringstatusDetail}
+            />
+          </Route>
 
           <Route path="/reporting">
-          <Route path="dashboard" Component={pages.dashboard}/>
-          <Route path="reports" Component={pages.reportsRoutesLayout}>
-          <Route path=":reportid" Component={pages.reports} />
-          <Route
+            <Route path="dashboard" Component={pages.dashboard} />
+            <Route path="reports" Component={pages.reportsRoutesLayout}>
+              <Route path=":reportid" Component={pages.reports} />
+              <Route
                 path="reportsdata"
                 Component={pages.SinglereportsRouteLayout}>
-                     <Route index Component={pages.reportsDetailpage} />
-                     <Route  path=":id" Component={pages.reportsDetailmodal} />
-<Route path="Parameters" Component={pages.reportsparameters} />
-                </Route>                
-       
-         
+                <Route index Component={pages.reportsDetailpage} />
+                <Route path=":id" Component={pages.reportsDetailmodal} />
+                <Route path="Parameters" Component={pages.reportsparameters} />
+              </Route>
+            </Route>
+            {/* <Route path="reports" Component={pages.reports}/> */}
+            <Route path="reportschedule" Component={pages.reportscheduleLayout} >
+            <Route
+                path="reportscheduledetail"
+                Component={pages.SinglereportsscheduleRouteLayout}>
+                <Route index Component={pages.reportscheduleDetail} />
+                <Route path="reportsscheduleUsers" Component={pages.reportsscheduleUsers} />
+                <Route path="schedulereports" Component={pages.schedulereports} />
+              </Route>
+            </Route>
+            <Route path="resultbrowser" Component={pages.resultbrowser} />
           </Route>
-          {/* <Route path="reports" Component={pages.reports}/> */}
-          <Route path="reportschedule" Component={pages.reportschedule}/>
-          <Route path="resultbrowser" Component={pages.resultbrowser} />
-          </Route> 
-
 
           <Route path="/config">
             <Route
