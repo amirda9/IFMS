@@ -6,7 +6,8 @@ type Resultdata={
 }
 
 type Iprops={
- onclick:(name:string)=>void
+ onclick:(name:string)=>void,
+ Wavelength:string
 }
 const options = [
   {value: 'Result', label: 'Result'},
@@ -26,7 +27,7 @@ const Resultdata=({name,value}:Resultdata)=>{
  </div>
  )
 }
-function Opticalroute({onclick}:Iprops) {
+function Opticalroute({onclick,Wavelength}:Iprops) {
   return (
    <div className="h-full w-full bg-[#C6DFF8] p-[10px] box-border rounded-[10px]">
    <Selectbox
@@ -40,10 +41,7 @@ function Opticalroute({onclick}:Iprops) {
   <Resultdata name={'Source Station'} value={'Station 1'}  />
   <Resultdata name={'Destination Station'} value={'Station 2'}  />
   <Resultdata name={'RTU Name'} value={'RTU 1'}  />
-  <Resultdata name={'Average Helix Factor'} value={'1%'}  />
-  <Resultdata name={'Wavelength'} value={'1550 nm'}  />
-  <Resultdata name={'IOR'} value={'1.465'}  />
-  <Resultdata name={'RBS'} value={'-45.01 dB'}  />
+  <Resultdata name={'Wavelength'} value={Wavelength}  />
  </div>
   )
 }

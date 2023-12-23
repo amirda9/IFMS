@@ -3,7 +3,6 @@ import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import {ResponsiveLine} from '@nivo/line';
 import Resultdata from '~/components/chart/result';
 import Opticalroute from '~/components/chart/opticalroute';
-import Detailbox from '~/components/chart/detailbox';
 import Group from './../../../assets/icons/Group 29.png';
 import nonereflective from '~/assets/icons/Group 23.png';
 import reflecive from '~/assets/icons/Group 27.png';
@@ -22,7 +21,7 @@ import Avg from '~/assets/icons/Avg.png';
 import {SimpleBtn, Table} from '~/components';
 import {MdOutlineArrowBackIos} from 'react-icons/md';
 import {deepcopy} from '~/util';
-import {BiPlus} from 'react-icons/bi';                                 
+import {BiPlus} from 'react-icons/bi';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -8769,7 +8768,6 @@ const fakedata = JSON.parse(
   }),
 );
 
-
 const columns = {
   index: {label: 'Index', size: 'w-[9%]'},
   Position: {label: 'Position/Length (km)', size: 'w-[14%]', sort: true},
@@ -8858,6 +8856,23 @@ const allcurve = [
   },
 ];
 
+console.log(
+  'length',
+  fakedata.result.key_events.events[
+    fakedata.result.key_events.events.length - 1
+  ].event_location.x / 1000,
+);
+
+console.log('loss', fakedata.result.key_events.end_to_end_loss);
+console.log(
+  'avgloss',
+  Number(fakedata.result.key_events.end_to_end_loss) /
+    (fakedata.result.key_events.events[
+      fakedata.result.key_events.events.length - 1
+    ].event_location.x /
+      1000),
+);
+
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
   const svgRef = useRef<HTMLDivElement>(null);
@@ -8875,7 +8890,7 @@ function Chart() {
   const [maxx, setMaxx] = useState(0);
   const [tabelItems, setTabelitems] = useState<tabelItemstype[]>([]);
   const [maxy, setMaxy] = useState(0);
-  const [selectedVerticalline,setSelectedVerticalline]=useState("")
+  const [selectedVerticalline, setSelectedVerticalline] = useState('');
 
   const [events, setEvents] = useState<
     {x: number; y: number; event_number?: number; type: string}[]
@@ -8892,12 +8907,9 @@ function Chart() {
       event_number?: number;
       type: string;
       location?: string;
-      name?: string;
+      name: string;
     }[]
   >([]);
-
-
-
 
   const [yvalue, setYvalue] = useState('');
   const [basescale, setbasescale] = useState(2);
@@ -8906,7 +8918,6 @@ function Chart() {
     min: 0,
     // tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
   });
-
 
   useEffect(() => {
     let allpointsdata = fakedata.result.data_pts.data_points.map(
@@ -9007,7 +9018,6 @@ function Chart() {
     setTabelitems(items);
   }, []);
 
-
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
     min: 0,
@@ -9021,7 +9031,6 @@ function Chart() {
       event_number: data.event_number,
       type: 'event',
     }));
-
 
     for (let i = 0; i < fakedata.result.key_events.events.length; i++) {
       if (fakedata.result.key_events.events[i].event_code == 'Start of fiber') {
@@ -9047,8 +9056,6 @@ function Chart() {
     setEvents(allevents);
     // setVerticalLines(allevents);
   };
-
-
 
   const getchartcoordinate = (event: any) => {
     // گرفتن مختصات موس نسبت به صفحه مرورگر
@@ -9148,14 +9155,12 @@ function Chart() {
     );
 
     setVerticalLines([
-      {x: finevent.marker_location_1 * 10, name: 'a', type: 'bigline'},
-      {x: finevent.marker_location_2 * 10, name: 'A', type: 'bigline'},
-      {x: finevent.marker_location_5 * 10, name: 'B', type: 'bigline'},
-      {x: finevent.marker_location_4 * 10, name: 'b', type: 'bigline'},
+      {x: finevent.marker_location_1, name: 'a', type: 'bigline'},
+      {x: finevent.marker_location_2, name: 'A', type: 'bigline'},
+      {x: finevent.marker_location_5, name: 'B', type: 'bigline'},
+      {x: finevent.marker_location_4, name: 'b', type: 'bigline'},
     ]);
   };
-
-
 
   const eventhandleMouseMove = (event_number: number, e: any) => {
     const mouseX = e.clientX;
@@ -9178,7 +9183,7 @@ function Chart() {
   };
 
   const biglinehandleMouseMove = (name: string, e: any) => {
-    setSelectedVerticalline(name)
+    setSelectedVerticalline(name);
     const mouseX = e.clientX;
     const mouseY = e.clientY;
     const square = svgRef;
@@ -9213,6 +9218,7 @@ function Chart() {
             x2={X}
             y2={Y - 70}
             stroke="red"
+            style={{zIndex: 5}}
           />,
         );
         elements.push(
@@ -9225,7 +9231,8 @@ function Chart() {
             x2={X}
             y2={Y - 70}
             stroke="red"
-            style={{opacity: 0}}
+            style={{opacity: 1,zIndex: 5}}
+
           />,
         );
         elements.push(
@@ -9260,36 +9267,8 @@ function Chart() {
               x2={X}
               y2={Y - 40}
               stroke="red"
-              onMouseDown={() => handleMouseDown(point.event_number!)}
-              onMouseUp={handleMouseUp}
+              style={{zIndex: 1}}
             />,
-
-            <line
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-              style={{opacity: 0}}
-              onMouseDown={() => handleMouseDown(point.event_number!)}
-              strokeWidth={isDraggingname === point.event_number ? 0 : 10}
-              onMouseUp={handleMouseUp}
-            />,
-
-            <line
-              onMouseMove={e => eventhandleMouseMove(point.event_number!, e)}
-              onMouseUp={handleMouseUp}
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              style={{opacity: 0}}
-              stroke="green"
-              strokeWidth={isDraggingname === point.event_number ? 250 : 0}
-            />,
-
             <line
               key={index}
               x1={X + 20}
@@ -9368,32 +9347,10 @@ function Chart() {
               x2={X}
               y2={Y - 40}
               stroke="red"
-              onMouseDown={() => handleMouseDown(point.event_number!)}
-              onMouseUp={handleMouseUp}
+              style={{zIndex: 1}}
             />,
-            <line
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-              style={{opacity: 0}}
-              onMouseDown={() => handleMouseDown(point.event_number!)}
-              strokeWidth={isDraggingname === point.event_number ? 0 : 10}
-              onMouseUp={handleMouseUp}
-            />,
-            <line
-              onMouseMove={e => eventhandleMouseMove(point.event_number!, e)}
-              onMouseUp={handleMouseUp}
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="green"
-              strokeWidth={isDraggingname === point.event_number ? 250 : 0}
-            />,
+           
+  
             <line
               key={index}
               x1={X - 20}
@@ -9449,7 +9406,6 @@ function Chart() {
     }
   };
 
-
   const VerticalLine = ({xScale, yScale}: any) => {
     const elements: any = [];
     if (showeventdetail) {
@@ -9491,7 +9447,6 @@ function Chart() {
             onMouseMove={e => biglinehandleMouseMove(point.name!, e)}
             onMouseUp={handleMouseUp}
           />,
-        
         );
         elements.push(
           <text
@@ -9513,8 +9468,6 @@ function Chart() {
     setIsDraggingname('');
   };
 
-
-
   // ------ component --------- component ------------ component --------------- component ------------------
   const Chatrtabtype = ({name, src, ...props}: chatrtabtype) => {
     return (
@@ -9530,6 +9483,7 @@ function Chart() {
       </button>
     );
   };
+
   const Verticalbotton = ({name, classname, ...props}: Verticalbotton) => {
     return (
       <button
@@ -9541,6 +9495,30 @@ function Chart() {
         } mt-[1px]  box-border w-[40px] text-[18px] font-light leading-[21.87px] ${classname}`}>
         <div className="rotate-90">{name}</div>
       </button>
+    );
+  };
+
+  const Datatext = (props: {value: string}) => {
+    return (
+      <span className="mb-[20px] w-[50px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+        {props.value}
+      </span>
+    );
+  };
+
+  const Row = ({name}: {name: string}) => {
+    return (
+      <div className="flex w-full flex-row justify-between">
+        <Datatext value={name} />
+        <Datatext
+          value={(verticalLines.find(data => data.name == name)?.x! / 1000)
+            .toString()
+            .substring(0, 5)}
+        />
+        <Datatext value="km" />
+        <Datatext value={finddata(name) && finddata(name)[1]?.toString().substring(0, 5)} />
+        <Datatext value="dB" />
+      </div>
     );
   };
 
@@ -9590,9 +9568,60 @@ function Chart() {
     }
   };
 
+  const finddata = (linename: string) => {
+    let X = verticalLines!.find(data => data.name == linename)?.x!;
+    let findequal = fakedata.result.data_pts.data_points.find(
+      (data: any) => data[0] == X,
+    );
+    let findbigger = fakedata.result.data_pts.data_points.find(
+      (data: any) => data[0] >= X,
+    );
+    return (findequal && findequal) || findbigger;
+  };
+
+  const Tabbox = ({name, dbvalue}: any) => {
+    return (
+      <div className="mb-[4px] flex w-full flex-row justify-between">
+        <span className="2xl:tex-[20px] w-[63.6px] text-[16px]  leading-[26px] text-[#000000]">
+          {name}:
+        </span>
+
+        {name == 'A-B' ? (
+          <span className="2xl:tex-[20px] w-[63.6px]  text-[16px] leading-[26px] text-[#000000]">
+            {((finddata('B')[0] - finddata('A')[0]) / 1000)
+              .toString()
+              .substring(0, 5)}
+          </span>
+        ) : (
+          <span className="2xl:tex-[20px] w-[63.6px]  text-[16px] leading-[26px] text-[#000000]">
+            {(verticalLines.find(data => data.name == name)!.x! / 1000)
+              .toString()
+              .substring(0, 5)}
+          </span>
+        )}
+
+        <span className="2xl:tex-[20px] w-[63.6px] text-[16px] leading-[26px] text-[#000000]">
+          km
+        </span>
+        {name == 'A-B' ? (
+          <span className="2xl:tex-[20px] w-[63.6px] text-[16px] leading-[26px] text-[#000000]">
+            {(finddata('B')[1] - finddata('A')[1]).toString().substring(0, 5)}
+          </span>
+        ) : (
+          <span className="2xl:tex-[20px] w-[63.6px] text-[16px] leading-[26px] text-[#000000]">
+            {finddata(name)[1].toString().substring(0, 5)}
+          </span>
+        )}
+
+        <span className="2xl:tex-[20px] w-[63.6px] text-[16px] leading-[26px] text-[#000000]">
+          dB
+        </span>
+      </div>
+    );
+  };
+
   return (
-    <div
-      className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
+    <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
         {yvalue}
       </span>
@@ -9612,7 +9641,7 @@ function Chart() {
                 classname="pb-[15px] h-[79px]"
               />
               <Verticalbotton
-                onClick={() => Measure()}
+                onClick={showeventdetail?() => Measure():()=>{}}
                 name="Measure"
                 classname="pb-[27px] h-[79px]"
               />
@@ -9739,12 +9768,6 @@ function Chart() {
         <div className="w-[370px]">
           {reightbar == 'Result' ? (
             <Resultdata
-            AverageLoss={((
-              fakedata.result.key_events.events[
-                fakedata.result.key_events.events.length - 1
-              ].event_location.x / 1000
-            )/Number(fakedata.result.key_events.end_to_end_loss)).toString()
-            .substring(0, 5)}
               Length={(
                 fakedata.result.key_events.events[
                   fakedata.result.key_events.events.length - 1
@@ -9752,14 +9775,29 @@ function Chart() {
               )
                 .toString()
                 .substring(0, 5)}
-
-                Loss={fakedata.result.key_events.end_to_end_loss.toString().substring(0, 5)}
+              AverageLoss={(
+                Number(fakedata.result.key_events.end_to_end_loss) /
+                (fakedata.result.key_events.events[
+                  fakedata.result.key_events.events.length - 1
+                ].event_location.x /
+                  1000)
+              )
+                .toString()
+                .substring(0, 5)}
+              ORL={fakedata.result.key_events.optical_return_loss}
+              Loss={fakedata.result.key_events.end_to_end_loss
+                .toString()
+                .substring(0, 5)}
+              NoiseFloor={fakedata.result.fxd_params.noise_floor_level}
               onclick={e => setReightbar(e)}
             />
           ) : reightbar == 'Alarms' ? (
             <Alarms onclick={e => setReightbar(e)} />
           ) : (
-            <Opticalroute onclick={e => setReightbar(e)} />
+            <Opticalroute
+              Wavelength={fakedata.result.fxd_params.actual_wavelength}
+              onclick={e => setReightbar(e)}
+            />
           )}
         </div>
       </div>
@@ -9771,63 +9809,46 @@ function Chart() {
             <div className="ml-[80px] mt-[55px] flex w-[calc(100vw-504px)] flex-row justify-between">
               <div className="box-border  flex  w-[35.4%] flex-col">
                 <div className="relative box-border h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px]">
-                  <div className="mb-[4px] flex w-full flex-row justify-between">
-                    <span className="2xl:tex-[25px] w-[68px] text-[20px]  leading-[36.31px] text-[#000000]">
-                      A:
-                    </span>
-                    <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
-                      {(verticalLines.find((data)=> data.name == "A")!.x!/1000).toString().substring(0,5)}
-                    </span>
-                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                      km
-                    </span>
-                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                      dB
-                    </span>
-                  </div>
-                  <div className="mb-[4px] flex w-full flex-row justify-between">
-                    <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
-                      B:
-                    </span>
-                    <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
-                      4.124
-                    </span>
-                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                      km
-                    </span>
-                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                      dB
-                    </span>
-                  </div>
-                  <div className="flex w-full flex-row justify-between">
-                    <span className="2xl:tex-[25px] w-[68px] text-[20px] leading-[36.31px] text-[#000000]">
-                      A-B:
-                    </span>
-                    <span className="2xl:tex-[25px] w-[100px] text-[20px] leading-[36.31px] text-[#000000]">
-                      4.124
-                    </span>
-                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                      km
-                    </span>
-                    <span className="2xl:tex-[25px] w-[50px] text-[20px] leading-[36.31px] text-[#000000]">
-                      dB
-                    </span>
-                  </div>
+                  <Tabbox name="a" />
+                  <Tabbox name="A" />
+                  <Tabbox name="B" />
+                  <Tabbox name="b" />
+                  <Tabbox name="A-B" />
                 </div>
                 <div className="mt-[10px] flex w-full flex-row justify-between">
                   <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
                     <MdOutlineArrowBackIos size={40} />
                   </button>
-                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "a"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"}  text-[20px]`}>
+                  <button
+                    className={`flex h-[50px] w-[50px] items-center justify-center ${
+                      selectedVerticalline == 'a'
+                        ? 'bg-[#006BBC] text-white'
+                        : 'bg-[#C6DFF8] text-black'
+                    }  text-[20px]`}>
                     a
                   </button>
-                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "A"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"} text-[20px]`}>
+                  <button
+                    className={`flex h-[50px] w-[50px] items-center justify-center ${
+                      selectedVerticalline == 'A'
+                        ? 'bg-[#006BBC] text-white'
+                        : 'bg-[#C6DFF8] text-black'
+                    } text-[20px]`}>
                     A
                   </button>
-                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "B"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"} text-[20px]`}>
+                  <button
+                    className={`flex h-[50px] w-[50px] items-center justify-center ${
+                      selectedVerticalline == 'B'
+                        ? 'bg-[#006BBC] text-white'
+                        : 'bg-[#C6DFF8] text-black'
+                    } text-[20px]`}>
                     B
                   </button>
-                  <button className={`flex h-[50px] w-[50px] items-center justify-center ${selectedVerticalline == "b"?"bg-[#006BBC] text-white":"bg-[#C6DFF8] text-black"} text-[20px]`}>
+                  <button
+                    className={`flex h-[50px] w-[50px] items-center justify-center ${
+                      selectedVerticalline == 'b'
+                        ? 'bg-[#006BBC] text-white'
+                        : 'bg-[#C6DFF8] text-black'
+                    } text-[20px]`}>
                     b
                   </button>
                   <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
@@ -9836,7 +9857,7 @@ function Chart() {
                 </div>
               </div>
 
-              <div className="flex h-[195px] w-[63.9%] flex-col">
+              <div className="flex h-[222px] w-[63.9%] flex-col">
                 <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
                     <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
@@ -9960,7 +9981,12 @@ function Chart() {
             className={`w-auto ${
               showeventdetail ? 'opacity-100' : 'opacity-0'
             }`}>
-            <Detailbox />
+            <div className="mt-[20px] box-border h-[195px] w-[370px] rounded-[10px] bg-[#C6DFF8] p-[20px]">
+              <Row name="a" />
+              <Row name="A" />
+              <Row name="B" />
+              <Row name="b" />
+            </div>
           </div>
           <div className="flex w-[360px] flex-row">
             <span className="ml-[25px] mr-[45px] text-[24px] font-normal text-[#000000]">
@@ -9974,9 +10000,7 @@ function Chart() {
       </div>
 
       {rectangelzoom == true && startdraw == true ? (
-        <div
-          className="absolute"
-          style={rectangleStyle}></div>
+        <div className="absolute" style={rectangleStyle}></div>
       ) : null}
     </div>
   );
