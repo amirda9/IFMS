@@ -22,6 +22,8 @@ import {SimpleBtn, Table} from '~/components';
 import {MdOutlineArrowBackIos} from 'react-icons/md';
 import {deepcopy} from '~/util';
 import {BiPlus} from 'react-icons/bi';
+import {number} from 'yup';
+import {JSX} from 'react/jsx-runtime';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -32,7 +34,7 @@ type Verticalbotton = {
   onClick: () => void;
 };
 type tabelItemstype = {
-  index: any;
+  index: string | number;
   Position: string;
   Loss: string;
   Reflectance: string;
@@ -40,6 +42,25 @@ type tabelItemstype = {
   Attenuation: string;
   Cumulative: string;
   event_code: string | undefined;
+};
+
+type eventstype = {
+  event_number: number;
+  event_location: {
+    x: number;
+    y: number;
+  };
+  attenuation_coef_lead_in_fiber: number;
+  event_loss: number;
+  event_reflectance: number;
+  event_code: string;
+  loss_measurment_technique: string;
+  marker_location_1: number;
+  marker_location_2: number;
+  marker_location_3: number;
+  marker_location_4: number;
+  marker_location_5: number;
+  comment: string;
 };
 
 const fakedata = JSON.parse(
@@ -8778,7 +8799,7 @@ const columns = {
   Cumulative: {label: 'Cumulative Loss (dB)', size: 'w-[13%]'},
 };
 
-const allcurve = [
+const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
   {
     id: 'Cur',
     data: [
@@ -8856,30 +8877,22 @@ const allcurve = [
   },
 ];
 
-console.log(
-  'length',
-  fakedata.result.key_events.events[
-    fakedata.result.key_events.events.length - 1
-  ].event_location.x / 1000,
-);
-
-console.log('loss', fakedata.result.key_events.end_to_end_loss);
-console.log(
-  'avgloss',
-  Number(fakedata.result.key_events.end_to_end_loss) /
-    (fakedata.result.key_events.events[
-      fakedata.result.key_events.events.length - 1
-    ].event_location.x /
-      1000),
-);
-
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
   const svgRef = useRef<HTMLDivElement>(null);
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [mousecursor, setMousecursor] = useState(false);
-  const [allcurveline, setAllcurveline] = useState<any>([]);
+  const [allcurveline, setAllcurveline] = useState<
+    {
+      id: string;
+      data: {x: number; y: number}[];
+    }[]
+  >([]);
+  // const get
+// useEffect(()=>{
+
+// },[])
   const [reightbar, setReightbar] = useState('Result');
   const [isDraggingname, setIsDraggingname] = useState<string | number>('');
   const [showeventdetail, setShoweventdetail] = useState(false);
@@ -8916,16 +8929,19 @@ function Chart() {
   const [xScale, setXScale] = useState<any>({
     type: 'linear',
     min: 0,
-    // tickFormat: (value: any) => Math.abs(Math.round(value / 5) * 5),
   });
 
   useEffect(() => {
     let allpointsdata = fakedata.result.data_pts.data_points.map(
-      (data: any, index: any) => ({x: data[0], y: data[1]}),
+      (data: [number, number]) => ({x: data[0], y: data[1]}),
     );
-    const max_x = Math.max(...allpointsdata.map((o: any) => o.x));
+    const max_x = Math.max(
+      ...allpointsdata.map((o: {x: number; y: number}) => o.x),
+    );
     setMaxx(max_x);
-    const max_y = Math.max(...allpointsdata.map((o: any) => o.y));
+    const max_y = Math.max(
+      ...allpointsdata.map((o: {x: number; y: number}) => o.y),
+    );
     setMaxy(max_y);
     // -----------------------
     setAllcurveline([
@@ -9025,32 +9041,34 @@ function Chart() {
 
   // ---- func ------func --------------- func ---------------- func ------------- func --------
   const Events = () => {
-    let allevents = fakedata.result.key_events.events.map((data: any) => ({
-      x: data.event_location.x,
-      y: data.event_location.y,
-      event_number: data.event_number,
-      type: 'event',
-    }));
+    let allevents = fakedata.result.key_events.events.map(
+      (data: eventstype) => ({
+        x: data.event_location.x,
+        y: data.event_location.y,
+        event_number: data.event_number,
+        type: 'event',
+      }),
+    );
 
-    for (let i = 0; i < fakedata.result.key_events.events.length; i++) {
-      if (fakedata.result.key_events.events[i].event_code == 'Start of fiber') {
-        allevents.push({
-          x: fakedata.result.key_events.events[i].event_location.x,
-          y: fakedata.result.key_events.events[i].event_location.y,
-          type: 'arrowevent',
-          location: 'start',
-        });
-      } else if (
-        fakedata.result.key_events.events[i].event_code == 'End of fiber'
-      ) {
-        allevents.push({
-          x: fakedata.result.key_events.events[i].event_location.x,
-          y: fakedata.result.key_events.events[i].event_location.y,
-          type: 'arrowevent',
-          location: 'end',
-        });
-      }
-    }
+    // for (let i = 0; i < fakedata.result.key_events.events.length; i++) {
+    //   if (fakedata.result.key_events.events[i].event_code == 'Start of fiber') {
+    //     allevents.push({
+    //       x: fakedata.result.key_events.events[i].event_location.x,
+    //       y: fakedata.result.key_events.events[i].event_location.y,
+    //       type: 'arrowevent',
+    //       location: 'start',
+    //     });
+    //   } else if (
+    //     fakedata.result.key_events.events[i].event_code == 'End of fiber'
+    //   ) {
+    //     allevents.push({
+    //       x: fakedata.result.key_events.events[i].event_location.x,
+    //       y: fakedata.result.key_events.events[i].event_location.y,
+    //       type: 'arrowevent',
+    //       location: 'end',
+    //     });
+    //   }
+    // }
     setShoweventdetail(false);
     setLeftverticaltab('Events');
     setEvents(allevents);
@@ -9069,9 +9087,9 @@ function Chart() {
     const rect: any = square?.current?.getBoundingClientRect();
     const x = mouseX - 157.8;
     const y = mouseY;
-    setYvalue(
-      -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min,
-    );
+    // setYvalue(
+    //   -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min,
+    // );
 
     setMousecoordinate({
       x: x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min,
@@ -9108,15 +9126,15 @@ function Chart() {
       min: y,
       // max: 4,
     });
-    setYScale({
-      type: 'linear',
-      min: y,
-      // max: 20,
-    });
+    // setYScale({
+    //   type: 'linear',
+    //   min: y,
+    //   // max: 20,
+    // });
     if (x) {
-      setbasescale(basescale + 1);
+      setbasescale(basescale + 100);
     } else {
-      setbasescale(basescale - 1);
+      setbasescale(basescale - 100);
     }
   };
 
@@ -9129,19 +9147,24 @@ function Chart() {
   };
 
   const showcurveline = (name: string) => {
-    const find = allcurve.findIndex((data: any) => data.id == name);
-    const find2 = allcurveline.findIndex((data: any) => data.id == name);
+    const find = allcurve.findIndex(data => data.id == name);
+    const find2 = allcurveline.findIndex(data => data.id == name);
 
-    const find3 = allchart.findIndex((data: any) => data == name);
+    const find3 = allchart.findIndex(data => data == name);
     if (find2 > -1) {
-      const filtercurvs = allcurveline.filter((data: any) => data.id != name);
+      const filtercurvs = allcurveline.filter(data => data.id != name);
       setAllcurveline(filtercurvs);
     } else {
-      setAllcurveline((prev: any) => [...prev, allcurve[find]]);
+      setAllcurveline(
+        (prev: {id: string; data: {x: number; y: number}[]}[]) => [
+          ...prev,
+          allcurve[find],
+        ],
+      );
     }
 
     if (find3 > -1) {
-      const filtercurvs = allchart.filter((data: any) => data != name);
+      const filtercurvs = allchart.filter(data => data != name);
       setAllchart(filtercurvs);
     } else {
       setAllchart(prev => [...prev, name]);
@@ -9149,10 +9172,12 @@ function Chart() {
   };
 
   const onclickevent = (event_number: number) => {
+   
     setShoweventdetail(true);
     const finevent = fakedata.result.key_events.events.find(
-      (data: any) => data.event_number == event_number,
+      (data: eventstype) => data.event_number == event_number,
     );
+;
 
     setVerticalLines([
       {x: finevent.marker_location_1, name: 'a', type: 'bigline'},
@@ -9182,7 +9207,10 @@ function Chart() {
     }
   };
 
-  const biglinehandleMouseMove = (name: string, e: any) => {
+  const biglinehandleMouseMove = (
+    name: string,
+    e: React.MouseEvent<SVGLineElement, MouseEvent>,
+  ) => {
     setSelectedVerticalline(name);
     const mouseX = e.clientX;
     const mouseY = e.clientY;
@@ -9203,22 +9231,36 @@ function Chart() {
     }
   };
 
+  const movebigline = (name: string, direction: string) => {
+    // if (isDraggingname == name) {
+      const verticalLinesCopy = deepcopy(verticalLines);
+      const findverticalindex = verticalLines.findIndex(
+        data => data.name && data.name == name,
+      );
+      verticalLinesCopy[findverticalindex].x =
+        direction == 'right'
+          ? verticalLines[findverticalindex].x + 10
+          : verticalLines[findverticalindex].x - 10;
+      // x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
+
+      setVerticalLines(verticalLinesCopy);
+    // }
+  };
+
   const Eventline = ({xScale, yScale}: any) => {
-    let elements: any = [];
+    let elements: JSX.Element[] = [];
     if (!showeventdetail && leftverticaltab == 'Events') {
       events.forEach((point, index) => {
         const X = xScale(point.x);
         const Y = yScale(point!.y!);
         elements.push(
           <line
-            onClick={() => onclickevent(point.event_number!)}
             key={index}
             x1={X}
             y1={Y + 70}
             x2={X}
             y2={Y - 70}
             stroke="red"
-            style={{zIndex: 5}}
           />,
         );
         elements.push(
@@ -9231,8 +9273,7 @@ function Chart() {
             x2={X}
             y2={Y - 70}
             stroke="red"
-            style={{opacity: 1,zIndex: 5}}
-
+            style={{opacity: 1, zIndex: 5}}
           />,
         );
         elements.push(
@@ -9253,7 +9294,7 @@ function Chart() {
   };
 
   const Arrowline = ({xScale, yScale}: any) => {
-    let elements: any = [];
+    let elements: JSX.Element[] = [];
     if (!showeventdetail) {
       arrowevents.forEach((point, index) => {
         const X = xScale(point.x);
@@ -9318,24 +9359,24 @@ function Chart() {
               stroke="red"
             />,
             // ----------------------------------------------------------------
-            <line
-              className="cursor-pointer opacity-0"
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-            />,
-            <line
-              className="cursor-pointer"
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-            />,
+            // <line
+            //   className="cursor-pointer opacity-0"
+            //   key={index}
+            //   x1={X}
+            //   y1={Y + 40}
+            //   x2={X}
+            //   y2={Y - 40}
+            //   stroke="red"
+            // />,
+            // <line
+            //   className="cursor-pointer"
+            //   key={index}
+            //   x1={X}
+            //   y1={Y + 40}
+            //   x2={X}
+            //   y2={Y - 40}
+            //   stroke="red"
+            // />,
           );
         } else {
           elements.push(
@@ -9349,8 +9390,7 @@ function Chart() {
               stroke="red"
               style={{zIndex: 1}}
             />,
-           
-  
+
             <line
               key={index}
               x1={X - 20}
@@ -9407,7 +9447,7 @@ function Chart() {
   };
 
   const VerticalLine = ({xScale, yScale}: any) => {
-    const elements: any = [];
+    const elements: JSX.Element[] = [];
     if (showeventdetail) {
       verticalLines.forEach((point, index) => {
         const X = xScale(point.x);
@@ -9516,7 +9556,11 @@ function Chart() {
             .substring(0, 5)}
         />
         <Datatext value="km" />
-        <Datatext value={finddata(name) && finddata(name)[1]?.toString().substring(0, 5)} />
+        <Datatext
+          value={
+            finddata(name) && finddata(name)[1]?.toString().substring(0, 5)
+          }
+        />
         <Datatext value="dB" />
       </div>
     );
@@ -9546,7 +9590,7 @@ function Chart() {
     width: Math.abs(endX - startX) + 'px', // عرض برابر با فاصله افقی شروع و پایان
     height: Math.abs(endY - startY) + 'px', // ارتفاع برابر با فاصله عمودی شروع و پایان
     left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
-    top: Math.min(startY, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
+    top: Math.min(startY-80+scrollValue, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
     border: '1px solid red', // حاشیه قرمز رنگ
     // موقعیت نسبی به div container
   };
@@ -9571,15 +9615,15 @@ function Chart() {
   const finddata = (linename: string) => {
     let X = verticalLines!.find(data => data.name == linename)?.x!;
     let findequal = fakedata.result.data_pts.data_points.find(
-      (data: any) => data[0] == X,
+      (data: [number, number]) => data[0] == X,
     );
     let findbigger = fakedata.result.data_pts.data_points.find(
-      (data: any) => data[0] >= X,
+      (data: [number, number]) => data[0] >= X,
     );
     return (findequal && findequal) || findbigger;
   };
 
-  const Tabbox = ({name, dbvalue}: any) => {
+  const Tabbox = ({name}: {name: string}) => {
     return (
       <div className="mb-[4px] flex w-full flex-row justify-between">
         <span className="2xl:tex-[20px] w-[63.6px] text-[16px]  leading-[26px] text-[#000000]">
@@ -9620,6 +9664,25 @@ function Chart() {
     );
   };
 
+
+  const handelMouseup2=()=>{
+    setStartDraw(false)
+    const square = svgRef;
+
+    // گرفتن مختصات مربع نسبت به صفحه مرورگر
+    const rect: any = square?.current?.getBoundingClientRect();
+    // setYvalue(((startX+endX)/2)/ ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min)
+    const xstart=(startX-158)/ ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
+    const xend=(endX-158)/ ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
+    const ystart=-(startY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
+    yScale.min;
+    const yend=-(endY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
+    yScale.min;
+  setYvalue(yend)
+    // left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
+    // top: Math.min(startY-80, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
+    // border: '1px solid red', // حاشیه قرمز رنگ
+  }
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
@@ -9641,7 +9704,7 @@ function Chart() {
                 classname="pb-[15px] h-[79px]"
               />
               <Verticalbotton
-                onClick={showeventdetail?() => Measure():()=>{}}
+                onClick={showeventdetail ? () => Measure() : () => {}}
                 name="Measure"
                 classname="pb-[27px] h-[79px]"
               />
@@ -9664,7 +9727,7 @@ function Chart() {
                 className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
               />
               <GoZoomIn
-                onClick={() => zoom(true, basescale + 1)}
+                onClick={() => zoom(true, basescale + 100)}
                 size={30}
                 className="mt-[20px] cursor-pointer"
               />
@@ -9702,16 +9765,17 @@ function Chart() {
         <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
-              // onMouseDown={handleMouseDown2}
-              // onMouseMove={handleMouseMove2}
-              // onMouseUp={handleMouseUp2}
+              onMouseDown={handleMouseDown2}
+              onMouseMove={handleMouseMove2}
+                onMouseUp={handelMouseup2}
               ref={svgRef}
-              onMouseMove={e => getchartcoordinate(e)}
+              // onMouseMove={e => getchartcoordinate(e)}
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
               <ResponsiveLine
                 // tooltip={tooltip}
+                // enablePointLabel="x"
                 data={allcurveline}
                 margin={{top: 10, right: 50, bottom: 40, left: 50}}
                 xScale={xScale}
@@ -9719,12 +9783,13 @@ function Chart() {
                 colors={({id}) => getColorForId(id)}
                 xFormat="d"
                 curve="linear"
-                enableSlices={false}
-                debugSlices={false}
+       
+                // enableArea={true}
+                // debugSlices={false}
                 enableCrosshair={false}
                 // ref={svgRef}
                 onMouseMove={(point, event) => {
-                  getchartcoordinate;
+                  getchartcoordinate(event);
                   // const  y  = event.nativeEvent.clientY;
                   // setYvalue((y-100)/65)
                   // console.log(point, 'point');
@@ -9741,7 +9806,7 @@ function Chart() {
 
                   'points',
                   'slices',
-                  // 'mesh',
+               'mesh',
                   'legends',
                   VerticalLine, // اضافه کردن تابع VerticalLine به لایه ها
                   Eventline,
@@ -9817,9 +9882,15 @@ function Chart() {
                 </div>
                 <div className="mt-[10px] flex w-full flex-row justify-between">
                   <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
-                    <MdOutlineArrowBackIos size={40} />
+                    <MdOutlineArrowBackIos
+                      size={40}
+                      onClick={() => {setIsDraggingname(selectedVerticalline),movebigline(selectedVerticalline, 'left')}}
+                    />
                   </button>
                   <button
+                    onClick={() => {
+                      setSelectedVerticalline('a'), setIsDraggingname('a');
+                    }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
                       selectedVerticalline == 'a'
                         ? 'bg-[#006BBC] text-white'
@@ -9828,6 +9899,9 @@ function Chart() {
                     a
                   </button>
                   <button
+                    onClick={() => {
+                      setSelectedVerticalline('A'), setIsDraggingname('A');
+                    }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
                       selectedVerticalline == 'A'
                         ? 'bg-[#006BBC] text-white'
@@ -9836,6 +9910,9 @@ function Chart() {
                     A
                   </button>
                   <button
+                    onClick={() => {
+                      setSelectedVerticalline('B'), setIsDraggingname('B');
+                    }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
                       selectedVerticalline == 'B'
                         ? 'bg-[#006BBC] text-white'
@@ -9844,6 +9921,9 @@ function Chart() {
                     B
                   </button>
                   <button
+                    onClick={() => {
+                      setSelectedVerticalline('b'), setIsDraggingname('b');
+                    }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
                       selectedVerticalline == 'b'
                         ? 'bg-[#006BBC] text-white'
@@ -9852,7 +9932,12 @@ function Chart() {
                     b
                   </button>
                   <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
-                    <MdOutlineArrowBackIos size={40} className="rotate-180" />
+                    <MdOutlineArrowBackIos
+                      size={40}
+                      onClick={() => {setIsDraggingname(selectedVerticalline),movebigline(selectedVerticalline, 'right')}}
+                  onMouseLeave={()=>setIsDraggingname("")}
+                      className="rotate-180"
+                    />
                   </button>
                 </div>
               </div>
@@ -9861,10 +9946,10 @@ function Chart() {
                 <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
                     <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      Four-Point Loss:
+                    Avg. A-B Loss:
                     </span>
                     <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      0.384 dB
+                    {((finddata('B')[1]-finddata('A')[1])/(finddata('B')[0]-finddata('A')[0])).toString().substring(0, 9)}
                     </span>
                   </div>
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
@@ -9872,7 +9957,7 @@ function Chart() {
                       Four-Point Loss:
                     </span>
                     <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      0.384 dB
+                    0.384 dB
                     </span>
                   </div>
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
@@ -9907,7 +9992,7 @@ function Chart() {
             items={tabelItems}
             dynamicColumns={['index']}
             renderDynamicColumn={({key, value}) => {
-              console.log('🔫', value);
+             
               if (key == 'index') {
                 if (value.index == '') {
                   return (
@@ -10007,3 +10092,6 @@ function Chart() {
 }
 
 export default Chart;
+
+
+
