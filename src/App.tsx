@@ -219,7 +219,7 @@ function App() {
                 />
               </Route>
             </Route>
-            <Route path="chart" Component={pages.Chart} />
+            <Route path="chart/:id/:id" Component={pages.Chart} />
 
             <Route path="remote-test-units" Component={pages.RtuLayout}>
               <Route path=":rtuId" Component={pages.SingleRtuLayout}>
