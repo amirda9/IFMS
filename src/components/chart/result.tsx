@@ -12,6 +12,7 @@ type Iprops={
   AverageLoss:string;
   NoiseFloor:string;
   ORL:string;
+  Date:string;
  }
  const options = [
    {value: 'Result', label: 'Result'},
@@ -31,7 +32,7 @@ const Resultdata=({name,value}:Resultdata)=>{
  </div>
  )
 }
-function Rightbar({onclick,Length,Loss,AverageLoss,NoiseFloor,ORL}:Iprops) {
+function Rightbar({onclick,Length,Loss,AverageLoss,NoiseFloor,ORL,Date}:Iprops) {
   return (
    <div className="h-full w-full o bg-[#C6DFF8] p-[10px] box-border rounded-[10px]">
    <Selectbox
@@ -41,7 +42,7 @@ function Rightbar({onclick,Length,Loss,AverageLoss,NoiseFloor,ORL}:Iprops) {
      borderColor={'black'}
      classname={'w-full h-[40px] rounded-[10px] mb-[25px]'}
    />
-  <Resultdata name={'Date'} value={'2023/02/10'}  />
+  <Resultdata name={'Date'} value={Date}  />
   <Resultdata name={'Length'} value={`${Length} km`}  />
   <Resultdata name={'Loss'} value={Loss}  />
   <Resultdata name={'Average Loss'} value={AverageLoss}  />
