@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {useParams, useNavigate} from 'react-router-dom';
-import {log} from 'util';
 import {SimpleBtn, Table} from '~/components';
 import {deepcopy} from '~/util';
 import {$Delete, $Get} from '~/util/requestapi';
@@ -75,7 +74,6 @@ const OpticalRouteTestHistoryPage: FC = () => {
   const [historydata, setHistorydata] = useState<historydatatype>([]);
 
   const gethistory = async () => {
-    setHistorydata(items);
     try {
       const getdata = await $Get(
         `otdr/optical-route/${params.opticalRouteId}/test-setups/history`,
@@ -89,9 +87,8 @@ const OpticalRouteTestHistoryPage: FC = () => {
         rtu: string;
         station: string;
       }[] = await getdata.json();
-      console.log('👺', data);
       if (getdata.status == 200) {
-        // setHistorydata(data.map(prev => ({...prev,details: '', delete: ''})))
+        setHistorydata(data.map(prev => ({...prev, details: '', delete: ''})));
       }
     } catch (error) {}
   };
@@ -143,7 +140,6 @@ const OpticalRouteTestHistoryPage: FC = () => {
     setMount(true);
   }, [veiwertablesorte, selectedtab]);
 
-
   const deletehistory = async (measurement_id: string) => {
     try {
       const deleteonehistory = await $Delete(
@@ -163,14 +159,14 @@ const OpticalRouteTestHistoryPage: FC = () => {
           rtu: string;
           station: string;
         }[] = await getdata.json();
-        console.log('👺', data);
         if (getdata.status == 200) {
-          // setHistorydata(data.map(prev => ({...prev,details: '', delete: ''})))
+          setHistorydata(
+            data.map(prev => ({...prev, details: '', delete: ''})),
+          );
         }
       }
     } catch (error) {}
   };
-
 
   return (
     <div className="flex flex-grow flex-col">
@@ -185,8 +181,6 @@ const OpticalRouteTestHistoryPage: FC = () => {
           items={historydata}
           dynamicColumns={['details', 'delete']}
           renderDynamicColumn={({value, key}) => {
-            console.log(value, 'value💩');
-
             if (key === 'details')
               return (
                 <IoOpenOutline
