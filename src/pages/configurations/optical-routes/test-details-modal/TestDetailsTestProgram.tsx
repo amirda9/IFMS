@@ -46,19 +46,19 @@ const TestDetailsTestProgram: FC = () => {
     }
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
     let a = opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time.toString() || '';
-    let result;
-    if(a == "month"){
-      result="Monthly"
-    }else if(a == "year"){
-      result ="Yearly"
-    }else if (a == "day"){
-      result="Daily"
-    }else if (a == "hour"){
-      result="Hourly"
-    }else{
-      result="Every"
-    }
-    setSelectedradio2(result);
+    // let result;
+    // if(a == "month"){
+    //   result="Monthly"
+    // }else if(a == "year"){
+    //   result ="Yearly"
+    // }else if (a == "day"){
+    //   result="Daily"
+    // }else if (a == "hour"){
+    //   result="Hourly"
+    // }else{
+    //   result="Every"
+    // }
+    setSelectedradio2(a);
 
   }, []);
 
@@ -139,18 +139,18 @@ const TestDetailsTestProgram: FC = () => {
             setSelectedradio2(name),
               formik.setFieldValue(
                 'periodtimePeriodtime',
-                name.toLocaleLowerCase(),
+                name,
               );
-              let Name=name.toLowerCase()
+              let newName=name
         
-              let newName;
-              if(Name == "every"){
-                newName ="every"
-              }else if(Name == "daily"){
-                newName ="day"
-              }else {
-                newName=Name.slice(0,-2)
-              }
+              // let newName;
+              // if(Name == "every"){
+              //   newName ="every"
+              // }else if(Name == "daily"){
+              //   newName ="day"
+              // }else {
+              //   newName=Name.slice(0,-2)
+              // }
           
               
             dataa.test_program.period_time.period_time = newName;
@@ -250,11 +250,11 @@ const TestDetailsTestProgram: FC = () => {
       </Description>
       <Description label="Periodicity">
         <div className="flex flex-col gap-y-4">
-          <RadioButton2 name={'Hourly'} />
-          <RadioButton2 name={'Daily'} />
-          <RadioButton2 name={'Monthly'} />
-          <RadioButton2 name={'Yearly'} />
-          <RadioButton2 name={'Every'} />
+          <RadioButton2 name={'hourly'} />
+          <RadioButton2 name={'daily'} />
+          <RadioButton2 name={'monthly'} />
+          <RadioButton2 name={'yearly'} />
+          <RadioButton2 name={'secondly'} />
         </div>
         <div className="ml-16">
           <span>Every</span>

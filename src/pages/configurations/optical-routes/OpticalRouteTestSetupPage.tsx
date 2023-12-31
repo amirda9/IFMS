@@ -182,7 +182,7 @@ const OpticalRouteTestSetupPage: FC = () => {
           time: '',
           periodic_options: {
             value: 0,
-            period_time: 'day',
+            period_time: 'secondly',
           },
         },
         increase_count_options: {
@@ -192,7 +192,7 @@ const OpticalRouteTestSetupPage: FC = () => {
             time: '',
             periodic_options: {
               value: 0,
-              period_time: 'day',
+              period_time: 'secondly',
             },
           },
           maximum_count: 60,
@@ -207,7 +207,7 @@ const OpticalRouteTestSetupPage: FC = () => {
         },
         period_time: {
           value: 0,
-          period_time: 'day',
+          period_time: 'secondly',
         },
       },
     }),

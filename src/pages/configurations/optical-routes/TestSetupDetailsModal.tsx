@@ -95,7 +95,7 @@ const TestSetupDetailsModal: FC = () => {
       newdata.station_id == '' ||
       newdata.station_name == '' ||
       !newdata.learning_data.increase_count_options.count ||
-      newdata.learning_data.increase_count_options.timing.time == '' ||
+      // newdata.learning_data.increase_count_options.timing.time == '' ||
       newdata.learning_data.increase_count_options.timing.type == '' ||
       newdata.learning_data.increase_count_options.timing.periodic_options
         .period_time == '' ||

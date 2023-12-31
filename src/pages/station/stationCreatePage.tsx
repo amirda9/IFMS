@@ -79,14 +79,14 @@ console.log(stationDetail,'stationDetail');
           region: '',
         }}
         onSubmit={values => {
-    
+
           request('stationCreate', {
             data: {
               name: values.name,
               description: values.description,
               longitude: values.longitude,
               latitude: values.latitude,
-              // region_id:"",
+             region_id:null,
               model: 'cables',
               network_id: networkId!,
             },

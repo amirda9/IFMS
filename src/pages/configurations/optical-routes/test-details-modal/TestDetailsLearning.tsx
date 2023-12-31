@@ -215,15 +215,16 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.start_cycle_time.periodic_options.period_time =
-                      e.target.value.toLowerCase().slice(0,-1);
+                      e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
                   value={convertperiod(opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.periodic_options?.period_time || "")}
                   className="w-26">
-                  <option>Months</option>
-                  <option>Days</option>
-                  <option>Years</option>
-                  <option>Hours</option>
+              <option>secondly</option>
+                  <option>monthly</option>
+                  <option>daily</option>
+                  <option>yearly</option>
+                  <option>hourly</option>
                 </Select>
               </div>
             </div>
@@ -311,15 +312,17 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.increase_count_options.timing.periodic_options.period_time =
-                    e.target.value.toLowerCase().slice(0,-1);;
+                    e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
                   value={convertperiod(opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing?.periodic_options?.period_time || "")}
                   className="w-26">
-                  <option>Months</option>
-                  <option>Days</option>
-                  <option>Years</option>
-                  <option>Hours</option>
+                  <option>secondly</option>
+                  <option>monthly</option>
+                  <option>daily</option>
+                  <option>yearly</option>
+                  <option>hourly</option>
+                
                 </Select>
                 <span>Up to Max.</span>
                 <TextInput
