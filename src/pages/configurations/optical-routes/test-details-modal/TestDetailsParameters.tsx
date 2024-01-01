@@ -374,7 +374,7 @@ const TestDetailsParameters: FC = () => {
                 {opticalroutUpdateTestsetupDetail?.init_rtu_name}
               </option>
 
-              {rtulist?.map((data, index) => (
+              { rtulist && Array.isArray(rtulist) && rtulist.map((data, index) => (
                 <option
                   value={`${data.name}_${data.id}`}
                   key={index}
