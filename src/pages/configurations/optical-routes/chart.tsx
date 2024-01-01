@@ -20931,25 +20931,26 @@ function Chart() {
       data: {x: number; y: number}[];
     }[]
   >([]);
-  console.log("👿🧑‍✈️",fakedata.key_events.events);
+
  
   useEffect(()=>{
-    // const getchartdata=async()=>{
-    //   const getdata = await $Get(
-    //     `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
-    //   );
-    //   const data = await getdata.json();
-    //   console.log('👺', data);
-    //   if (getdata.status == 200) {
-    //      setChartdata(fakedata)
-    //   }
-    // }
-    // try {
-    //   getchartdata()
-    // } catch (error) {}
+    let data:any;
+    const getchartdata=async()=>{
+      const getdata = await $Get(
+        `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
+      );
+      data = await getdata.json();
+    
+      if (getdata.status == 200) {
+         setChartdata(data)
+      }
+    }
+    try {
+      getchartdata()
+    } catch (error) {}
     // *******************************************************************
-     setChartdata(fakedata)
-     let allpointsdata = fakedata?.datapoints?.data_points?.map(
+     setChartdata(data)
+     let allpointsdata = data?.datapoints?.data_points?.map(
       (data: [number, number]) => ({x: data[0], y: data[1]}),
     );
     const max_x =allpointsdata && Math.max(
@@ -20969,30 +20970,30 @@ function Chart() {
     ]);
     // -----------------------------
     let Arrowevents = [];
-    for (let i = 0; i < fakedata?.key_events?.events?.length; i++) {
-      if (fakedata?.key_events?.events[i]?.event_code == 'Start of fiber') {
+    for (let i = 0; i < data?.key_events?.events?.length; i++) {
+      if (data?.key_events?.events[i]?.event_code == 'Start of fiber') {
         Arrowevents.push({
-          x: fakedata?.key_events.events[i]?.event_location?.x,
-          y: fakedata.key_events.events[i].event_location.y,
+          x: data?.key_events.events[i]?.event_location?.x,
+          y: data.key_events.events[i].event_location.y,
           type: 'arrowevent',
           location: 'start',
-          event_number: fakedata.key_events.events[i].event_number,
+          event_number: data.key_events.events[i].event_number,
         });
       } else if (
-        fakedata.key_events.events[i].event_code == 'End of fiber'
+        data.key_events.events[i].event_code == 'End of fiber'
       ) {
         Arrowevents.push({
-          x: fakedata.key_events.events[i].event_location.x,
-          y: fakedata.key_events.events[i].event_location.y,
+          x: data.key_events.events[i].event_location.x,
+          y: data.key_events.events[i].event_location.y,
           type: 'arrowevent',
           location: 'end',
-          event_number: fakedata.key_events.events[i].event_number,
+          event_number: data.key_events.events[i].event_number,
         });
       }
     }
     setArrowevents(Arrowevents);
     // --------------------------------
-    const Allevents = fakedata?.key_events?.events;
+    const Allevents = data?.key_events?.events;
     let items = [];
     let sumloss = 0;
     for (let c = 0; c < Allevents?.length; c++) {
@@ -21091,9 +21092,7 @@ function Chart() {
     min: 0,
   });
 
-  useEffect(() => {
 
-  }, []);
 
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
