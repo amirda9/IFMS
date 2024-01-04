@@ -6,15 +6,16 @@ import {useDispatch, useSelector} from 'react-redux';
 import {InputFormik} from '~/container';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
+import {deepcopy} from '~/util';
 const TestDetailsLearning: FC = () => {
   //This function changes the period that comes from the backend, for example, it changes month to Monthly
- const convertperiod=(str:string)=>{
-  let firstLetter = str.charAt(0);
-  let firstLetterUpper = firstLetter.toUpperCase();
-  let restOfStr = str.slice(1);
-  let result = firstLetterUpper + restOfStr+"s";
-  return result
-  }
+  const convertperiod = (str: string) => {
+    let firstLetter = str.charAt(0);
+    let firstLetterUpper = firstLetter.toUpperCase();
+    let restOfStr = str.slice(1);
+    let result = firstLetterUpper + restOfStr + 's';
+    return result;
+  };
   const dispatch = useDispatch();
   const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
   const {opticalroutUpdateTestsetupDetail} = useSelector(
@@ -25,56 +26,58 @@ const TestDetailsLearning: FC = () => {
   const [selectedradio2, setSelectedradio2] = useState('On');
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
-  useEffect(()=>{
-    const incresetype=opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing?.type
+  useEffect(() => {
+    const incresetype =
+      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        ?.timing?.type;
 
-    const starttype=opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.type
-    if(starttype != "periodic"){
-    setSelectedradio("On")
-    }else{
-      setSelectedradio("Every")
+    const starttype =
+      opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.type;
+    if (starttype != 'periodic') {
+      setSelectedradio('On');
+    } else {
+      setSelectedradio('Every');
     }
-    if(incresetype != "periodic"){
-      setSelectedradio2("On")
-    }else{
-      setSelectedradio2("Every")
+    if (incresetype != 'periodic') {
+      setSelectedradio2('On');
+    } else {
+      setSelectedradio2('Every');
     }
-    },[])
+  }, []);
+
 
   const formik = useFormik({
     initialValues: {
       countpercycle:
-      opticalroutUpdateTestsetupDetail?.learning_data
+        opticalroutUpdateTestsetupDetail?.learning_data
           ?.targeted_count_per_cycle,
       startcycletype:
-      opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time
-          ?.type,
+        opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.type,
       startcycletime:
-      opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time
-          ?.time,
+        opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.time,
       periodicoptionsvalue:
-      opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time
+        opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time
           ?.periodic_options?.value,
       periodicoptionsperiodtime:
-      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.time,
       increasecountoptionscount:
-      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.count,
       increasecountoptionstype:
-      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.type,
       increaseperiodicoptionsvalue:
-      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.periodic_options?.value,
       increaseperiodicoptionsperiodtime:
-      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.periodic_options?.period_time,
       increasecountoptionstiming:
-      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.timing?.time,
       increasecountoptionsmaximumcount:
-      opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
+        opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options
           ?.maximum_count,
     },
 
@@ -135,8 +138,6 @@ const TestDetailsLearning: FC = () => {
     );
   }
 
-
-
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -153,7 +154,10 @@ const TestDetailsLearning: FC = () => {
                 dataa.learning_data.targeted_count_per_cycle = e.target.value;
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
-              value={opticalroutUpdateTestsetupDetail?.learning_data?.targeted_count_per_cycle}
+              value={
+                opticalroutUpdateTestsetupDetail?.learning_data
+                  ?.targeted_count_per_cycle
+              }
               name="count-per-cycle"
               type="number"
             />
@@ -169,14 +173,16 @@ const TestDetailsLearning: FC = () => {
                 <input
                   ref={firstdateref}
                   onChange={e => {
-                    formik.setFieldValue('startcycletime', e.target.value);
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
-                    );
-                    dataa.learning_data.start_cycle_time.time = e.target.value;
+                    formik.setFieldValue('startcycletime',`${e.target.value} 23:00:00`);
+                    let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
+
+                    dataa.learning_data.start_cycle_time.time = `${e.target.value} 23:00:00`;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.time}
+                  value={
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.start_cycle_time?.time.split(" ")[0]
+                  }
                   type="date"
                   className="ml-6 h-8 w-48 rounded-md border border-black px-2"
                 />
@@ -189,7 +195,7 @@ const TestDetailsLearning: FC = () => {
               <div className="flex flex-row items-center gap-x-4">
                 <RadioButton name="Every" />
                 <TextInput
-                type='number'
+                  type="number"
                   onChange={e => {
                     formik.setFieldValue(
                       'periodicoptionsvalue',
@@ -199,10 +205,13 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.start_cycle_time.periodic_options.value =
-                     Number(e.target.value) ;
+                      Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-               value={opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.periodic_options.value}
+                  value={
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.start_cycle_time?.periodic_options.value
+                  }
                   className="w-16"
                 />
                 <Select
@@ -218,9 +227,12 @@ const TestDetailsLearning: FC = () => {
                       e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={convertperiod(opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.periodic_options?.period_time || "")}
+                  value={convertperiod(
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.start_cycle_time?.periodic_options?.period_time || '',
+                  )}
                   className="w-26">
-              <option>secondly</option>
+                  <option>secondly</option>
                   <option>monthly</option>
                   <option>daily</option>
                   <option>yearly</option>
@@ -236,20 +248,23 @@ const TestDetailsLearning: FC = () => {
               <span className="flex items-center gap-x-2">
                 <span>Increase Target by</span>
                 <TextInput
-                type='number'
+                  type="number"
                   onChange={e => {
                     formik.setFieldValue(
                       'increasecountoptionscount',
                       e.target.value,
                     );
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
+                    let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail);
+                  
+                    dataa.learning_data.increase_count_options.count = Number(
+                      e.target.value,
                     );
-                    dataa.learning_data.increase_count_options.count =
-                      Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.count}
+                  value={
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.increase_count_options?.count
+                  }
                   className="w-16"
                 />
               </span>
@@ -262,17 +277,19 @@ const TestDetailsLearning: FC = () => {
                   onChange={e => {
                     formik.setFieldValue(
                       'increaseperiodicoptionsperiodtime',
-                      e.target.value,
+                      `${e.target.value} 23:00:00`,
                     );
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
-                    );
+                    let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail);
+                    
                     dataa.learning_data.increase_count_options.timing.time =
-                      e.target.value;
+                      `${e.target.value} 23:00:00`;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
                   ref={secenddateref}
-                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing.time}
+                  value={
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.increase_count_options?.timing.time.split(" ")[0]
+                  }
                   type="date"
                   className="ml-6 h-8 w-48 rounded-md border border-black px-2"
                 />
@@ -286,7 +303,7 @@ const TestDetailsLearning: FC = () => {
                 <RadioButton2 name="Every" />
 
                 <TextInput
-                type='number'
+                  type="number"
                   onChange={e => {
                     formik.setFieldValue(
                       'increaseperiodicoptionsvalue',
@@ -299,7 +316,10 @@ const TestDetailsLearning: FC = () => {
                       Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing?.periodic_options?.value}
+                  value={
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.increase_count_options?.timing?.periodic_options?.value
+                  }
                   className="w-16"
                 />
                 <Select
@@ -312,34 +332,38 @@ const TestDetailsLearning: FC = () => {
                       JSON.stringify(opticalroutUpdateTestsetupDetail),
                     );
                     dataa.learning_data.increase_count_options.timing.periodic_options.period_time =
-                    e.target.value;
+                      e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={convertperiod(opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.timing?.periodic_options?.period_time || "")}
+                  value={convertperiod(
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.increase_count_options?.timing?.periodic_options
+                      ?.period_time || '',
+                  )}
                   className="w-26">
                   <option>secondly</option>
                   <option>monthly</option>
                   <option>daily</option>
                   <option>yearly</option>
                   <option>hourly</option>
-                
                 </Select>
                 <span>Up to Max.</span>
                 <TextInput
-                type='number'
+                  type="number"
                   onChange={e => {
                     formik.setFieldValue(
                       'increasecountoptionsmaximumcount',
                       e.target.value,
                     );
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
-                    );
+                    let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
                     dataa.learning_data.increase_count_options.maximum_count =
                       Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options?.maximum_count}
+                  value={
+                    opticalroutUpdateTestsetupDetail?.learning_data
+                      ?.increase_count_options?.maximum_count
+                  }
                   className="w-16"
                 />
                 <span>traces</span>

@@ -78,6 +78,8 @@ const OpticalRouteTestHistoryPage: FC = () => {
       const getdata = await $Get(
         `otdr/optical-route/${params.opticalRouteId}/test-setups/history`,
       );
+
+      
       const data: {
         measurement_id: string;
         index: number;
@@ -87,6 +89,8 @@ const OpticalRouteTestHistoryPage: FC = () => {
         rtu: string;
         station: string;
       }[] = await getdata.json();
+      
+      console.log("🥵",data);
       if (getdata.status == 200) {
         setHistorydata(data.map(prev => ({...prev, details: '', delete: ''})));
       }

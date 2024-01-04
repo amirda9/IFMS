@@ -192,6 +192,9 @@ const TestDetailsParameters: FC = () => {
   const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
 
+
+  console.log("🐎",stations);
+  
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -294,27 +297,27 @@ const TestDetailsParameters: FC = () => {
               onChange={async e => {
                 formik.setFieldValue(
                   'station',
-                  e.target.value.split('_')[0].toString(),
+                  e.target.value.split('&_&')[0].toString(),
                 );
                 formik.setFieldValue(
                   'stationId',
-                  e.target.value.split('_')[1].toString(),
+                  e.target.value.split('&_&')[1].toString(),
                 );
                 const testsetupDetailCopy = deepcopy(
                   opticalroutUpdateTestsetupDetail,
                 );
                 testsetupDetailCopy.station_name = e.target.value
-                  .split('_')[0]
+                  .split('&_&')[0]
                   .toString();
                 testsetupDetailCopy.station_id = e.target.value
-                  .split('_')[1]
+                  .split('&_&')[1]
                   .toString();
                 dispatch(
                   setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
                 );
                 const allrtu = await $GET(
                   `otdr/station/${e.target.value
-                    .split('_')[1]
+                    .split('&_&')[1]
                     .toString()}/rtus`,
                 );
                 setRtulist(allrtu);
@@ -329,7 +332,7 @@ const TestDetailsParameters: FC = () => {
 
               {stations?.data?.map((data, index: number) => (
                 <option
-                  value={`${data.name}_${data.id}`}
+                  value={`${data.name}&_&${data.id}`}
                   key={index}
                   className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   {data.name}

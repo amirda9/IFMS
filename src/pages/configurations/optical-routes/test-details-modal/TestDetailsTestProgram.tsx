@@ -4,6 +4,7 @@ import dateicon from '~/assets/images/dateicon.png';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 import {useDispatch, useSelector} from 'react-redux';
 import {useFormik} from 'formik';
+import { deepcopy } from '~/util';
 
 const seperatedate = (time: string) => {
   //The function below takes a date and separates its time and date
@@ -178,9 +179,8 @@ const TestDetailsTestProgram: FC = () => {
         <div className="flex items-center">
           <input
             onChange={e => {
-              let dataa = JSON.parse(
-                JSON.stringify(opticalroutUpdateTestsetupDetail),
-              );
+              let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
+              
               formik.setFieldValue('startingdateStart', e.target.value);
               dataa.startdatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
@@ -216,9 +216,8 @@ const TestDetailsTestProgram: FC = () => {
           <input
             onChange={e => {
               formik.setFieldValue('enddateEnd', e.target.value);
-              let dataa = JSON.parse(
-                JSON.stringify(opticalroutUpdateTestsetupDetail),
-              );
+              let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
+              
               dataa.enddatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
@@ -235,9 +234,8 @@ const TestDetailsTestProgram: FC = () => {
           <TextInput
             onChange={e => {
               formik.setFieldValue('enddateEndtime', e.target.value);
-              let dataa = JSON.parse(
-                JSON.stringify(opticalroutUpdateTestsetupDetail),
-              );
+              let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
+              
               dataa.endtimePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
@@ -260,9 +258,8 @@ const TestDetailsTestProgram: FC = () => {
           <span>Every</span>
           <TextInput
             onChange={e => {
-              let dataa = JSON.parse(
-                JSON.stringify(opticalroutUpdateTestsetupDetail),
-              );
+              let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
+              
               formik.setFieldValue('periodtimevalue', e.target.value);
               dataa.test_program.period_time.value =Number(e.target.value) ;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));

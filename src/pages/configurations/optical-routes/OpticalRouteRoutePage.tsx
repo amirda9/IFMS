@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
 import {$GET} from '~/util/requestapi';
+import { deepcopy } from '~/util';
 // ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
   classname: string;
@@ -151,6 +152,9 @@ const OpticalRouteRoutePage: FC = () => {
   };
   // ------------------------------------------------------------
 
+console.log("⏰",allcreatedroutes);
+
+
   const {
     request,
     state: {opticalrouteRoute, stations},
@@ -245,7 +249,7 @@ const OpticalRouteRoutePage: FC = () => {
     //Here we save the source and the links related to this source.
     const finddataaindex = fndseletedsourceIndex(index);
     if (finddataaindex > -1) {
-      let old = JSON.parse(JSON.stringify(allselectedsource));
+      let old = deepcopy(allselectedsource);
       old[finddataaindex] = {
         index: index,
         sourceId: id,
@@ -344,9 +348,12 @@ const OpticalRouteRoutePage: FC = () => {
   const onclickcabel = async (index: number) => {
     const old = JSON.parse(JSON.stringify(allselectedsource));
     const findroute = fndseletedsourceIndex(index);
+    console.log("findroute",findroute);
+    
     if (findroute > -1) {
       //We get the link specifications because we need the cable and duct specifications of it.
       const getdata = await $GET(`otdr/link/${old[findroute].linkId}`);
+  
       let cables =
         getdata?.data?.cables == null
           ? null
@@ -354,14 +361,14 @@ const OpticalRouteRoutePage: FC = () => {
               id: data.id,
               number_of_cores: data.number_of_cores,
             }));
-      let ducts =
-        getdata.data.ducts == null
+      let ducts =getdata.data.ducts == null
           ? null
           : getdata.data.ducts.map((data: any) => ({
               id: data.id,
               mini_ducts: data.mini_ducts,
             }));
       old[findroute].cableandducts = {cables: cables, ducts: ducts};
+      console.log("old",old);
       setAllselectedsource(old);
     }
   };
@@ -682,10 +689,11 @@ const OpticalRouteRoutePage: FC = () => {
     if (allcreatedroutes.length > 0) {
       request('opticalrouteCreateRoute', {
         params: {optical_route_id: params.opticalRouteId || ''},
-        data: allcreatedroutes.map(data => ({
+        data: allcreatedroutes.map((data,index) => ({
           link_id: data.link_id,
           cable: data.cable,
           core: data.core,
+          route_number:index
         })),
       });
     }
@@ -693,7 +701,7 @@ const OpticalRouteRoutePage: FC = () => {
     if (allupdatedroutes.length > 0) {
       request('opticalrouteUpdateRoute', {
         params: {optical_route_id: params.opticalRouteId || ''},
-        data: allupdatedroutes.map(data => ({
+        data: allupdatedroutes.map((data,index) => ({
           link_id: data.link_id,
           cable: data.cable,
           core: data.core,
@@ -806,7 +814,7 @@ const OpticalRouteRoutePage: FC = () => {
                     : data?.cable}
                 </option>
 
-                {fndseletedsource(index)?.cableandducts?.cables == null
+                {fndseletedsource(index)?.cableandducts?.cables != null
                   ? fndseletedsource(index)?.cableandducts?.cables?.map(
                       data => <option value={data.id}>{data.id}</option>,
                     )
@@ -835,7 +843,7 @@ const OpticalRouteRoutePage: FC = () => {
                     ? allcreatedroutes[index]?.core
                     : data?.core}
                 </option>
-                {fndseletedsource(index)?.cableandducts?.cables == null
+                {fndseletedsource(index)?.cableandducts?.cables != null
                   ? createlistocore(
                       Number(
                         fndseletedsource(index)?.cableandducts?.cables?.find(

@@ -6,7 +6,7 @@ import {Link, Outlet, useNavigate, useParams,useLocation } from 'react-router-do
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import { setopticalroutUpdateTestsetupDetail } from '~/store/slices/opticalroutslice';
-import {$GET} from '~/util/requestapi';
+import {$GET, $Get} from '~/util/requestapi';
 
 const columns = {
   name: {label: 'Name', size: 'w-[20%]', sort: true},
@@ -79,21 +79,29 @@ const OpticalRouteTestSetupPage: FC = () => {
 
   const Getsetup=()=>{
     const getsetup = async () => {
-      const getdata = await $GET(
-        `otdr/optical-route/${params.opticalRouteId}/test-setups`,
-      );
-      console.log(getdata, 'getdata');
-      const all =
-        getdata?.map((data: any) => ({
-          name: data.name,
-          type: data.type,
-          wavelength: data.wavelength,
-          rtu: data.rtu.name,
-          station: data.station.name,
-          detail: data.id,
-          delete: data.id,
-        })) || [];
-      setAllitems(all);
+      try {
+        const getalldata = await $Get(
+          `otdr/optical-route/${params.opticalRouteId}/test-setups`,
+        );
+        const getdata=await getalldata.json();
+        if(getalldata.status == 200){
+          console.log(getdata, 'getdata');
+          const all =
+            getdata?.map((data: any) => ({
+              name: data.name,
+              type: data.type,
+              wavelength: data.wavelength,
+              rtu: data.rtu.name,
+              station: data.station.name,
+              detail: data.id,
+              delete: data.id,
+            })) || [];
+          setAllitems(all);
+        }
+      } catch (error) {
+        
+      }
+
     };
     getsetup();
   }

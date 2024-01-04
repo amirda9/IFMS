@@ -4,6 +4,7 @@ import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {SimpleBtn, TabItem} from '~/components';
 import AppDialog from '~/components/modals/AppDialog';
 import {useHttpRequest} from '~/hooks';
+import { deepcopy } from '~/util';
 
 //this function get full date and time then produce full date
 const convertDate = (date: string, time: string) => {
@@ -50,9 +51,8 @@ const TestSetupDetailsModal: FC = () => {
   });
 
   const createtestaetup = () => {
-    const newdata = JSON.parse(
-      JSON.stringify(opticalroutUpdateTestsetupDetail),
-    );
+    const newdata =deepcopy(opticalroutUpdateTestsetupDetail);
+    
     if (
       opticalroutUpdateTestsetupDetail?.parameters?.distance_mode != 'manual'
     ) {
@@ -68,14 +68,9 @@ const TestSetupDetailsModal: FC = () => {
     ) {
       delete newdata?.parameters?.sampling_duration;
     }
-    newdata.test_program.starting_date.start = convertDate(
-      newdata?.startdatePart,
-      newdata?.starttimePart,
-    );
-    newdata.test_program.end_date.end = convertDate(
-      newdata?.enddatePart,
-      newdata?.endtimePart,
-    );
+    newdata.test_program.starting_date.start =`${newdata?.startdatePart} ${newdata?.starttimePart}:00`
+    newdata.test_program.end_date.end =`${newdata?.enddatePart} ${newdata?.endtimePart}:00` 
+
     delete newdata.station_name;
     delete newdata.init_rtu_name;
     delete newdata.startdatePart;

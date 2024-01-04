@@ -86,6 +86,8 @@ const NetworkAccessPage = () => {
       params: {network_id: params.networkId!},
       data: {users: network?.networkviewers},
     });
+
+ 
     dispatch(setnetworkviewersstatus(false));
 
   };

@@ -28,14 +28,15 @@ function App() {
         />
 
         <Route path="/" Component={selectElement(auth, MainLayout)}>
-          <Route
-            path="/networks/:networkId/edit-access"
-            Component={pages.NetworkAccessEditPage}
-          />
+         
 
           <Route
             path="/networks"
             Component={selectElement(auth, pages.NetworksPage)}>
+               <Route
+            path=":networkId/edit-access"
+            Component={pages.NetworkAccessEditPage}
+          />
             <Route path="create" Component={pages.NetworkCreatePage} />
             <Route path=":networkId" Component={pages.NetworkEmptyPage}>
               <Route path="" Component={pages.NetworkDetailPage}>

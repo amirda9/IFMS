@@ -1,3 +1,4 @@
+
 import React, {
   FC,
   forwardRef,
@@ -8,6 +9,9 @@ import React, {
 import {useHttpRequest} from '~/hooks';
 import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
+import Checkbox from '~/components/checkbox/checkbox';
+import { $Get } from '~/util/requestapi';
+import { UserRole } from '~/constant/users';
 
 type UserTableType = {
   id: string;
@@ -43,14 +47,72 @@ export type EditorRefType = {
   setAdminid:(values:string) => void;
 };
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
+
+  const {
+    state: {users, groups},
+    request,
+  } = useHttpRequest({
+    selector: state => ({
+      users: state.http.userList,
+      groups: state.http.groupList,
+    }),
+    initialRequests: request => {
+      request('userList', undefined);
+    },
+  });
+  // const userList =
+  //   users?.data?.map(user => ({
+  //     user: user.username,
+  //     region: user.region?.name || '-',
+  //     station: user.station?.name || '-',
+  //     id: user.id,
+  //   })) || [];
+   const [userList,setUserlist]=useState<{   id: string;
+    username: string;
+    name:string;
+    email: string;
+    role: UserRole;
+    station?: {
+      name: string;
+    };
+    region?: {
+      name: string;
+    }}[]>([])
   const [state, setState] = useState<StateType>({
     values: [],
-    selectLeft: [],
+    selectLeft:[],
     selectRight: [],
     group: false,
     Adminid:""
   });
+  const getuserlist=async()=>{
+    try {
+      const listuser=await $Get(`auth/users/`)
+      const listuserdata:any=await listuser.json()
+      console.log("🎯",listuserdata);
+      
+      if(listuser.status == 200){
+        setUserlist(listuserdata?.map((user:any) => ({
+          user: user.username,
+          region: user.region?.name || '-',
+          station: user.station?.name || '-',
+          id: user.id,
+        })) || [])
+      }
+      setState(state =>({
+        ...state,
+        selectLeft:listuserdata.filter((userr:any) => state.values.includes(userr.id)).map((data:any)=>(data.id)),
+      }));
+    } catch (error) {
+      
+    }
+ 
+  }
+  useEffect(()=>{
+   
 
+    getuserlist()
+  },[])
   
   const [mount, setmount] = useState(false);
   const [usertabselected, setUsertabselected] = useState('User');
@@ -93,13 +155,43 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
         if (isGroup && !groups?.data) {
           request('groupList', undefined);
         }
-        setState({...state, group: isGroup});
+        
+        setState({...state,selectLeft:userList.filter((userr:any) => state.values.includes(userr.id)).map((data:any)=>(data.id)), group: isGroup});
       },
     }),
     [state.values, state.group,state.Adminid],
   );
 
+
+
+
+
+  console.log(state,'🦐');
+  
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
+    const allvalues = [...state.values];
+    const index = allvalues.indexOf(id!);
+    if(allvalues.indexOf(id!) > -1){
+      allvalues.splice(index, 1);
+    }else{
+      allvalues.push(id!)
+    }
+    // setState({
+    //   ...state,
+    //   selectLeft: [],
+    //   values: [...state.values, ...state.selectLeft],
+    // });
+    // setCange(!change);
+
+
+    // const values = [...state.values];
+    // state.selectRight.forEach(value => {
+    //   const index = values.indexOf(value);
+    //   values.splice(index, 1);
+    // });
+    // setState({...state, selectRight: [], values});
+    // setCange(!change);
+
     setState(state => {
       const list = [
         ...(side === 'left' ? state.selectLeft : state.selectRight),
@@ -112,6 +204,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       }
       return {
         ...state,
+        values:allvalues,
         [side === 'left' ? 'selectLeft' : 'selectRight']: list,
       };
     });
@@ -122,14 +215,27 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       if (key === 'index') return index + 1;
       else
         return (
-          <input
-            type="checkbox"
-            checked={(side === 'left'
-              ? state.selectLeft
-              : state.selectRight
-            ).includes(value.id)}
-            onChange={changeSelect(side, value.id)}
-          />
+      <div className='w-full flex flex-row justify-center'>
+
+<Checkbox
+          checkstatus={
+           state.selectLeft.includes(value.id)}
+           onclick={changeSelect(side, value.id)}
+        
+          iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+          classname={
+            ' border-[1px] text-[#18C047] border-[#000000]'
+          }
+        />
+      </div>
+          // <input
+          //   type="checkbox"
+          //   checked={(side === 'left'
+          //     ? state.selectLeft
+          //     : state.selectRight
+          //   ).includes(value.id)}
+          //   onChange={changeSelect(side, value.id)}
+          // />
         );
     };
   };
@@ -137,25 +243,6 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   // const admin = groups?.data?.find(
   //   value => value.access === AccessEnum.admin,
   // );
-  const {
-    state: {users, groups},
-    request,
-  } = useHttpRequest({
-    selector: state => ({
-      users: state.http.userList,
-      groups: state.http.groupList,
-    }),
-    initialRequests: request => {
-      request('userList', undefined);
-    },
-  });
-  const userList =
-    users?.data?.map(user => ({
-      user: user.username,
-      region: user.region?.name || '-',
-      station: user.station?.name || '-',
-      id: user.id,
-    })) || [];
 
 
   const group1 = groups?.data;
@@ -169,11 +256,13 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
 
       return {
         label: group.name,
-        items: users.filter(item => !state.values.includes(item.value)),
+        items: users
+        // .filter(item => !state.values.includes(item.value)),
       };
     }) || [];
 
-  const Users = userList.filter(user => !state.values.includes(user.id)) || [];
+  const Users:any = userList
+  // .filter(user => !state.values.includes(user.id)) || [];
 
   const sortdusers = (tabname: string, sortalfabet: boolean) => {
     if (tabname != 'Index') {
@@ -199,15 +288,16 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
 
 
 
-  const veiwers = userList.filter(user => state.values.includes(user.id)) || [];
+  const veiwers:any = userList.filter(user => state.values.includes(user.id)) || [];
+
 
   for (let i=0;i<veiwers.length;i++){
-    // const findusers=state.Viewers?.findIndex(data =>data.user.id == veiwers[i].id);
-    
+  // const findusers=state.Viewers?.findIndex(data =>data.user.id == veiwers[i].id);
   if(veiwers[i].id == state.Adminid){
   veiwers.splice(i,1)
   }
   }
+
 
 
   const sortdveiwers = (tabname: string, sortalfabet: boolean) => {
@@ -258,12 +348,14 @@ useEffect(()=>{
       {state.group ? (
         <Table
           keyExtractor={value => value.label}
-          containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px] overflow-y-auto"
+          containerClassName="w-full h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
           cols={{groups: {label: 'Groups'}}}
           items={groupList}
           dynamicColumns={['groups']}
-          renderDynamicColumn={({value}) => (
-            <div className="px-4">
+          renderDynamicColumn={({value}) => {
+           console.log("🌻",value);
+            return(
+              <div className="px-4">
               <GroupItem
                 items={value.items}
                 label={value.label}
@@ -271,7 +363,9 @@ useEffect(()=>{
                 selected={state.selectLeft}
               />
             </div>
-          )}
+            )
+        
+          }}
         />
       ) : (
         <Table
@@ -284,13 +378,14 @@ useEffect(()=>{
             setUsertabselected(tabname), setUsertablesort(sortalfabet);
           }}
           cols={columns}
-          items={usersssorted.length > 0 ? usersssorted : Users.sort((a, b) => a.user.localeCompare(b.user, 'en-US'))}
-          containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
+          items={usersssorted.length > 0 ? usersssorted : Users.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US'))}
+          containerClassName="w-full h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
           dynamicColumns={['select', 'index']}
           renderDynamicColumn={renderDynamicColumn('left')}
         />
       )}
 
+{/* {state.group ?
       <DoubleSideButtonGroup
         onClickRightButton={() => {
           // if(parentname == "networkaccess"){
@@ -312,8 +407,9 @@ useEffect(()=>{
           setState({...state, selectRight: [], values});
           setCange(!change);
         }}
-      />
-
+      />:null} */}
+{/* 
+{state.group ?
       <Table
         loading={
           (groups?.httpRequestStatus !== 'success' && state.group) ||
@@ -328,7 +424,7 @@ useEffect(()=>{
         containerClassName="w-[44%] h-[calc(100vh-260px)] ml-[5px]  overflow-y-auto"
         dynamicColumns={['select', 'index']}
         renderDynamicColumn={renderDynamicColumn('right')}
-      />
+      />:null} */}
     </div>
   );
 });
