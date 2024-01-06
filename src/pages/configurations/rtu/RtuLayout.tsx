@@ -78,6 +78,8 @@ const RtuLayout: FC = () => {
     (state: RootState) => state.rtu,
   );
 
+  console.log("🤠🤑",stationsrtu);
+  
   const {
     request,
     state: {list, regions},

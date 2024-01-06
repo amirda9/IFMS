@@ -4,6 +4,7 @@ import {SidebarItem} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 import {BASE_URL} from './../../constant';
+import NetworkLayout from './NetworkLayout';
 const NetworksPage: FC = () => {
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
@@ -47,12 +48,18 @@ const NetworksPage: FC = () => {
   });
 
   return (
-    <SidebarLayout
+    <NetworkLayout
       searchOnChange={() => {}}
       createTitle="Networks"
       canAdd={userrole == 'superuser' ? true : false}>
-      {list?.data?.map(value => (
-        <SidebarItem
+        <div className='w-full flex flex-col mb-[-18px]'>
+        {list?.data?.map(value => (
+        <div className='flex flex-row items-center w-full'>
+          <span className='text-[14px]'>....</span>
+          <SidebarItem
+          selected={true}
+          paddleft="pl-[5px]"
+          className='flex-start w-full pl-[2px]'
           name={value.name}
           to={value.id}
           key={value.id}
@@ -66,8 +73,12 @@ const NetworksPage: FC = () => {
             deleteRequest.request?.params.networkId === value.id
           }
         />
+        </div>
+     
       ))}
-    </SidebarLayout>
+        </div>
+
+    </NetworkLayout>
   );
 };
 

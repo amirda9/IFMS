@@ -42,6 +42,7 @@ const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
       setState({...state, selected: stateSelected});
     }
   };
+
   const selectItem = (value: string | number) => () => {
     // const allvalues = [...state.values];
     // const index = allvalues.indexOf(id!);
@@ -91,28 +92,27 @@ const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
         <div className="my-1 ml-16 mt-[-9px]">
           {items.map(item => (
             <div
-              className="flex h-[50px] flex-row pt-[37px] ml-[-18px] items-start border-l-[1px] border-dashed border-black"
+              className="ml-[-18px] flex h-[50px] flex-row items-start border-l-[1px] border-dashed border-black pt-[37px]"
               key={item.label}>
-                <div className='flex flex-row w-full items-center'>
-                  <span className='mt-[-10px] mr-[5px]'>....</span>
-                  <Checkbox
-                checkstatus={selected.includes(item.value)}
-                onclick={selectItem(item.value)}
-                iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
-                classname={
-                  'border-[1px] text-[#18C047] border-[#000000] mr-[7px]'
-                }
-              />
-               <span>{item.label}</span>
-                </div>
-            
+              <div className="flex w-full flex-row items-center">
+                <span className="mr-[5px] mt-[-10px]">....</span>
+                <Checkbox
+                  checkstatus={selected.includes(item.value)}
+                  onclick={selectItem(item.value)}
+                  iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+                  classname={
+                    'border-[1px] text-[#18C047] border-[#000000] mr-[7px]'
+                  }
+                />
+                <span>{item.label}</span>
+              </div>
+
               {/* <input
                 checked={selected.includes(item.value)}
                 type="checkbox"
                 className="mr-4 cursor-pointer"
                 onChange={selectItem(item.value)}
               /> */}
-             
             </div>
           ))}
         </div>

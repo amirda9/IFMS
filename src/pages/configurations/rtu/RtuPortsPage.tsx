@@ -44,6 +44,7 @@ type allupdatesportstype = {
 type allcreateports = {
   optical_route_id: string;
   state: string;
+  optical_switch_port_index:number
 }[];
 // -------- main ------------------ main -------------------- main -------------main --------
 const swalsetting: any = {
@@ -67,12 +68,17 @@ const RtuPortsPage: FC = () => {
   const [allcreateport, setAllcreateport] = useState<allcreateports>([]);
   const [alldeletedports, setAlldeletedports] = useState<string[]>([]);
 
+console.log("👹",params?.rtuId);
+
+
   const getrtuports = async () => {
     try {
       //get rtu ports
       const getdata = await $Get(
         `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
       );
+      console.log("getdata",getdata);
+      
       const allrtuports: allportstype = await getdata.json();
       let rtuports: allportstype = deepcopy(allrtuports);
       if (allrtuports.length < 8) {
@@ -107,12 +113,14 @@ const RtuPortsPage: FC = () => {
         
         const getrtuopticalrote = await $Get(
           `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
-            '_',
-          )[1]}network_id=${params?.rtuId?.split('_')[2]}`,
+            '_'
+          )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
         );
+
+     
         const getopticaldata: opticalroutlistType =
           await getrtuopticalrote.json();
-
+          console.log("getopticaldata",getopticaldata);
         if (getrtuopticalrote.status == 200) {
           // remove the optical-routes of the ports from the list of optical-routes that should be shown in the select boxes. Because the selected optical routes should not be repeated.
           let data: opticalroutlistType = [];
@@ -252,6 +260,7 @@ const RtuPortsPage: FC = () => {
           {
             optical_route_id: id,
             state: 'deactivate',
+            optical_switch_port_index:index
           },
         ]);
       }
@@ -392,7 +401,7 @@ const RtuPortsPage: FC = () => {
         </div>
         {Array.isArray(allrtuports) &&
           allrtuports.length > 0 &&
-          allrtuports?.map((data, index: any) => (
+          allrtuports?.map((data, index: number) => (
             <div
               className={classNames(
                 'flex items-center rounded-lg p-4',

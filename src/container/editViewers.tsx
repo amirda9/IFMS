@@ -169,11 +169,15 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   console.log(state,'🦐');
   
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
+    console.log("🤢🤬",id);
+    
     const allvalues = [...state.values];
     const index = allvalues.indexOf(id!);
     if(allvalues.indexOf(id!) > -1){
+     
       allvalues.splice(index, 1);
     }else{
+    
       allvalues.push(id!)
     }
     // setState({
