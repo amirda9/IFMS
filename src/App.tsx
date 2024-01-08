@@ -9,7 +9,7 @@ import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
 import ErrorPage403 from './pages/errors/403';
 import {UserRole} from './constant/users';
-
+import NetworkLayout from './pages/network/NetworkLayout'
 function App() {
   const auth = useAppSelector(
     state =>

@@ -48,17 +48,17 @@ const NetworksPage: FC = () => {
   });
 
   return (
-    <NetworkLayout
-      searchOnChange={() => {}}
-      createTitle="Networks"
-      canAdd={userrole == 'superuser' ? true : false}>
+    <SidebarLayout
+      // searchOnChange={() => {}}
+      // createTitle="Networks"
+      // canAdd={userrole == 'superuser' ? true : false}
+      >
         <div className='w-full flex flex-col mb-[-18px]'>
-        {list?.data?.map(value => (
+        {/* {list?.data?.map(value => (
         <div className='flex flex-row items-center w-full'>
           <span className='text-[14px]'>....</span>
           <SidebarItem
           selected={true}
-          paddleft="pl-[5px]"
           className='flex-start w-full pl-[2px]'
           name={value.name}
           to={value.id}
@@ -75,10 +75,10 @@ const NetworksPage: FC = () => {
         />
         </div>
      
-      ))}
+      ))} */}
         </div>
 
-    </NetworkLayout>
+    </SidebarLayout>
   );
 };
 

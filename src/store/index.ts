@@ -3,6 +3,7 @@ import {httpReducer} from './slices/http.slice';
 import changetyperstate from './slices/networkslice';
 import opticalroute from './slices/opticalroutslice'
 import rtu from './slices/rtu'
+import networktreeslice from './slices/networktreeslice'
 import createSagaMiddleware from 'redux-saga';
 import {AppSaga} from './saga';
 
@@ -16,7 +17,8 @@ export const store = configureStore({
     http: httpReducer,
     network:changetyperstate,
     opticalroute:opticalroute,
-    rtu:rtu
+    rtu:rtu,
+    networktree:networktreeslice
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),

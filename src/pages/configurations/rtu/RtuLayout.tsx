@@ -78,7 +78,7 @@ const RtuLayout: FC = () => {
     (state: RootState) => state.rtu,
   );
 
-  console.log("🤠🤑",stationsrtu);
+
   
   const {
     request,
@@ -152,7 +152,7 @@ const RtuLayout: FC = () => {
           if (getnetworlrtues.status == 200) {
             const networlrtues: getallrtuestype = await getnetworlrtues.json();
             if (networlrtues.length > 0) {
-              console.log('👽');
+     
               //then delete network rtues
               const deleteNetworkRtues = await $Delete(
                 `otdr/rtu/batch_delete`,
@@ -539,7 +539,7 @@ const RtuLayout: FC = () => {
 
   // ############################################################
   return (
-    <SidebarLayout createTitle="">
+    <SidebarLayout >
       <div className="flex flex-row items-center">
         <label htmlFor="search" className="mr-2">
           Search

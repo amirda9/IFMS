@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType';
 import {object, string} from 'yup';
+import { deepcopy } from '~/util';
 export enum statustype {
   TRUE="true",
   FALSE="false",
@@ -42,6 +43,11 @@ export type regionstationstype = {
   type: string;
 };
 
+export type regionlinkstype = {
+  payload: {regionid: string; links: {name: string; id: string}[]}[];
+  type: string;
+};
+
 export type allstationsrtutype=
   {stationid: string; regionid:string,networkid:string,rtues: {name: string; id: string}[];deletertues: string[]}
   
@@ -57,6 +63,7 @@ export  type allnetworkregionstype= {
 
 
 export type allregionstationstype={regionid: string; stations: {name: string; id: string}[]}
+export type allregionlinkstype={regionid: string; links: {name: string; id: string}[]}
 
 type leftbarStationcheckboxlist={length:number,stationid:string,rtues:string[]}[]
 export type initialStatetype={
@@ -66,20 +73,26 @@ export type initialStatetype={
   stationsrtu:allstationsrtutype[]
   allrtues:string[]
   allLeftbar:allLeftbartype[]
+  showAllnetworks:boolean,
+  allselectedId:string[],
+  regionLinks:allregionlinkstype[]
 }
 const initialState:initialStatetype = {
   leftbarStationcheckboxlist: [],
   networkregions: [],
   regionstations: [],
+  regionLinks: [],
   stationsrtu: [],
   allrtues:[],
-  allLeftbar:[]
+  allLeftbar:[],
+  showAllnetworks:false,
+  allselectedId:[]
 } ;
 
 
 
 
-const rtu = createSlice({
+const networktreeslice = createSlice({
   name: 'type',
   initialState,
   reducers: {
@@ -95,12 +108,31 @@ const rtu = createSlice({
     setRegionstations: (state, action: regionstationstype) => {
       state.regionstations = action.payload;
     },
+    setRegionLinks: (state, action: regionlinkstype) => {
+      state.regionLinks = action.payload;
+    },
     setStationsrtu: (state, action: stationsrtutype) => {
       state.stationsrtu = action.payload;
+    },
+    setShowallnetworks:(state, action) => {
+      state.showAllnetworks = action.payload;
+    },
+    setAllselectedId:(state, action) => {
+      const findId = state.allselectedId.findIndex(data => data == action.payload);
+      let allselectedIdCopy: string[] = deepcopy(state.allselectedId);
+      if (findId > -1) {
+        
+        const newlist = allselectedIdCopy.filter(data => data != action.payload);
+        state.allselectedId = newlist;
+      } else {
+        allselectedIdCopy.push(action.payload)
+        state.allselectedId = allselectedIdCopy;
+      }
+
     },
   },
 });
 
-export const {setNetworkregions, setRegionstations,setStationsrtu,setleftbarStationcheckboxlist,setallLeftbar} = rtu.actions;
+export const {setNetworkregions, setRegionstations,setStationsrtu,setleftbarStationcheckboxlist,setallLeftbar,setShowallnetworks,setAllselectedId,setRegionLinks} = networktreeslice.actions;
 
-export default rtu.reducer;
+export default networktreeslice.reducer;

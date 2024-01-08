@@ -16,7 +16,6 @@ type PropsType = {
   onclickcheckbox?: (e: boolean) => void;
   onclick?: () => void;
   selected?:boolean,
-  paddleft?:string;
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -30,7 +29,6 @@ const SidebarItem: FC<PropsType> = ({
   onclickcheckbox = () => {},
   onclick=()=>{},
   selected=false,
-  paddleft="pl-[28px]"
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -44,7 +42,7 @@ const SidebarItem: FC<PropsType> = ({
         onClick={() => {onclick()}}
         to={to}
         className={({isActive}) =>
-          ` flex h-10 flex-grow items-center rounded-lg ${paddleft} ${
+          ` flex h-10 flex-grow items-center rounded-lg ${enabelcheck?"pl-[30px]":"pl-[5px]"} ${
             isActive ? 'bg-cyan-200' : ''
           }`
         }>

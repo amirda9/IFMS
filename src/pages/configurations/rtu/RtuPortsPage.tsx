@@ -39,6 +39,7 @@ type allupdatesportstype = {
   optical_route_id: string;
   state: string;
   id: string;
+  optical_switch_port_index:number
 };
 
 type allcreateports = {
@@ -68,7 +69,7 @@ const RtuPortsPage: FC = () => {
   const [allcreateport, setAllcreateport] = useState<allcreateports>([]);
   const [alldeletedports, setAlldeletedports] = useState<string[]>([]);
 
-console.log("👹",params?.rtuId);
+console.log("👹",allrtuports);
 
 
   const getrtuports = async () => {
@@ -77,9 +78,10 @@ console.log("👹",params?.rtuId);
       const getdata = await $Get(
         `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
       );
-      console.log("getdata",getdata);
+    
       
       const allrtuports: allportstype = await getdata.json();
+      console.log("allrtuports",allrtuports);
       let rtuports: allportstype = deepcopy(allrtuports);
       if (allrtuports.length < 8) {
         for (let i = 0; i < 8 - allrtuports.length; i++) {
@@ -171,6 +173,7 @@ console.log("👹",params?.rtuId);
             id: data.id,
             state: data.state,
             optical_route_id: data.optical_route_id,
+            optical_switch_port_index:data.optical_switch_port_index
           })),
         );
       } catch (error) {
@@ -242,6 +245,7 @@ console.log("👹",params?.rtuId);
             optical_route_id: id,
             state: allportsCopy[findportIndex].state,
             id: allportsCopy[findportIndex].id,
+            optical_switch_port_index:index
           },
         ]);
       }
@@ -306,6 +310,7 @@ console.log("👹",params?.rtuId);
             optical_route_id: opticalroutid,
             state: state,
             id: oldallports[findportIndex].id,
+            optical_switch_port_index:index,
           },
         ]);
       }
