@@ -104,6 +104,7 @@ type selectedlinktype = {
   linkID: string[];
 };
 
+type createregiontype= {payload:{networkid:string,regionid:string,regionname:string},type:string}
 
 export type allregionstationstype = {
   regionid: string;
@@ -119,7 +120,33 @@ type leftbarStationcheckboxlist = {
   stationid: string;
   rtues: string[];
 }[];
+type createStationtype={
+  payload:{regionid:string,
+    stationid:string,
+    stationname:string}
+    type:string
+  
+}
+
+type createLinktype={
+  payload:{regionid:string,
+    linkid:string,
+    linkname:string}
+    type:string
+  
+}
+
+type networklisttype={
+  payload:{id:string,name:string}[]
+  type:string
+}
+
+type createnetworkType={
+  payload:{id:string,name:string}
+  type:string
+}
 export type initialStatetype = {
+  networkslist:{id:string,name:string}[],
   leftbarStationcheckboxlist: leftbarStationcheckboxlist;
   networkregions: allnetworkregionstype[];
   regionstations: allregionstationstype[];
@@ -133,6 +160,7 @@ export type initialStatetype = {
   selectedlinks: selectedlinktype[];
 };
 const initialState: initialStatetype = {
+  networkslist:[],
   leftbarStationcheckboxlist: [],
   networkregions: [],
   regionstations: [],
@@ -150,6 +178,9 @@ const networktreeslice = createSlice({
   name: 'type',
   initialState,
   reducers: {
+    setNetworklist: (state, action: networklisttype) => {
+      state.networkslist = action.payload;
+    },
     setallLeftbar: (
       state,
       action: {type: string; payload: allLeftbartype[]},
@@ -268,11 +299,31 @@ const networktreeslice = createSlice({
       state.selectedlinks = selectedlinksCopy;
     },
       //  -----------------------------
-      createRegion: (state, action:{payload:{networkid:string,regionid:string,regionname:string},type:string}) => {
+      createRegion: (state, action:createregiontype) => {
        const networkRegionCopy=deepcopy(state.networkregions)
        const fintnetwork=state.networkregions.findIndex(data => data.networkid == action.payload.networkid)
        networkRegionCopy[fintnetwork].regions.push({id:action.payload.regionid,name:action.payload.regionname})
       state.networkregions = networkRegionCopy;
+      },
+     //  -----------------------------
+      createStation: (state, action: createStationtype) => {
+        const regionStationcopy=deepcopy(state.regionstations)
+        const findregionstationinddex=state.regionstations.findIndex(data => data.regionid == action.payload.regionid)
+        regionStationcopy[findregionstationinddex].stations.push({id:action.payload.stationid,name:action.payload.stationname})
+        state.regionstations = regionStationcopy;
+    },
+       //  -----------------------------
+       createLinks: (state, action: createLinktype) => {
+        const regionLinkcopy=deepcopy(state.regionLinks)
+        const findregionlinkddex=state.regionLinks.findIndex(data => data.regionid == action.payload.regionid)
+        regionLinkcopy[findregionlinkddex].stations.push({id:action.payload.linkid,name:action.payload.linkname})
+        state.regionLinks = regionLinkcopy;
+    },
+      //  -----------------------------
+      createnetwork: (state, action:createnetworkType) => {
+        let networklistCopy=deepcopy(state.networkslist)
+        networklistCopy.push(action.payload)
+         state.networkslist = networklistCopy;
       },
   },
 });
@@ -288,7 +339,10 @@ export const {
   setRegionLinks,
   onclickstationcheckbox,
   onclicklinkcheckbox,
-  createRegion
+  createRegion,
+  createStation,
+  setNetworklist,
+  createnetwork
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

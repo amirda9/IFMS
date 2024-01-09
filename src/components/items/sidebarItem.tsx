@@ -51,7 +51,7 @@ const SidebarItem: FC<PropsType> = ({
         className={({isActive}) =>
           ` flex h-10 flex-grow items-center rounded-lg ${
             enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
-          } ${isActive ? 'bg-cyan-200' : ''}`
+          } ${isActive ? 'bg-[#C0E7F2]' : ''}`
         }>
         {name}
       </NavLink>

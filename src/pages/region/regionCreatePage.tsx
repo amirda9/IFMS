@@ -1,6 +1,6 @@
 import React, {useRef} from 'react';
 import {Description, SimpleBtn} from '~/components';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Form, Formik, FormikProps} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
@@ -8,13 +8,30 @@ import {FormLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
-
+import {
+  setNetworkregions,
+  setRegionstations,
+  setStationsrtu,
+  setShowallnetworks,
+  setAllselectedId,
+  setRegionLinks,
+  onclickstationcheckbox,
+  onclicklinkcheckbox,
+  createRegion
+} from './../../store/slices/networktreeslice';
+import { useDispatch } from 'react-redux';
+import { $Post } from '~/util/requestapi';
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
   // description: Yup.string().required('Please enter region comments'),
 });
 const RegionDetailPage = () => {
+  const dispatch=useDispatch()
   const networkId = Cookies.get(networkExplored);
+  const params=useParams()
+  console.log("👩‍👩‍👧‍👧",params.networkid
+  );
+  
   const navigate = useNavigate();
   const {
     state: {create},
@@ -54,11 +71,21 @@ const RegionDetailPage = () => {
           name: '',
           description: '',
         }}
-        onSubmit={values => {
-          request('regionCreate', {
-            params: {network_id : networkId!},
-            data: {name: values.name, description: values.description},
-          });
+        onSubmit={async(values) => {
+          try {
+            const createregion=await $Post(`otdr/region/network/${networkId}`,{name: values.name, description: values.description})
+            const responsedata=await createregion.json()
+            if(createregion.status == 200){
+            dispatch(createRegion({networkid:params.networkid!,regionid:responsedata.region_id,regionname:values.name}))
+            navigate(`/regions/${responsedata.region_id}`)
+            }
+          } catch (error) {
+            
+          }
+          // request('regionCreate', {
+          //   params: {network_id : networkId!},
+          //   data: {name: values.name, description: values.description},
+          // });
         }}
         validationSchema={regionSchema}>
         <Form className="flex h-full flex-col justify-between">

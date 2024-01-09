@@ -5,11 +5,14 @@ import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useNavigate} from 'react-router-dom';
-
+import {createnetwork} from './../../store/slices/networktreeslice'
+import { useDispatch } from 'react-redux';
+import { $Post } from '~/util/requestapi';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
 const NetworkCreatePage = () => {
+  const dispatch=useDispatch()
   const navigate = useNavigate();
   const {state, request} = useHttpRequest({
     selector: state => state.http.networkCreate,
@@ -29,8 +32,19 @@ const NetworkCreatePage = () => {
       <Formik
         validationSchema={networkSchema}
         initialValues={{name: '', description: ''}}
-        onSubmit={values => {
-          request('networkCreate', {data: values});
+        onSubmit={async(values) => {
+          try {
+            const response=await $Post(`otdr/network`,values)
+            const responsedata=await response.json()
+            if(response.status == 200){
+              dispatch(createnetwork({id:responsedata.network_id,name:values.name}))
+              navigate(`/networks/${responsedata.network_id}`)
+            }
+          } catch (error) {
+            
+          }
+          
+          // request('networkCreate', {data: values});
         }}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col gap-y-4">
