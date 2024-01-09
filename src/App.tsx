@@ -9,7 +9,7 @@ import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
 import ErrorPage403 from './pages/errors/403';
 import {UserRole} from './constant/users';
-import NetworkLayout from './pages/network/NetworkLayout'
+import NetworktreeLayout from './layout/networktreeLayout'
 function App() {
   const auth = useAppSelector(
     state =>
@@ -62,7 +62,7 @@ function App() {
           <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
-            <Route path="create" Component={pages.RegionCreatePage} />
+            <Route path="create/:networkid" Component={pages.RegionCreatePage} />
             <Route path=":regionId" Component={pages.RegionEmptyPage}>
               <Route path="" Component={pages.RegionDetailPage} />
               <Route path="access" Component={pages.RegionAccessPage} />
@@ -103,6 +103,7 @@ function App() {
               <Route path="points" Component={pages.LinkPointsPage} />
             </Route>
           </Route>
+
 
           <Route path="/monitoring">
             <Route path="status" Component={pages.status} />

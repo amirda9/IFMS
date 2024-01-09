@@ -6,6 +6,7 @@ import {networkExplored} from '~/constant';
 import { useHttpRequest } from '~/hooks';
 import {BASE_URL} from './../../constant'
 import { useSelector } from 'react-redux';
+import NetworktreeLayout from '~/layout/networktreeLayout';
 const LinksPage = () => {
   const {stationDetail,networkDetail} = useSelector((state: any) => state.http);
   const [linkID, setLinkId] = useState<string | null>(null);
@@ -52,8 +53,12 @@ useEffect(()=>{
   console.log(links,'linkslinks');
   
   return (
-    <SidebarLayout searchOnChange={() => {}} createTitle="Links" canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access =="ADMIN"?true:false}>
-      {links?.data?.map((value, index) => (
+    <NetworktreeLayout 
+    
+    // searchOnChange={() => {}} createTitle="Links" canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access =="ADMIN"?true:false}
+    
+    >
+      {/* {links?.data?.map((value, index) => (
         <SidebarItem
           name={`${value.name}`}
           to={value.id.toString()}
@@ -62,8 +67,8 @@ useEffect(()=>{
  
           }}
         />
-      ))}
-    </SidebarLayout>
+      ))} */}
+    </NetworktreeLayout>
   );
 };
 

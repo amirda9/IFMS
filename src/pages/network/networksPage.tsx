@@ -4,7 +4,8 @@ import {SidebarItem} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 import {BASE_URL} from './../../constant';
-import NetworkLayout from './NetworkLayout';
+import NetworktreeLayout from '~/layout/networktreeLayout';
+
 const NetworksPage: FC = () => {
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
@@ -48,7 +49,7 @@ const NetworksPage: FC = () => {
   });
 
   return (
-    <SidebarLayout
+    <NetworktreeLayout
       // searchOnChange={() => {}}
       // createTitle="Networks"
       // canAdd={userrole == 'superuser' ? true : false}
@@ -78,7 +79,7 @@ const NetworksPage: FC = () => {
       ))} */}
         </div>
 
-    </SidebarLayout>
+    </NetworktreeLayout>
   );
 };
 

@@ -1,9 +1,10 @@
 import React, {FC, useState} from 'react';
-import {NavLink, useLocation} from 'react-router-dom';
+import {NavLink, useLocation, useNavigate} from 'react-router-dom';
 import {matchPath} from 'react-router';
 import {IoTrashOutline} from 'react-icons/io5';
 import classNames from '~/util/classNames';
 import Checkbox from '../checkbox/checkbox';
+import {BsPlusLg} from 'react-icons/bs';
 
 type PropsType = {
   name: string;
@@ -15,7 +16,9 @@ type PropsType = {
   checkstatus?: boolean;
   onclickcheckbox?: (e: boolean) => void;
   onclick?: () => void;
-  selected?:boolean,
+  selected?: boolean;
+  canAdd?: boolean;
+  createurl?:string
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -27,24 +30,28 @@ const SidebarItem: FC<PropsType> = ({
   enabelcheck = false,
   checkstatus = false,
   onclickcheckbox = () => {},
-  onclick=()=>{},
-  selected=false,
+  onclick = () => {},
+  selected = false,
+  canAdd = false,
+  createurl=""
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
   const match = matchPath(to, location.pathname);
 
   var result = location.pathname.search(to);
-
+ const navigate=useNavigate()
   return (
     <div className={'relative my-1 flex flex-row ' + className}>
       <NavLink
-        onClick={() => {onclick()}}
+        onClick={() => {
+          onclick();
+        }}
         to={to}
         className={({isActive}) =>
-          ` flex h-10 flex-grow items-center rounded-lg ${enabelcheck?"pl-[30px]":"pl-[5px]"} ${
-            isActive ? 'bg-cyan-200' : ''
-          }`
+          ` flex h-10 flex-grow items-center rounded-lg ${
+            enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
+          } ${isActive ? 'bg-cyan-200' : ''}`
         }>
         {name}
       </NavLink>
@@ -58,7 +65,20 @@ const SidebarItem: FC<PropsType> = ({
           }
         />
       ) : null}
-      {(onDelete && result > -1) && selected  ? (
+
+      {canAdd && result > -1 && selected ? (
+        <BsPlusLg
+          onClick={
+            
+             ()=>navigate(createurl)
+          }
+          color="#18C047"
+          size={25}
+          className="absolute right-[27px] top-[15px] mt-[-6px] cursor-pointer"
+        />
+      ) : null}
+
+      {onDelete && result > -1 && selected ? (
         <button
           className={`ml-[-4px] rounded-r-lg px-[4px] ${
             result > -1 ? 'bg-cyan-200' : 'white'

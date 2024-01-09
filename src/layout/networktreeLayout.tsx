@@ -9,7 +9,14 @@ import {
   setNetworkregions,
   setRegionstations,
   setStationsrtu,
-} from './../../store/slices/networktreeslice';
+  setShowallnetworks,
+  setAllselectedId,
+  setRegionLinks,
+  onclickstationcheckbox,
+  onclicklinkcheckbox
+} from './../store/slices/networktreeslice';
+import { $Get } from '~/util/requestapi';
+import { BsPlusLg } from 'react-icons/bs';
 
 const allregions = ['13', '14', '15', '16'];
 const allstation = ['17', '18', '19', '20'];
@@ -23,19 +30,22 @@ type ItemspROPS = {
   name: string;
   enabelcheck?:boolean,
   checkstatus?:boolean,
-  pluse?:boolean
+  pluse?:boolean,
+  onclickcheckbox?:()=>void,
+  canAdd?:boolean,
+  createurl?:string
 };
 type Iprops={
   children:React.ReactNode
 }
 
-function NetworkLayout() {
+function NetworktreeLayout({children}:Iprops) {
   const dispatch = useDispatch();
-  const [showAllnetworks, setShowallnetworks] = useState(false);
-  const [allselectedId, setAllselectedId] = useState<string[]>([]);
+  // const [showAllnetworks, setShowallnetworks] = useState(false);
+  // const [allselectedId, setAllselectedId] = useState<string[]>([]);
   const [networkId, setNetworkId] = useState('');
   const [mount, setMount] = useState(false);
-  const {stationsrtu, regionstations, networkregions} = useSelector(
+  const {stationsrtu, regionstations, networkregions,showAllnetworks,allselectedId,regionLinks,selectedstations,selectedlinks} = useSelector(
     (state: RootState) => state.networktree,
   );
   const {
@@ -56,6 +66,13 @@ function NetworkLayout() {
     request('regionList', {params: {network_id: id}});
   };
   
+  // useEffect(()=>{
+  //  const element = document.getElementById('9a57882c-759a-4ef7-98d3-321dcc7cf9e3');
+  //  if (element) {
+  //    // 👇 Will scroll smoothly to the top of the next section
+  //    element.scrollIntoView({ behavior: 'smooth' });
+  //  }
+  // },[])
   useEffect(() => {
 
     if (mount) {
@@ -89,20 +106,23 @@ function NetworkLayout() {
     onDelete,
     onclick,
     id,
+    canAdd=true,
     name,
     enabelcheck=false,
     checkstatus=false,
-    pluse=true
+    pluse=true,
+    createurl="",
+    onclickcheckbox=()=>{}
   }: ItemspROPS) => {
     return (
-      <div className="mb-[15px] flex h-[40px] flex-row items-center">
+      <div className="mb-[15px] relative flex h-[40px] flex-row items-center">
         <span className="mr-[4px] text-[20px]">....</span>
         {pluse?
         <>
          {allselectedId.indexOf(id) > -1 ? (
           <span
             // onClick={() => onclikitems(id)}
-            className="mt-[-4px] cursor-pointer text-[20px]">
+            className="mt-[-4px] z-50 cursor-pointer text-[20px]">
             _
           </span>
         ) : (
@@ -119,49 +139,103 @@ function NetworkLayout() {
         <SidebarItem
           onclick={() => onclick()}
           selected={true}
-    
+          onclickcheckbox={onclickcheckbox}
           className="flex-start mb-[-5px] ml-[5px] w-full pl-[2px]"
           name={name}
           to={to}
+          canAdd={canAdd}
+          createurl={createurl}
           key={key}
           enabelcheck={enabelcheck}
           checkstatus={checkstatus}
           onDelete={() => onDelete()}
         />
+         {/* { canAdd && allselectedId.indexOf(id) > -1 ?
+              <BsPlusLg
+                onClick={() =>{}
+                  // navigate(`create/${id}_${regionid}_${networkid}`)
+                }
+                color="#18C047"
+                size={25}
+                className="absolute right-[25px] top-[15px] cursor-pointer"
+              />:null} */}
+           
       </div>
     );
   };
 
-  const onclikitems = (id: string) => {
-    const findId = allselectedId.findIndex(data => data == id);
-    if (findId > -1) {
-      let allselectedIdCopy: string[] = deepcopy(allselectedId);
-      const newlist = allselectedIdCopy.filter(data => data != id);
-      setAllselectedId(newlist);
-    } else {
-      setAllselectedId(prev => [...prev, id]);
+  const onclickstations = async (id: string) => {
+    let old = deepcopy(regionstations);
+    const allstation = await $Get(`otdr/region/${id}/stations`);
+    if (allstation.status === 200) {
+      let allstationdata = await allstation.json();
+      const finddata = regionstations.findIndex(data => data.regionid == id);
+      let allregionsid: any = [];
+      if (allstationdata.length > 0 && finddata < 0) {
+        for (let i = 0; i < allstationdata?.length; i++) {
+          allregionsid.push({
+            id: allstationdata[i].id,
+            name: allstationdata[i].name,
+          });
+        }
+        old.push({regionid: id, stations: allregionsid});
+      }
+      dispatch(setRegionstations(old));
     }
+  };
+
+  const onclicklinks = async (id: string) => {
+    let old = deepcopy(regionLinks);
+    const alllinks = await $Get(`otdr/region/${id}/links`);
+    if (alllinks.status === 200) {
+      let alllinksdata = await alllinks.json();
+      const finddata = regionLinks.findIndex(data => data.regionid == id);
+      let allregionsid: any = [];
+      if (alllinksdata.length > 0 && finddata < 0) {
+        for (let i = 0; i < alllinksdata?.length; i++) {
+          allregionsid.push({
+            id: alllinksdata[i].id,
+            name: alllinksdata[i].name,
+          });
+        }
+        old.push({regionid: id, links: allregionsid});
+      }
+      dispatch(setRegionLinks(old));
+    }
+  };
+
+
+  const onclikitems = (id: string) => {
+    dispatch(setAllselectedId(id))
+    // const findId = allselectedId.findIndex(data => data == id);
+    // if (findId > -1) {
+    //   let allselectedIdCopy: string[] = deepcopy(allselectedId);
+    //   const newlist = allselectedIdCopy.filter(data => data != id);
+    //   setAllselectedId(newlist);
+    // } else {
+    //   setAllselectedId(prev => [...prev, id]);
+    // }
   };
   return (
     <>
-    <div className="flex h-[calc(100vh-120px)] w-1/4 flex-col overflow-y-auto border-r-2  border-g p-4">
+    <div className="flex h-[calc(100vh-120px)] w-[30%] flex-col overflow-y-auto border-r-2  border-g p-4">
       <div className="flex flex-row">
         {showAllnetworks ? (
           <span
-            onClick={() => setShowallnetworks(!showAllnetworks)}
+            onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
             className="mt-[-7px] cursor-pointer text-[20px]">
             _
           </span>
         ) : (
           <span
-            onClick={() => setShowallnetworks(!showAllnetworks)}
+            onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
             className="cursor-pointer text-[20px]">
             +
           </span>
         )}
 
         <span
-          onClick={() => setShowallnetworks(!showAllnetworks)}
+          onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
           className="ml-[5px] cursor-pointer text-[20px] font-bold">
           Networks
         </span>
@@ -174,7 +248,8 @@ function NetworkLayout() {
             <>
               <Items
                 key={Number(networkdata.id)}
-                to={networkdata.id}
+                to={`/networks/${networkdata.id}`}
+                createurl={`/regions/create/${networkdata.id}`}
                 selected={false}
                 onDelete={() => {}}
                 onclick={() => {
@@ -200,71 +275,87 @@ function NetworkLayout() {
                       <>
                         <Items
                           key={Number(regionsdata.id)}
-                          to={`../regions/${regionsdata.id}`}
+                          to={`/regions/${regionsdata.id}`}
                           selected={false}
                           onDelete={() => {}}
-                          onclick={() => onclikitems(regionsdata.id)}
+                          onclick={() => {onclikitems(regionsdata.id)}}
                           id={regionsdata.id}
                           name={regionsdata.name}
                         />
                         {allselectedId.indexOf(regionsdata.id) > -1 ? (
                           <div className="relative ml-[32px]  mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
-                              <div className="absolute bottom-[-3px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
+                       
+                              <div className={`absolute ${allselectedId.indexOf(`${regionsdata.id}&${regionsdata.id}`) > -1?"bottom-[-7px]":"bottom-[-3px]"} left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]`}></div>
                             <Items
                               key={Number(regionsdata.id)}
-                              to={'dede'}
+                              to={`/regions/${regionsdata.id}`}
+                              createurl={`/regions/create`}
+                              canAdd={false}
                               selected={false}
                               onDelete={() => {}}
-                              onclick={() => onclikitems('888888')}
-                              id={'888888'}
+                              onclick={() => {onclikitems(`${regionsdata.id}${regionsdata.id}`),onclickstations(regionsdata.id)}}
+                              id={`${regionsdata.id}${regionsdata.id}`} 
                               name="Stations"
                             />
 
-                            {allselectedId.indexOf('888888') > -1 ? (
+                            {allselectedId.indexOf(`${regionsdata.id}${regionsdata.id}`) > -1 ? (
                               <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
-                                <div className="absolute bottom-[-3px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
+                                <div className="absolute bottom-[-4px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
 
-                                {allstation.map(data => (
+                                {regionstations
+                                    .find(
+                                      dataa => dataa.regionid == regionsdata.id,
+                                    )
+                                    ?.stations.map(stationsdata => (
                                   <Items
-                                    key={Number(data)}
-                                    to={'dede'}
+                                    key={Number(stationsdata)}
+                                    to={`/stations/${stationsdata.id}`}
                                     selected={false}
                                     onDelete={() => {}}
                                     enabelcheck={true}
-                                    checkstatus={true}
+                                    onclickcheckbox={()=> dispatch(onclickstationcheckbox({networkid:networkdata.id,regionid:regionsdata.id,stationid:stationsdata.id}))}
+                                    checkstatus={selectedstations.find(data =>data.regionid == regionsdata.id)?.stationsID.includes(stationsdata.id)}
                                     pluse={false}
-                                    onclick={() => onclikitems(data)}
-                                    id={data}
-                                    name="station1"
+                                    createurl={`/stations/create`}
+                                    onclick={() => onclikitems(stationsdata.id)}
+                                    id={stationsdata.id}
+                                    name={stationsdata.name}
                                   />
                                 ))}
                               </div>
                             ) : null}
                             <Items
                               key={Number(regionsdata.id)}
-                              to={'dede'}
+                              to={`/regions/${regionsdata.id}`}
                               selected={false}
                               onDelete={() => {}}
-                              onclick={() => onclikitems('99999')}
-                              id={'99999'}
+                              onclick={() => {onclikitems(`${regionsdata.id}&${regionsdata.id}`),onclicklinks(regionsdata.id)}}
+                              canAdd={false}
+                              id={`${regionsdata.id}&${regionsdata.id}`}
                               name="Links"
                             />
-                               {allselectedId.indexOf('99999') > -1 ? (
+                               {allselectedId.indexOf(`${regionsdata.id}&${regionsdata.id}`) > -1 ? (
                               <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
-                                <div className="absolute bottom-[-3px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
+                                <div className={`absolute ${allselectedId.indexOf(`${regionsdata.id}&${regionsdata.id}`)>-1?"bottom-[-4px]":"bottom-[-8px]"} left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]`}></div>
                                 <div className="absolute bottom-[3px] left-[-40px] z-10 h-full w-[20px] bg-[#E7EFF7]"></div>
-                                {allstation.map(data => (
+                                {regionLinks
+                                    .find(
+                                      dataa => dataa.regionid == regionsdata.id,
+                                    )
+                                    ?.links.map(linksdata => (
                                   <Items
-                                    key={Number(data)}
-                                    to={'dede'}
+                                    key={Number(linksdata.id)}
+                                    to={`/links/${linksdata.id}`}
+                                    createurl={`/links/create`}
                                     selected={false}
                                     onDelete={() => {}}
                                     enabelcheck={true}
-                                    checkstatus={true}
-                                    onclick={() => onclikitems(data)}
-                                    id={data}
+                                    onclickcheckbox={()=> dispatch(onclicklinkcheckbox({networkid:networkdata.id,regionid:regionsdata.id,linkid:linksdata.id}))}
+                                    checkstatus={selectedlinks.find(data =>data.regionid == regionsdata.id)?.linkID.includes(linksdata.id)}
+                                    onclick={() => onclikitems(linksdata.id)}
+                                    id={linksdata.id}
                                     pluse={false}
-                                    name="link1"
+                                    name={linksdata.name}
                                 
                                   />
                                 ))}
@@ -290,6 +381,7 @@ function NetworkLayout() {
           ))}
         </div>
       ) : null}
+
       
             {/* <div className="ml-[5px] mt-[-6px] border-l-[1px]  border-dashed border-black  pt-[20px]">
                {children}
@@ -303,92 +395,4 @@ function NetworkLayout() {
   );
 }
 
-export default NetworkLayout;
-
-// import {FC, ReactNode, useState} from 'react';
-// import {TextInput} from '~/components';
-// import {Link, Outlet} from 'react-router-dom';
-// import {IoAddOutline} from 'react-icons/io5';
-
-// type PropsType = {
-//   children: ReactNode;
-//   createTitle?: string;
-//   searchOnChange?: (text: string) => void;
-//   canAdd?: boolean;
-//   addButtonLink?: string;
-//   hideSidebar?: boolean;
-// };
-// const NetworkLayout: FC<PropsType> = ({
-//   children,
-//   createTitle,
-//   searchOnChange,
-//   canAdd,
-//   addButtonLink,
-//   hideSidebar = false,
-// }) => {
-//   const [show, setShow] = useState(false);
-//   return (
-//     <>
-//       {!hideSidebar && (
-//         <div className="flex min-h-[calc(100vh-120px)] w-1/4 flex-col overflow-y-auto border-r-2  border-g p-4">
-//           {searchOnChange ? (
-//             <div className="flex flex-row items-center">
-//               <label htmlFor="search" className="mr-2">
-//                 Search
-//               </label>
-
-//               <TextInput
-//                 id="search"
-//                 className="mr-10 w-full"
-//                 onChange={event => {
-//                   searchOnChange(event.target.value);
-//                 }}
-//               />
-//             </div>
-//           ) : null}
-
-//           {createTitle ? (
-//             <div className="ml-[-10px]  mt-14 flex w-fit flex-row items-center rounded-md px-3 py-2 pb-[0px]">
-//               {show ? (
-//                 <span
-//                   onClick={() => setShow(!show)}
-//                   className="mr-[5px] mt-[-10px] cursor-pointer">
-//                   _
-//                 </span>
-//               ) : (
-//                 <span
-//                   onClick={() => setShow(!show)}
-//                   className="mr-[5px] cursor-pointer text-[20px]">
-//                   +
-//                 </span>
-//               )}
-
-//               <button
-//                 onClick={() => setShow(!show)}
-//                 className="text-md font-semibold">
-//                 {createTitle}
-//               </button>
-//               {canAdd ? (
-//                 <Link
-//                   to={addButtonLink || 'create'}
-//                   className="ml-3 rounded-md">
-//                   <IoAddOutline className="text-2xl text-green-500 active:text-green-300" />
-//                 </Link>
-//               ) : null}
-//             </div>
-//           ) : null}
-//           {show ? (
-//             <div className="ml-[5px] mt-[-6px] border-l-[1px]  border-dashed border-black  pt-[20px]">
-//               {children}
-//             </div>
-//           ) : null}
-//         </div>
-//       )}
-//       <div className="flex w-full px-8 py-6">
-//         <Outlet />
-//       </div>
-//     </>
-//   );
-// };
-
-// export default NetworkLayout;
+export default NetworktreeLayout;

@@ -7,6 +7,7 @@ import {networkExplored} from '~/constant';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
 import { useSelector } from 'react-redux';
 import {BASE_URL} from './../../constant'
+import NetworktreeLayout from '~/layout/networktreeLayout';
 const RegionsPage = () => {
   const networkId = Cookies.get(networkExplored);
   const {networkDetail} = useSelector((state: any) => state.http);
@@ -66,12 +67,13 @@ useEffect(()=>{
         type="danger"
         primaryButtonText="Delete"
       />
-      <SidebarLayout
-        searchOnChange={() => {}}
-        createTitle="Regions"
-        // regionDetail?.data?.access.access == 'ADMIN' ?!!networkId:false
-        canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access == "ADMIN"?true:false}>
-        {regions?.data?.map(region => (
+      <NetworktreeLayout
+        // searchOnChange={() => {}}
+        // createTitle="Regions"
+        // canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access == "ADMIN"?true:false}
+        
+        >
+        {/* {regions?.data?.map(region => (
           <SidebarItem
             name={region.name}
             to={region.id}
@@ -80,8 +82,8 @@ useEffect(()=>{
               setRegionId(region.id);
             }:()=>{}}
           />
-        ))}
-      </SidebarLayout>
+        ))} */}
+      </NetworktreeLayout>
     </>
   );
 };

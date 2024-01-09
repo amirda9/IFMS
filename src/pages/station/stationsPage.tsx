@@ -6,6 +6,7 @@ import {networkExplored} from '~/constant';
 import {useHttpRequest} from '~/hooks';
 import {useSelector} from 'react-redux';
 import {BASE_URL} from './../../constant';
+import NetworktreeLayout from '~/layout/networktreeLayout';
 const StationsPage = () => {
   const {stationDetail, networkDetail} = useSelector(
     (state: any) => state.http,
@@ -56,16 +57,17 @@ const StationsPage = () => {
   // console.log(networkstations,'networkstations');
 
   return (
-    <SidebarLayout
-      searchOnChange={() => {}}
-      createTitle="Stations"
-      canAdd={
-        userrole == 'superuser' ||
-        networkDetail?.data?.access?.access == 'ADMIN'
-          ? true
-          : false
-      }>
-      {stations?.data?.map(value => (
+    <NetworktreeLayout
+      // searchOnChange={() => {}}
+      // createTitle="Stations"
+      // canAdd={
+      //   userrole == 'superuser' ||
+      //   networkDetail?.data?.access?.access == 'ADMIN'
+      //     ? true
+      //     : false
+      // }
+      >
+      {/* {stations?.data?.map(value => (
         <SidebarItem
           onDelete={
             userrole == 'superuser' ||
@@ -77,8 +79,8 @@ const StationsPage = () => {
           to={value.id}
           key={value.id}
         />
-      ))}
-    </SidebarLayout>
+      ))} */}
+    </NetworktreeLayout>
   );
 };
 
