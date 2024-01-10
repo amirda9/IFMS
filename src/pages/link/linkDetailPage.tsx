@@ -9,6 +9,9 @@ import {useEffect, useState} from 'react';
 import {settypestate} from './../../store/slices/networkslice';
 import {BASE_URL} from './../../constant';
 import {useDispatch, useSelector} from 'react-redux';
+import {updatelinkname} from './../../store/slices/networktreeslice'
+import { $Post, $Put } from '~/util/requestapi';
+import { deepcopy } from '~/util';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
@@ -16,7 +19,8 @@ const typeoptions = [
 
 // *********************************************************************
 const LinkDetailPage = () => {
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+
+  const {networkDetail} = useSelector((state: any) => state.http);
 
   const {type} = useSelector((state: any) => state.network);
 
@@ -45,20 +49,11 @@ const LinkDetailPage = () => {
     selector: state => ({
       detail: state.http.linkDetail,
       stations: state.http.allStations,
-      update: state.http.linkUpdate,
     }),
     initialRequests: request => {
       request('linkDetail', {params: {link_id: params.linkId!}});
       if (networkId) {
         request('allStations', undefined);
-      }
-    },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.update?.httpRequestStatus === 'loading' &&
-        state.update!.httpRequestStatus === 'success'
-      ) {
-        request('allLinks', undefined);
       }
     },
   });
@@ -148,20 +143,20 @@ const LinkDetailPage = () => {
   const changesource = (id: string) => {
     setSourcerror('');
     setSource(id);
-    const data = JSON.parse(JSON.stringify(selectedstations));
+    const data = deepcopy(selectedstations);
     const destinationedata = data?.filter((data: any) => data.value != id);
     setAlldestination(destinationedata);
   };
 
   const changedestination = (id: string) => {
     setDestinationid(id);
-    const data = JSON.parse(JSON.stringify(selectedstations));
+    const data = deepcopy(selectedstations);
     const destinationedata = data?.filter((data: any) => data.value != id);
     setAllsource(destinationedata);
     setDestinationerror('');
   };
 
-  const updatelink = () => {
+  const updatelink = async() => {
     if (name.length < 1) {
       setNameerror('Please enter link name');
     } else if (source.length == 0) {
@@ -181,17 +176,21 @@ const LinkDetailPage = () => {
       setTypeerror('');
       setSourcerror('');
       setDestinationerror('');
-      request('linkUpdate', {
-        params: {link_id: params.linkId || ''},
-        data: {
-          description: comment,
-          name: name,
-          link_points: [],
-          source_id: source,
-          destination_id: destinationid,
-          type: types,
-        },
-      });
+try {
+  const response=await $Put(`otdr/link/${params.linkId}`,{
+    description: comment,
+    name: name,
+    link_points: [],
+    source_id: source,
+    destination_id: destinationid,
+    type: types,
+  })
+  if(response.status == 200){
+    dispatch(updatelinkname({regionid:state!.detail!.data!.region_id!,linkid:params.linkId!,linkname:name}))
+  }
+} catch (error) {
+  
+}
     }
   };
 

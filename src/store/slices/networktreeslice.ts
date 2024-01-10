@@ -325,6 +325,14 @@ const networktreeslice = createSlice({
         networklistCopy.push(action.payload)
          state.networkslist = networklistCopy;
       },
+          //  -----------------------------
+          updatelinkname: (state, action:createLinktype) => {
+            let regionLinksCopy=deepcopy(state.regionLinks)
+            const findwithregionindex=state.regionLinks.findIndex(data => data.regionid == action.payload.regionid)
+            const findlinkid=regionLinksCopy[findwithregionindex].links.findIndex((data:{id:string,name:string})=> data.id == action.payload.linkid)
+            regionLinksCopy[findwithregionindex].links[findlinkid].name=action.payload.linkname
+            state.regionLinks = regionLinksCopy;
+          },
   },
 });
 
@@ -343,7 +351,8 @@ export const {
   createStation,
   setNetworklist,
   createnetwork,
-  createLinks
+  createLinks,
+  updatelinkname
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;
