@@ -7,14 +7,17 @@ import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {Request} from '~/hooks/useHttpRequest';
 import {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
+import {updateStationName} from './../../store/slices/networktreeslice'
+import {useDispatch, useSelector} from 'react-redux';
 import {BASE_URL} from './../../constant';
+import { $Put } from '~/util/requestapi';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
   latitude: Yup.string().required('Please enter latitude'),
   longitude: Yup.string().required('Please enter longitude'),
 });
 const StationDetailPage = () => {
+  const dispatch=useDispatch()
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
@@ -43,18 +46,8 @@ const StationDetailPage = () => {
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.stationDetail,
-      update: state.http.stationUpdate,
     }),
     initialRequests,
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.update?.httpRequestStatus === 'loading' &&
-        state.update!.httpRequestStatus === 'success'
-      ) {
-        initialRequests(request);
-        request('allStations', undefined);
-      }
-    },
   });
 
   return (
@@ -81,17 +74,21 @@ const StationDetailPage = () => {
             version => version.id === state?.detail?.data?.current_version?.id,
           )?.time_created || '',
       }}
-      onSubmit={values => {
-        request('stationUpdate', {
-          data: {
+      onSubmit={async(values) => {
+        try {
+          const response=await $Put(`otdr/station/${params.stationId!}`,{
             name: values.name,
             longitude: Number(values.longitude),
             latitude: Number(values.latitude),
             description: values.description,
             model: 'cables',
-          },
-          params: {station_id: params.stationId!},
-        });
+          })
+          if(response.status == 200){
+            dispatch(updateStationName({regionid:state!.detail!.data!.region_id,stationid:params.stationId!,stationname:values.name}))
+          }
+        } catch (error) {
+          
+        }
       }}
       validationSchema={stationSchema}>
       <Form >
