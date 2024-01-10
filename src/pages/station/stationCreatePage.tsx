@@ -1,14 +1,15 @@
-import React, { useRef } from 'react';
+
 import {useNavigate, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
-import {FormLayout} from '~/layout';
 import {Form, Formik} from 'formik';
-import {InputFormik, SelectFormik, TextareaFormik} from '~/container';
+import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
+import {createStation} from './../../store/slices/networktreeslice';
 import {networkExplored} from '~/constant';
-import { useSelector } from 'react-redux';
+import {useDispatch} from 'react-redux';
+import {$Post} from '~/util/requestapi';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -18,83 +19,57 @@ const stationSchema = Yup.object().shape({
   // region: Yup.string().required('Please select region'),
 });
 const StationDetailPage = () => {
-  const {stationDetail} = useSelector((state: any) => state.http);
-console.log(stationDetail,'stationDetail');
+  const dispatch = useDispatch();
+  const params = useParams();
+  console.log(params.regionid, 'params');
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const {state, request} = useHttpRequest({
     selector: state => ({
-      create: state.http.stationCreate,
       regions: state.http.regionList,
     }),
-    onUpdate: lastState => {
-      if (
-        lastState.create?.httpRequestStatus === 'loading' &&
-        state.create?.httpRequestStatus === 'success'
-      ) {
-        request('allStations', undefined);
-        navigate('../' + state.create?.data?.station_id);
-      }
-    },
     initialRequests: () => {
       request('regionList', {params: {network_id: networkId!}});
     },
   });
-  console.log(state.create,'create');
-  
-  // const buttons = (
-  //   <>
-  //     <SimpleBtn
-  //       onClick={() => {
-  //         reff.current.click();
-  //       }}
-  //       disabled={state.create?.httpRequestStatus === 'loading'}>
-  //       Save
-  //     </SimpleBtn>
-  //     <SimpleBtn link to="../">
-  //       Cancel
-  //     </SimpleBtn>
-  //   </>
-  // );
-  const buttons = (
-    <>
-      <SimpleBtn
-        type="submit"
-        disabled={state?.create?.httpRequestStatus === 'loading'}>
-        Save
-      </SimpleBtn>
-      <SimpleBtn link to="../">
-        Cancel
-      </SimpleBtn>
-    </>
-  );
+
   return (
-
-      <Formik
-        initialValues={{
-          name: '',
-          description: '',
-          latitude: 0,
-          longitude: 0,
-          region: '',
-        }}
-        onSubmit={values => {
-
-          request('stationCreate', {
-            data: {
-              name: values.name,
-              description: values.description,
-              longitude: values.longitude,
-              latitude: values.latitude,
-             region_id:null,
-              model: 'cables',
-              network_id: networkId!,
-            },
+    <Formik
+      initialValues={{
+        name: '',
+        description: '',
+        latitude: 0,
+        longitude: 0,
+        region: '',
+      }}
+      onSubmit={async values => {
+        try {
+          const response = await $Post(`otdr/station`, {
+            name: values.name,
+            description: values.description,
+            longitude: values.longitude,
+            latitude: values.latitude,
+            region_id: params.regionid,
+            model: 'cables',
+            network_id: networkId!,
           });
-        }}
-        validationSchema={stationSchema}>
-        <Form className="w-full">
-          <div className='flex flex-grow relative min-h-[calc(100vh-160px)] flex-col justify-between '>
+          const responsedata = await response.json();
+          if (response.status == 200) {
+            // we should update the network tree
+            dispatch(
+              createStation({
+                regionid: params.regionid!,
+                stationid: responsedata.station_id,
+                stationname: values.name,
+              }),
+            );
+            navigate(`/stations/${responsedata.station_id}`);
+          }
+        } catch (error) {}
+      }}
+      validationSchema={stationSchema}>
+      <Form className="w-full">
+        <div className="relative flex min-h-[calc(100vh-160px)] flex-grow flex-col justify-between ">
           <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" className="w-2/3 disabled:bg-white" />
@@ -119,27 +94,8 @@ console.log(stationDetail,'stationDetail');
                 className="w-1/4 disabled:bg-white"
               />
             </Description>
-
-            {/* <Description label="Region" items="start" className="mb-4">
-              <SelectFormik
-                placeholder="select region"
-                name="region"
-                className="w-1/4 disabled:bg-white">
-                <option value="select region" label="" className="hidden" />
-                <option
-                  value={undefined}
-                  label="select region"
-                  className="hidden"
-                />
-                {state.regions?.data?.map(region => (
-                  <option key={region.id} label={region.name} value={region.id}>
-                    {region.name}
-                  </option>
-                ))}
-              </SelectFormik>
-            </Description> */}
           </div>
-          <div className="flex flex-row  gap-x-4 self-end absolute bottom-[0px] right-0">
+          <div className="absolute bottom-[0px]  right-0 flex flex-row gap-x-4 self-end">
             {/* <SimpleBtn
               onClick={() => {}}>
               Explore
@@ -148,7 +104,6 @@ console.log(stationDetail,'stationDetail');
             {/* {stationDetail?.data?.access == 'ADMIN' ? */}
             <SimpleBtn
               type="submit"
-              disabled={state?.create?.httpRequestStatus === 'loading'}
               >
               Save
             </SimpleBtn>
@@ -157,11 +112,9 @@ console.log(stationDetail,'stationDetail');
               Cancel
             </SimpleBtn>
           </div>
-          </div>
-          {/* <button ref={reff} type="submit" id="formSubmit" hidden /> */}
-        </Form>
-      </Formik>
-
+        </div>
+      </Form>
+    </Formik>
   );
 };
 

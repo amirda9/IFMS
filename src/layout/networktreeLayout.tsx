@@ -330,7 +330,7 @@ function NetworktreeLayout({children}: Iprops) {
                                 <Items
                                   key={Number(regionsdata.id)}
                                   to={`/regions/${regionsdata.id}`}
-                                  createurl={`/stations/create`}
+                                  createurl={`/stations/create/${regionsdata.id}`}
                               
                                   selected={false}
                                   onDelete={() => {}}
@@ -357,7 +357,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       )
                                       ?.stations.map(stationsdata => (
                                         <Items
-                                          key={Number(stationsdata)}
+                                          key={Number(stationsdata.id)}
                                           to={`/stations/${stationsdata.id}`}
                                           selected={false}
                                           onDelete={() => {}}
@@ -397,11 +397,11 @@ function NetworktreeLayout({children}: Iprops) {
                                   onDelete={() => {}}
                                   onclick={() => {
                                     onclikitems(
-                                      `${regionsdata.id}&${regionsdata.id}`,
+                                      `${regionsdata.id}&${regionsdata.id}`
                                     ),
                                       onclicklinks(regionsdata.id);
                                   }}
-                                  canAdd={false}
+                                  createurl={`/links/create/${regionsdata.id}`}
                                   id={`${regionsdata.id}&${regionsdata.id}`}
                                   name="Links"
                                 />

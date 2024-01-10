@@ -81,7 +81,7 @@ const SidebarItem: FC<PropsType> = ({
       {onDelete && result > -1 && selected ? (
         <button
           className={`ml-[-4px] rounded-r-lg px-[4px] ${
-            result > -1 ? 'bg-cyan-200' : 'white'
+            result > -1 ? 'bg-[#C0E7F2]' : 'white'
           } `}
           onClick={onDelete}>
           <IoTrashOutline
