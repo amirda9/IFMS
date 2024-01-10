@@ -1,70 +1,39 @@
 import {useParams} from 'react-router-dom';
-import {Description, SimpleBtn} from '~/components';
+import {SimpleBtn} from '~/components';
 import {useNavigate} from 'react-router-dom';
 import {networkExplored} from '~/constant';
 import Selectbox from './../../components/selectbox/selectbox';
 import Cookies from 'js-cookie';
-import {FormLayout} from '~/layout';
-import {Form, Formik, useField} from 'formik';
-import {InputFormik, TextareaFormik} from '~/container';
 import {useDispatch, useSelector} from 'react-redux';
-import {settypestate} from './../../store/slices/networkslice';
-import * as Yup from 'yup';
-import SelectFormik from '~/container/formik/SelectFormik';
-import {getPrettyDateTime} from '~/util/time';
+import {createLinks} from './../../store/slices/networktreeslice';
 import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
+import {$Post} from '~/util/requestapi';
 
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
 ];
-const linkSchema = Yup.object().shape({
-  name: Yup.string().required('Please enter link name'),
-  description: Yup.string().required('Please enter link comment'),
-  // source: Yup.string().required('Please select source'),
-  // destination: Yup.string().required('Please select destination'),
-  type: Yup.string().required('Please select type'),
-});
+
 const LinkCreatePage = () => {
+  const params = useParams();
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const {
-    state: {create, stations},
+    state: {stations},
     request,
   } = useHttpRequest({
     selector: state => ({
-      create: state.http.linkCreate,
-      // allLinks: state.http.allLinks,
       stations: state.http.allStations,
     }),
     initialRequests: request => {
       if (networkId) {
         request('allStations', undefined);
       }
-
     },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.create?.httpRequestStatus === 'loading' &&
-        state.create?.httpRequestStatus === 'success'
-      ) {
-        request('allLinks',undefined);
-        navigate('../' + create?.data?.link_id
-        );
-      }
-    },
-    // onUpdate: lastState => {
-    //   if (
-    //     lastState.create?.httpRequestStatus === 'loading' &&
-    //     create?.httpRequestStatus === 'success'
-    //   ) {
-    //     request('allLinks', undefined);
-    //     // navigate('../' + create?.data?.link_id);
-    //   }
-    // },
+ 
   });
-console.log(create,'create');
+
 
   const {allStations} = useSelector((state: any) => state.http);
   const [name, setName] = useState('');
@@ -82,12 +51,8 @@ console.log(create,'create');
   const [alldestinaton, setAlldestination] = useState([]);
   const [source, setSource] = useState<string>('');
   const [destinationid, setDestinationid] = useState<string>('');
-  const {linkDetail} = useSelector((state: any) => state.http);
-
-  const {type} = useSelector((state: any) => state.network);
   const dispatch = useDispatch();
-  const params = useParams<{linkId: string}>();
-console.log(stations,'stations');
+
 
   useEffect(() => {
     let data: any = [];
@@ -118,26 +83,10 @@ console.log(stations,'stations');
     setDestinationerror('');
   };
 
-// console.log(allLinks,'allLinksallLinksallLinks');
 
 
-  const buttons = (
-    <>
-      <SimpleBtn
-        onClick={() => {
-          document.getElementById('formSubmit')?.click();
-        }}
-        disabled={create?.httpRequestStatus === 'loading'}>
-        Save
-      </SimpleBtn>
-      <SimpleBtn link to="../">
-        Cancel
-      </SimpleBtn>
-    </>
-  );
-  console.log(destenationerror, 'ddddddddddddddd');
 
-  const createlink = () => {
+  const createlink = async () => {
     if (name.length < 1) {
       setNameerror('Please enter link name');
     } else if (source.length == 0) {
@@ -158,33 +107,44 @@ console.log(stations,'stations');
       setTypeerror('');
       setSourcerror('');
       setDestinationerror('');
-      request('linkCreate', {
-        data: {
+      try {
+        const response = await $Post(`otdr/link/`, {
           name: name,
           network_id: networkId!,
           source_id: source,
           destination_id: destinationid,
-          link_points: [
-       
-          ],
-          // region_id:"",
+          link_points: [],
+          region_id: params.regionid,
           description: comment,
           type: types,
-        },
-      });
+        });
+        const responsedata = await response.json();
+        //we should update the networktree
+        if (response.status == 200) {
+          dispatch(
+            createLinks({
+              regionid: params.regionid!,
+              linkid: responsedata.link_id,
+              linkname: name,
+            }),
+          );
+        }
+
+        navigate(`/links/${responsedata.link_id}`);
+      } catch (error) {}
 
     }
   };
 
   return (
-    <div className="min-h-[calc(100%-80px)] relative flex w-full flex-col">
+    <div className="relative flex min-h-[calc(100%-80px)] w-full flex-col">
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
           onChange={(e: any) => {
             setName(e.target.value), setNameerror('');
           }}
-          className="px-2 h-[40px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000]"
+          className="h-[40px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2"
         />
         {nameerror.length > 0 ? (
           <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">
@@ -199,7 +159,7 @@ console.log(stations,'stations');
           onChange={(e: any) => {
             setComment(e.target.value), setCommmenerror('');
           }}
-          className="px-2 h-[100px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000]"
+          className="h-[100px] w-[calc(100%-160px)] rounded-[6px] border-[1px] border-[#000000] px-2"
         />
         {commenerror.length > 0 ? (
           <div className="absolute bottom-[-15px] left-[160px] z-[20] text-xs text-red-500">

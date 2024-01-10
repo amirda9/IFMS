@@ -316,7 +316,7 @@ const networktreeslice = createSlice({
        createLinks: (state, action: createLinktype) => {
         const regionLinkcopy=deepcopy(state.regionLinks)
         const findregionlinkddex=state.regionLinks.findIndex(data => data.regionid == action.payload.regionid)
-        regionLinkcopy[findregionlinkddex].stations.push({id:action.payload.linkid,name:action.payload.linkname})
+        regionLinkcopy[findregionlinkddex].links.push({id:action.payload.linkid,name:action.payload.linkname})
         state.regionLinks = regionLinkcopy;
     },
       //  -----------------------------
@@ -342,7 +342,8 @@ export const {
   createRegion,
   createStation,
   setNetworklist,
-  createnetwork
+  createnetwork,
+  createLinks
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

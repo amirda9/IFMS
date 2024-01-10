@@ -88,7 +88,7 @@ function App() {
             Component={pages.LinkEditViewersPage}
           />
           <Route path="/links" Component={pages.LinksPage}>
-            <Route path="create" Component={pages.LinkCreatePage} />
+            <Route path="create/:regionid" Component={pages.LinkCreatePage} />
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
               <Route path="access" Component={pages.LinkAccessPage} />
