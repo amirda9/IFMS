@@ -35,6 +35,7 @@ type ItemspROPS = {
   onclickcheckbox?: () => void;
   canAdd?: boolean;
   createurl?: string;
+  canDelete?: boolean;
 };
 type Iprops = {
   children: React.ReactNode;
@@ -132,6 +133,7 @@ function NetworktreeLayout({children}: Iprops) {
     checkstatus = false,
     pluse = true,
     createurl = '',
+    canDelete = true,
     onclickcheckbox = () => {},
   }: ItemspROPS) => {
     return (
@@ -169,6 +171,7 @@ function NetworktreeLayout({children}: Iprops) {
           key={key}
           enabelcheck={enabelcheck}
           checkstatus={checkstatus}
+          canDelete={canDelete}
           onDelete={() => onDelete()}
         />
         {/* { canAdd && allselectedId.indexOf(id) > -1 ?
@@ -303,7 +306,7 @@ function NetworktreeLayout({children}: Iprops) {
                           networkregionsdata =>
                             networkregionsdata.networkid == networkdata.id,
                         )
-                        ?.regions.map((regionsdata,index) => (
+                        ?.regions.map((regionsdata, index) => (
                           <>
                             <Items
                               key={Number(regionsdata.id)}
@@ -331,7 +334,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   key={Number(`${index}`)}
                                   to={`/regions/${regionsdata.id}`}
                                   createurl={`/stations/create/${regionsdata.id}`}
-                              
+                                  canDelete={false}
                                   selected={false}
                                   onDelete={() => {}}
                                   onclick={() => {
@@ -355,7 +358,7 @@ function NetworktreeLayout({children}: Iprops) {
                                         dataa =>
                                           dataa.regionid == regionsdata.id,
                                       )
-                                      ?.stations.map((stationsdata,index) => (
+                                      ?.stations.map((stationsdata, index) => (
                                         <Items
                                           key={Number(index)}
                                           to={`/stations/${stationsdata.id}`}
@@ -391,13 +394,16 @@ function NetworktreeLayout({children}: Iprops) {
                                   </div>
                                 ) : null}
                                 <Items
-                                  key={Number(`${regionsdata.id}${networkdata.id}`)}
+                                  key={Number(
+                                    `${regionsdata.id}${networkdata.id}`,
+                                  )}
                                   to={`/regions/${regionsdata.id}`}
                                   selected={false}
+                                  canDelete={false}
                                   onDelete={() => {}}
                                   onclick={() => {
                                     onclikitems(
-                                      `${regionsdata.id}&${regionsdata.id}`
+                                      `${regionsdata.id}&${regionsdata.id}`,
                                     ),
                                       onclicklinks(regionsdata.id);
                                   }}
@@ -423,7 +429,7 @@ function NetworktreeLayout({children}: Iprops) {
                                         dataa =>
                                           dataa.regionid == regionsdata.id,
                                       )
-                                      ?.links.map((linksdata,index) => (
+                                      ?.links.map((linksdata, index) => (
                                         <Items
                                           key={Number(index)}
                                           to={`/links/${linksdata.id}`}

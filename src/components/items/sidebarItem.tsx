@@ -18,7 +18,8 @@ type PropsType = {
   onclick?: () => void;
   selected?: boolean;
   canAdd?: boolean;
-  createurl?:string
+  createurl?:string;
+  canDelete?:boolean
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -33,7 +34,8 @@ const SidebarItem: FC<PropsType> = ({
   onclick = () => {},
   selected = false,
   canAdd = false,
-  createurl=""
+  createurl="",
+  canDelete=true,
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -78,7 +80,7 @@ const SidebarItem: FC<PropsType> = ({
         />
       ) : null}
 
-      {onDelete && result > -1 && selected ? (
+      {canDelete && onDelete && result > -1 && selected ? (
         <button
           className={`ml-[-4px] rounded-r-lg px-[4px] ${
             result > -1 ? 'bg-[#C0E7F2]' : 'white'

@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType';
 import {object, string} from 'yup';
 import {deepcopy} from '~/util';
+import networkslice from './networkslice';
 export enum statustype {
   TRUE = 'true',
   FALSE = 'false',
@@ -361,6 +362,21 @@ const networktreeslice = createSlice({
         action.payload.stationname;
       state.regionstations = regionStationsCopy;
     },
+    //---------------------------------
+    updateregionname: (state, action:createregiontype) => {
+      const networkregionsCopy=deepcopy(state.networkregions)
+      const fintbynetworkid=state.networkregions.findIndex(data => data.networkid == action.payload.networkid)
+      const findregionindex=state.networkregions[fintbynetworkid].regions.findIndex(data => data.id == action.payload.regionid)
+      networkregionsCopy[fintbynetworkid].regions[findregionindex].name = action.payload.regionname
+       state.networkregions = networkregionsCopy;
+    },
+    //---------------------------------------------
+    changeNetworkname: (state, action: createnetworkType) => {
+      const networklistCopy=deepcopy(state.networkslist)
+      const findnetworkindex=state.networkslist.findIndex(data => data.id == action.payload.id)
+      networklistCopy[findnetworkindex].name=action.payload.name
+     state.networkslist =networklistCopy;
+    },
   },
 });
 
@@ -381,7 +397,9 @@ export const {
   createnetwork,
   createLinks,
   updatelinkname,
-  updateStationName
+  updateStationName,
+  updateregionname,
+  changeNetworkname
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

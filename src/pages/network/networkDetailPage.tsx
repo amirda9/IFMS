@@ -3,18 +3,20 @@ import {useHttpRequest} from '~/hooks';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as Yup from 'yup';
 import {Request} from '~/hooks/useHttpRequest';
+import {changeNetworkname} from './../../store/slices/networktreeslice'
 import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
 import {BASE_URL} from './../../constant';
+import { $Put } from '~/util/requestapi';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
 const NetworkDetailPage = () => {
+  const dispatch=useDispatch()
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -34,30 +36,19 @@ const NetworkDetailPage = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
 
   const params = useParams<{networkId: string}>();
-  const [dataa, setdataa] = useState(0);
   const navigate = useNavigate();
   const initialRequests = (request: Request) => {
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
 
   const {
-    state: {detail, update},
+    state: {detail},
     request,
   } = useHttpRequest({
     selector: state => ({
       detail: state.http.networkDetail,
-      update: state.http.networkUpdate,
     }),
     initialRequests,
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.update?.httpRequestStatus === 'loading' &&
-        state.update!.httpRequestStatus === 'success'
-      ) {
-        request('networkList', undefined);
-        initialRequests(request);
-      }
-    },
   });
 
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
@@ -73,11 +64,16 @@ const NetworkDetailPage = () => {
               version => version.id === detail!.data!.current_version.id,
             )?.description || '',
         }}
-        onSubmit={values => {
-          request('networkUpdate', {
-            data: values,
-            params: {networkId: params.networkId!},
-          });
+        onSubmit={async(values) => {
+          try {
+            const response=await $Put(`otdr/network/${params.networkId!}`,values)
+            //we should update the networktree
+            if(response.status == 200){
+              dispatch(changeNetworkname({id:params.networkId!,name:values.name}))
+            }
+          } catch (error) {
+            
+          }
         }}
         validationSchema={networkSchema}>
         <Form className="flex h-full flex-col justify-between">
@@ -113,7 +109,8 @@ const NetworkDetailPage = () => {
             networkDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"
-                disabled={update?.httpRequestStatus === 'loading'}>
+               
+                >
                 Save
               </SimpleBtn>
             ) : null}

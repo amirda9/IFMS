@@ -5,10 +5,12 @@ import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
-import { useSelector } from 'react-redux';
+import {updateregionname} from './../../store/slices/networktreeslice'
+import { useDispatch, useSelector } from 'react-redux';
 import {BASE_URL} from './../../constant'
 import NetworktreeLayout from '~/layout/networktreeLayout';
 const RegionsPage = () => {
+  const dispatch=useDispatch()
   const networkId = Cookies.get(networkExplored);
   const {networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');

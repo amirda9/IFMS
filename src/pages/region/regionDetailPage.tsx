@@ -6,15 +6,18 @@ import * as Yup from 'yup';
 import {FormLayout} from '~/layout';
 import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useEffect, useState} from 'react';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
+import {updateregionname} from './../../store/slices/networktreeslice'
 import {BASE_URL} from './../../constant';
+import { $Put } from '~/util/requestapi';
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
 });
 const RegionDetailPage = () => {
+  const dispatch=useDispatch()
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const networkId = Cookies.get(networkExplored) || '';
   const params = useParams<{regionId: string}>();
@@ -83,11 +86,20 @@ const RegionDetailPage = () => {
           name: state.detail?.data?.name,
           description: state.detail?.data?.current_version.description!,
         }}
-        onSubmit={values => {
-          request('regionUpdate', {
-            data: values,
-            params: {region_id: params.regionId!},
-          });
+        onSubmit={async(values) => {
+          try {
+            const response=await $Put(`otdr/region/${params.regionId!}`,values)
+            if(response.status == 200){
+              dispatch(updateregionname({networkid:state!.detail!.data!.network_id,regionid:params.regionId!,regionname:values.name!}))
+            }
+          } catch (error) {
+            
+          }
+          
+          // request('regionUpdate', {
+          //   data: values,
+          //   params: {region_id: params.regionId!},
+          // });
         }}
         validationSchema={regionSchema}>
         <Form className="flex h-full flex-col justify-between">
