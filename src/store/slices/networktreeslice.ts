@@ -156,6 +156,7 @@ export type initialStatetype = {
   regionLinks: allregionlinkstype[];
   selectedstations: selectedstationtype[];
   selectedlinks: selectedlinktype[];
+  selectedid:string
 };
 const initialState: initialStatetype = {
   networkslist: [],
@@ -170,6 +171,7 @@ const initialState: initialStatetype = {
   allselectedId: [],
   selectedstations: [],
   selectedlinks: [],
+  selectedid:""
 };
 
 const networktreeslice = createSlice({
@@ -206,7 +208,9 @@ const networktreeslice = createSlice({
     setShowallnetworks: (state, action) => {
       state.showAllnetworks = action.payload;
     },
-
+    setSelectedid: (state, action:{payload:string,type:string}) => {
+      state.selectedid = action.payload;
+    },
     // ---------------------------------------------------------
     setAllselectedId: (state, action) => {
       const findId = state.allselectedId.findIndex(
@@ -399,7 +403,8 @@ export const {
   updatelinkname,
   updateStationName,
   updateregionname,
-  changeNetworkname
+  changeNetworkname,
+  setSelectedid
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

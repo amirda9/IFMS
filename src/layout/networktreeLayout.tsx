@@ -15,12 +15,10 @@ import {
   onclickstationcheckbox,
   onclicklinkcheckbox,
   setNetworklist,
+  setSelectedid,
 } from './../store/slices/networktreeslice';
 import {$Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
-
-const allregions = ['13', '14', '15', '16'];
-const allstation = ['17', '18', '19', '20'];
 type ItemspROPS = {
   to: string;
   selected: boolean;
@@ -58,6 +56,7 @@ function NetworktreeLayout({children}: Iprops) {
     regionLinks,
     selectedstations,
     selectedlinks,
+    selectedid,
   } = useSelector((state: RootState) => state.networktree);
   const {
     request,
@@ -77,13 +76,13 @@ function NetworktreeLayout({children}: Iprops) {
     request('regionList', {params: {network_id: id}});
   };
 
-  // useEffect(()=>{
-  //  const element = document.getElementById('9a57882c-759a-4ef7-98d3-321dcc7cf9e3');
-  //  if (element) {
-  //    // 👇 Will scroll smoothly to the top of the next section
-  //    element.scrollIntoView({ behavior: 'smooth' });
-  //  }
-  // },[])
+  useEffect(() => {
+    const element = document.getElementById(selectedid);
+    if (element) {
+      // 👇 Will scroll smoothly to the top of the next section
+      element.scrollIntoView();
+    }
+  }, []);
   useEffect(() => {
     const getnetworklist = async () => {
       try {
@@ -167,6 +166,7 @@ function NetworktreeLayout({children}: Iprops) {
           name={name}
           to={to}
           canAdd={canAdd}
+          id={id}
           createurl={createurl}
           key={key}
           enabelcheck={enabelcheck}
@@ -174,15 +174,7 @@ function NetworktreeLayout({children}: Iprops) {
           canDelete={canDelete}
           onDelete={() => onDelete()}
         />
-        {/* { canAdd && allselectedId.indexOf(id) > -1 ?
-              <BsPlusLg
-                onClick={() =>{}
-                  // navigate(`create/${id}_${regionid}_${networkid}`)
-                }
-                color="#18C047"
-                size={25}
-                className="absolute right-[25px] top-[15px] cursor-pointer"
-              />:null} */}
+
       </div>
     );
   };
@@ -229,50 +221,45 @@ function NetworktreeLayout({children}: Iprops) {
 
   const onclikitems = (id: string) => {
     dispatch(setAllselectedId(id));
-    // const findId = allselectedId.findIndex(data => data == id);
-    // if (findId > -1) {
-    //   let allselectedIdCopy: string[] = deepcopy(allselectedId);
-    //   const newlist = allselectedIdCopy.filter(data => data != id);
-    //   setAllselectedId(newlist);
-    // } else {
-    //   setAllselectedId(prev => [...prev, id]);
-    // }
   };
   return (
     <>
       <div className="flex h-[calc(100vh-120px)] w-[30%] flex-col overflow-y-auto border-r-2  border-g p-4">
-        <div
-          className={`flex h-[45px] w-full flex-row items-center px-[8px] ${
-            showAllnetworks ? 'bg-[#C0E7F2]' : 'bg-[#E7EFF7]'
-          }`}>
-          {showAllnetworks ? (
-            <span
-              onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
-              className="mt-[-7px] cursor-pointer text-[20px]">
-              _
-            </span>
-          ) : (
-            <span
-              onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
-              className="cursor-pointer text-[20px]">
-              +
-            </span>
-          )}
-
-          <div className="flex w-[calc(100%-20px)] flex-row items-center justify-between">
-            <span
-              onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
-              className="ml-[5px] cursor-pointer text-[20px] font-bold">
-              Networks
-            </span>
+        <div className="flex w-full flex-row items-center">
+          <>
             {showAllnetworks ? (
-              <BsPlusLg
-                onClick={() => navigate('/networks/create')}
-                color="#18C047"
-                size={25}
-                className="cursor-pointer"
-              />
-            ) : null}
+              <span
+                onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
+                className="mt-[-14px] mr-[7px] cursor-pointer text-[20px]">
+                _
+              </span>
+            ) : (
+              <span
+                onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
+                className="cursor-pointer text-[20px]">
+                +
+              </span>
+            )}
+          </>
+          <div
+            className={`flex h-[45px] w-full flex-row items-center px-[8px] ${
+              showAllnetworks ? 'bg-[#C0E7F2]' : 'bg-[#E7EFF7]'
+            }`}>
+            <div className="flex w-[calc(100%-20px)] flex-row items-center justify-between">
+              <span
+                onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
+                className="ml-[5px] cursor-pointer text-[20px] font-bold">
+                Networks
+              </span>
+              {showAllnetworks ? (
+                <BsPlusLg
+                  onClick={() => navigate('/networks/create')}
+                  color="#18C047"
+                  size={25}
+                  className="cursor-pointer"
+                />
+              ) : null}
+            </div>
           </div>
         </div>
 
@@ -288,7 +275,8 @@ function NetworktreeLayout({children}: Iprops) {
                   selected={false}
                   onDelete={() => {}}
                   onclick={() => {
-                    onclikitems(networkdata.id),
+                    dispatch(setSelectedid(networkdata.id)),
+                      onclikitems(networkdata.id),
                       onclicknetwork(networkdata.id),
                       () => setNetworkId(networkdata.id);
                   }}
@@ -315,7 +303,8 @@ function NetworktreeLayout({children}: Iprops) {
                               canAdd={false}
                               onDelete={() => {}}
                               onclick={() => {
-                                onclikitems(regionsdata.id);
+                                dispatch(setSelectedid(networkdata.id)),
+                                  onclikitems(regionsdata.id);
                               }}
                               id={regionsdata.id}
                               name={regionsdata.name}
@@ -338,9 +327,10 @@ function NetworktreeLayout({children}: Iprops) {
                                   selected={false}
                                   onDelete={() => {}}
                                   onclick={() => {
-                                    onclikitems(
-                                      `${regionsdata.id}${regionsdata.id}`,
-                                    ),
+                                    dispatch(setSelectedid(networkdata.id)),
+                                      onclikitems(
+                                        `${regionsdata.id}${regionsdata.id}`,
+                                      ),
                                       onclickstations(regionsdata.id);
                                   }}
                                   id={`${regionsdata.id}${regionsdata.id}`}
@@ -384,9 +374,12 @@ function NetworktreeLayout({children}: Iprops) {
                                             )}
                                           pluse={false}
                                           createurl={`/stations/create`}
-                                          onclick={() =>
-                                            onclikitems(stationsdata.id)
-                                          }
+                                          onclick={() => {
+                                            dispatch(
+                                              setSelectedid(stationsdata.id),
+                                            ),
+                                              onclikitems(stationsdata.id);
+                                          }}
                                           id={stationsdata.id}
                                           name={stationsdata.name}
                                         />
@@ -402,9 +395,10 @@ function NetworktreeLayout({children}: Iprops) {
                                   canDelete={false}
                                   onDelete={() => {}}
                                   onclick={() => {
-                                    onclikitems(
-                                      `${regionsdata.id}&${regionsdata.id}`,
-                                    ),
+                                    dispatch(setSelectedid(regionsdata.id)),
+                                      onclikitems(
+                                        `${regionsdata.id}&${regionsdata.id}`,
+                                      ),
                                       onclicklinks(regionsdata.id);
                                   }}
                                   createurl={`/links/create/${regionsdata.id}`}
@@ -452,9 +446,12 @@ function NetworktreeLayout({children}: Iprops) {
                                                 data.regionid == regionsdata.id,
                                             )
                                             ?.linkID.includes(linksdata.id)}
-                                          onclick={() =>
-                                            onclikitems(linksdata.id)
-                                          }
+                                          onclick={() => {
+                                            dispatch(
+                                              setSelectedid(linksdata.id),
+                                            ),
+                                              onclikitems(linksdata.id);
+                                          }}
                                           id={linksdata.id}
                                           pluse={false}
                                           name={linksdata.name}
@@ -495,3 +492,6 @@ function NetworktreeLayout({children}: Iprops) {
 }
 
 export default NetworktreeLayout;
+
+
+

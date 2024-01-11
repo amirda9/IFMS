@@ -19,7 +19,8 @@ type PropsType = {
   selected?: boolean;
   canAdd?: boolean;
   createurl?:string;
-  canDelete?:boolean
+  canDelete?:boolean;
+  id?:string
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -36,6 +37,7 @@ const SidebarItem: FC<PropsType> = ({
   canAdd = false,
   createurl="",
   canDelete=true,
+  id
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -46,6 +48,7 @@ const SidebarItem: FC<PropsType> = ({
   return (
     <div className={'relative my-1 flex flex-row ' + className}>
       <NavLink
+      id={id}
         onClick={() => {
           onclick();
         }}
