@@ -67,7 +67,7 @@ type eventstype = {
   comment: string;
 };
 
-const fakedata = JSON.parse(
+const data = JSON.parse(
   JSON.stringify({
     "id": "b9925d2b-1b2b-4738-ba4d-cc74463ed4c7",
     "status": "SUCCESS",
@@ -20934,16 +20934,17 @@ function Chart() {
 
  
   useEffect(()=>{
-    let data:any;
+    // let data:any;
     const getchartdata=async()=>{
-      const getdata = await $Get(
-        `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
-      );
-      data = await getdata.json();
+      // const getdata = await $Get(
+      //   `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
+      // );
+      // data = await getdata.json();
     
-      if (getdata.status == 200) {
+      // if (getdata.status == 200) {
+        //  setChartdata(data)
          setChartdata(data)
-      }
+      // }
     }
     try {
       getchartdata()
@@ -21051,7 +21052,7 @@ function Chart() {
     }
     setTabelitems(items);
   },[])
-  console.log("🥶",fakedata);
+ 
   // const get
 
   const [reightbar, setReightbar] = useState('Result');
@@ -21834,8 +21835,6 @@ function Chart() {
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
               <ResponsiveLine
-                // tooltip={tooltip}
-                // enablePointLabel="x"
                 data={allcurveline}
                 margin={{top: 10, right: 50, bottom: 40, left: 50}}
                 xScale={xScale}
@@ -21843,7 +21842,7 @@ function Chart() {
                 colors={({id}) => getColorForId(id)}
                 xFormat="d"
                 curve="linear"
-       
+
                 // enableArea={true}
                 // debugSlices={false}
                 enableCrosshair={false}

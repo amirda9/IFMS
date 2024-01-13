@@ -93,6 +93,16 @@ export type allnetworkregionstype = {
   regions: {name: string; id: string}[];
 };
 
+type deletegroupstationtype = {
+  payload: {regionid: string; stationsid: string[]};
+  type: string;
+};
+
+type deletegrouplinktype = {
+  payload: {regionid: string; linksid: string[]};
+  type: string;
+};
+
 type selectedstationtype = {
   networkid: string;
   regionid: string;
@@ -156,7 +166,7 @@ export type initialStatetype = {
   regionLinks: allregionlinkstype[];
   selectedstations: selectedstationtype[];
   selectedlinks: selectedlinktype[];
-  selectedid:string
+  selectedid: string;
 };
 const initialState: initialStatetype = {
   networkslist: [],
@@ -171,7 +181,7 @@ const initialState: initialStatetype = {
   allselectedId: [],
   selectedstations: [],
   selectedlinks: [],
-  selectedid:""
+  selectedid: '',
 };
 
 const networktreeslice = createSlice({
@@ -208,7 +218,7 @@ const networktreeslice = createSlice({
     setShowallnetworks: (state, action) => {
       state.showAllnetworks = action.payload;
     },
-    setSelectedid: (state, action:{payload:string,type:string}) => {
+    setSelectedid: (state, action: {payload: string; type: string}) => {
       state.selectedid = action.payload;
     },
     // ---------------------------------------------------------
@@ -359,27 +369,93 @@ const networktreeslice = createSlice({
       const findwithregionindex = state.regionstations.findIndex(
         data => data.regionid == action.payload.regionid,
       );
-      const findstationid = regionStationsCopy[findwithregionindex].stations.findIndex(
-        (data: {id: string; name: string}) => data.id == action.payload.stationid,
+      const findstationid = regionStationsCopy[
+        findwithregionindex
+      ].stations.findIndex(
+        (data: {id: string; name: string}) =>
+          data.id == action.payload.stationid,
       );
       regionStationsCopy[findwithregionindex].stations[findstationid].name =
         action.payload.stationname;
       state.regionstations = regionStationsCopy;
     },
     //---------------------------------
-    updateregionname: (state, action:createregiontype) => {
-      const networkregionsCopy=deepcopy(state.networkregions)
-      const fintbynetworkid=state.networkregions.findIndex(data => data.networkid == action.payload.networkid)
-      const findregionindex=state.networkregions[fintbynetworkid].regions.findIndex(data => data.id == action.payload.regionid)
-      networkregionsCopy[fintbynetworkid].regions[findregionindex].name = action.payload.regionname
-       state.networkregions = networkregionsCopy;
+    updateregionname: (state, action: createregiontype) => {
+      const networkregionsCopy = deepcopy(state.networkregions);
+      const fintbynetworkid = state.networkregions.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+      const findregionindex = state.networkregions[
+        fintbynetworkid
+      ].regions.findIndex(data => data.id == action.payload.regionid);
+      networkregionsCopy[fintbynetworkid].regions[findregionindex].name =
+        action.payload.regionname;
+      state.networkregions = networkregionsCopy;
     },
     //---------------------------------------------
     changeNetworkname: (state, action: createnetworkType) => {
-      const networklistCopy=deepcopy(state.networkslist)
-      const findnetworkindex=state.networkslist.findIndex(data => data.id == action.payload.id)
-      networklistCopy[findnetworkindex].name=action.payload.name
-     state.networkslist =networklistCopy;
+      const networklistCopy = deepcopy(state.networkslist);
+      const findnetworkindex = state.networkslist.findIndex(
+        data => data.id == action.payload.id,
+      );
+      networklistCopy[findnetworkindex].name = action.payload.name;
+      state.networkslist = networklistCopy;
+    },
+    //---------------------------------------------
+    deletegroupstation: (state, action: deletegroupstationtype) => {
+      const regionstationsCopy = deepcopy(state.regionstations);
+      const findstations = state.regionstations.findIndex(
+        data => data.regionid == action.payload.regionid,
+      );
+
+      let newtlist = [];
+      for (
+        let i = 0;
+        i < regionstationsCopy[findstations].stations.length;
+        i++
+      ) {
+        if (
+          action.payload.stationsid.findIndex(
+            data => data == regionstationsCopy[findstations].stations[i].id,
+          ) < 0
+        ) {
+          newtlist.push(regionstationsCopy[findstations].stations[i]);
+        }
+      }
+      regionstationsCopy[findstations].stations = newtlist;
+      const newselectedstations = state.selectedstations.filter(
+        data => data.regionid != action.payload.regionid,
+      );
+      state.regionstations = regionstationsCopy;
+      state.selectedstations = newselectedstations;
+    },
+     //---------------------------------------------
+     deletegrouplinks: (state, action: deletegrouplinktype) => {
+      const regionlinksCopy = deepcopy(state.regionLinks);
+      const findlinks = state.regionLinks.findIndex(
+        data => data.regionid == action.payload.regionid,
+      );
+
+      let newtlist = [];
+      for (
+        let i = 0;
+        i < regionlinksCopy[findlinks].links.length;
+        i++
+      ) {
+        if (
+          action.payload.linksid.findIndex(
+            data => data == regionlinksCopy[findlinks].links[i].id,
+          ) < 0
+        ) {
+          newtlist.push(regionlinksCopy[findlinks].links[i]);
+        }
+      }
+      regionlinksCopy[findlinks].links = newtlist;
+      const newselectedlinks = state.selectedlinks.filter(
+        data => data.regionid != action.payload.regionid,
+      );
+      state.regionLinks = regionlinksCopy;
+      state.selectedlinks = newselectedlinks;
     },
   },
 });
@@ -404,7 +480,9 @@ export const {
   updateStationName,
   updateregionname,
   changeNetworkname,
-  setSelectedid
+  setSelectedid,
+  deletegroupstation,
+  deletegrouplinks
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

@@ -16,8 +16,10 @@ import {
   onclicklinkcheckbox,
   setNetworklist,
   setSelectedid,
+  deletegroupstation,
+  deletegrouplinks
 } from './../store/slices/networktreeslice';
-import {$Get} from '~/util/requestapi';
+import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
 type ItemspROPS = {
   to: string;
@@ -57,6 +59,7 @@ function NetworktreeLayout({children}: Iprops) {
     selectedstations,
     selectedlinks,
     selectedid,
+    
   } = useSelector((state: RootState) => state.networktree);
   const {
     request,
@@ -222,6 +225,21 @@ function NetworktreeLayout({children}: Iprops) {
   const onclikitems = (id: string) => {
     dispatch(setAllselectedId(id));
   };
+  const deletegroupsationds=async(regionid:string)=>{
+   const deletestationlist=selectedstations.find(data => data.regionid == regionid)
+  const response=await $Delete(`otdr/station/batch_delete`,deletestationlist?.stationsID)
+  if(response.status == 200){
+    dispatch(deletegroupstation({regionid:regionid,stationsid:deletestationlist?.stationsID || []}))
+  }
+  }
+
+  const ondeletelinksgroup=async(regionid:string)=>{
+    const deletestationlist=selectedlinks.find(data => data.regionid == regionid)
+    const response=await $Delete(`otdr/link/batch_delete`,deletestationlist?.linkID)
+    if(response.status == 200){
+      dispatch(deletegrouplinks({regionid:regionid,linksid:deletestationlist?.linkID || []}))
+    }
+  }
   return (
     <>
       <div className="flex h-[calc(100vh-120px)] w-[30%] flex-col overflow-y-auto border-r-2  border-g p-4">
@@ -353,7 +371,7 @@ function NetworktreeLayout({children}: Iprops) {
                                           key={Number(index)}
                                           to={`/stations/${stationsdata.id}`}
                                           selected={false}
-                                          onDelete={() => {}}
+                                          onDelete={() => deletegroupsationds(regionsdata.id)}
                                           enabelcheck={true}
                                           onclickcheckbox={() =>
                                             dispatch(
@@ -429,7 +447,7 @@ function NetworktreeLayout({children}: Iprops) {
                                           to={`/links/${linksdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
-                                          onDelete={() => {}}
+                                          onDelete={() => ondeletelinksgroup(regionsdata.id)}
                                           enabelcheck={true}
                                           onclickcheckbox={() =>
                                             dispatch(
