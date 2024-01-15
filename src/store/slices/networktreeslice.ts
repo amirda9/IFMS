@@ -69,12 +69,18 @@ export type regionstationstype = {
   payload: {regionid: string; stations: {name: string; id: string}[]}[];
   type: string;
 };
-
+export type defaultregionstationstype = {
+  payload: {networkid: string; stations: {name: string; id: string}[]};
+  type: string;
+};
 export type regionlinkstype = {
   payload: {regionid: string; links: {name: string; id: string}[]}[];
   type: string;
 };
-
+export type defaultregionlinkstype = {
+  payload: {networkid: string; links: {name: string; id: string}[]};
+  type: string;
+};
 export type allstationsrtutype = {
   stationid: string;
   regionid: string;
@@ -98,8 +104,21 @@ type deletegroupstationtype = {
   type: string;
 };
 
+
+type deletedefaultgroupstationtype = {
+  payload: {networkid: string; stationsid: string[]};
+  type: string;
+};
+
+
 type deletegrouplinktype = {
   payload: {regionid: string; linksid: string[]};
+  type: string;
+};
+
+
+type deletedefaultgrouplinktype = {
+  payload: {networkid: string; linksid: string[]};
   type: string;
 };
 
@@ -109,9 +128,20 @@ type selectedstationtype = {
   stationsID: string[];
 };
 
+type selecteddefaultstationtype = {
+  networkid: string;
+  stationsID: string[];
+};
+
+
 type selectedlinktype = {
   networkid: string;
   regionid: string;
+  linkID: string[];
+};
+
+type selecteddefaultlinktype = {
+  networkid: string;
   linkID: string[];
 };
 
@@ -124,8 +154,17 @@ export type allregionstationstype = {
   regionid: string;
   stations: {name: string; id: string}[];
 };
+export type alldefaultregionstationstype = {
+  networkid: string;
+  stations: {name: string; id: string}[];
+};
 export type allregionlinkstype = {
   regionid: string;
+  links: {name: string; id: string}[];
+};
+
+export type alldefaultregionlinkstype = {
+  networkid: string;
   links: {name: string; id: string}[];
 };
 
@@ -158,14 +197,18 @@ export type initialStatetype = {
   leftbarStationcheckboxlist: leftbarStationcheckboxlist;
   networkregions: allnetworkregionstype[];
   regionstations: allregionstationstype[];
+  defaultregionstations: alldefaultregionstationstype[];
   stationsrtu: allstationsrtutype[];
   allrtues: string[];
   allLeftbar: allLeftbartype[];
   showAllnetworks: boolean;
   allselectedId: string[];
   regionLinks: allregionlinkstype[];
+  defaultregionLinks: alldefaultregionlinkstype[];
   selectedstations: selectedstationtype[];
+  selecteddefaultstations: selecteddefaultstationtype[];
   selectedlinks: selectedlinktype[];
+  selectedefaultdlinks: selecteddefaultlinktype[];
   selectedid: string;
 };
 const initialState: initialStatetype = {
@@ -173,6 +216,8 @@ const initialState: initialStatetype = {
   leftbarStationcheckboxlist: [],
   networkregions: [],
   regionstations: [],
+  defaultregionstations: [],
+  defaultregionLinks: [],
   regionLinks: [],
   stationsrtu: [],
   allrtues: [],
@@ -182,6 +227,8 @@ const initialState: initialStatetype = {
   selectedstations: [],
   selectedlinks: [],
   selectedid: '',
+  selecteddefaultstations: [],
+  selectedefaultdlinks: []
 };
 
 const networktreeslice = createSlice({
@@ -206,12 +253,46 @@ const networktreeslice = createSlice({
     setNetworkregions: (state, action: networkregionstype) => {
       state.networkregions = action.payload;
     },
+
+
+    deletenetwork: (state, action: {type:string,payload:string}) => {
+      const newnetworkslist=state.networkslist.filter(data=> data.id != action.payload)
+ state.networkslist = newnetworkslist;
+    },
+
+
     setRegionstations: (state, action: regionstationstype) => {
       state.regionstations = action.payload;
     },
+
+    setdefaultRegionstations: (state, action: defaultregionstationstype) => {
+      const defaultregionStationsCopy=deepcopy(state.defaultregionstations);
+      const finddataindex=state.defaultregionstations.findIndex(data => data.networkid == action.payload.networkid)
+     if(finddataindex > -1){
+      defaultregionStationsCopy[finddataindex].stations=action.payload.stations
+     }else{
+      defaultregionStationsCopy.push(action.payload)
+     }
+       state.defaultregionstations = defaultregionStationsCopy;
+    },
+
     setRegionLinks: (state, action: regionlinkstype) => {
       state.regionLinks = action.payload;
     },
+
+    setdefaultRegionLinks: (state, action: defaultregionlinkstype) => {
+      const defaultregionLinksCopy=deepcopy(state.defaultregionLinks);
+      const finddataindex=state.defaultregionLinks.findIndex(data => data.networkid == action.payload.networkid)
+     if(finddataindex > -1){
+      defaultregionLinksCopy[finddataindex].links=action.payload.links
+     }else{
+      defaultregionLinksCopy.push(action.payload)
+     }
+   
+     
+       state.defaultregionLinks = defaultregionLinksCopy;
+    },
+
     setStationsrtu: (state, action: stationsrtutype) => {
       state.stationsrtu = action.payload;
     },
@@ -275,6 +356,42 @@ const networktreeslice = createSlice({
       }
       state.selectedstations = selectedstationsCopy;
     },
+     //  -----------------------------
+     onclickdefaultstationcheckbox: (
+      state,
+      action: {
+        payload: {networkid: string; stationid: string};
+        type: string;
+      },
+    ) => {
+      let selecteddefaultstationsCopy: selecteddefaultstationtype[] = deepcopy(
+        state.selecteddefaultstations,
+      );
+      const findregioniddex = selecteddefaultstationsCopy.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+      if (findregioniddex > -1) {
+        let findstationidindex = selecteddefaultstationsCopy[
+          findregioniddex
+        ].stationsID.findIndex(data => data == action.payload.stationid);
+        if (findstationidindex > -1) {
+          let newstationlist = selecteddefaultstationsCopy[
+            findregioniddex
+          ].stationsID.filter(data => data != action.payload.stationid);
+          selecteddefaultstationsCopy[findregioniddex].stationsID = newstationlist;
+        } else {
+          selecteddefaultstationsCopy[findregioniddex].stationsID.push(
+            action.payload.stationid,
+          );
+        }
+      } else {
+        selecteddefaultstationsCopy.push({
+          networkid: action.payload.networkid,
+          stationsID: [action.payload.stationid],
+        });
+      }
+      state.selecteddefaultstations = selecteddefaultstationsCopy;
+    },
     //  -----------------------------
     onclicklinkcheckbox: (
       state,
@@ -308,16 +425,54 @@ const networktreeslice = createSlice({
       }
       state.selectedlinks = selectedlinksCopy;
     },
+     //  -----------------------------
+     onclickdefaultlinkcheckbox: (
+      state,
+      action: {
+        payload: {networkid: string; linkid: string};
+        type: string;
+      },
+    ) => {
+      let selecteddefaultlinksCopy: selecteddefaultlinktype[] = deepcopy(state.selectedefaultdlinks);
+      const findregioniddex = selecteddefaultlinksCopy.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+      if (findregioniddex > -1) {
+        let findstationidindex = selecteddefaultlinksCopy[
+          findregioniddex
+        ].linkID.findIndex(data => data == action.payload.linkid);
+        if (findstationidindex > -1) {
+          let newstationlist = selecteddefaultlinksCopy[findregioniddex].linkID.filter(
+            data => data != action.payload.linkid,
+          );
+          selecteddefaultlinksCopy[findregioniddex].linkID = newstationlist;
+        } else {
+          selecteddefaultlinksCopy[findregioniddex].linkID.push(action.payload.linkid);
+        }
+      } else {
+        selecteddefaultlinksCopy.push({
+          networkid: action.payload.networkid,
+          linkID: [action.payload.linkid],
+        });
+      }
+      state.selectedefaultdlinks = selecteddefaultlinksCopy;
+    },
     //  -----------------------------
     createRegion: (state, action: createregiontype) => {
       const networkRegionCopy = deepcopy(state.networkregions);
       const fintnetwork = state.networkregions.findIndex(
         data => data.networkid == action.payload.networkid,
       );
-      networkRegionCopy[fintnetwork].regions.push({
-        id: action.payload.regionid,
-        name: action.payload.regionname,
-      });
+      console.log("🎫",fintnetwork);
+      if(fintnetwork > -1){
+        networkRegionCopy[fintnetwork].regions.push({
+          id: action.payload.regionid,
+          name: action.payload.regionname,
+        });
+      }else{
+        networkRegionCopy.push({networkid:action.payload.networkid,regions:[{id:action.payload.regionid,name:action.payload.regionname}]})
+      }
+
       state.networkregions = networkRegionCopy;
     },
     //  -----------------------------
@@ -429,19 +584,43 @@ const networktreeslice = createSlice({
       state.regionstations = regionstationsCopy;
       state.selectedstations = newselectedstations;
     },
-     //---------------------------------------------
-     deletegrouplinks: (state, action: deletegrouplinktype) => {
+ //---------------------------------------------
+ deletedefaultgroupstation: (state, action: deletedefaultgroupstationtype) => {
+  const regionstationsCopy = deepcopy(state.defaultregionstations);
+  const findstations = state.defaultregionstations.findIndex(
+    data => data.networkid == action.payload.networkid,
+  );
+
+  let newtlist = [];
+  for (
+    let i = 0;
+    i < regionstationsCopy[findstations].stations.length;
+    i++
+  ) {
+    if (
+      action.payload.stationsid.findIndex(
+        data => data == regionstationsCopy[findstations].stations[i].id,
+      ) < 0
+    ) {
+      newtlist.push(regionstationsCopy[findstations].stations[i]);
+    }
+  }
+  regionstationsCopy[findstations].stations = newtlist;
+  const newselectedstations = state.selecteddefaultstations.filter(
+    data => data.networkid != action.payload.networkid,
+  );
+  state.defaultregionstations = regionstationsCopy;
+  state.selecteddefaultstations = newselectedstations;
+},
+    //---------------------------------------------
+    deletegrouplinks: (state, action: deletegrouplinktype) => {
       const regionlinksCopy = deepcopy(state.regionLinks);
       const findlinks = state.regionLinks.findIndex(
         data => data.regionid == action.payload.regionid,
       );
 
       let newtlist = [];
-      for (
-        let i = 0;
-        i < regionlinksCopy[findlinks].links.length;
-        i++
-      ) {
+      for (let i = 0; i < regionlinksCopy[findlinks].links.length; i++) {
         if (
           action.payload.linksid.findIndex(
             data => data == regionlinksCopy[findlinks].links[i].id,
@@ -456,6 +635,70 @@ const networktreeslice = createSlice({
       );
       state.regionLinks = regionlinksCopy;
       state.selectedlinks = newselectedlinks;
+    },
+     //---------------------------------------------
+     deletedefaultgrouplinks: (state, action: deletedefaultgrouplinktype) => {
+      const regionlinksCopy = deepcopy(state.defaultregionLinks);
+      const findlinks = state.defaultregionLinks.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+
+      let newtlist = [];
+      for (let i = 0; i < regionlinksCopy[findlinks].links.length; i++) {
+        if (
+          action.payload.linksid.findIndex(
+            data => data == regionlinksCopy[findlinks].links[i].id,
+          ) < 0
+        ) {
+          newtlist.push(regionlinksCopy[findlinks].links[i]);
+        }
+      }
+      regionlinksCopy[findlinks].links = newtlist;
+      const newselectedlinks = state.selectedefaultdlinks.filter(
+        data => data.networkid != action.payload.networkid,
+      );
+      state.defaultregionLinks = regionlinksCopy;
+      state.selectedefaultdlinks = newselectedlinks;
+    },
+    //---------------------------------------------
+    deleteRegion: (
+      state,
+      action: {payload: {regionid: string; networkid: string}; type: string},
+    ) => {
+      const defaultregionstationsCopy=deepcopy(state.defaultregionstations)
+      const defaultregionlinksCopy=deepcopy(state.defaultregionLinks)
+      const regionstationsCopy=deepcopy(state.regionstations)
+      const findregionstation=regionstationsCopy.find((data:any) => data.regionid == action.payload.regionid)
+      const finddefaultregionstation=defaultregionstationsCopy.findIndex((data:any) => data.networkid == action.payload.networkid)
+      const findregionlink=state.regionLinks.find(data => data.regionid == action.payload.regionid)
+      const finddefaultregionlink=state.defaultregionLinks.findIndex(data => data.networkid == action.payload.networkid)
+      if(finddefaultregionlink > -1){
+          defaultregionlinksCopy[finddefaultregionlink].links=[...(defaultregionlinksCopy[finddefaultregionlink].links),...(findregionlink!.links)]
+      }else{
+        defaultregionlinksCopy.push(findregionlink)
+      }
+      if(finddefaultregionstation >-1){
+        defaultregionstationsCopy[finddefaultregionstation].stations=[...(defaultregionstationsCopy[finddefaultregionstation].stations),...(findregionstation!.stations)]
+
+      }else{
+        defaultregionstationsCopy.push(findregionstation)
+      }
+     
+
+      const newnetworkregions = state.networkregions.filter(
+        data => data.networkid != action.payload.networkid,
+      );
+      const newregionlinks = state.regionLinks.filter(
+        data => data.regionid != action.payload.regionid,
+      );
+      const newregionstations = state.regionstations.filter(
+        data => data.regionid != action.payload.regionid,
+      );
+      state.regionLinks = newregionlinks;
+      state.regionstations = newregionstations;
+      state.networkregions = newnetworkregions;
+      state.defaultregionstations=defaultregionstationsCopy;
+      state.defaultregionLinks=defaultregionlinksCopy
     },
   },
 });
@@ -482,7 +725,15 @@ export const {
   changeNetworkname,
   setSelectedid,
   deletegroupstation,
-  deletegrouplinks
+  deletegrouplinks,
+  deleteRegion,
+  setdefaultRegionLinks,
+  setdefaultRegionstations,
+  deletedefaultgroupstation,
+  onclickdefaultstationcheckbox,
+  onclickdefaultlinkcheckbox,
+  deletedefaultgrouplinks,
+  deletenetwork
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;
