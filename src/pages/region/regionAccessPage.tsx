@@ -157,8 +157,11 @@ const RegionAccessPage = () => {
     
     return (
       <>
-        <Description label="Region Admin" className="mb-4">
-          <Select
+        <div className="mb-10 flex flex-col">
+              <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+              Region Admin
+              </span>
+              <Select
             disabled={
               userrole == 'superuser' ||
               networkDetail?.data?.access?.access == 'ADMIN' ||
@@ -166,7 +169,7 @@ const RegionAccessPage = () => {
                 ? false
                 : true
             }
-            className="w-80"
+            className="w-[70%]"
             value={userAdmin || admin?.user.id}
             onChange={event => {
               setUserAdmin(event.target.value);
@@ -179,8 +182,34 @@ const RegionAccessPage = () => {
               </option>
             ))}
           </Select>
-        </Description>
-        <Description label="Region Viewer(s)" items="start" className="h-full">
+              </div>
+    
+              <div className="mb-6 flex flex-col">
+              <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+              Region Viewer(s)
+              </span>
+              <Table
+               dynamicColumns={['index']}
+               renderDynamicColumn={data => data.index + 1}
+               tabicon={tabname}
+         
+               onclicktitle={(tabname: string, sortalfabet: boolean) => {
+                setTabname(tabname);
+                sortddata(tabname, sortalfabet);
+              }}
+            items={
+              itemssorted.length > 0
+                ? itemssorted
+                : items
+            }
+            loading={viewers?.httpRequestStatus === 'loading'}
+            cols={columns}
+            containerClassName="w-full mt-[-6px]"
+          />
+
+              </div>
+    
+        {/* <Description label="Region Viewer(s)" items="start" className="h-full">
           <Table
                dynamicColumns={['index']}
                renderDynamicColumn={data => data.index + 1}
@@ -199,7 +228,7 @@ const RegionAccessPage = () => {
             cols={columns}
             containerClassName="w-3/5 mt-[-6px]"
           />
-        </Description>
+        </Description> */}
       </>
     );
   }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin,itemssorted,network?.regionviewers]);

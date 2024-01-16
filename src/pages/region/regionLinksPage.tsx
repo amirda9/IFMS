@@ -162,7 +162,7 @@ const RegionLinksPage = () => {
           items={itemssorted}
           dynamicColumns={['index']}
           renderDynamicColumn={data => data.index + 1}
-          containerClassName="w-3/5"
+          containerClassName="w-full"
           loading={list?.httpRequestStatus === 'loading'}
         />
       </div>
