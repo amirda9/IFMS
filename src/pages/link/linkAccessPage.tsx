@@ -93,21 +93,23 @@ const LinkAccessPage = () => {
     }
   }
 
-  const items =network.linkviewersstatus?dataa.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US')): (viewers?.data?.users || [])
-    .filter(value => value.access !== AccessEnum.admin)
-    .map((value, index) => ({
-      index: (index + 1).toString(),
-      user: value.user.username,
-      station: value.user.station?.name || '-',
-      region: value.user.region?.name || '-',
-    }))
-    .sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
+  const items = network.linkviewersstatus
+    ? dataa.sort((a: any, b: any) => a.user.localeCompare(b.user, 'en-US'))
+    : (viewers?.data?.users || [])
+        .filter(value => value.access !== AccessEnum.admin)
+        .map((value, index) => ({
+          index: (index + 1).toString(),
+          user: value.user.username,
+          station: value.user.station?.name || '-',
+          region: value.user.region?.name || '-',
+        }))
+        .sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
 
   const admin = viewers?.data?.users.find(
     viewer => viewer.access === AccessEnum.admin,
   );
   const ifUserExist = users?.data?.some(user => user.id === admin?.user.id);
-  
+
   const userList =
     users?.httpRequestStatus === 'success' ? [...users.data!] : [];
   if (!ifUserExist && admin) {
@@ -165,7 +167,29 @@ const LinkAccessPage = () => {
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="h-5/6">
-        <Description label="Link Admin" className="mb-4">
+        <div className="mb-6 flex flex-col">
+          <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+            Link Admin
+          </span>
+          <Select
+            value={userAdmin || admin?.user.id}
+            disabled={
+              userrole == 'superuser' ||
+              linkDetail?.data?.access.role == 'superuser' ||
+              networkDetail?.data?.access?.access == 'ADMIN'
+                ? false
+                : true
+            }
+            onChange={e => setUserAdmin(e.target.value)}
+            className="w-[70%] text-sm">
+            {userList.map(user => (
+              <option onClick={() => alert('kk')} value={user.id} key={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </Select>
+        </div>
+        {/* <Description label="Link Admin" className="mb-4">
           <Select
             value={userAdmin || admin?.user.id}
             disabled={
@@ -183,8 +207,26 @@ const LinkAccessPage = () => {
               </option>
             ))}
           </Select>
-        </Description>
-        <Description
+        </Description> */}
+
+        <div className="mb-6 flex flex-col">
+          <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+            Link Viewer(s)
+          </span>
+          <Table
+            dynamicColumns={['index']}
+            renderDynamicColumn={data => data.index + 1}
+            onclicktitle={(tabname: string, sortalfabet: boolean) => {
+              sortddata(tabname, sortalfabet);
+              setTabname(tabname);
+            }}
+            tabicon={tabname}
+            cols={columns}
+            items={itemssorted.length > 0 ? itemssorted : items}
+            containerClassName="w-full mt-[-5px]"
+          />
+        </div>
+        {/* <Description
           label="Link Viewer(s)"
           items="start"
           className="h-full text-sm">
@@ -200,7 +242,7 @@ const LinkAccessPage = () => {
             items={itemssorted.length > 0 ? itemssorted : items}
             containerClassName="w-3/5 mt-[-5px]"
           />
-        </Description>
+        </Description> */}
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
         {userrole == 'superuser' ||

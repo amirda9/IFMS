@@ -4,7 +4,10 @@ import {useParams} from 'react-router-dom';
 import {Description, Select, SimpleBtn, Table} from '~/components';
 import {BASE_URL} from '~/constant';
 import {useHttpRequest} from '~/hooks';
-import { setstationviewers,setstationviewersstatus} from '~/store/slices/networkslice';
+import {
+  setstationviewers,
+  setstationviewersstatus,
+} from '~/store/slices/networkslice';
 import {AccessEnum} from '~/types';
 
 const columns = {
@@ -93,14 +96,15 @@ const StationAccessPage = () => {
       params: {station_id: params.stationId!},
       data: {users: network?.stationviewers},
     });
-    dispatch(setstationviewers([])) 
+    dispatch(setstationviewers([]));
     dispatch(setstationviewersstatus(false));
   };
 
-  var dataa:any= [];
+  var dataa: any = [];
   for (let i = 0; i < network?.stationviewers.length; i++) {
-    const findd =
-      users!.data!.findIndex(data => data.id == network?.stationviewers[i]);
+    const findd = users!.data!.findIndex(
+      data => data.id == network?.stationviewers[i],
+    );
     if (findd > -1) {
       dataa.push({
         index: (i + 1).toString(),
@@ -111,22 +115,23 @@ const StationAccessPage = () => {
     }
   }
 
-
   const body = useMemo(() => {
-    const items =network.stationviewersstatus?dataa.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US')):(viewers?.data?.users || [])
-      .filter(value => value.access !== AccessEnum.admin)
-      .map((value, index) => ({
-        index: (index + 1).toString(),
-        user: value.user.username,
-        station: value.user.station?.name || '-',
-        region: value.user.region?.name || '-',
-      }));
+    const items = network.stationviewersstatus
+      ? dataa.sort((a: any, b: any) => a.user.localeCompare(b.user, 'en-US'))
+      : (viewers?.data?.users || [])
+          .filter(value => value.access !== AccessEnum.admin)
+          .map((value, index) => ({
+            index: (index + 1).toString(),
+            user: value.user.username,
+            station: value.user.station?.name || '-',
+            region: value.user.region?.name || '-',
+          }));
 
     // for (let j = 0; j < dataa.length; j++) {
     //   items.push(dataa[j]);
     // }
 
-    items.sort((a:any, b:any) => a.user.localeCompare(b.user, 'en-US'));
+    items.sort((a: any, b: any) => a.user.localeCompare(b.user, 'en-US'));
 
     const sortddata = (tabname: string, sortalfabet: boolean) => {
       if (sortalfabet) {
@@ -164,7 +169,10 @@ const StationAccessPage = () => {
       <>
         <div className="relative flex min-h-[calc(100vh-220px)] flex-col justify-between">
           <div className="h-5/6">
-            <Description label="Station Admin" className="mb-4">
+            <div className="mb-6 flex flex-col">
+              <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+                Station Admin
+              </span>
               <Select
                 value={userAdmin || admin?.user.id}
                 disabled={
@@ -175,18 +183,19 @@ const StationAccessPage = () => {
                     : true
                 }
                 onChange={e => setUserAdmin(e.target.value)}
-                className="w-80">
+                className="w-[70%]">
                 {userList.map(user => (
                   <option value={user.id} key={user.id}>
                     {user.username}
                   </option>
                 ))}
               </Select>
-            </Description>
-            <Description
-              label="Station Viewer(s)"
-              items="start"
-              className="h-full">
+            </div>
+
+            <div className="mb-6 flex flex-col">
+              <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+                Link Viewer(s)
+              </span>
               <Table
                 dynamicColumns={['index']}
                 renderDynamicColumn={data => data.index + 1}
@@ -197,9 +206,9 @@ const StationAccessPage = () => {
                 }}
                 cols={columns}
                 items={itemssorted.length > 0 ? itemssorted : items}
-                containerClassName="w-3/5 mt-[-6px]"
+                containerClassName="w-full mt-[-6px]"
               />
-            </Description>
+            </div>
           </div>
           <div className="absolue bottom-[20px] right-0 mr-4 flex flex-row gap-x-4 self-end">
             {userrole == 'superuser' ||
@@ -212,9 +221,18 @@ const StationAccessPage = () => {
             {userrole == 'superuser' ||
             http.stationDetail?.data?.access.access == 'ADMIN' ||
             networkDetail?.data?.access?.access == 'ADMIN' ? (
-              <SimpleBtn onClick={network.stationviewersstatus?saveAdmin:()=>{}}>Save</SimpleBtn>
+              <SimpleBtn
+                onClick={network.stationviewersstatus ? saveAdmin : () => {}}>
+                Save
+              </SimpleBtn>
             ) : null}
-            <SimpleBtn onClick={()=>{dispatch(setstationviewers([])), dispatch(setstationviewersstatus(false));} }>Cancel</SimpleBtn>
+            <SimpleBtn
+              onClick={() => {
+                dispatch(setstationviewers([])),
+                  dispatch(setstationviewersstatus(false));
+              }}>
+              Cancel
+            </SimpleBtn>
           </div>
         </div>
       </>
@@ -224,7 +242,7 @@ const StationAccessPage = () => {
     users?.httpRequestStatus,
     userAdmin,
     itemssorted,
-    network?.stationviewers
+    network?.stationviewers,
   ]);
 
   return <>{body}</>;
