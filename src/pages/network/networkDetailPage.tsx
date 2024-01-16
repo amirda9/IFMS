@@ -100,10 +100,10 @@ const NetworkDetailPage = () => {
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">
-            <SimpleBtn
+            {/* <SimpleBtn
               onClick={() => Cookies.set('networkExplored', params.networkId!)}>
               Explore
-            </SimpleBtn>
+            </SimpleBtn> */}
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
             {userrole == 'superuser' ||
             networkDetail?.data?.access?.access == 'ADMIN' ? (

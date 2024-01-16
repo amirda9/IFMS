@@ -13,9 +13,9 @@ const NetworkHistoryPage = () => {
   } = useHttpRequest({selector: state => ({detail: state.http.networkDetail})});
   return (
     <div
-      className="absolute bottom-0 left-[-150px] right-0 top-[425px] flex items-center justify-center bg-[#D9D9D97d]"
+      className="absolute top-0 left-0 right-0 h-full flex items-center justify-center bg-[#D9D9D97d]"
       onClick={goBack}>
-      <div className="h-fit w-1/4">
+      <div className="h-fit w-[679px]">
 
         <div className="flex flex-grow justify-end rounded-t-md bg-p px-2 py-1">
           <button className="active:opacity-50" onClick={goBack}>
