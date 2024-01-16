@@ -359,7 +359,7 @@ function NetworktreeLayout({children}: Iprops) {
   };
   return (
     <>
-      <div className="flex h-[calc(100vh-120px)] w-[30%] flex-col overflow-y-auto border-r-2  border-g p-4">
+      <div className="flex h-[calc(100vh-120px)] w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
         <div className="flex w-full flex-row items-center">
           <>
             {showAllnetworks ? (

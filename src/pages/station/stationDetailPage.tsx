@@ -165,7 +165,7 @@ const StationDetailPage = () => {
       }}
       validationSchema={stationSchema}>
       <Form>
-        <div className="relative flex h-[calc(100vh-220px)] flex-col justify-between">
+        <div className="relative flex h-[calc(100vh-220px)]  flex-col justify-between">
           <div className="flex flex-col gap-y-4">
             <Description label="Name" items="start">
               <InputFormik
@@ -262,7 +262,7 @@ const StationDetailPage = () => {
               {getPrettyDateTime()}
             </Description>
           </div>
-          <div className="absolute bottom-0 right-0 flex flex-row  gap-x-4 self-end">
+          <div className="flex flex-row pb-4 gap-x-4 self-end">
             {userrole == 'superuser' ||
             stationDetail?.data?.access.access == 'ADMIN' ||
             networkDetail?.data?.access?.access == 'ADMIN' ? (

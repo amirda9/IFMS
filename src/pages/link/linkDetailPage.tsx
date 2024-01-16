@@ -401,7 +401,7 @@ try {
         {getPrettyDateTime(state?.detail?.data?.time_updated)}
       </Description>
 
-      <div className="absolute bottom-[-10px] right-0 mr-4 flex flex-row gap-x-4 self-end ">
+      <div className="pb-4 mr-4 flex flex-row gap-x-4 self-end ">
         {userrole == 'superuser' ||
         state?.detail?.data?.access?.access == 'ADMIN' ||
         networkDetail?.data?.access?.access == 'ADMIN' ? (
