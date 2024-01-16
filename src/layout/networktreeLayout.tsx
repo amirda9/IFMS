@@ -461,7 +461,7 @@ function NetworktreeLayout({children}: Iprops) {
                                 <Items
                                   key={Number(`${index}`)}
                                   to={`/regions/${regionsdata.id}`}
-                                  createurl={`/stations/create/${regionsdata.id}`}
+                                  createurl={`/stations/create/${regionsdata.id}_${networkdata.id}`}
                                   canDelete={false}
                                   selected={false}
                                   onDelete={() => {}}
@@ -470,7 +470,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       onclikitems(
                                         `${regionsdata.id}${regionsdata.id}`,
                                       );
-                                    // onclickstations(regionsdata.id);
+                                 onclickstations(regionsdata.id);
                                   }}
                                   id={`${regionsdata.id}${regionsdata.id}`}
                                   name="Stations"
@@ -542,7 +542,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       );
                                     // onclicklinks(regionsdata.id);
                                   }}
-                                  createurl={`/links/create/${regionsdata.id}`}
+                                  createurl={`/links/create/${regionsdata.id}_${networkdata.id}`}
                                   id={`${regionsdata.id}&${regionsdata.id}`}
                                   name="Links"
                                 />
@@ -793,7 +793,7 @@ function NetworktreeLayout({children}: Iprops) {
                {children}
             </div> */}
       </div>
-      <div className="flex w-full px-8 py-6">
+      <div className="flex w-full px-8 py-6 overflow-y-auto">
         <Outlet />
       </div>
     </>

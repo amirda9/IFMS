@@ -73,7 +73,7 @@ const RegionDetailPage = () => {
         }}
         onSubmit={async(values) => {
           try {
-            const createregion=await $Post(`otdr/region/network/${networkId}`,{name: values.name, description: values.description})
+            const createregion=await $Post(`otdr/region/network/${params.networkid}`,{name: values.name, description: values.description})
             const responsedata=await createregion.json()
             if(createregion.status == 200){
             dispatch(createRegion({networkid:params.networkid!,regionid:responsedata.region_id,regionname:values.name}))

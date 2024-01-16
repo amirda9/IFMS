@@ -110,11 +110,11 @@ const LinkCreatePage = () => {
       try {
         const response = await $Post(`otdr/link/`, {
           name: name,
-          network_id: networkId!,
+          network_id: params.regionid!.split("_")[1],
           source_id: source,
           destination_id: destinationid,
           link_points: [],
-          region_id: params.regionid,
+          region_id: params.regionid!.split("_")[0],
           description: comment,
           type: types,
         });
@@ -123,7 +123,7 @@ const LinkCreatePage = () => {
         if (response.status == 200) {
           dispatch(
             createLinks({
-              regionid: params.regionid!,
+              regionid: params.regionid!.split("_")[0]!,
               linkid: responsedata.link_id,
               linkname: name,
             }),

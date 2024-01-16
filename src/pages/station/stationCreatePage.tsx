@@ -49,16 +49,16 @@ const StationDetailPage = () => {
             description: values.description,
             longitude: values.longitude,
             latitude: values.latitude,
-            region_id: params.regionid,
+            region_id: params.regionid?.split("_")[0],
             model: 'cables',
-            network_id: networkId!,
+            network_id: params.regionid?.split("_")[1],
           });
           const responsedata = await response.json();
           if (response.status == 200) {
             // we should update the network tree
             dispatch(
               createStation({
-                regionid: params.regionid!,
+                regionid:params.regionid?.split("_")[0]!,
                 stationid: responsedata.station_id,
                 stationname: values.name,
               }),

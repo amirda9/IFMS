@@ -493,10 +493,15 @@ const networktreeslice = createSlice({
       const findregionlinkddex = state.regionLinks.findIndex(
         data => data.regionid == action.payload.regionid,
       );
-      regionLinkcopy[findregionlinkddex].links.push({
-        id: action.payload.linkid,
-        name: action.payload.linkname,
-      });
+      if(findregionlinkddex> -1){
+        regionLinkcopy[findregionlinkddex].links.push({
+          id: action.payload.linkid,
+          name: action.payload.linkname,
+        });
+      }else{
+        regionLinkcopy.push({regionid:action.payload.regionid,links:[{id:action.payload.linkid,name:action.payload.linkname}]})
+      }
+    
       state.regionLinks = regionLinkcopy;
     },
     //  -----------------------------
@@ -673,7 +678,7 @@ const networktreeslice = createSlice({
       const findregionlink=state.regionLinks.find(data => data.regionid == action.payload.regionid)
       const finddefaultregionlink=state.defaultregionLinks.findIndex(data => data.networkid == action.payload.networkid)
       if(finddefaultregionlink > -1){
-          defaultregionlinksCopy[finddefaultregionlink].links=[...(defaultregionlinksCopy[finddefaultregionlink].links),...(findregionlink!.links)]
+          // defaultregionlinksCopy[finddefaultregionlink].links=[...(defaultregionlinksCopy[finddefaultregionlink].links),...(findregionlink!.links)]
       }else{
         defaultregionlinksCopy.push(findregionlink)
       }

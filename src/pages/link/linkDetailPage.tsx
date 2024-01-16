@@ -10,18 +10,32 @@ import {settypestate} from './../../store/slices/networkslice';
 import {BASE_URL} from './../../constant';
 import {useDispatch, useSelector} from 'react-redux';
 import {updatelinkname} from './../../store/slices/networktreeslice'
-import { $Post, $Put } from '~/util/requestapi';
+import { $Get, $Post, $Put } from '~/util/requestapi';
 import { deepcopy } from '~/util';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
 ];
+type networklisttype = {
+  id: string;
+  name: string;
+  time_created: string;
+  time_updated: string;
+};
 
+type regionlisttype = {
+  id: string,
+  name: string,
+  network_id: string,
+  time_created: string,
+  time_updated: string
+};
 // *********************************************************************
 const LinkDetailPage = () => {
 
   const {networkDetail} = useSelector((state: any) => state.http);
-
+  const [defaultnetworkname,setDefaultnetworkname]=useState("")
+  const [defaultregionkname,setDefaultregionname]=useState("")
   const {type} = useSelector((state: any) => state.network);
 
   const login = localStorage.getItem('login');
@@ -57,7 +71,10 @@ const LinkDetailPage = () => {
       }
     },
   });
-
+  const [selectenetwork,setSelectednetwork]=useState("")
+  const [networklist, setNetworklist] = useState<networklisttype[]>([]);
+  const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
+  const [selectedregion,setSelectedregion]=useState("")
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [types, setType] = useState('');
@@ -194,6 +211,52 @@ try {
     }
   };
 
+
+
+  useEffect(() => {
+    const getrole = async () => {
+      const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+          Accept: 'application.json',
+          'Content-Type': 'application/json',
+        },
+      }).then(res => res.json());
+      setuserrole(role.role);
+    };
+    getrole();
+    const getnetworks = async () => {
+      const getstationdetail=await $Get(`otdr/link/${params.linkId!}`)
+      if(getstationdetail.status == 200){
+        const getstationdetaildata=await getstationdetail.json()
+        const response = await $Get(`otdr/network`);
+        if (response.status == 200) {
+          const responsedata = await response.json();
+          const Defaultnetworkname=responsedata.find((data:any) => data.id == getstationdetaildata.network_id)?.name;
+          setDefaultnetworkname(Defaultnetworkname || "select")
+          setNetworklist(responsedata);
+          const networkregionresponse=await $Get(`otdr/region/network/${responsedata.find((data:any) => data.id == getstationdetaildata.network_id)?.id}`)
+        if(networkregionresponse.status == 200){
+          const networkregionresponsedata=await networkregionresponse.json()
+          const Defaultegionname=networkregionresponsedata.find((data:any) => data.id == getstationdetaildata.region_id)?.name || "select"
+          setDefaultregionname(Defaultegionname)
+          setRegionlist(networkregionresponsedata)
+        }
+        }
+      } 
+    };
+    getnetworks();
+
+  }, []);
+
+  const onclicknetwork=async(id:string)=>{
+    setSelectednetwork(id)
+    const networkregionresponse=await $Get(`otdr/region/network/${id}`)
+    if(networkregionresponse.status == 200){
+      const networkregionresponsedata=await networkregionresponse.json()
+      setRegionlist(networkregionresponsedata)
+    }
+    }
   // ---------------------------------------------------------------
   return (
     <div className="relative flex h-[calc(100vh-220px)]  w-full flex-col">
@@ -230,6 +293,29 @@ try {
           </div>
         ) : null}
       </div>
+
+      <Description label="Network" items="start">
+            <Selectbox
+                defaultvalue={defaultnetworkname}
+                placeholder={defaultnetworkname}
+                onclickItem={(e: { value: string; label: string; }) => onclicknetwork(e.value)} 
+                options={networklist.map(data => ({ value: data.id, label: data.name }))}
+                borderColor={'black'}
+                classname="w-[28%] mt-[21px] h-[32px] rounded-[5px]"
+                   />
+            </Description>
+
+
+            <Description label="Region" items="start">
+            <Selectbox
+                defaultvalue={defaultregionkname}
+                placeholder={defaultregionkname}
+                onclickItem={(e: { value: string; label: string; }) => setSelectedregion(e.value)} 
+                options={regionlist.map(data => ({ value: data.id, label: data.name }))}
+                borderColor={'black'}
+                classname="w-[28%] mt-[21px] h-[32px] rounded-[5px]"
+                   />
+            </Description>
 
       <div className="relative mt-[20px] flex w-[430px] flex-row items-center justify-between ">
         <div className="w-[130px] text-sm text-black">Source</div>
