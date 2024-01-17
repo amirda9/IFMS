@@ -55,7 +55,6 @@ useEffect(()=>{
       <SimpleBtn link to="../edit-access">
         Add Shapefile
       </SimpleBtn>:null}
-      <SimpleBtn>Explore</SimpleBtn>
       <SimpleBtn>History</SimpleBtn>
       {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN'?
       <SimpleBtn>Save</SimpleBtn>:null}
