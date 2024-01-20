@@ -1,4 +1,3 @@
-
 import React, {useEffect, useRef, useState} from 'react';
 import Plot from 'react-plotly.js';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
@@ -26,10 +25,10 @@ import {deepcopy} from '~/util';
 import {BiPlus} from 'react-icons/bi';
 import {number} from 'yup';
 import {JSX} from 'react/jsx-runtime';
-import { useParams } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import { $Get } from '~/util/requestapi';
-import { getPrettyDateTime } from '~/util/time';
+import {useParams} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
+import {$Get} from '~/util/requestapi';
+import {getPrettyDateTime} from '~/util/time';
 import Plotly from 'plotly.js';
 type chatrtabtype = {
   name: string;
@@ -72,167 +71,167 @@ type eventstype = {
 
 const data = JSON.parse(
   JSON.stringify({
-    "id": "b9925d2b-1b2b-4738-ba4d-cc74463ed4c7",
-    "status": "SUCCESS",
-    "type": "on_demand",
-    "date": "2023-12-27 21:05:31",
-    "optical_route": {
-      "optical_route_name": "ibownyomsw",
-      "source_station_name": "station_0",
-      "destination_station_name": "station_3",
-      "rtu_name": "the_rtu"
+    id: 'b9925d2b-1b2b-4738-ba4d-cc74463ed4c7',
+    status: 'SUCCESS',
+    type: 'on_demand',
+    date: '2023-12-27 21:05:31',
+    optical_route: {
+      optical_route_name: 'ibownyomsw',
+      source_station_name: 'station_0',
+      destination_station_name: 'station_3',
+      rtu_name: 'the_rtu',
     },
-    "measurement_request": {
-      "priority": "measurement_low_priority",
-      "switch_ip": "10.1.60.17",
-      "switch_port": 2000,
-      "otdr_ip": "192.168.0.252",
-      "otdr_port": 8000,
-      "measurement_switch_port": 0,
-      "stp_distance_mode": "0",
-      "stp_distance": "5000",
-      "stp_pulse_width_mode": "0",
-      "stp_pulse_width": "30",
-      "stp_sampling_mode": "1",
-      "ior_refractivity": "1.54321",
-      "bsl2_scattering_coefficient": "-79.0",
-      "wls_wavelength": "1310",
-      "thr2_threshold": "-43.2",
-      "thf_threshold": "5.67",
-      "ths_threshold": "4.56",
-      "ala_mode": "0",
-      "ala_setting": "4",
-      "avg_mode": "1"
+    measurement_request: {
+      priority: 'measurement_low_priority',
+      switch_ip: '10.1.60.17',
+      switch_port: 2000,
+      otdr_ip: '192.168.0.252',
+      otdr_port: 8000,
+      measurement_switch_port: 0,
+      stp_distance_mode: '0',
+      stp_distance: '5000',
+      stp_pulse_width_mode: '0',
+      stp_pulse_width: '30',
+      stp_sampling_mode: '1',
+      ior_refractivity: '1.54321',
+      bsl2_scattering_coefficient: '-79.0',
+      wls_wavelength: '1310',
+      thr2_threshold: '-43.2',
+      thf_threshold: '5.67',
+      ths_threshold: '4.56',
+      ala_mode: '0',
+      ala_setting: '4',
+      avg_mode: '1',
     },
-    "gen_params": {
-      "language": "Chinese",
-      "cable_id": "",
-      "fiber_id": "",
-      "fiber_type": "SMF",
-      "nominal_wavelength": 1310,
-      "originating_location": "",
-      "terminating_location": "",
-      "cable_code": "",
-      "current_data_flag": "As-Built Condition",
-      "user_offset": 0.0,
-      "user_offset_distance": 0.0,
-      "operator": "",
-      "GenParams_comment": ""
+    gen_params: {
+      language: 'Chinese',
+      cable_id: '',
+      fiber_id: '',
+      fiber_type: 'SMF',
+      nominal_wavelength: 1310,
+      originating_location: '',
+      terminating_location: '',
+      cable_code: '',
+      current_data_flag: 'As-Built Condition',
+      user_offset: 0.0,
+      user_offset_distance: 0.0,
+      operator: '',
+      GenParams_comment: '',
     },
-    "sup_params": {
-      "supplier_name": "OPWILL",
-      "mainframe_id": "",
-      "mainframe_serial_num": "",
-      "module_id": "",
-      "module_serial_num": "02030263188117",
-      "software_revision": "4.0.0.2",
-      "other_information": ""
+    sup_params: {
+      supplier_name: 'OPWILL',
+      mainframe_id: '',
+      mainframe_serial_num: '',
+      module_id: '',
+      module_serial_num: '02030263188117',
+      software_revision: '4.0.0.2',
+      other_information: '',
     },
-    "fxd_params": {
-      "time": 1695922266,
-      "distance_unit": "meters",
-      "actual_wavelength": 1310.0,
-      "acquisition_offset": 0.0,
-      "acquisition_offset_distance": 0.0,
-      "used_pulse_width_num": 1,
-      "used_pulse_width": [30],
-      "data_space": [1250.0],
-      "data_points_num": [20591],
-      "group_index": 1.54321,
-      "backscatter_coef": -79.0,
-      "average_num": 27675,
-      "averaging_time": 3.0,
-      "acquisition_range": 4999.985941484438,
-      "acquisition_range_distance": 80000.0,
-      "front_panel_offset": 0.0,
-      "noise_floor_level": -13.0,
-      "noise_floor_scale_factor": 1.0,
-      "power_offset_first_point": 0.0,
-      "loss_threshold": 4.56,
-      "reflectance_threshold": -43.2,
-      "fiber_end_threshold": 5.67,
-      "trace_type": "Standard trace-single fiber",
-      "window_coordinates": [0, 0, 0, 0]
+    fxd_params: {
+      time: 1695922266,
+      distance_unit: 'meters',
+      actual_wavelength: 1310.0,
+      acquisition_offset: 0.0,
+      acquisition_offset_distance: 0.0,
+      used_pulse_width_num: 1,
+      used_pulse_width: [30],
+      data_space: [1250.0],
+      data_points_num: [20591],
+      group_index: 1.54321,
+      backscatter_coef: -79.0,
+      average_num: 27675,
+      averaging_time: 3.0,
+      acquisition_range: 4999.985941484438,
+      acquisition_range_distance: 80000.0,
+      front_panel_offset: 0.0,
+      noise_floor_level: -13.0,
+      noise_floor_scale_factor: 1.0,
+      power_offset_first_point: 0.0,
+      loss_threshold: 4.56,
+      reflectance_threshold: -43.2,
+      fiber_end_threshold: 5.67,
+      trace_type: 'Standard trace-single fiber',
+      window_coordinates: [0, 0, 0, 0],
     },
-    "key_events": {
-      "number_of_events": 3,
-      "end_to_end_loss": 1.54,
-      "end_to_end_marker_position_1": 0,
-      "end_to_end_marker_position_2": 11200,
-      "optical_return_loss": 0,
-      "optical_return_loss_end_to_end_marker_position_1": 0.0,
-      "optical_return_loss_end_to_end_marker_position_2": 0.0,
-      "events": [
+    key_events: {
+      number_of_events: 3,
+      end_to_end_loss: 1.54,
+      end_to_end_marker_position_1: 0,
+      end_to_end_marker_position_2: 11200,
+      optical_return_loss: 0,
+      optical_return_loss_end_to_end_marker_position_1: 0.0,
+      optical_return_loss_end_to_end_marker_position_2: 0.0,
+      events: [
         {
-          "event_number": 1,
-          "event_location": { "x": 0.0, "y": 25.979 },
-          "attenuation_coef_lead_in_fiber": 0.0,
-          "event_loss": 0.0,
-          "event_reflectance": -4294967.296,
-          "event_code": "Start of fiber",
-          "loss_measurment_technique": "Least squares method",
-          "marker_location_1": 0.0,
-          "marker_location_2": 0.0,
-          "marker_location_3": 0.11694782934014164,
-          "marker_location_4": 10.854973189433712,
-          "marker_location_5": 0.0,
-          "comment": ""
+          event_number: 1,
+          event_location: {x: 0.0, y: 25.979},
+          attenuation_coef_lead_in_fiber: 0.0,
+          event_loss: 0.0,
+          event_reflectance: -4294967.296,
+          event_code: 'Start of fiber',
+          loss_measurment_technique: 'Least squares method',
+          marker_location_1: 0.0,
+          marker_location_2: 0.0,
+          marker_location_3: 0.11694782934014164,
+          marker_location_4: 10.854973189433712,
+          marker_location_5: 0.0,
+          comment: '',
         },
         {
-          "event_number": 2,
-          "event_location": { "x": 1085.4973189433713, "y": 4.442500000000003 },
-          "attenuation_coef_lead_in_fiber": 0.7,
-          "event_loss": 0.5,
-          "event_reflectance": -37.158,
-          "event_code": "Reflective",
-          "loss_measurment_technique": "Least squares method",
-          "marker_location_1": 0.11694782934014164,
-          "marker_location_2": 10.854973189433712,
-          "marker_location_3": 10.971532487779367,
-          "marker_location_4": 20.79903546229612,
-          "marker_location_5": 10.854973189433712,
-          "comment": ""
+          event_number: 2,
+          event_location: {x: 1085.4973189433713, y: 4.442500000000003},
+          attenuation_coef_lead_in_fiber: 0.7,
+          event_loss: 0.5,
+          event_reflectance: -37.158,
+          event_code: 'Reflective',
+          loss_measurment_technique: 'Least squares method',
+          marker_location_1: 0.11694782934014164,
+          marker_location_2: 10.854973189433712,
+          marker_location_3: 10.971532487779367,
+          marker_location_4: 20.79903546229612,
+          marker_location_5: 10.854973189433712,
+          comment: '',
         },
         {
-          "event_number": 3,
-          "event_location": { "x": 2079.9035462296124, "y": 5.447500000000002 },
-          "attenuation_coef_lead_in_fiber": 0.282,
-          "event_loss": 0.5,
-          "event_reflectance": -42.719,
-          "event_code": "End of fiber",
-          "loss_measurment_technique": "Least squares method",
-          "marker_location_1": 10.971532487779367,
-          "marker_location_2": 20.79903546229612,
-          "marker_location_3": 20.915594760641778,
-          "marker_location_4": 23.34391347617628,
-          "marker_location_5": 20.79903546229612,
-          "comment": ""
-        }
-      ]
+          event_number: 3,
+          event_location: {x: 2079.9035462296124, y: 5.447500000000002},
+          attenuation_coef_lead_in_fiber: 0.282,
+          event_loss: 0.5,
+          event_reflectance: -42.719,
+          event_code: 'End of fiber',
+          loss_measurment_technique: 'Least squares method',
+          marker_location_1: 10.971532487779367,
+          marker_location_2: 20.79903546229612,
+          marker_location_3: 20.915594760641778,
+          marker_location_4: 23.34391347617628,
+          marker_location_5: 20.79903546229612,
+          comment: '',
+        },
+      ],
     },
-    "link_params": {
-      "number_of_landmarks": 1,
-      "landmarks": [
+    link_params: {
+      number_of_landmarks: 1,
+      landmarks: [
         {
-          "landmark_number": 1,
-          "landmark_code": "Other",
-          "landmark_location": 0,
-          "related_event_number": 1,
-          "longitude": 0,
-          "latitude": 0,
-          "fiber_correction_factor_lead_in_fiber": 0.0,
-          "sheath_marker_entering_landmark": 0,
-          "sheath_marker_leaving_landmark": 0,
-          "units_of_sheath_marker_leaving_landmark": "feet",
-          "mode_field_diameter_leaving_landmark": 88,
-          "comment": ""
-        }
-      ]
+          landmark_number: 1,
+          landmark_code: 'Other',
+          landmark_location: 0,
+          related_event_number: 1,
+          longitude: 0,
+          latitude: 0,
+          fiber_correction_factor_lead_in_fiber: 0.0,
+          sheath_marker_entering_landmark: 0,
+          sheath_marker_leaving_landmark: 0,
+          units_of_sheath_marker_leaving_landmark: 'feet',
+          mode_field_diameter_leaving_landmark: 88,
+          comment: '',
+        },
+      ],
     },
-    "datapoints": {
-      "number_of_points": 20591,
-      "number_of_used_scale_factors": 1,
-      "data_points": [
+    datapoints: {
+      number_of_points: 20591,
+      number_of_used_scale_factors: 1,
+      data_points: [
         [0.0, 25.979],
         [0.24283187155345026, 26.345],
         [0.4856637431069005, 26.762999999999998],
@@ -11304,9 +11303,8 @@ const data = JSON.parse(
         [2687.6631543535873, 0.0010000000000047748],
         [2687.905986225141, 6.774000000000001],
         [2688.1488180966944, 2.871000000000002],
-      
-      ]
-    }
+      ],
+    },
   }),
 );
 
@@ -11398,17 +11396,16 @@ const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
   },
 ];
 
-
-
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
-  const plotref=useRef()
+  const plotref = useRef();
   const svgRef = useRef<HTMLDivElement>(null);
-  const params=useParams()
+  const params = useParams();
   let location = useLocation();
-  const [chartdata,setChartdata]=useState<any>({})
+  const [chartdata, setChartdata] = useState<any>({});
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
+  const [allshapes,setAllshapes]=useState<any>([])
   const [mousecursor, setMousecursor] = useState(false);
   const [allcurveline, setAllcurveline] = useState<
     {
@@ -11417,35 +11414,34 @@ function Chart() {
     }[]
   >([]);
 
- 
-  useEffect(()=>{
+  useEffect(() => {
     // let data:any;
-    const getchartdata=async()=>{
+    const getchartdata = async () => {
       // const getdata = await $Get(
       //   `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
       // );
       // data = await getdata.json();
-    
+
       // if (getdata.status == 200) {
-        //  setChartdata(data)
-         setChartdata(data)
+      //  setChartdata(data)
+      setChartdata(data);
       // }
-    }
+    };
     try {
-      getchartdata()
+      getchartdata();
     } catch (error) {}
     // *******************************************************************
-     setChartdata(data)
-     let allpointsdata = data?.datapoints?.data_points?.map(
+    setChartdata(data);
+    let allpointsdata = data?.datapoints?.data_points?.map(
       (data: [number, number]) => ({x: data[0], y: data[1]}),
     );
-    const max_x =allpointsdata && Math.max(
-      ...allpointsdata?.map((o: {x: number; y: number}) => o.x),
-    );
+    const max_x =
+      allpointsdata &&
+      Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.x));
     setMaxx(max_x);
-    const max_y =allpointsdata && Math.max(
-      ...allpointsdata?.map((o: {x: number; y: number}) => o.y),
-    );
+    const max_y =
+      allpointsdata &&
+      Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.y));
     setMaxy(max_y);
     // -----------------------
     setAllcurveline([
@@ -11465,9 +11461,7 @@ function Chart() {
           location: 'start',
           event_number: data.key_events.events[i].event_number,
         });
-      } else if (
-        data.key_events.events[i].event_code == 'End of fiber'
-      ) {
+      } else if (data.key_events.events[i].event_code == 'End of fiber') {
         Arrowevents.push({
           x: data.key_events.events[i].event_location.x,
           y: data.key_events.events[i].event_location.y,
@@ -11478,6 +11472,177 @@ function Chart() {
       }
     }
     setArrowevents(Arrowevents);
+    // ###################################################################################################
+    let allshapesCopy=deepcopy(allshapes)
+    let elements: JSX.Element[] = [];
+    // if (!showeventdetail) {
+      Arrowevents?.forEach((point, index) => {
+        const X = point.x;
+        const Y = point.y!;
+        if (point.location == 'start') {
+          allshapesCopy.push( {
+            type: 'line',
+            x0:X, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X + 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y + 10, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X + 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X + 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X+15, // x coordinate of the second point
+            y1: Y - 11, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X + 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X+15, // x coordinate of the second point
+            y1: Y - 9, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X + 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X+15, // x coordinate of the second point
+            y1: Y + 9, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X + 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X+15, // x coordinate of the second point
+            y1: Y + 11, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          )
+        } else {
+          allshapesCopy.push( {
+            type: 'line',
+            x0:X, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X-20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y + 10, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X-20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X-20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X-15, // x coordinate of the second point
+            y1: Y - 11, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X-20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X-15, // x coordinate of the second point
+            y1: Y - 9, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X-20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X-15, // x coordinate of the second point
+            y1: Y + 9, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0:X-20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X-15, // x coordinate of the second point
+            y1: Y + 11, // y coordinate of the second point
+            line: {
+              color: 'blue', // color of the line
+              width: 2, // width of the line
+            },
+          },
+          )
+        }
+        setAllshapes(allshapesCopy)
+      });
+    // }
+
+    // ###################################################################################################
     // --------------------------------
     const Allevents = data?.key_events?.events;
     let items = [];
@@ -11536,8 +11701,8 @@ function Chart() {
       }
     }
     setTabelitems(items);
-  },[])
- 
+  }, []);
+
   // const get
 
   const [reightbar, setReightbar] = useState('Result');
@@ -11551,7 +11716,7 @@ function Chart() {
   const [tabelItems, setTabelitems] = useState<tabelItemstype[]>([]);
   const [maxy, setMaxy] = useState(0);
   const [selectedVerticalline, setSelectedVerticalline] = useState('');
-
+ const [showevents,setShowEwents]=useState(false)
   const [events, setEvents] = useState<
     {x: number; y: number; event_number?: number; type: string}[]
   >([]);
@@ -11578,8 +11743,6 @@ function Chart() {
     min: 0,
   });
 
-
-
   const [yScale, setYScale] = useState<any>({
     type: 'linear',
     min: 0,
@@ -11587,14 +11750,41 @@ function Chart() {
 
   // ---- func ------func --------------- func ---------------- func ------------- func --------
   const Events = () => {
-    let allevents = chartdata?.key_events?.events?.map(
-      (data: eventstype) => ({
-        x: data?.event_location?.x,
-        y: data?.event_location?.y,
-        event_number: data?.event_number,
-        type: 'event',
-      }),
-    );
+    if(showevents){
+
+    
+    }else{
+    //   <text
+    //   key={index}
+    //   x={X}
+    //   y={Y + 84}
+    //   fill="red"
+    //   fontSize={12}
+    //   textAnchor="middle">
+    //   {point!.event_number!}
+    // </text>,
+      let allevents = chartdata?.key_events?.events?.map((data: eventstype) => (
+        {
+          type: 'line',
+          x0:data?.event_location?.x, // x coordinate of the first point
+          y0: data?.event_location?.y+10, // y coordinate of the first point
+          x1: data?.event_location?.x, // x coordinate of the second point
+          y1: data?.event_location?.y-10, // y coordinate of the second point
+          line: {
+            color: 'green', // color of the line
+            width: 2, // width of the line
+          }
+        }
+      ));
+      setAllshapes((prev:any) => [...prev,...allevents])
+      setShowEwents(true)
+    }
+    // let allevents = chartdata?.key_events?.events?.map((data: eventstype) => ({
+    //   x: data?.event_location?.x,
+    //   y: data?.event_location?.y,
+    //   event_number: data?.event_number,
+    //   type: 'event',
+    // }));
 
     // for (let i = 0; i < chartdata.key_events.events.length; i++) {
     //   if (chartdata.key_events.events[i].event_code == 'Start of fiber') {
@@ -11617,7 +11807,7 @@ function Chart() {
     // }
     setShoweventdetail(false);
     setLeftverticaltab('Events');
-    setEvents(allevents);
+    // setEvents(allevents);
     // setVerticalLines(allevents);
   };
 
@@ -11718,19 +11908,61 @@ function Chart() {
   };
 
   const onclickevent = (event_number: number) => {
-   
     setShoweventdetail(true);
     const finevent = chartdata.key_events.events.find(
       (data: eventstype) => data.event_number == event_number,
     );
-;
-
-    setVerticalLines([
-      {x: finevent.marker_location_1, name: 'a', type: 'bigline'},
-      {x: finevent.marker_location_2, name: 'A', type: 'bigline'},
-      {x: finevent.marker_location_5, name: 'B', type: 'bigline'},
-      {x: finevent.marker_location_4, name: 'b', type: 'bigline'},
-    ]);
+    // setVerticalLines([
+    //   {x: finevent.marker_location_1, name: 'a', type: 'bigline'},
+    //   {x: finevent.marker_location_2, name: 'A', type: 'bigline'},
+    //   {x: finevent.marker_location_5, name: 'B', type: 'bigline'},
+    //   {x: finevent.marker_location_4, name: 'b', type: 'bigline'},
+    // ]);
+    setAllshapes([  {
+      type: 'line',
+      x0:finevent.marker_location_1, // x coordinate of the first point
+      y0: 10, // y coordinate of the first point
+      x1: finevent.marker_location_1, // x coordinate of the second point
+      y1: 1000, // y coordinate of the second point
+      line: {
+        color: 'blue', // color of the line
+        width: 2, // width of the line
+      },
+    },
+    {
+      type: 'line',
+      x0:finevent.marker_location_2, // x coordinate of the first point
+      y0: 10, // y coordinate of the first point
+      x1: finevent.marker_location_2, // x coordinate of the second point
+      y1: 1000, // y coordinate of the second point
+      line: {
+        color: 'blue', // color of the line
+        width: 2, // width of the line
+      },
+    },
+    {
+      type: 'line',
+      x0:finevent.marker_location_5, // x coordinate of the first point
+      y0: 10, // y coordinate of the first point
+      x1: finevent.marker_location_5, // x coordinate of the second point
+      y1: 1000, // y coordinate of the second point
+      line: {
+        color: 'blue', // color of the line
+        width: 2, // width of the line
+      },
+    },
+    {
+      type: 'line',
+      x0:finevent.marker_location_4, // x coordinate of the first point
+      y0: 10, // y coordinate of the first point
+      x1: finevent.marker_location_4, // x coordinate of the second point
+      y1: 1000, // y coordinate of the second point
+      line: {
+        color: 'blue', // color of the line
+        width: 2, // width of the line
+      },
+    }
+  ])
   };
 
   const eventhandleMouseMove = (event_number: number, e: any) => {
@@ -11779,17 +12011,17 @@ function Chart() {
 
   const movebigline = (name: string, direction: string) => {
     // if (isDraggingname == name) {
-      const verticalLinesCopy = deepcopy(verticalLines);
-      const findverticalindex = verticalLines.findIndex(
-        data => data.name && data.name == name,
-      );
-      verticalLinesCopy[findverticalindex].x =
-        direction == 'right'
-          ? verticalLines[findverticalindex].x + 10
-          : verticalLines[findverticalindex].x - 10;
-      // x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
+    const verticalLinesCopy = deepcopy(verticalLines);
+    const findverticalindex = verticalLines.findIndex(
+      data => data.name && data.name == name,
+    );
+    verticalLinesCopy[findverticalindex].x =
+      direction == 'right'
+        ? verticalLines[findverticalindex].x + 10
+        : verticalLines[findverticalindex].x - 10;
+    // x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
 
-      setVerticalLines(verticalLinesCopy);
+    setVerticalLines(verticalLinesCopy);
     // }
   };
 
@@ -11838,6 +12070,7 @@ function Chart() {
 
     return elements;
   };
+
 
   const Arrowline = ({xScale, yScale}: any) => {
     let elements: JSX.Element[] = [];
@@ -12136,7 +12369,7 @@ function Chart() {
     width: Math.abs(endX - startX) + 'px', // عرض برابر با فاصله افقی شروع و پایان
     height: Math.abs(endY - startY) + 'px', // ارتفاع برابر با فاصله عمودی شروع و پایان
     left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
-    top: Math.min(startY-80+scrollValue, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
+    top: Math.min(startY - 80 + scrollValue, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
     border: '1px solid red', // حاشیه قرمز رنگ
     // موقعیت نسبی به div container
   };
@@ -12210,29 +12443,28 @@ function Chart() {
     );
   };
 
-
-  const handelMouseup2=()=>{
-    setStartDraw(false)
+  const handelMouseup2 = () => {
+    setStartDraw(false);
     const square = svgRef;
 
     // گرفتن مختصات مربع نسبت به صفحه مرورگر
     const rect: any = square?.current?.getBoundingClientRect();
     // setYvalue(((startX+endX)/2)/ ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min)
-    const xstart=(startX-158)/ ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
-    const xend=(endX-158)/ ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
-    const ystart=-(startY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
-    yScale.min;
-    const yend=-(endY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
-    yScale.min;
-  setYvalue(yend)
+    const xstart =
+      (startX - 158) / ((rect.width - rect.x) / (maxx - xScale.min)) +
+      xScale.min;
+    const xend =
+      (endX - 158) / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
+    const ystart =
+      -(startY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min;
+    const yend =
+      -(endY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min;
+    setYvalue(yend);
     // left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
     // top: Math.min(startY-80, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
     // border: '1px solid red', // حاشیه قرمز رنگ
-  }
+  };
 
-
-
- 
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
@@ -12293,7 +12525,7 @@ function Chart() {
               />
               <img
                 onClick={() => {
-                  zoom(false, 1), setbasescale(2),setRectangelzoom(false);
+                  zoom(false, 1), setbasescale(2), setRectangelzoom(false);
                 }}
                 src={Vector1}
                 className="mt-[15px] h-[25.5px] w-[30px] cursor-pointer"
@@ -12317,41 +12549,47 @@ function Chart() {
             <div
               onMouseDown={handleMouseDown2}
               onMouseMove={handleMouseMove2}
-                onMouseUp={handelMouseup2}
+              onMouseUp={handelMouseup2}
               ref={svgRef}
               // onMouseMove={e => getchartcoordinate(e)}
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
-
-<Plot
-
-onHover={(e)=>console.log("😎",e)}
-className='w-full h-[600px]'
-      data={[
-        {
-          x: allcurveline[0]?.data?.map(dat => dat.x),
-          y: allcurveline[0]?.data?.map(dat => dat.y),
-          type: 'scatter',
-          mode: 'lines+markers',
-          marker: {color: 'red'},
-        },
-        // {type: 'line', x: [1, 2, 3], y: [2, 5, 3]},
-      ]}
-      layout={{uirevision: 'constant', title: 'A Fancy Plot',  shapes: [
-        {
-        type: 'line',
-        x0: 2, // x coordinate of the first point
-        y0: 20, // y coordinate of the first point
-        x1: 0.5, // x coordinate of the second point
-        y1:25, // y coordinate of the second point
-        line: {
-        color: 'blue', // color of the line
-        width: 2, // width of the line
-        },
-        },
-        ],}}
-    />
+              <Plot
+        
+      
+             onHover={e => console.log('😎', e)}
+                className="h-[600px] w-full"
+                data={[
+                  {
+                    x: allcurveline[0]?.data?.map(dat => dat.x),
+                    y: allcurveline[0]?.data?.map(dat => dat.y),
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    marker: {color: 'red'},
+                  },
+                  // {type: 'line', x: [1, 2, 3], y: [2, 5, 3]},
+                ]}
+                layout={{
+                  uirevision: 'constant',
+                  title: 'A Fancy Plot',
+                  clickmode: 'event+select',
+                  shapes:allshapes
+                  // [
+                  //   {
+                  //     type: 'line',
+                  //     x0: 2, // x coordinate of the first point
+                  //     y0: 20, // y coordinate of the first point
+                  //     x1: 0.5, // x coordinate of the second point
+                  //     y1: 25, // y coordinate of the second point
+                  //     line: {
+                  //       color: 'blue', // color of the line
+                  //       width: 2, // width of the line
+                  //     },
+                  //   },
+                  // ],
+                }}
+              />
 
               {/* <ResponsiveLine
                 data={allcurveline}
@@ -12411,7 +12649,10 @@ className='w-full h-[600px]'
         <div className="w-[370px]">
           {reightbar == 'Result' ? (
             <Resultdata
-               Date={(getPrettyDateTime(chartdata?.date).split(" ")[0]).replace("-",'/').replace("-",'/')}
+              Date={getPrettyDateTime(chartdata?.date)
+                .split(' ')[0]
+                .replace('-', '/')
+                .replace('-', '/')}
               Length={(
                 chartdata?.key_events?.events[
                   chartdata.key_events.events.length - 1
@@ -12463,7 +12704,10 @@ className='w-full h-[600px]'
                   <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
                     <MdOutlineArrowBackIos
                       size={40}
-                      onClick={() => {setIsDraggingname(selectedVerticalline),movebigline(selectedVerticalline, 'left')}}
+                      onClick={() => {
+                        setIsDraggingname(selectedVerticalline),
+                          movebigline(selectedVerticalline, 'left');
+                      }}
                     />
                   </button>
                   <button
@@ -12513,8 +12757,11 @@ className='w-full h-[600px]'
                   <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
                     <MdOutlineArrowBackIos
                       size={40}
-                      onClick={() => {setIsDraggingname(selectedVerticalline),movebigline(selectedVerticalline, 'right')}}
-                  onMouseLeave={()=>setIsDraggingname("")}
+                      onClick={() => {
+                        setIsDraggingname(selectedVerticalline),
+                          movebigline(selectedVerticalline, 'right');
+                      }}
+                      onMouseLeave={() => setIsDraggingname('')}
                       className="rotate-180"
                     />
                   </button>
@@ -12525,10 +12772,15 @@ className='w-full h-[600px]'
                 <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
                     <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                    Avg. A-B Loss:
+                      Avg. A-B Loss:
                     </span>
                     <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                    {((finddata('B')[1]-finddata('A')[1])/(finddata('B')[0]-finddata('A')[0])).toString().substring(0, 9)}
+                      {(
+                        (finddata('B')[1] - finddata('A')[1]) /
+                        (finddata('B')[0] - finddata('A')[0])
+                      )
+                        .toString()
+                        .substring(0, 9)}
                     </span>
                   </div>
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
@@ -12536,7 +12788,7 @@ className='w-full h-[600px]'
                       Four-Point Loss:
                     </span>
                     <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                    0.384 dB
+                      0.384 dB
                     </span>
                   </div>
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
@@ -12571,7 +12823,6 @@ className='w-full h-[600px]'
             items={tabelItems}
             dynamicColumns={['index']}
             renderDynamicColumn={({key, value}) => {
-             
               if (key == 'index') {
                 if (value.index == '') {
                   return (
@@ -12672,5 +12923,32 @@ className='w-full h-[600px]'
 
 export default Chart;
 
+// const handleClick = (data) => { // define a callback function for click event
+//   if (data.shapes.length > 0) { // check if there is at least one shape clicked
+//   const shape = data.shapes[0]; // get the first shape
+//   alert('You clicked on the blue line!'); // show an alert with a custom message
+//   }
+//   };
 
+// const handleMousedown = (data) => { // define a callback function for mousedown event
+// if (data.shapes.length > 0) { // check if there is at least one shape mousedowned
+// const shape = data.shapes[0]; // get the first shape
+// alert('You mousedowned on the blue line!'); // show an alert with a custom message
+// }
+// };
 
+// const layout = {
+// // other layout properties
+// shapes: [...], // the same shapes as before
+// clickmode: 'event+select', // enable click event
+// dragmode: 'select', // enable mousedown event
+// };
+
+// return (
+// <Plot
+// data={...}
+// layout={layout}
+// onClick={handleClick} // add the click event handler
+// onMousedown={handleMousedown} // add the mousedown event handler
+// />
+// );
