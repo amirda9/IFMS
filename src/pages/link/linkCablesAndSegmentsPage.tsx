@@ -417,7 +417,7 @@ const LinkCablesAndSegmentsPage = () => {
             <div key={data.id} className="relative z-50 w-full bg-b">
               <div
                 style={{zIndex: 20}}
-                className="relative z-40 my-8 w-9/12  rounded-md bg-gis p-4">
+                className="relative z-40 my-8 w-full  rounded-md bg-gis p-4">
                 <div
                   className={`absolute left-[-30px] top-0 z-40 ${
                     idd == parentcabl.cables.length - 1
@@ -442,6 +442,17 @@ const LinkCablesAndSegmentsPage = () => {
 
                     <Description
                       label="Number of Cores"
+                      labelClassName="w-fit pr-2"
+                      className="flex-grow-0 pr-14">
+                      <TextInput
+                        value={data.number_of_cores}
+                        onChange={e => setcores(data.id, e.target.value)}
+                        type="number"
+                        className="w-28 "
+                      />
+                    </Description>
+                    <Description
+                      label="Helix Factor:"
                       labelClassName="w-fit pr-2"
                       className="flex-grow-0 pr-14">
                       <TextInput
@@ -488,13 +499,13 @@ const LinkCablesAndSegmentsPage = () => {
                 {open[idd] ? (
                   <Fragment>
                     <div className="flex-grow-1 mt-8 flex flex-row justify-between ">
-                      <div className="flex w-full flex-row">
+                      {/* <div className="flex w-full flex-row">
                         <span className="w-1/5 text-center">Start (km)</span>
                         <span className="w-1/5 text-center">Length (km)</span>
                         <span className="w-1/5 text-center">Offset (km)</span>
                         <span className="w-1/5 text-center">Loss</span>
                         <span className="w-1/5 text-center">Fiber Type</span>
-                      </div>
+                      </div> */}
                       <div className="flex flex-row gap-x-12">
                         <IoTrashOutline
                           size={24}
@@ -508,12 +519,23 @@ const LinkCablesAndSegmentsPage = () => {
                       // console.log(data.segments[index-1],'😁');
 
                       return (
-                        <div className="w-full" key={index}>
+                        <div className="w-full bg-[#ACD3DE] p-4 mb-[15px] rounded-[10px]" key={index}>
                           <div
-                            className="flex-grow-1 flex flex-row justify-between "
+                            className="flex relative flex-col justify-between pr-[40px]"
                             key={index}>
-                            <div className="flex w-full flex-row">
-                              <div className="flex w-1/5 justify-center">
+                                <div className="flex flex-row gap-x-12 absolute top-[5px] right-[10px]">
+                              <IoTrashOutline
+                                onClick={() =>
+                                  deletecabledata(data.id, dataa.id)
+                                }
+                                size={24}
+                                className="cursor-pointer  text-red-500   active:text-red-300"
+                              />
+                           
+                            </div>
+                            <div className="flex w-full flex-row justify-between">
+                            <div className="flex w-[65%] flex-row justify-between ">
+                            <span className="mr-[5px] text-left">Connection Type</span>
                                 <TextInput
                                   defaultValue={10}
                                   value={
@@ -534,11 +556,72 @@ const LinkCablesAndSegmentsPage = () => {
                                             'start',
                                           )
                                   }
-                                  className="w-28"
+                                  className="w-[80%]"
+                                  type="number"
+                                />
+                            </div>
+                              <div className="flex w-[30%]   box-border flex-row justify-between ">
+                                <span className="mr-[5px] w-[100px]  text-left">
+                                  Connection Loss (dB)
+                                </span>
+                                <TextInput
+                                  defaultValue={10}
+                                  value={
+                                    index == 0
+                                      ? 0
+                                      : dataa.start == 0
+                                      ? data.segments[index - 1].length
+                                      : dataa.start
+                                  }
+                                  onChange={
+                                    index == 0
+                                      ? () => {}
+                                      : e =>
+                                          setcableslicecabsegment(
+                                            data.id,
+                                            dataa.id,
+                                            e.target.value,
+                                            'start',
+                                          )
+                                  }
+                                  className="w-[60%]"
                                   type="number"
                                 />
                               </div>
-                              <div className="flex w-1/5 justify-center">
+                            </div>
+                            <div className="flex w-full flex-row justify-between">
+                              <div className="flex w-[30%] flex-row justify-between ">
+                                <span className="mr-[5px]  text-left">
+                                  Start (km)
+                                </span>
+                                <TextInput
+                                  defaultValue={10}
+                                  value={
+                                    index == 0
+                                      ? 0
+                                      : dataa.start == 0
+                                      ? data.segments[index - 1].length
+                                      : dataa.start
+                                  }
+                                  onChange={
+                                    index == 0
+                                      ? () => {}
+                                      : e =>
+                                          setcableslicecabsegment(
+                                            data.id,
+                                            dataa.id,
+                                            e.target.value,
+                                            'start',
+                                          )
+                                  }
+                                  className="w-[60%]"
+                                  type="number"
+                                />
+                              </div>
+                              <div className="flex w-[30%] flex-row justify-between">
+                                <span className="mr-[5px] text-left ">
+                                  Length (km)
+                                </span>
                                 <TextInput
                                   value={dataa.length}
                                   onChange={
@@ -552,11 +635,14 @@ const LinkCablesAndSegmentsPage = () => {
                                             'length',
                                           )
                                   }
-                                  className="w-28"
+                                  className="w-[60%]"
                                   type="number"
                                 />
                               </div>
-                              <div className="flex w-1/5 justify-center">
+                              <div className="flex w-[30%] justify-between">
+                                <span className="mr-[5px]  text-left">
+                                  Offset (km)
+                                </span>
                                 <TextInput
                                   value={dataa.offset}
                                   onChange={e =>
@@ -567,11 +653,16 @@ const LinkCablesAndSegmentsPage = () => {
                                       'offset',
                                     )
                                   }
-                                  className="w-28"
+                                  className="w-[60%]"
                                   type="number"
                                 />
                               </div>
-                              <div className="flex w-1/5 justify-center">
+                            </div>
+                            <div className="mt-2 flex w-full flex-row justify-between">
+                              <div className="flex w-[30%] justify-between">
+                                <span className="mr-[5px]  text-left">
+                                  Fiber Type
+                                </span>
                                 <TextInput
                                   value={dataa.loss}
                                   onChange={e =>
@@ -582,12 +673,15 @@ const LinkCablesAndSegmentsPage = () => {
                                       'loss',
                                     )
                                   }
-                                  className="w-28"
+                                  className="w-[60%]"
                                   type="number"
                                 />
                               </div>
 
-                              <div className="flex w-1/5 justify-center">
+                              <div className="flex w-[30%] justify-between">
+                                <span className="mr-[5px]  text-left">
+                                  Loss
+                                </span>
                                 <Select
                                   value={data.loss}
                                   onChange={e =>
@@ -598,7 +692,7 @@ const LinkCablesAndSegmentsPage = () => {
                                       'fiber_type',
                                     )
                                   }
-                                  className="w-28"
+                                  className="w-[60%]"
                                   // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
                                 >
                                   <option value="" className="hidden">
@@ -616,22 +710,14 @@ const LinkCablesAndSegmentsPage = () => {
                                   <option value="SMF">SMF</option>
                                 </Select>
                               </div>
+                              <div className="flex w-[30%] justify-between"></div>
                             </div>
-                            <div className="flex flex-row gap-x-12">
-                              <IoTrashOutline
-                                onClick={() =>
-                                  deletecabledata(data.id, dataa.id)
-                                }
-                                size={24}
-                                className="cursor-pointer  text-red-500   active:text-red-300"
-                              />
-                              <span className="w-12" />
-                            </div>
+                          
                           </div>
 
                           <Addbox
                             classname={
-                              'ml-[calc(5%-56px)]  h-[30px] xl:ml-[calc(6%-56px)]'
+                              'ml-[calc(5%-56px)] absolute bottom-[0px] left-0 w-[calc(100%-20px)]  h-[30px] xl:ml-[calc(6%-56px)]'
                             }
                             onclick={() => addcabledata(data.id, index)}
                           />
@@ -660,7 +746,7 @@ const LinkCablesAndSegmentsPage = () => {
           );
         })}
       </div>
-      
+
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
         {userrole == 'superuser' ||
         state?.detail?.data?.access?.access == 'ADMIN' ||
