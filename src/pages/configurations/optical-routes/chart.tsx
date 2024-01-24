@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Plot from 'react-plotly.js';
+import Plotly from 'plotly.js'
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import {ResponsiveLine} from '@nivo/line';
 import Resultdata from '~/components/chart/result';
@@ -29,7 +30,6 @@ import {useParams} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
 import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
-import Plotly from 'plotly.js';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -11490,6 +11490,7 @@ function Chart() {
               color: 'blue', // color of the line
               width: 2, // width of the line
             },
+         
           },
           {
             type: 'line',
@@ -11497,6 +11498,7 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y + 10, // y coordinate of the second point
+            
             line: {
               color: 'blue', // color of the line
               width: 2, // width of the line
@@ -11768,11 +11770,15 @@ function Chart() {
           type: 'line',
           x0:data?.event_location?.x, // x coordinate of the first point
           y0: data?.event_location?.y+10, // y coordinate of the first point
-          x1: data?.event_location?.x, // x coordinate of the second point
-          y1: data?.event_location?.y-10, // y coordinate of the second point
+          x1: data?.event_location?.x, // x coordinate of the second point,
+          y1: data?.event_location?.y-10, // y coordinate of the first point
+          editable:true,
+          onclickevent:(e:any)=> console.log("✈️dddd",e),
           line: {
+  
+            editable:true,
             color: 'green', // color of the line
-            width: 2, // width of the line
+            width: 10, // width of the line
           }
         }
       ));
@@ -11926,7 +11932,7 @@ function Chart() {
       y1: 1000, // y coordinate of the second point
       line: {
         color: 'blue', // color of the line
-        width: 2, // width of the line
+        width: 10, // width of the line
       },
     },
     {
@@ -11937,7 +11943,7 @@ function Chart() {
       y1: 1000, // y coordinate of the second point
       line: {
         color: 'blue', // color of the line
-        width: 2, // width of the line
+        width: 10, // width of the line
       },
     },
     {
@@ -11948,7 +11954,7 @@ function Chart() {
       y1: 1000, // y coordinate of the second point
       line: {
         color: 'blue', // color of the line
-        width: 2, // width of the line
+        width: 10, // width of the line
       },
     },
     {
@@ -11959,7 +11965,7 @@ function Chart() {
       y1: 1000, // y coordinate of the second point
       line: {
         color: 'blue', // color of the line
-        width: 2, // width of the line
+        width: 10, // width of the line
       },
     }
   ])
@@ -12464,6 +12470,99 @@ function Chart() {
     // top: Math.min(startY-80, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
     // border: '1px solid red', // حاشیه قرمز رنگ
   };
+// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+var data11 = [
+  {
+    x: [
+      '2015-02-01', '2015-02-02', '2015-02-03', '2015-02-04', '2015-02-05',
+      '2015-02-06', '2015-02-07', '2015-02-08', '2015-02-09', '2015-02-10',
+      '2015-02-11', '2015-02-12', '2015-02-13', '2015-02-14', '2015-02-15',
+      '2015-02-16', '2015-02-17', '2015-02-18', '2015-02-19', '2015-02-20',
+      '2015-02-21', '2015-02-22', '2015-02-23', '2015-02-24', '2015-02-25',
+      '2015-02-26', '2015-02-27', '2015-02-28',
+    ],
+    y: [
+      14, 17, 8, 4, 7, 10, 12, 14, 12, 11, 10, 9, 18, 14, 14, 16, 13, 8, 8,
+      7, 7, 3, 9, 9, 4, 13, 9, 6,
+    ],
+    mode: 'line',
+  },
+];
+
+var layout11 = {
+  title: 'Product price changes and revenue growth',
+  xaxis: { title: 'Date' },
+  yaxis: { title: 'Revenue Growth' },
+  dragmode: 'drawline',
+
+  shapes: [
+    {
+      type: 'rect',
+      xref: 'x',
+      yref: 'paper',
+      x0: '2015-02-02',
+      y0: 0,
+      x1: '2015-02-08',
+      y1: 1,
+      fillcolor: '#d3d3d3',
+      opacity: 0.2,
+      editable: true,
+      line: {
+        width: 0,
+      },
+      label: {
+        text: 'Price drop',
+        font: { size: 10, color: 'green' },
+        textposition: 'top center',
+      },
+    },
+    {
+      type: 'line',
+      x0: '2015-02-01',
+      y0: 8,
+      x1: '2015-02-28',
+      y1: 8,
+      fillcolor: '#d3d3d3',
+      opacity: 0.2,
+      editable: true,
+      label: {
+        text: 'January average',
+        yanchor: 'top',
+      },
+    },
+  ],
+  newshape: { label: { text: 'New shape text' } },
+  height: 500,
+  width: 500,
+};
+
+var config = { 'modeBarButtonsToAdd': [
+  'drawline',
+  'drawopenpath',
+  'drawclosedpath',
+  'drawcircle',
+  'drawrect',
+  'eraseshape'
+  ]
+};
+
+
+//   var myPlot = document.getElementById('myDiv'),
+//     x = [1, 2, 3, 4, 5],
+//     y = [10, 20, 30, 20, 10],
+//     data = [{x:x, y:y, type:'scatter',
+//              mode:'markers', marker:{size:20}
+//             }],
+//     layout = {hovermode:'closest',
+//               title:'Click on Points'
+//      };
+
+// Plotly.newPlot('myDiv', data, layout);
+
+// plotref?.current?.on('plotly_click', function(){
+//     alert('You clicked this Plotly chart!');
+// });
+console.log("🌷",plotref?.current);
 
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
@@ -12547,18 +12646,24 @@ function Chart() {
         <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
-              onMouseDown={handleMouseDown2}
-              onMouseMove={handleMouseMove2}
-              onMouseUp={handelMouseup2}
-              ref={svgRef}
+              // onMouseDown={handleMouseDown2}
+              // onMouseMove={handleMouseMove2}
+              // onMouseUp={handelMouseup2}
+              // ref={svgRef}
               // onMouseMove={e => getchartcoordinate(e)}
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
-              <Plot
-        
-      
-             onHover={e => console.log('😎', e)}
+
+<Plot
+// data={data11}
+// layout={layout11}
+// />
+onRelayout={(e)=>console.log("🦞",e)}
+// onClick={(e)=> console.log("✈️",e)}
+onHover={(e)=> console.log("✈️",e)}
+//  onRelayouting={(e)=>console.log("🦞",e)}
+              // onHover={e => alert("hhh")}
                 className="h-[600px] w-full"
                 data={[
                   {
@@ -12568,82 +12673,29 @@ function Chart() {
                     mode: 'lines+markers',
                     marker: {color: 'red'},
                   },
-                  // {type: 'line', x: [1, 2, 3], y: [2, 5, 3]},
+                
                 ]}
+                
                 layout={{
+                 
                   uirevision: 'constant',
                   title: 'A Fancy Plot',
                   clickmode: 'event+select',
+                  dragmode: false,
                   shapes:allshapes
-                  // [
-                  //   {
-                  //     type: 'line',
-                  //     x0: 2, // x coordinate of the first point
-                  //     y0: 20, // y coordinate of the first point
-                  //     x1: 0.5, // x coordinate of the second point
-                  //     y1: 25, // y coordinate of the second point
-                  //     line: {
-                  //       color: 'blue', // color of the line
-                  //       width: 2, // width of the line
-                  //     },
-                  //   },
-                  // ],
+             
                 }}
-              />
+              /> 
 
-              {/* <ResponsiveLine
-                data={allcurveline}
-                margin={{top: 10, right: 50, bottom: 40, left: 50}}
-                xScale={xScale}
-                yScale={yScale}
-                colors={({id}) => getColorForId(id)}
-                xFormat="d"
-                curve="linear"
-
-                // enableArea={true}
-                // debugSlices={false}
-                enableCrosshair={false}
-                // ref={svgRef}
-                onMouseMove={(point, event) => {
-                  getchartcoordinate(event);
-                  // const  y  = event.nativeEvent.clientY;
-                  // setYvalue((y-100)/65)
-                  // console.log(point, 'point');
-                }}
-                lineWidth={3}
-                useMesh={!mousecursor}
-                layers={[
-                  'grid',
-                  'markers',
-                  'axes',
-                  'areas',
-                  'crosshair',
-                  'lines',
-
-                  'points',
-                  'slices',
-               'mesh',
-                  'legends',
-                  VerticalLine,
-                  Eventline,
-                  Arrowline,
-                ]}
-                // markers={markers}
-                // enablePoints={true}
-                pointSize={0.1}
-                pointColor={{theme: 'background'}}
-                pointBorderWidth={2}
-                pointBorderColor={{from: 'serieColor'}}
-              /> */}
             </div>
           </div>
 
-          <div className="relative mt-[30px] flex h-[10px] w-[720px] bg-[#18C047]">
+          {/* <div className="relative mt-[30px] flex h-[10px] w-[720px] bg-[#18C047]">
             <div className="absolute left-0 top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
             <div className="absolute right-0  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
             <div className="absolute right-[100px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
             <div className="absolute right-[150px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
-          </div>
+          </div> */}
         </div>
         {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}
         <div className="w-[370px]">
@@ -12952,3 +13004,5 @@ export default Chart;
 // onMousedown={handleMousedown} // add the mousedown event handler
 // />
 // );
+
+
