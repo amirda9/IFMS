@@ -68,10 +68,7 @@ const LinkPointsPage = () => {
     },
   });
 
-
   let linkDetail = state.detail;
-  console.log(linkDetail,'🥴');
-  
 
   useEffect(() => {
     const all =
@@ -84,8 +81,6 @@ const LinkPointsPage = () => {
     }
     setlinkpoints(points);
   }, []);
-
-
 
   const changelatitude = (id: number, x: string, name: string) => {
     let beforadddata = JSON.parse(JSON.stringify(linkpoints));
@@ -107,8 +102,6 @@ const LinkPointsPage = () => {
     setlinkpoints(data);
   };
 
-
-
   const Addlinkpoints = (index: number) => {
     let beforadddata = JSON.parse(JSON.stringify(linkpoints));
     let newArray = beforadddata.map(function (item: any) {
@@ -129,7 +122,6 @@ const LinkPointsPage = () => {
       return a.id - b.id;
     });
     setlinkpoints(sortarray);
-
   };
 
   const savepoints = () => {
@@ -137,7 +129,6 @@ const LinkPointsPage = () => {
       latitude: data.latitude,
       longitude: data.longitude,
     }));
-
 
     const newlink = {
       name: linkDetail?.data?.name || '',
@@ -187,6 +178,11 @@ const LinkPointsPage = () => {
           <div className="w-full  border-t-[2px] border-dashed  border-[#32C65D]"></div>
         </div>
       )}
+      <div className="relative my-4 flex w-[677px] flex-row  items-center justify-between rounded-md p-4">
+        <span>index</span>
+        <div className="mr-[90px] w-[246px] text-center">Latitude</div>
+        <div className="mr-[90px] w-[246px] text-center">Longitude</div>
+      </div>
       {linkpoints.map((data, index) => (
         <div
           key={index}
@@ -205,13 +201,19 @@ const LinkPointsPage = () => {
           <TextInput
             value={data.longitude}
             type="number"
-            onChange={ data.fix == true && (index == linkpoints.length - 1 || index == 0)
-              ? () => {}
-              :e => changelatitude(data.id, e.target.value, 'longitude')}
+            onChange={
+              data.fix == true && (index == linkpoints.length - 1 || index == 0)
+                ? () => {}
+                : e => changelatitude(data.id, e.target.value, 'longitude')
+            }
             className="w-[246px]"
           />
           <IoTrashOutline
-            onClick={data.fix == true && (index == linkpoints.length - 1 || index ==0)?()=>{}:() => deletpoints(data.id)}
+            onClick={
+              data.fix == true && (index == linkpoints.length - 1 || index == 0)
+                ? () => {}
+                : () => deletpoints(data.id)
+            }
             size={24}
             className="cursor-pointer  text-red-500  active:text-red-300"
           />
