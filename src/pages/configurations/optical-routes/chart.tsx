@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Plot from 'react-plotly.js';
-import Plotly from 'plotly.js'
+import Plotly from 'plotly.js';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import {ResponsiveLine} from '@nivo/line';
 import Resultdata from '~/components/chart/result';
@@ -11405,7 +11405,7 @@ function Chart() {
   const [chartdata, setChartdata] = useState<any>({});
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
-  const [allshapes,setAllshapes]=useState<any>([])
+  const [allshapes, setAllshapes] = useState<any>([]);
   const [mousecursor, setMousecursor] = useState(false);
   const [allcurveline, setAllcurveline] = useState<
     {
@@ -11473,16 +11473,17 @@ function Chart() {
     }
     setArrowevents(Arrowevents);
     // ###################################################################################################
-    let allshapesCopy=deepcopy(allshapes)
+    let allshapesCopy = deepcopy(allshapes);
     let elements: JSX.Element[] = [];
     // if (!showeventdetail) {
-      Arrowevents?.forEach((point, index) => {
-        const X = point.x;
-        const Y = point.y!;
-        if (point.location == 'start') {
-          allshapesCopy.push( {
+    Arrowevents?.forEach((point, index) => {
+      const X = point.x;
+      const Y = point.y!;
+      if (point.location == 'start') {
+        allshapesCopy.push(
+          {
             type: 'line',
-            x0:X, // x coordinate of the first point
+            x0: X, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
@@ -11490,15 +11491,14 @@ function Chart() {
               color: 'blue', // color of the line
               width: 2, // width of the line
             },
-         
           },
           {
             type: 'line',
-            x0:X + 20, // x coordinate of the first point
+            x0: X + 20, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y + 10, // y coordinate of the second point
-            
+
             line: {
               color: 'blue', // color of the line
               width: 2, // width of the line
@@ -11506,7 +11506,7 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X + 20, // x coordinate of the first point
+            x0: X + 20, // x coordinate of the first point
             y0: Y - 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
@@ -11517,9 +11517,9 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X + 20, // x coordinate of the first point
+            x0: X + 20, // x coordinate of the first point
             y0: Y - 10, // y coordinate of the first point
-            x1: X+15, // x coordinate of the second point
+            x1: X + 15, // x coordinate of the second point
             y1: Y - 11, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
@@ -11528,9 +11528,9 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X + 20, // x coordinate of the first point
+            x0: X + 20, // x coordinate of the first point
             y0: Y - 10, // y coordinate of the first point
-            x1: X+15, // x coordinate of the second point
+            x1: X + 15, // x coordinate of the second point
             y1: Y - 9, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
@@ -11539,9 +11539,9 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X + 20, // x coordinate of the first point
+            x0: X + 20, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
-            x1: X+15, // x coordinate of the second point
+            x1: X + 15, // x coordinate of the second point
             y1: Y + 9, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
@@ -11550,20 +11550,21 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X + 20, // x coordinate of the first point
+            x0: X + 20, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
-            x1: X+15, // x coordinate of the second point
+            x1: X + 15, // x coordinate of the second point
             y1: Y + 11, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
               width: 2, // width of the line
             },
           },
-          )
-        } else {
-          allshapesCopy.push( {
+        );
+      } else {
+        allshapesCopy.push(
+          {
             type: 'line',
-            x0:X, // x coordinate of the first point
+            x0: X, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
@@ -11574,7 +11575,7 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X-20, // x coordinate of the first point
+            x0: X - 20, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y + 10, // y coordinate of the second point
@@ -11585,7 +11586,7 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X-20, // x coordinate of the first point
+            x0: X - 20, // x coordinate of the first point
             y0: Y - 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
@@ -11596,9 +11597,9 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X-20, // x coordinate of the first point
+            x0: X - 20, // x coordinate of the first point
             y0: Y - 10, // y coordinate of the first point
-            x1: X-15, // x coordinate of the second point
+            x1: X - 15, // x coordinate of the second point
             y1: Y - 11, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
@@ -11607,9 +11608,9 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X-20, // x coordinate of the first point
+            x0: X - 20, // x coordinate of the first point
             y0: Y - 10, // y coordinate of the first point
-            x1: X-15, // x coordinate of the second point
+            x1: X - 15, // x coordinate of the second point
             y1: Y - 9, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
@@ -11618,9 +11619,9 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X-20, // x coordinate of the first point
+            x0: X - 20, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
-            x1: X-15, // x coordinate of the second point
+            x1: X - 15, // x coordinate of the second point
             y1: Y + 9, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
@@ -11629,19 +11630,19 @@ function Chart() {
           },
           {
             type: 'line',
-            x0:X-20, // x coordinate of the first point
+            x0: X - 20, // x coordinate of the first point
             y0: Y + 10, // y coordinate of the first point
-            x1: X-15, // x coordinate of the second point
+            x1: X - 15, // x coordinate of the second point
             y1: Y + 11, // y coordinate of the second point
             line: {
               color: 'blue', // color of the line
               width: 2, // width of the line
             },
           },
-          )
-        }
-        setAllshapes(allshapesCopy)
-      });
+        );
+      }
+      setAllshapes(allshapesCopy);
+    });
     // }
 
     // ###################################################################################################
@@ -11718,7 +11719,7 @@ function Chart() {
   const [tabelItems, setTabelitems] = useState<tabelItemstype[]>([]);
   const [maxy, setMaxy] = useState(0);
   const [selectedVerticalline, setSelectedVerticalline] = useState('');
- const [showevents,setShowEwents]=useState(false)
+  const [showevents, setShowEwents] = useState(false);
   const [events, setEvents] = useState<
     {x: number; y: number; event_number?: number; type: string}[]
   >([]);
@@ -11752,38 +11753,34 @@ function Chart() {
 
   // ---- func ------func --------------- func ---------------- func ------------- func --------
   const Events = () => {
-    if(showevents){
-
-    
-    }else{
-    //   <text
-    //   key={index}
-    //   x={X}
-    //   y={Y + 84}
-    //   fill="red"
-    //   fontSize={12}
-    //   textAnchor="middle">
-    //   {point!.event_number!}
-    // </text>,
-      let allevents = chartdata?.key_events?.events?.map((data: eventstype) => (
-        {
+    if (showevents) {
+    } else {
+      //   <text
+      //   key={index}
+      //   x={X}
+      //   y={Y + 84}
+      //   fill="red"
+      //   fontSize={12}
+      //   textAnchor="middle">
+      //   {point!.event_number!}
+      // </text>,
+      let allevents = chartdata?.key_events?.events?.map(
+        (data: eventstype) => ({
           type: 'line',
-          x0:data?.event_location?.x, // x coordinate of the first point
-          y0: data?.event_location?.y+10, // y coordinate of the first point
+          x0: data?.event_location?.x, // x coordinate of the first point
+          y0: data?.event_location?.y + 10, // y coordinate of the first point
           x1: data?.event_location?.x, // x coordinate of the second point,
-          y1: data?.event_location?.y-10, // y coordinate of the first point
-          editable:true,
-          onclickevent:(e:any)=> console.log("✈️dddd",e),
+          y1: data?.event_location?.y - 10, // y coordinate of the first point
+          editable: true,
           line: {
-  
-            editable:true,
+            editable: true,
             color: 'green', // color of the line
             width: 10, // width of the line
-          }
-        }
-      ));
-      setAllshapes((prev:any) => [...prev,...allevents])
-      setShowEwents(true)
+          },
+        }),
+      );
+      setAllshapes((prev: any) => [...prev, ...allevents]);
+      setShowEwents(true);
     }
     // let allevents = chartdata?.key_events?.events?.map((data: eventstype) => ({
     //   x: data?.event_location?.x,
@@ -11924,51 +11921,52 @@ function Chart() {
     //   {x: finevent.marker_location_5, name: 'B', type: 'bigline'},
     //   {x: finevent.marker_location_4, name: 'b', type: 'bigline'},
     // ]);
-    setAllshapes([  {
-      type: 'line',
-      x0:finevent.marker_location_1, // x coordinate of the first point
-      y0: 10, // y coordinate of the first point
-      x1: finevent.marker_location_1, // x coordinate of the second point
-      y1: 1000, // y coordinate of the second point
-      line: {
-        color: 'blue', // color of the line
-        width: 10, // width of the line
+    setAllshapes([
+      {
+        type: 'line',
+        x0: finevent.marker_location_1, // x coordinate of the first point
+        y0: 10, // y coordinate of the first point
+        x1: finevent.marker_location_1, // x coordinate of the second point
+        y1: 1000, // y coordinate of the second point
+        line: {
+          color: 'blue', // color of the line
+          width: 10, // width of the line
+        },
       },
-    },
-    {
-      type: 'line',
-      x0:finevent.marker_location_2, // x coordinate of the first point
-      y0: 10, // y coordinate of the first point
-      x1: finevent.marker_location_2, // x coordinate of the second point
-      y1: 1000, // y coordinate of the second point
-      line: {
-        color: 'blue', // color of the line
-        width: 10, // width of the line
+      {
+        type: 'line',
+        x0: finevent.marker_location_2, // x coordinate of the first point
+        y0: 10, // y coordinate of the first point
+        x1: finevent.marker_location_2, // x coordinate of the second point
+        y1: 1000, // y coordinate of the second point
+        line: {
+          color: 'blue', // color of the line
+          width: 10, // width of the line
+        },
       },
-    },
-    {
-      type: 'line',
-      x0:finevent.marker_location_5, // x coordinate of the first point
-      y0: 10, // y coordinate of the first point
-      x1: finevent.marker_location_5, // x coordinate of the second point
-      y1: 1000, // y coordinate of the second point
-      line: {
-        color: 'blue', // color of the line
-        width: 10, // width of the line
+      {
+        type: 'line',
+        x0: finevent.marker_location_5, // x coordinate of the first point
+        y0: 10, // y coordinate of the first point
+        x1: finevent.marker_location_5, // x coordinate of the second point
+        y1: 1000, // y coordinate of the second point
+        line: {
+          color: 'blue', // color of the line
+          width: 10, // width of the line
+        },
       },
-    },
-    {
-      type: 'line',
-      x0:finevent.marker_location_4, // x coordinate of the first point
-      y0: 10, // y coordinate of the first point
-      x1: finevent.marker_location_4, // x coordinate of the second point
-      y1: 1000, // y coordinate of the second point
-      line: {
-        color: 'blue', // color of the line
-        width: 10, // width of the line
+      {
+        type: 'line',
+        x0: finevent.marker_location_4, // x coordinate of the first point
+        y0: 10, // y coordinate of the first point
+        x1: finevent.marker_location_4, // x coordinate of the second point
+        y1: 1000, // y coordinate of the second point
+        line: {
+          color: 'blue', // color of the line
+          width: 10, // width of the line
+        },
       },
-    }
-  ])
+    ]);
   };
 
   const eventhandleMouseMove = (event_number: number, e: any) => {
@@ -12076,7 +12074,6 @@ function Chart() {
 
     return elements;
   };
-
 
   const Arrowline = ({xScale, yScale}: any) => {
     let elements: JSX.Element[] = [];
@@ -12470,99 +12467,121 @@ function Chart() {
     // top: Math.min(startY-80, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
     // border: '1px solid red', // حاشیه قرمز رنگ
   };
-// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-var data11 = [
-  {
-    x: [
-      '2015-02-01', '2015-02-02', '2015-02-03', '2015-02-04', '2015-02-05',
-      '2015-02-06', '2015-02-07', '2015-02-08', '2015-02-09', '2015-02-10',
-      '2015-02-11', '2015-02-12', '2015-02-13', '2015-02-14', '2015-02-15',
-      '2015-02-16', '2015-02-17', '2015-02-18', '2015-02-19', '2015-02-20',
-      '2015-02-21', '2015-02-22', '2015-02-23', '2015-02-24', '2015-02-25',
-      '2015-02-26', '2015-02-27', '2015-02-28',
-    ],
-    y: [
-      14, 17, 8, 4, 7, 10, 12, 14, 12, 11, 10, 9, 18, 14, 14, 16, 13, 8, 8,
-      7, 7, 3, 9, 9, 4, 13, 9, 6,
-    ],
-    mode: 'line',
-  },
-];
-
-var layout11 = {
-  title: 'Product price changes and revenue growth',
-  xaxis: { title: 'Date' },
-  yaxis: { title: 'Revenue Growth' },
-  dragmode: 'drawline',
-
-  shapes: [
+  // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+  var data11 = [
     {
-      type: 'rect',
-      xref: 'x',
-      yref: 'paper',
-      x0: '2015-02-02',
-      y0: 0,
-      x1: '2015-02-08',
-      y1: 1,
-      fillcolor: '#d3d3d3',
-      opacity: 0.2,
-      editable: true,
-      line: {
-        width: 0,
-      },
-      label: {
-        text: 'Price drop',
-        font: { size: 10, color: 'green' },
-        textposition: 'top center',
-      },
+      x: [
+        '2015-02-01',
+        '2015-02-02',
+        '2015-02-03',
+        '2015-02-04',
+        '2015-02-05',
+        '2015-02-06',
+        '2015-02-07',
+        '2015-02-08',
+        '2015-02-09',
+        '2015-02-10',
+        '2015-02-11',
+        '2015-02-12',
+        '2015-02-13',
+        '2015-02-14',
+        '2015-02-15',
+        '2015-02-16',
+        '2015-02-17',
+        '2015-02-18',
+        '2015-02-19',
+        '2015-02-20',
+        '2015-02-21',
+        '2015-02-22',
+        '2015-02-23',
+        '2015-02-24',
+        '2015-02-25',
+        '2015-02-26',
+        '2015-02-27',
+        '2015-02-28',
+      ],
+      y: [
+        14, 17, 8, 4, 7, 10, 12, 14, 12, 11, 10, 9, 18, 14, 14, 16, 13, 8, 8, 7,
+        7, 3, 9, 9, 4, 13, 9, 6,
+      ],
+      mode: 'line',
     },
-    {
-      type: 'line',
-      x0: '2015-02-01',
-      y0: 8,
-      x1: '2015-02-28',
-      y1: 8,
-      fillcolor: '#d3d3d3',
-      opacity: 0.2,
-      editable: true,
-      label: {
-        text: 'January average',
-        yanchor: 'top',
+  ];
+
+  var layout11 = {
+    title: 'Product price changes and revenue growth',
+    xaxis: {title: 'Date'},
+    yaxis: {title: 'Revenue Growth'},
+    dragmode: 'drawline',
+
+    shapes: [
+      {
+        type: 'rect',
+        xref: 'x',
+        yref: 'paper',
+        x0: '2015-02-02',
+        y0: 0,
+        x1: '2015-02-08',
+        y1: 1,
+        fillcolor: '#d3d3d3',
+        opacity: 0.2,
+        editable: true,
+        line: {
+          width: 0,
+        },
+        label: {
+          text: 'Price drop',
+          font: {size: 10, color: 'green'},
+          textposition: 'top center',
+        },
       },
-    },
-  ],
-  newshape: { label: { text: 'New shape text' } },
-  height: 500,
-  width: 500,
-};
+      {
+        type: 'line',
+        x0: '2015-02-01',
+        y0: 8,
+        x1: '2015-02-28',
+        y1: 8,
+        fillcolor: '#d3d3d3',
+        opacity: 0.2,
+        editable: true,
+        label: {
+          text: 'January average',
+          yanchor: 'top',
+        },
+      },
+    ],
+    newshape: {label: {text: 'New shape text'}},
+    height: 500,
+    width: 500,
+  };
 
-var config = { 'modeBarButtonsToAdd': [
-  'drawline',
-  'drawopenpath',
-  'drawclosedpath',
-  'drawcircle',
-  'drawrect',
-  'eraseshape'
-  ]
-};
+  var config = {
+    modeBarButtonsToAdd: [
+      'drawline',
+      'drawopenpath',
+      'drawclosedpath',
+      'drawcircle',
+      'drawrect',
+      'eraseshape',
+    ],
+  };
 
+  //   var myPlot = document.getElementById('myDiv'),
+  //     x = [1, 2, 3, 4, 5],
+  //     y = [10, 20, 30, 20, 10],
+  //     data = [{x:x, y:y, type:'scatter',
+  //              mode:'markers', marker:{size:20}
+  //             }],
+  //     layout = {hovermode:'closest',
+  //               title:'Click on Points'
+  //      };
 
-//   var myPlot = document.getElementById('myDiv'),
-//     x = [1, 2, 3, 4, 5],
-//     y = [10, 20, 30, 20, 10],
-//     data = [{x:x, y:y, type:'scatter',
-//              mode:'markers', marker:{size:20}
-//             }],
-//     layout = {hovermode:'closest',
-//               title:'Click on Points'
-//      };
+  // Plotly.newPlot('myDiv', data, layout);
 
-// Plotly.newPlot('myDiv', data, layout);
-
-// plotref?.current?.on('plotly_click', function(){
-//     alert('You clicked this Plotly chart!');
-// });
-console.log("🌷",plotref?.current);
+  // plotref?.current?.on('plotly_click', function(){
+  //     alert('You clicked this Plotly chart!');
+  // });
+  console.log('🌷', plotref?.current);
 
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
@@ -12654,16 +12673,15 @@ console.log("🌷",plotref?.current);
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
-
-<Plot
-// data={data11}
-// layout={layout11}
-// />
-onRelayout={(e)=>console.log("🦞",e)}
-// onClick={(e)=> console.log("✈️",e)}
-onHover={(e)=> console.log("✈️",e)}
-//  onRelayouting={(e)=>console.log("🦞",e)}
-              // onHover={e => alert("hhh")}
+              <Plot
+                // data={data11}
+                // layout={layout11}
+                // />
+               onRelayout={e => console.log('🦞', e)}
+                // onSelecting={(e)=> alert("tttt")}
+                // onHover={e => console.log('✈️', e)}
+                //  onClick={(e)=> alert("ddddddd")}
+                // onHover={e => alert("hhh")}
                 className="h-[600px] w-full"
                 data={[
                   {
@@ -12673,20 +12691,16 @@ onHover={(e)=> console.log("✈️",e)}
                     mode: 'lines+markers',
                     marker: {color: 'red'},
                   },
-                
                 ]}
-                
                 layout={{
-                 
+                  clickmode: 'event+select' ,
                   uirevision: 'constant',
                   title: 'A Fancy Plot',
-                  clickmode: 'event+select',
                   dragmode: false,
-                  shapes:allshapes
-             
+                  shapes: allshapes,
+                  selectdirection: 'any'
                 }}
-              /> 
-
+              />
             </div>
           </div>
 
@@ -13004,5 +13018,3 @@ export default Chart;
 // onMousedown={handleMousedown} // add the mousedown event handler
 // />
 // );
-
-
