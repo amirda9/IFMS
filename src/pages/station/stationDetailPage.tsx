@@ -101,7 +101,7 @@ const StationDetailPage = () => {
 
   }, []);
 
- console.log("😈",state.detail?.data?.network_id);
+
  
 
 
@@ -142,7 +142,6 @@ const StationDetailPage = () => {
           )?.time_created || '',
       }}
       onSubmit={async values => {
-        console.log(values,'😝');
         
         // try {
         //   const response = await $Put(`otdr/station/${params.stationId!}`, {
@@ -165,7 +164,7 @@ const StationDetailPage = () => {
       }}
       validationSchema={stationSchema}>
       <Form>
-        <div className="relative flex h-[calc(100vh-220px)]  flex-col justify-between">
+        <div className="relative flex flex-col justify-between">
           <div className="flex flex-col gap-y-4">
             <Description label="Name" items="start">
               <InputFormik

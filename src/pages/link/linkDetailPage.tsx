@@ -271,7 +271,7 @@ const LinkDetailPage = () => {
   };
   // ---------------------------------------------------------------
   return (
-    <div className="relative flex h-[calc(100vh-220px)]  w-full flex-col">
+    <div className="relative flex  w-full flex-col">
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
