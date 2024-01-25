@@ -38,8 +38,8 @@ const MainLayout: FC = () => {
   }
 
   return (
-    <div style={{minHeight:"100vh"}} className="flex h-full flex-col bg-p">
-      <nav className="flex h-20 flex-row items-center bg-p px-4 ">
+    <div style={{minHeight:"100vh"}} className="flex h-full flex-col bg-[#E7EFF7]">
+      <nav className="flex h-20 z-[10000] flex-row items-center fixed top-0 left-0 right-0 bg-p px-4 ">
         <h2 className="mr-16 font-s text-2xl text-white">ARIO-IFMS</h2>
         {navbarItems.map(item => (
           <NavItem
@@ -62,10 +62,10 @@ const MainLayout: FC = () => {
           onClick={handleLogout}
         />
       </nav>
-      <div  className="flex min-h-[calc(90vh-39px)] flex-row bg-b">
+      <div  className="flex min-h-[100vh] pt-[20px] pb-[20px] flex-row bg-[#E7EFF7]">
         <Outlet />
       </div>
-      <div className="h-6 bg-p">footer</div>
+      <div className="h-[25px] fixed bottom-0 right-0 left-0 bg-[red]">footer</div>
     </div>
   );
 };

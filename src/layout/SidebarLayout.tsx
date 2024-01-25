@@ -146,7 +146,7 @@ const SidebarLayout: FC<PropsType> = ({
           <div className="mt-2">{children}</div>
         </div>
       )}
-      <div className="flex w-full px-8 py-6">
+      <div className="flex w-full px-8 py-6 pt-[80px]">
         <Outlet />
       </div>
     </>
