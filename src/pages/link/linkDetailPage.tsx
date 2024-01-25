@@ -9,9 +9,9 @@ import {useEffect, useState} from 'react';
 import {settypestate} from './../../store/slices/networkslice';
 import {BASE_URL} from './../../constant';
 import {useDispatch, useSelector} from 'react-redux';
-import {updatelinkname} from './../../store/slices/networktreeslice'
-import { $Get, $Post, $Put } from '~/util/requestapi';
-import { deepcopy } from '~/util';
+import {updatelinkname} from './../../store/slices/networktreeslice';
+import {$Get, $Post, $Put} from '~/util/requestapi';
+import {deepcopy} from '~/util';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
@@ -24,18 +24,17 @@ type networklisttype = {
 };
 
 type regionlisttype = {
-  id: string,
-  name: string,
-  network_id: string,
-  time_created: string,
-  time_updated: string
+  id: string;
+  name: string;
+  network_id: string;
+  time_created: string;
+  time_updated: string;
 };
 // *********************************************************************
 const LinkDetailPage = () => {
-
   const {networkDetail} = useSelector((state: any) => state.http);
-  const [defaultnetworkname,setDefaultnetworkname]=useState("")
-  const [defaultregionkname,setDefaultregionname]=useState("")
+  const [defaultnetworkname, setDefaultnetworkname] = useState('');
+  const [defaultregionkname, setDefaultregionname] = useState('');
   const {type} = useSelector((state: any) => state.network);
 
   const login = localStorage.getItem('login');
@@ -71,10 +70,10 @@ const LinkDetailPage = () => {
       }
     },
   });
-  const [selectenetwork,setSelectednetwork]=useState("")
+  const [selectenetwork, setSelectednetwork] = useState('');
   const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
-  const [selectedregion,setSelectedregion]=useState("")
+  const [selectedregion, setSelectedregion] = useState('');
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [types, setType] = useState('');
@@ -88,7 +87,7 @@ const LinkDetailPage = () => {
   const [allsource, setAllsource] = useState<{value: string; label: string}[]>(
     [],
   );
-  
+
   const [soueceerror, setSourcerror] = useState('');
   const [destenationerror, setDestinationerror] = useState('');
   const [alldestinaton, setAlldestination] = useState([]);
@@ -173,7 +172,7 @@ const LinkDetailPage = () => {
     setDestinationerror('');
   };
 
-  const updatelink = async() => {
+  const updatelink = async () => {
     if (name.length < 1) {
       setNameerror('Please enter link name');
     } else if (source.length == 0) {
@@ -193,25 +192,27 @@ const LinkDetailPage = () => {
       setTypeerror('');
       setSourcerror('');
       setDestinationerror('');
-try {
-  const response=await $Put(`otdr/link/${params.linkId}`,{
-    description: comment,
-    name: name,
-    link_points: [],
-    source_id: source,
-    destination_id: destinationid,
-    type: types,
-  })
-  if(response.status == 200){
-    dispatch(updatelinkname({regionid:state!.detail!.data!.region_id!,linkid:params.linkId!,linkname:name}))
-  }
-} catch (error) {
-  
-}
+      try {
+        const response = await $Put(`otdr/link/${params.linkId}`, {
+          description: comment,
+          name: name,
+          link_points: [],
+          source_id: source,
+          destination_id: destinationid,
+          type: types,
+        });
+        if (response.status == 200) {
+          dispatch(
+            updatelinkname({
+              regionid: state!.detail!.data!.region_id!,
+              linkid: params.linkId!,
+              linkname: name,
+            }),
+          );
+        }
+      } catch (error) {}
     }
   };
-
-
 
   useEffect(() => {
     const getrole = async () => {
@@ -226,41 +227,49 @@ try {
     };
     getrole();
     const getnetworks = async () => {
-      const getstationdetail=await $Get(`otdr/link/${params.linkId!}`)
-      if(getstationdetail.status == 200){
-        const getstationdetaildata=await getstationdetail.json()
+      const getstationdetail = await $Get(`otdr/link/${params.linkId!}`);
+      if (getstationdetail.status == 200) {
+        const getstationdetaildata = await getstationdetail.json();
         const response = await $Get(`otdr/network`);
         if (response.status == 200) {
           const responsedata = await response.json();
-          const Defaultnetworkname=responsedata.find((data:any) => data.id == getstationdetaildata.network_id)?.name;
-          setDefaultnetworkname(Defaultnetworkname || "select")
+          const Defaultnetworkname = responsedata.find(
+            (data: any) => data.id == getstationdetaildata.network_id,
+          )?.name;
+          setDefaultnetworkname(Defaultnetworkname || 'select');
           setNetworklist(responsedata);
-          const networkregionresponse=await $Get(`otdr/region/network/${responsedata.find((data:any) => data.id == getstationdetaildata.network_id)?.id}`)
-        if(networkregionresponse.status == 200){
-          const networkregionresponsedata=await networkregionresponse.json()
-          const Defaultegionname=networkregionresponsedata.find((data:any) => data.id == getstationdetaildata.region_id)?.name || "select"
-          setDefaultregionname(Defaultegionname)
-          setRegionlist(networkregionresponsedata)
+          const networkregionresponse = await $Get(
+            `otdr/region/network/${responsedata.find(
+              (data: any) => data.id == getstationdetaildata.network_id,
+            )?.id}`,
+          );
+          if (networkregionresponse.status == 200) {
+            const networkregionresponsedata =
+              await networkregionresponse.json();
+            const Defaultegionname =
+              networkregionresponsedata.find(
+                (data: any) => data.id == getstationdetaildata.region_id,
+              )?.name || 'select';
+            setDefaultregionname(Defaultegionname);
+            setRegionlist(networkregionresponsedata);
+          }
         }
-        }
-      } 
+      }
     };
     getnetworks();
-
   }, []);
 
-  const onclicknetwork=async(id:string)=>{
-    setSelectednetwork(id)
-    const networkregionresponse=await $Get(`otdr/region/network/${id}`)
-    if(networkregionresponse.status == 200){
-      const networkregionresponsedata=await networkregionresponse.json()
-      setRegionlist(networkregionresponsedata)
+  const onclicknetwork = async (id: string) => {
+    setSelectednetwork(id);
+    const networkregionresponse = await $Get(`otdr/region/network/${id}`);
+    if (networkregionresponse.status == 200) {
+      const networkregionresponsedata = await networkregionresponse.json();
+      setRegionlist(networkregionresponsedata);
     }
-    }
+  };
   // ---------------------------------------------------------------
   return (
     <div className="relative flex h-[calc(100vh-220px)]  w-full flex-col">
-
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
@@ -278,7 +287,7 @@ try {
         ) : null}
       </div>
 
-      <div className="relative mt-[20px] flex w-[70%] flex-row items-center justify-between">
+      <div className="relative mt-[20px] flex w-[70%] flex-row  justify-between">
         <div className="w-[130px] text-sm text-black">Comment</div>
         <textarea
           value={comment}
@@ -294,28 +303,34 @@ try {
         ) : null}
       </div>
 
-      <Description label="Network" items="start">
-            <Selectbox
-                defaultvalue={defaultnetworkname}
-                placeholder={defaultnetworkname}
-                onclickItem={(e: { value: string; label: string; }) => onclicknetwork(e.value)} 
-                options={networklist.map(data => ({ value: data.id, label: data.name }))}
-                borderColor={'black'}
-                classname="w-[28%] mt-[21px] h-[32px] rounded-[5px]"
-                   />
-            </Description>
+      <Description className="mt-[21px]" label="Network" items="center">
+        <Selectbox
+          defaultvalue={defaultnetworkname}
+          placeholder={defaultnetworkname}
+          onclickItem={(e: {value: string; label: string}) =>
+            onclicknetwork(e.value)
+          }
+          options={networklist.map(data => ({
+            value: data.id,
+            label: data.name,
+          }))}
+          borderColor={'black'}
+          classname="w-[28%] h-[32px] rounded-[5px]"
+        />
+      </Description>
 
-
-            <Description label="Region" items="start">
-            <Selectbox
-                defaultvalue={defaultregionkname}
-                placeholder={defaultregionkname}
-                onclickItem={(e: { value: string; label: string; }) => setSelectedregion(e.value)} 
-                options={regionlist.map(data => ({ value: data.id, label: data.name }))}
-                borderColor={'black'}
-                classname="w-[28%] mt-[21px] h-[32px] rounded-[5px]"
-                   />
-            </Description>
+      <Description className="mt-[21px]" label="Region" items="center">
+        <Selectbox
+          defaultvalue={defaultregionkname}
+          placeholder={defaultregionkname}
+          onclickItem={(e: {value: string; label: string}) =>
+            setSelectedregion(e.value)
+          }
+          options={regionlist.map(data => ({value: data.id, label: data.name}))}
+          borderColor={'black'}
+          classname="w-[28%]  h-[32px] rounded-[5px]"
+        />
+      </Description>
 
       <div className="relative mt-[20px] flex w-[430px] flex-row items-center justify-between ">
         <div className="w-[130px] text-sm text-black">Source</div>
@@ -401,7 +416,7 @@ try {
         {getPrettyDateTime(state?.detail?.data?.time_updated)}
       </Description>
 
-      <div className="pb-4 mr-4 flex flex-row gap-x-4 self-end ">
+      <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
         {userrole == 'superuser' ||
         state?.detail?.data?.access?.access == 'ADMIN' ||
         networkDetail?.data?.access?.access == 'ADMIN' ? (
@@ -412,7 +427,6 @@ try {
 
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
-      
     </div>
   );
 };
