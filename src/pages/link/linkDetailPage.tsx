@@ -95,6 +95,7 @@ const LinkDetailPage = () => {
   const [destinationid, setDestinationid] = useState<string>('');
 
   useEffect(() => {
+
     setName(state?.detail?.data?.name || '');
     setComment(
       state?.detail?.data?.versions?.find(
@@ -133,16 +134,17 @@ const LinkDetailPage = () => {
           version => version.id === state?.detail?.data?.current_version?.id,
         )?.type || '',
       );
+      dispatch(
+        settypestate({
+          type: state?.detail?.data?.versions?.find(
+            version => version.id === state?.detail?.data?.current_version?.id,
+          )?.type,
+          id: state?.detail?.data?.id,
+        }),
+      );
     }
 
-    dispatch(
-      settypestate({
-        type: state?.detail?.data?.versions?.find(
-          version => version.id === state?.detail?.data?.current_version?.id,
-        )?.type,
-        id: state?.detail?.data?.id,
-      }),
-    );
+  
 
     let data: any = [];
     if (state.stations) {
@@ -385,7 +387,7 @@ const LinkDetailPage = () => {
               setType(e.value);
               setTypeerror('');
               dispatch(
-                settypestate({type: e.label, id: state?.detail?.data?.id}),
+                settypestate({type: e.label.toLowerCase(), id: state?.detail?.data?.id}),
               );
             }}
             options={typeoptions}

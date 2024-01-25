@@ -401,13 +401,13 @@ const LinkCablesAndSegmentsPage = () => {
                       : 'h-[calc(100%+32px)]'
                   }  w-[30px] bg-b`}></div>
 
-                <div className="z-40 flex flex-row items-center justify-between">
-                  <div className="flex flex-row">
+                <div className="z-40 flex w-full flex-row items-center justify-between">
+                  <div className="flex w-full justify-between flex-row">
                     <span className="w-14"> {idd + 1}</span>
                     <Description
                       label="ID:"
                       labelClassName="w-fit pr-2"
-                      className="flex-grow-0 pr-14">
+                      className="ml-[-20px] pr-14">
                       <TextInput
                         type="text"
                         value={data.cableId}
@@ -417,9 +417,9 @@ const LinkCablesAndSegmentsPage = () => {
                     </Description>
 
                     <Description
-                      label="Number of Cores"
-                      labelClassName="w-fit pr-2"
-                      className="flex-grow-0 pr-14">
+                      label="Number of Cores:"
+                      labelClassName="pr-0"
+                      className="w-[270px] pr-4 ml-[-20px]">
                       <TextInput
                         value={data.number_of_cores}
                         onChange={e => setcores(data.id, e.target.value)}
@@ -429,8 +429,8 @@ const LinkCablesAndSegmentsPage = () => {
                     </Description>
                     <Description
                       label="Helix Factor:"
-                      labelClassName="w-fit pr-2"
-                      className="flex-grow-0 pr-14">
+                      labelClassName="pr-2"
+                      className="w-[235px] pr-4">
                       <TextInput
                         value={data.number_of_cores}
                         onChange={e => setcores(data.id, e.target.value)}
