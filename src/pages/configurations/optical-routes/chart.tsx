@@ -11407,6 +11407,7 @@ function Chart() {
   const [allchart, setAllchart] = useState<string[]>([]);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [mousecursor, setMousecursor] = useState(false);
+  const [zoomm,setZoom]=useState(1)
   const [allcurveline, setAllcurveline] = useState<
     {
       id: string;
@@ -11713,6 +11714,7 @@ function Chart() {
   const [showeventdetail, setShoweventdetail] = useState(false);
   const [rectangelzoom, setRectangelzoom] = useState(false);
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
+
   const [scrollValue, setScrollValue] = useState(0);
   const [startdraw, setStartDraw] = useState(false);
   const [maxx, setMaxx] = useState(0);
@@ -11772,6 +11774,11 @@ function Chart() {
           x1: data?.event_location?.x, // x coordinate of the second point,
           y1: data?.event_location?.y - 10, // y coordinate of the first point
           editable: true,
+          showlegend:false,
+          label:{
+            text:"jhjkhjk",
+            textposition:"bottom center",
+          },
           line: {
             editable: true,
             color: 'green', // color of the line
@@ -11928,7 +11935,9 @@ function Chart() {
         y0: 10, // y coordinate of the first point
         x1: finevent.marker_location_1, // x coordinate of the second point
         y1: 1000, // y coordinate of the second point
+      
         line: {
+
           color: 'blue', // color of the line
           width: 10, // width of the line
         },
@@ -12584,7 +12593,7 @@ function Chart() {
   console.log('🌷', plotref?.current);
 
   return (
-    <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px]">
+    <div className="relative box-border flex h-auto w-full flex-col p-[10px] pt-[100px] pb-[200px]">
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
         {yvalue}
       </span>
@@ -12673,14 +12682,18 @@ function Chart() {
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
+                <button onClick={()=>setZoom(zoomm+100)}>jjjjj</button>
               <Plot
+               
                 // data={data11}
                 // layout={layout11}
                 // />
+      
                onRelayout={e => console.log('🦞', e)}
-                // onSelecting={(e)=> alert("tttt")}
+              //  onSliderChange={(e)=> alert("tttt")}
+              //   onSelecting={(e)=> alert("tttt")}
                 // onHover={e => console.log('✈️', e)}
-                //  onClick={(e)=> alert("ddddddd")}
+                  // onClick={(e)=> alert("ddddddd")}
                 // onHover={e => alert("hhh")}
                 className="h-[600px] w-full"
                 data={[
@@ -12690,16 +12703,20 @@ function Chart() {
                     type: 'scatter',
                     mode: 'lines+markers',
                     marker: {color: 'red'},
+                  
                   },
                 ]}
+                
                 layout={{
                   clickmode: 'event+select' ,
                   uirevision: 'constant',
                   title: 'A Fancy Plot',
                   dragmode: false,
                   shapes: allshapes,
-                  selectdirection: 'any'
+                 xaxis:{range: [0+zoomm, 2500-zoomm]},
+                 
                 }}
+               
               />
             </div>
           </div>
@@ -12989,32 +13006,3 @@ function Chart() {
 
 export default Chart;
 
-// const handleClick = (data) => { // define a callback function for click event
-//   if (data.shapes.length > 0) { // check if there is at least one shape clicked
-//   const shape = data.shapes[0]; // get the first shape
-//   alert('You clicked on the blue line!'); // show an alert with a custom message
-//   }
-//   };
-
-// const handleMousedown = (data) => { // define a callback function for mousedown event
-// if (data.shapes.length > 0) { // check if there is at least one shape mousedowned
-// const shape = data.shapes[0]; // get the first shape
-// alert('You mousedowned on the blue line!'); // show an alert with a custom message
-// }
-// };
-
-// const layout = {
-// // other layout properties
-// shapes: [...], // the same shapes as before
-// clickmode: 'event+select', // enable click event
-// dragmode: 'select', // enable mousedown event
-// };
-
-// return (
-// <Plot
-// data={...}
-// layout={layout}
-// onClick={handleClick} // add the click event handler
-// onMousedown={handleMousedown} // add the mousedown event handler
-// />
-// );
