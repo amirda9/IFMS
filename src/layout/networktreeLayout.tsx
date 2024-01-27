@@ -436,7 +436,7 @@ function NetworktreeLayout({children}: Iprops) {
                           <>
                             <Items
                               key={Number(regionsdata.id)}
-                              to={`/regions/${regionsdata.id}`}
+                              to={`/regions/${regionsdata.id}_${networkdata.id}`}
                               selected={false}
                               canAdd={false}
                               onDelete={() =>

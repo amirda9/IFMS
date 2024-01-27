@@ -4,9 +4,6 @@ import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {BASE_URL} from '~/constant';
 import {useSelector} from 'react-redux';
-import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
-import {BsChevronDown} from 'react-icons/bs';
 import {
   setnewregionstationlist,
   setnewregionstationliststatus,
@@ -24,13 +21,10 @@ const RegionStationsPage = () => {
   const {newregionstationlist, regionviewers, newregionstationliststatus} =
     useSelector((state: any) => state.network);
   const {network} = useSelector((state: any) => state);
-  const networkId = Cookies.get(networkExplored) || '';
   const dispatch = useDispatch();
   const login = localStorage.getItem('login');
   const [tabname, setTabname] = useState('Name');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [appendstationsdata, setAppendstationsdata] = useState([]);
-  const [removestationsdata, setRemovetationsdata] = useState([]);
   const [userrole, setuserrole] = useState<any>('');
   const [itemssorted, setItemssorted] = useState<
     {
@@ -62,10 +56,11 @@ const RegionStationsPage = () => {
       stations: state.http.allStations,
     }),
     initialRequests: request => {
-      request('regionStationList', {params: {region_id: params.regionId!}});
-      if (networkId) {
-        request('allStations', undefined);
-      }
+      request('regionStationList', {
+        params: {region_id: params.regionId!.split('_')[0]},
+      });
+
+      request('allStations', undefined);
     },
     onUpdate: (lastState, state) => {
       if (
@@ -74,7 +69,9 @@ const RegionStationsPage = () => {
         (lastState.add?.httpRequestStatus === 'loading' &&
           state.add!.httpRequestStatus === 'success')
       ) {
-        request('regionStationList', {params: {region_id: params.regionId!}});
+        request('regionStationList', {
+          params: {region_id: params.regionId!.split('_')[0]},
+        });
       }
     },
   });
@@ -87,7 +84,6 @@ const RegionStationsPage = () => {
       longitude: station.latitude,
     })) || [];
 
-  var dataa2: any = [];
   useEffect(() => {
     if (newregionstationliststatus) {
       setItemssorted(network?.newregionstationlist);
@@ -145,7 +141,9 @@ const RegionStationsPage = () => {
       (data: any) => data.id,
     );
     for (let i = 0; i < alllist.length; i++) {
-      const find = newregionstationlist2.findIndex((data: any) => data == alllist[i].id);
+      const find = newregionstationlist2.findIndex(
+        (data: any) => data == alllist[i].id,
+      );
       if (find < 0) {
         removedata.push(alllist[i].id);
       }
@@ -164,17 +162,16 @@ const RegionStationsPage = () => {
     if (first.length == 0 && newregionstationlist2?.length == 0) {
     } else {
       request('removeregionStationList', {
-        params: {region_id: params.regionId!},
+        params: {region_id: params.regionId!.split('_')[0]},
         data: {stations_id: removedata},
       });
       request('addregionStationList', {
-        params: {region_id: params.regionId!},
+        params: {region_id: params.regionId!.split('_')[0]},
         data: {stations_id: appenddata},
       });
     }
     dispatch(setnewregionstationliststatus(false)),
-    dispatch(setnewregionstationlist([]));
-
+      dispatch(setnewregionstationlist([]));
   };
 
   return (

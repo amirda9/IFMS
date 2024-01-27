@@ -57,14 +57,14 @@ const RegionLinksPage = () => {
       add: state.http.addregionLinkList,
     }),
     initialRequests: request => {
-      request('regionLinkList', {params: {region_id: params.regionId!}});
+      request('regionLinkList', {params: {region_id: params.regionId!.split("_")[0]}});
     },
     onUpdate: (lastState, state) => {
       if (
         lastState.add?.httpRequestStatus === 'loading' &&
         state.add!.httpRequestStatus === 'success'
       ) {
-        request('regionLinkList', {params: {region_id: params.regionId!}});
+        request('regionLinkList', {params: {region_id: params.regionId!.split("_")[0]}});
       }
     },
   });
@@ -136,11 +136,11 @@ const RegionLinksPage = () => {
     if (first.length == 0 && newregionlinklist?.length == 0) {
     } else {
       request('addregionLinkList', {
-        params: {region_id: params.regionId!},
+        params: {region_id: params.regionId!.split("_")[0]},
         data: {links_id: appenddata || []},
       });
       request('removeregionLinkList', {
-        params: {region_id: params.regionId!},
+        params: {region_id: params.regionId!.split("_")[0]},
         data: {links_id: removedata || []},
       });
     }

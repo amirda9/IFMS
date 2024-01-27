@@ -75,6 +75,7 @@ const RegionstationlisteditPage = () => {
       longitude: '-',
     })) || [];
 
+console.log("👽",allstations);
 
   const params = useParams<{regionId: string}>();
   const [leftstationsorted, setLeftstationssorted] =

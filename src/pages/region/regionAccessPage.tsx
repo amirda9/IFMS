@@ -60,7 +60,7 @@ const RegionAccessPage = () => {
       update: state.http.regionAdminUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.regionId!}});
+      request('regionAccessList', {params: {region_id: params.regionId!.split("_")[0]}});
       request('userList', undefined);
     },
     onUpdate: lastState => {
@@ -68,7 +68,7 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('regionAccessList', {params: {region_id: params.regionId!}});
+        request('regionAccessList', {params: {region_id: params.regionId!.split("_")[0]}});
         navigate('../access', {replace: true, relative: 'path'});
       }
     },
@@ -91,11 +91,11 @@ const RegionAccessPage = () => {
       access_types: AccessEnum.admin,
     });
     request('regionAdminUpdate', {
-      params: {region_id: params.regionId!},
+      params: {region_id: params.regionId!.split("_")[0]},
       data: {user_id: userAdmin || admin!.user.id!},
     });
     request('regionAccessUpdate', {
-      params: {region_id: params.regionId!},
+      params: {region_id: params.regionId!.split("_")[0]},
       data: {users: network?.regionviewers},
     });
     dispatch(setregionviewersstatus(false)),

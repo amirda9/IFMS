@@ -1,15 +1,12 @@
 import {Description, SimpleBtn} from '~/components';
 import {useParams} from 'react-router-dom';
-import {Form, Formik, FormikConsumer, FormikProvider, useFormik} from 'formik';
+import {Form,FormikProvider, useFormik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import {FormLayout} from '~/layout';
-import {useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {useDispatch, useSelector} from 'react-redux';
 import {useEffect, useState} from 'react';
-import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
 import {updateregionname} from './../../store/slices/networktreeslice'
 import {BASE_URL} from './../../constant';
 import { $Get, $Put } from '~/util/requestapi';
@@ -29,7 +26,6 @@ type networklisttype = {
 const RegionDetailPage = () => {
   const dispatch=useDispatch()
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
-  const networkId = Cookies.get(networkExplored) || '';
   const params = useParams<{regionId: string}>();
   const [regiondata,setregiondata]=useState<any>([])
   const login = localStorage.getItem('login');
@@ -54,32 +50,13 @@ const RegionDetailPage = () => {
     setSelectednetwork(id)
     }
 
-  // const {state, request} = useHttpRequest({
-  //   selector: state => ({
-  //     detail: state.http.regionDetail,
-  //     update: state.http.regionUpdate,
-  //   }),
-  //   initialRequests: request => {
-  //     request('regionDetail', {params: {region_id: params.regionId!}});
-  //   },
-  //   onUpdate: lastState => {
-  //     if (
-  //       lastState.update?.httpRequestStatus === 'loading' &&
-  //       state.update?.httpRequestStatus === 'success'
-  //     ) {
-  //       request('regionDetail', {params: {region_id: params.regionId!}});
-  //       request('regionList', {params: {network_id: networkId}});
-  //     }
-  //   },
-  // });
 
   useEffect(() => {
     getrole();
     const getnetworks = async () => {
-      const getstationdetail=await $Get(`otdr/region/${params.regionId!}`)
+      const getstationdetail=await $Get(`otdr/region/${params.regionId!.split("_")[0]}`)
       if(getstationdetail.status == 200){
         const getstationdetaildata=await getstationdetail.json()
-        console.log("👽",getstationdetaildata);
         setregiondata(getstationdetaildata)
         const response = await $Get(`otdr/network`);
         if (response.status == 200) {
@@ -126,18 +103,14 @@ const RegionDetailPage = () => {
     },
     onSubmit:async(values) => {
       try {
-        const response=await $Put(`otdr/region/${params.regionId!}`,values)
+        const response=await $Put(`otdr/region/${params.regionId!.split("_")[0]}`,values)
         if(response.status == 200){
-          dispatch(updateregionname({networkid:regiondata!.network_id,regionid:params.regionId!,regionname:values.name!}))
+          dispatch(updateregionname({networkid:regiondata!.network_id,regionid:params.regionId!.split("_")[0],regionname:values.name!}))
         }
       } catch (error) {
         
       }
       
-      // request('regionUpdate', {
-      //   data: values,
-      //   params: {region_id: params.regionId!},
-      // });
     },
     validationSchema:{regionSchema}
   })
