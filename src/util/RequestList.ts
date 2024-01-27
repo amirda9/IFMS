@@ -64,6 +64,7 @@ type RequestKeys =
   | 'regionAdminUpdate'
   | 'allStations'
   | 'networkstations'
+  | 'networklinks'
   | 'stationCreate'
   | 'stationDetail'
   | 'stationrtuList'
@@ -471,7 +472,11 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
     method: 'post',
     auth: true,
   },
-
+  networklinks: {
+    url: api.BASE_URL + api.URLS.otdr.link.networklinks,
+    method: 'get',
+    auth: true,
+  },
   rtuCreate: {
     url: api.BASE_URL + api.URLS.otdr.rtu.create,
     method: 'post',
@@ -711,7 +716,7 @@ export type RequestListTypes = {
   };
   linkDelete: {params: {link_id: string}};
   linkDetail: {params: {link_id: string}};
-
+  networklinks: {params: {network_id: string}};
   linkUpdate: {
     params: {link_id: string};
     data: {
@@ -1254,6 +1259,7 @@ export type ResponseListType = {
   linkDetail: T.LinksType;
   linkUpdate: T.LinksType;
   linkupdatecables: string;
+  networklinks: T.networklinklistType[];
   linkAccessList: {users: T.AccessListType[]};
   linkAddadmin: string;
   linkAccessUpdate: {count: number};

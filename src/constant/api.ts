@@ -71,7 +71,8 @@ export const URLS = {
       allAccess: '/otdr/link/{link_id}/access',
       viewersAccess: '/otdr/link/{link_id}/access/viewers',
       updatecableandduct:'/otdr/link/{link_id}/cables_and_ducts',
-      Addadmin:'/otdr/link/{link_id}/access/admin'
+      Addadmin:'/otdr/link/{link_id}/access/admin',
+      networklinks:'/otdr/link/network/{network_id}'
     },
     rtu:{
       create:'/otdr/rtu/',

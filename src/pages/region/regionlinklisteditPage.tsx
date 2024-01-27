@@ -8,6 +8,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {setnewregionlinklist,setnewregionlinkliststatus} from './../../store/slices/networkslice';
 import {useDispatch} from 'react-redux';
 import {array} from 'yup';
+import { deepcopy } from '~/util';
 type UserTableType = {
   id: string;
   name: string;
@@ -44,13 +45,13 @@ const RegionlinklisteditPage = () => {
   const {state} = useHttpRequest({
     selector: state => ({
       regionLinkList: state.http.regionLinkList,
-      links: state.http.allLinks,
+      links: state.http.networklinks,
     }),
     initialRequests: request => {
-      request('regionLinkList', {params: {region_id: params.regionId!}});
-      if (networkId) {
-        request('allLinks', undefined);
-      }
+      request('regionLinkList', {params: {region_id: params.regionId!.split("_")[0]}});
+
+        request('networklinks', {params: {network_id: params.regionId!.split("_")[1]}});
+
     },
   });
 
@@ -61,7 +62,7 @@ const RegionlinklisteditPage = () => {
   const [reighttableselecttab, setReighttableselecttab] = useState('Name');
   const [lefttablesorte, setLefttablesort] = useState(false);
   const [reighttablesorte, setreighttablesort] = useState(false);
-  const networkId = Cookies.get(networkExplored);
+
   const params = useParams<{regionId: string}>();
   const [mount, setmount] = useState(false);
   const [leftlinksorted, setLeftlinksorted] = useState<UserTableType[]>([]);
@@ -175,7 +176,7 @@ const RegionlinklisteditPage = () => {
   const sortleft = (tabname: string, sortalfabet: boolean) => {
 
 
-    const old = JSON.parse(JSON.stringify(leftlinksorted));
+    const old = deepcopy(leftlinksorted);
     if (tabname != 'Index') {
       if (sortalfabet) {
         old.sort(

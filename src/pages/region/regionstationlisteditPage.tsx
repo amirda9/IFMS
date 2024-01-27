@@ -2,9 +2,6 @@ import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
 import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
 import {useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
-import {networkExplored} from '~/constant';
-
-import Cookies from 'js-cookie';
 import {useNavigate, useParams} from 'react-router-dom';
 import {
   setnewregionstationlist,
@@ -39,8 +36,8 @@ const columns = {
 };
 // *****************************************************************************
 const RegionstationlisteditPage = () => {
+  const params = useParams<{regionId: string}>();
   const {network} = useSelector((state: any) => state);
-  const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {state} = useHttpRequest({
@@ -49,10 +46,10 @@ const RegionstationlisteditPage = () => {
       stations: state.http.networkstations,
     }),
     initialRequests: request => {
-      request('regionStationList', {params: {region_id: params.regionId!}});
-      if (networkId) {
-        request('networkstations', {params: {network_id: networkId}});
-      }
+      request('regionStationList', {params: {region_id: params.regionId!.split("_")[0]}});
+    
+        request('networkstations', {params: {network_id: params.regionId!.split("_")[1]}});
+
     },
   });
 
@@ -77,7 +74,7 @@ const RegionstationlisteditPage = () => {
 
 console.log("👽",allstations);
 
-  const params = useParams<{regionId: string}>();
+
   const [leftstationsorted, setLeftstationssorted] =
     useState<UserTableType[]>(allstations);
 
