@@ -89,6 +89,7 @@ function App() {
           />
           <Route path="/links" Component={pages.LinksPage}>
             <Route path="create/:regionid" Component={pages.LinkCreatePage} />
+            <Route path="createdefaultregionlink/:regionid" Component={pages.defaultregionlinkcreatepage} />
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
               <Route path="access" Component={pages.LinkAccessPage} />

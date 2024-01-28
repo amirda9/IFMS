@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {TabItem} from '~/components';
 import {Outlet, useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
@@ -6,9 +6,8 @@ import {useSelector} from 'react-redux';
 const LinkEmptyPage = () => {
   const {network, http} = useSelector((state: any) => state);
   let findtaype = network.type.find(
-    (data: any) => data.id == http.linkDetail.data?.id,
+    (data: any) => data.id == network.linkDetail.id,
   );
-
   const params = useParams<{linkId: string}>();
   return (
     <div className="flex h-full w-full flex-col">

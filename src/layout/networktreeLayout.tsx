@@ -570,7 +570,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       ?.links.map((linksdata, index) => (
                                         <Items
                                           key={Number(index)}
-                                          to={`/links/${linksdata.id}`}
+                                          to={`/links/${linksdata.id}_${regionsdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
                                           onDelete={() =>

@@ -1,21 +1,41 @@
 import {useParams} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {useNavigate} from 'react-router-dom';
+import {networkExplored} from '~/constant';
 import Selectbox from './../../components/selectbox/selectbox';
-import {useDispatch,} from 'react-redux';
+import Cookies from 'js-cookie';
+import {useDispatch, useSelector} from 'react-redux';
 import {createLinks} from './../../store/slices/networktreeslice';
+import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
-import {$Get, $Post} from '~/util/requestapi';
-import { deepcopy } from '~/util';
-// --------- type ---------------- type ------------------ type -------------------------- type ---------
+import {$Post} from '~/util/requestapi';
+
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
 ];
-// -------------------------------------------------------------------------------------------------------
+
 const LinkCreatePage = () => {
   const params = useParams();
+  const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
+  const {
+    state: {stations},
+    request,
+  } = useHttpRequest({
+    selector: state => ({
+      stations: state.http.allStations,
+    }),
+    initialRequests: request => {
+      if (networkId) {
+        request('allStations', undefined);
+      }
+    },
+ 
+  });
+
+
+  const {allStations} = useSelector((state: any) => state.http);
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [types, setType] = useState('');
@@ -33,49 +53,38 @@ const LinkCreatePage = () => {
   const [destinationid, setDestinationid] = useState<string>('');
   const dispatch = useDispatch();
 
+
   useEffect(() => {
-    const getregionstations = async () => {
-      try {
-        const response = await $Get(
-          `otdr/region/${params.regionid!.split('_')[0]}/stations`,
-        );
-
-        if (response.status == 200) {
-          const responsdata = await response.json();
-          console.log("👽",responsdata);
-          
-          let data: any = [];
-          if (responsdata) {
-            let all = responsdata || [];
-            for (let i = 0; i < all.length; i++) {
-              data.push({value: all[i].id, label: all[i].name});
-            }
-            setAllsource(data);
-            setAlldestination(data);
-            setSelectedstations(data);
-          }
-        }
-      } catch (error) {}
-    };
-    getregionstations()
-
-  }, []);
+    let data: any = [];
+    if (allStations) {
+      let all = allStations?.data || [];
+      for (let i = 0; i < all.length; i++) {
+        data.push({value: all[i].id, label: all[i].name});
+      }
+      setAllsource(data);
+      setAlldestination(data);
+      setSelectedstations(data);
+    }
+  }, [stations]);
 
   const changesource = (id: string) => {
     setSourcerror('');
     setSource(id);
-    const data = deepcopy(selectedstations);
+    const data = JSON.parse(JSON.stringify(selectedstations));
     const destinationedata = data?.filter((data: any) => data.value != id);
     setAlldestination(destinationedata);
   };
 
   const changedestination = (id: string) => {
     setDestinationid(id);
-    const data = deepcopy(selectedstations);
+    const data = JSON.parse(JSON.stringify(selectedstations));
     const destinationedata = data?.filter((data: any) => data.value != id);
     setAllsource(destinationedata);
     setDestinationerror('');
   };
+
+
+
 
   const createlink = async () => {
     if (name.length < 1) {
@@ -101,11 +110,11 @@ const LinkCreatePage = () => {
       try {
         const response = await $Post(`otdr/link/`, {
           name: name,
-          network_id: params.regionid!.split('_')[1],
+          network_id: params.regionid!.split("_")[1],
           source_id: source,
           destination_id: destinationid,
           link_points: [],
-          region_id: params.regionid!.split('_')[0],
+          region_id: params.regionid!.split("_")[0],
           description: comment,
           type: types,
         });
@@ -114,7 +123,7 @@ const LinkCreatePage = () => {
         if (response.status == 200) {
           dispatch(
             createLinks({
-              regionid: params.regionid!.split('_')[0]!,
+              regionid: params.regionid!.split("_")[0]!,
               linkid: responsedata.link_id,
               linkname: name,
             }),
@@ -123,6 +132,7 @@ const LinkCreatePage = () => {
 
         navigate(`/links/${responsedata.link_id}`);
       } catch (error) {}
+
     }
   };
 

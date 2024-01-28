@@ -2,15 +2,16 @@ import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import Selectbox from './../../components/selectbox/selectbox';
 import {getPrettyDateTime} from '~/util/time';
+import {useHttpRequest} from '~/hooks';
+import Cookies from 'js-cookie';
+import {networkExplored} from '~/constant';
 import {useEffect, useState} from 'react';
-import {setLinkdetail, settypestate} from './../../store/slices/networkslice';
+import {settypestate} from './../../store/slices/networkslice';
 import {BASE_URL} from './../../constant';
 import {useDispatch, useSelector} from 'react-redux';
 import {updatelinkname} from './../../store/slices/networktreeslice';
-import {$Get, $Put} from '~/util/requestapi';
+import {$Get, $Post, $Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
-import {LinksType} from '~/types/RegionType';
-
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
@@ -55,9 +56,20 @@ const LinkDetailPage = () => {
   }, []);
 
   const dispatch = useDispatch();
-
+  const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
-
+  const {state, request} = useHttpRequest({
+    selector: state => ({
+      detail: state.http.linkDetail,
+      stations: state.http.allStations,
+    }),
+    initialRequests: request => {
+      request('linkDetail', {params: {link_id: params.linkId!}});
+      if (networkId) {
+        request('allStations', undefined);
+      }
+    },
+  });
   const [selectenetwork, setSelectednetwork] = useState('');
   const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
@@ -70,107 +82,81 @@ const LinkDetailPage = () => {
   const [commenerror, setCommmenerror] = useState('');
   const [defaultdestinationname, setDefaultdestinationname] = useState('');
   const [defaultsource, setdefaultsource] = useState('');
+  const [defauttype, setdefaulttype] = useState('');
   const [selectedstations, setSelectedstations] = useState([]);
   const [allsource, setAllsource] = useState<{value: string; label: string}[]>(
     [],
   );
+
   const [soueceerror, setSourcerror] = useState('');
   const [destenationerror, setDestinationerror] = useState('');
   const [alldestinaton, setAlldestination] = useState([]);
   const [source, setSource] = useState<string>('');
   const [destinationid, setDestinationid] = useState<string>('');
-  const [linkDetails, setLinkDetails] = useState<LinksType>();
+
   useEffect(() => {
-    const getregionstations = async () => {
-      try {
-        const linkdetailresponse = await $Get(
-          `otdr/link/${params.linkId!.split('_')[0]}`,
-        );
-        const regionstationresponse = await $Get(
-          `otdr/region/${params.linkId!.split('_')[1]}/stations`,
-        );
-        const [linkdetail, regionstation] = await Promise.all([
-          linkdetailresponse,
-          regionstationresponse,
-        ]);
 
-        const linkdetaildata = await linkdetail.json();
-        dispatch(setLinkdetail(linkdetaildata));
+    setName(state?.detail?.data?.name || '');
+    setComment(
+      state?.detail?.data?.versions?.find(
+        version => version.id === state?.detail?.data?.current_version?.id,
+      )?.description || '',
+    );
+    setDestinationid(
+      state?.detail?.data?.versions?.find(
+        version => version.id === state?.detail?.data?.current_version?.id,
+      )?.destination.id || '',
+    );
+    setDefaultdestinationname(
+      state?.detail?.data?.versions?.find(
+        version => version.id === state?.detail?.data?.current_version?.id,
+      )?.destination.name || '',
+    );
+    setSource(
+      state?.detail?.data?.versions?.find(
+        version => version.id === state?.detail?.data?.current_version?.id,
+      )?.source.id || '',
+    );
+    setdefaultsource(
+      state?.detail?.data?.versions?.find(
+        version => version.id === state?.detail?.data?.current_version?.id,
+      )?.source.name || '',
+    );
+    let findtaype = type.findIndex(
+      (data: any) => data.id == state?.detail?.data?.id,
+    );
 
-        setLinkDetails(linkdetaildata);
-        setName(linkdetaildata?.name || '');
-        setComment(
-          linkdetaildata.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.description || '',
-        );
-        setDestinationid(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.destination.id || '',
-        );
-        setDefaultdestinationname(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.destination.name || '',
-        );
-        setSource(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.source.id || '',
-        );
-        setdefaultsource(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.source.name || '',
-        );
-        let findtaype = type.findIndex(
-          (data: any) => data.id == linkdetaildata?.id,
-        );
+    if (findtaype > -1) {
+      setType(type[findtaype].type);
+    } else {
+      setType(
+        state?.detail?.data?.versions?.find(
+          version => version.id === state?.detail?.data?.current_version?.id,
+        )?.type || '',
+      );
+      dispatch(
+        settypestate({
+          type: state?.detail?.data?.versions?.find(
+            version => version.id === state?.detail?.data?.current_version?.id,
+          )?.type,
+          id: state?.detail?.data?.id,
+        }),
+      );
+    }
 
-        if (findtaype > -1) {
-          setType(type[findtaype].type);
-        } else {
-          setType(
-            linkdetaildata?.versions?.find(
-              (version: any) =>
-                version.id === linkdetaildata?.current_version?.id,
-            )?.type || '',
-          );
-          dispatch(
-            settypestate({
-              type: linkdetaildata?.versions?.find(
-                (version: any) =>
-                  version.id === linkdetaildata?.current_version?.id,
-              )?.type,
-              id: linkdetaildata?.id,
-            }),
-          );
-        }
-        // ----------------------------------------------------------
-        if (regionstation.status == 200) {
-          const responsdata = await regionstation.json();
-          let data: any = [];
-          if (responsdata) {
-            let all = responsdata || [];
-            for (let i = 0; i < all.length; i++) {
-              data.push({value: all[i].id, label: all[i].name});
-            }
-            setAllsource(data);
-            setAlldestination(data);
-            setSelectedstations(data);
-          }
-        }
-      } catch (error) {}
-    };
+  
 
-    getregionstations();
-  }, []);
+    let data: any = [];
+    if (state.stations) {
+      const all = state.stations?.data || [];
+      for (let i = 0; i < all.length; i++) {
+        data.push({value: all[i].id, label: all[i].name});
+      }
+      setAllsource(data);
+      setAlldestination(data);
+      setSelectedstations(data);
+    }
+  }, [state.detail]);
 
   const changesource = (id: string) => {
     setSourcerror('');
@@ -209,23 +195,19 @@ const LinkDetailPage = () => {
       setSourcerror('');
       setDestinationerror('');
       try {
-        const response = await $Put(
-          `otdr/link/${params.linkId!.split('_')[0]}`,
-          {
-            description: comment,
-            name: name,
-            link_points: [],
-            source_id: source,
-            destination_id: destinationid,
-            type: types,
-          },
-        );
+        const response = await $Put(`otdr/link/${params.linkId}`, {
+          description: comment,
+          name: name,
+          link_points: [],
+          source_id: source,
+          destination_id: destinationid,
+          type: types,
+        });
         if (response.status == 200) {
           dispatch(
             updatelinkname({
-              // state!.detail!.data!.region_id!
-              regionid: '',
-              linkid: params.linkId!.split('_')[0],
+              regionid: state!.detail!.data!.region_id!,
+              linkid: params.linkId!,
               linkname: name,
             }),
           );
@@ -247,9 +229,7 @@ const LinkDetailPage = () => {
     };
     getrole();
     const getnetworks = async () => {
-      const getstationdetail = await $Get(
-        `otdr/link/${params.linkId!.split('_')[0]}`,
-      );
+      const getstationdetail = await $Get(`otdr/link/${params.linkId!}`);
       if (getstationdetail.status == 200) {
         const getstationdetaildata = await getstationdetail.json();
         const response = await $Get(`otdr/network`);
@@ -407,10 +387,7 @@ const LinkDetailPage = () => {
               setType(e.value);
               setTypeerror('');
               dispatch(
-                settypestate({
-                  type: e.label.toLowerCase(),
-                  id: linkDetails?.id,
-                }),
+                settypestate({type: e.label.toLowerCase(), id: state?.detail?.data?.id}),
               );
             }}
             options={typeoptions}
@@ -428,22 +405,22 @@ const LinkDetailPage = () => {
       </div>
 
       <Description label="Owner" items="start" className="mt-6">
-        {linkDetails?.versions?.find(
-          version => version.id === linkDetails?.current_version?.id,
+        {state?.detail?.data?.versions?.find(
+          version => version.id === state?.detail?.data?.current_version?.id,
         )?.owner.username || ''}
       </Description>
 
       <Description label="Created" className="mt-6">
-        {getPrettyDateTime(linkDetails?.time_created)}
+        {getPrettyDateTime(state?.detail?.data?.time_created)}
       </Description>
 
       <Description label="Last Modified" className="mt-6">
-        {getPrettyDateTime(linkDetails?.time_updated)}
+        {getPrettyDateTime(state?.detail?.data?.time_updated)}
       </Description>
 
       <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
         {userrole == 'superuser' ||
-        linkDetails?.access?.access == 'ADMIN' ||
+        state?.detail?.data?.access?.access == 'ADMIN' ||
         networkDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={updatelink} type="button">
             Save
