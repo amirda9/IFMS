@@ -11398,17 +11398,33 @@ const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
 
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
-  const plotref = useRef();
+  const plotref: any = useRef();
   const svgRef = useRef<HTMLDivElement>(null);
   const params = useParams();
   let location = useLocation();
+
   const [chartdata, setChartdata] = useState<any>({});
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [mousecursor, setMousecursor] = useState(false);
-  const [zoomm,setZoom]=useState(1)
+  const [layout, setLayout] = useState<any>({
+    clickmode: 'event+select',
+    uirevision: 'constant',
+    title: 'A Fancy Plot',
+    dragmode: false,
+    shapes: allshapes,
+    xaxis: {range: [0, 2500]},
+  }); // use useState hook to define layout state
+  const [zoom, setZoom] = useState(1);
   const [allcurveline, setAllcurveline] = useState<
+    {
+      id: string;
+      data: {x: number; y: number}[];
+    }[]
+  >([]);
+
+  const [allcurveline2, setAllcurveline2] = useState<
     {
       id: string;
       data: {x: number; y: number}[];
@@ -11708,6 +11724,7 @@ function Chart() {
   }, []);
 
   // const get
+console.log("🐜",allshapes[0]);
 
   const [reightbar, setReightbar] = useState('Result');
   const [isDraggingname, setIsDraggingname] = useState<string | number>('');
@@ -11774,19 +11791,31 @@ function Chart() {
           x1: data?.event_location?.x, // x coordinate of the second point,
           y1: data?.event_location?.y - 10, // y coordinate of the first point
           editable: true,
-          showlegend:false,
-          label:{
-            text:"jhjkhjk",
-            textposition:"bottom center",
+          showlegend: false,
+          onClick: () => alert('pp'),
+          label: {
+            text: 'jhjkhjk',
+            textposition: 'bottom center',
+            onclick: () => alert('luul'),
           },
           line: {
+            onclick: () => alert('ll'),
             editable: true,
             color: 'green', // color of the line
             width: 10, // width of the line
+            onClick: () => alert('pp'),
           },
         }),
       );
-      setAllshapes((prev: any) => [...prev, ...allevents]);
+
+      for (let c = 0; c < allevents.length; c++) {
+        setAllcurveline2(prev => [
+          ...prev,
+          {id: (c + 10).toString(), data: [{x: allevents[c].x0, y: allevents[c].y0}]},
+        ]);
+      }
+
+       setAllshapes((prev: any) => [...prev, ...allevents]);
       setShowEwents(true);
     }
     // let allevents = chartdata?.key_events?.events?.map((data: eventstype) => ({
@@ -11866,23 +11895,23 @@ function Chart() {
     setLeftverticaltab('LinkView');
   };
 
-  const zoom = (x: boolean, y: number) => {
-    setXScale({
-      type: 'linear',
-      min: y,
-      // max: 4,
-    });
-    // setYScale({
-    //   type: 'linear',
-    //   min: y,
-    //   // max: 20,
-    // });
-    if (x) {
-      setbasescale(basescale + 100);
-    } else {
-      setbasescale(basescale - 100);
-    }
-  };
+  // const zoom = (x: boolean, y: number) => {
+  //   setXScale({
+  //     type: 'linear',
+  //     min: y,
+  //     // max: 4,
+  //   });
+  //   // setYScale({
+  //   //   type: 'linear',
+  //   //   min: y,
+  //   //   // max: 20,
+  //   // });
+  //   if (x) {
+  //     setbasescale(basescale + 100);
+  //   } else {
+  //     setbasescale(basescale - 100);
+  //   }
+  // };
 
   const getColorForId = (id: string) => {
     if (id === 'Cur') return '#273746';
@@ -11935,9 +11964,8 @@ function Chart() {
         y0: 10, // y coordinate of the first point
         x1: finevent.marker_location_1, // x coordinate of the second point
         y1: 1000, // y coordinate of the second point
-      
-        line: {
 
+        line: {
           color: 'blue', // color of the line
           width: 10, // width of the line
         },
@@ -12590,10 +12618,83 @@ function Chart() {
   // plotref?.current?.on('plotly_click', function(){
   //     alert('You clicked this Plotly chart!');
   // });
-  console.log('🌷', plotref?.current);
+  console.log('🌷', [chartdata?.key_events?.events[0]?.event_location?.x,chartdata?.key_events?.events[0]]);
+  const zoomIn = () => {
+    // define a function to zoom in the plot
+    const newZoom = zoom + 0.5; // increase the zoom value by 0.5
+    const newLayout = {
+      // create a new layout object
+      ...layout, // keep the previous layout properties
+      xaxis: {
+        // update the x-axis properties
+        ...layout.xaxis, // keep the previous x-axis properties
+        range: [
+          // set the new x-axis range according to the zoom value
+          layout.xaxis.range[0] / newZoom,
+          layout.xaxis.range[1] / newZoom,
+        ],
+      },
+      yaxis: {
+        // update the y-axis properties
+        ...layout.yaxis, // keep the previous y-axis properties
+        range: [
+          // set the new y-axis range according to the zoom value
+          layout.yaxis.range[0] / newZoom,
+          layout.yaxis.range[1] / newZoom,
+        ],
+      },
+    };
+    setLayout(newLayout); // use the setState function to update the layout state
+    setZoom(newZoom); // use the setState function to update the zoom state
+    plotref?.current?.relayout(newLayout); // use the relayout method to update the plot
+  };
 
+  const zoomout = () => {
+    // define a function to zoom in the plot
+    const newZoom = zoom + 0.5; // decrease the zoom value by 0.5
+    // const newData = [...this.state.data]; // create a new data array
+    const newLayout = {
+      // create a new layout object
+      ...layout, // keep the previous layout properties
+      xaxis: {
+        // update the x-axis properties
+        ...layout.xaxis, // keep the previous x-axis properties
+        range: [
+          // set the new x-axis range according to the zoom value
+          layout.xaxis.range[0] * newZoom,
+          layout.xaxis.range[1] * newZoom,
+        ],
+      },
+      yaxis: {
+        // update the y-axis properties
+        ...layout.yaxis, // keep the previous y-axis properties
+        range: [
+          // set the new y-axis range according to the zoom value
+          layout.yaxis.range[0] * newZoom,
+          layout.yaxis.range[1] * newZoom,
+        ],
+      },
+    };
+    setLayout(newLayout); // use the setState function to update the layout state
+    setZoom(newZoom);
+    plotref?.current?.relayout(newLayout); // use the update method to update the plot
+  };
+
+  // const showAlert = data => {
+  //   // define a function to show an alert
+  //   // check if the clicked point is a shape
+  //   alert('gyty');
+  //   if (data.points[0].pointNumber === undefined) {
+  //     // get the index of the clicked shape
+  //     // const shapeIndex = data.points[0].curveNumber;
+  //     // // get the shape object from the layout
+  //     // const shape = plotref.current.layout.shapes[shapeIndex];
+  //     // // show an alert with the shape type and coordinates
+  //     // alert(`You clicked on a ${shape.type} with coordinates ${shape.x0}, ${shape.y0}, ${shape.x1}, ${shape.y1}`);
+  //   }
+  // };
   return (
-    <div className="relative box-border flex h-auto w-full flex-col p-[10px] pt-[100px] pb-[200px]">
+    <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
         {yvalue}
       </span>
@@ -12636,12 +12737,12 @@ function Chart() {
                 className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
               />
               <GoZoomIn
-                onClick={() => zoom(true, basescale + 100)}
+                // onClick={() => zoom(true, basescale + 100)}
                 size={30}
                 className="mt-[20px] cursor-pointer"
               />
               <GoZoomOut
-                onClick={() => zoom(false, basescale - 1)}
+                // onClick={() => zoom(false, basescale - 1)}
                 size={30}
                 className="mt-[20px] cursor-pointer"
               />
@@ -12652,7 +12753,7 @@ function Chart() {
               />
               <img
                 onClick={() => {
-                  zoom(false, 1), setbasescale(2), setRectangelzoom(false);
+                  // zoom(false, 1), setbasescale(2), setRectangelzoom(false);
                 }}
                 src={Vector1}
                 className="mt-[15px] h-[25.5px] w-[30px] cursor-pointer"
@@ -12682,19 +12783,15 @@ function Chart() {
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
-                <button onClick={()=>setZoom(zoomm+100)}>jjjjj</button>
+              <button
+                className="mx-[50px]"
+                onClick={() => console.log(plotref.current)}>
+                zoomin
+              </button>
+              <button onClick={() => zoomout()}>zoomout</button>
               <Plot
-               
-                // data={data11}
-                // layout={layout11}
-                // />
-      
-               onRelayout={e => console.log('🦞', e)}
-              //  onSliderChange={(e)=> alert("tttt")}
-              //   onSelecting={(e)=> alert("tttt")}
-                // onHover={e => console.log('✈️', e)}
-                  // onClick={(e)=> alert("ddddddd")}
-                // onHover={e => alert("hhh")}
+                ref={plotref}
+                onRelayout={e => console.log('🦞', e)}
                 className="h-[600px] w-full"
                 data={[
                   {
@@ -12703,20 +12800,67 @@ function Chart() {
                     type: 'scatter',
                     mode: 'lines+markers',
                     marker: {color: 'red'},
-                  
                   },
+                  // {
+                  //   x: [chartdata?.key_events?.events[0]?.event_location?.x,chartdata?.key_events?.events[0]?.event_location?.x],
+                  //   y: [chartdata?.key_events?.events[0]?.event_location?.y - 10,chartdata?.key_events?.events[0]?.event_location?.y + 10],
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line:{width:10},
+                  //   marker: {color: 'green'},
+                  // },
+                  // {
+                  //   x: [chartdata?.key_events?.events[1]?.event_location?.x,chartdata?.key_events?.events[1]?.event_location?.x],
+                  //   y: [chartdata?.key_events?.events[1]?.event_location?.y - 10,chartdata?.key_events?.events[1]?.event_location?.y + 10],
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line:{width:10},
+                  //   marker: {color: 'green'},
+                  // },
+                  // {
+                  //   x: [chartdata?.key_events?.events[2]?.event_location?.x,chartdata?.key_events?.events[2]?.event_location?.x],
+                  //   y: [chartdata?.key_events?.events[2]?.event_location?.y - 10,chartdata?.key_events?.events[2]?.event_location?.y + 10],
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line:{width:10},
+                  //   marker: {color: 'green'},
+                  // },
                 ]}
-                
+
+
+                // let allevents = chartdata?.key_events?.events?.map(
+                //   (data: eventstype) => ({
+                //     type: 'line',
+                //     x0: data?.event_location?.x, // x coordinate of the first point
+                //     y0: data?.event_location?.y + 10, // y coordinate of the first point
+                //     x1: data?.event_location?.x, // x coordinate of the second point,
+                //     y1: data?.event_location?.y - 10, // y coordinate of the first point
+
+                // {
+                //   type: 'line',
+                //   x0: finevent.marker_location_1, // x coordinate of the first point
+                //   y0: 10, // y coordinate of the first point
+                //   x1: finevent.marker_location_1, // x coordinate of the second point
+                //   y1: 1000, // y coordinate of the second point
+          
+                //   line: {
+                //     color: 'blue', // color of the line
+                //     width: 10, // width of the line
+                //   },
+                // },
+
+                onButtonClicked={()=>alert("kk")}
+                onClick={()=>alert("kk")}
+                // onHover={(data)=>console.log('🩰',data)}
+                // onUnhover={data => console.log('🤡', data)}
                 layout={{
-                  clickmode: 'event+select' ,
+                  clickmode: 'event+select',
                   uirevision: 'constant',
                   title: 'A Fancy Plot',
                   dragmode: false,
                   shapes: allshapes,
-                 xaxis:{range: [0+zoomm, 2500-zoomm]},
-                 
+                  //  xaxis:{range: [0, 2500]},
                 }}
-               
               />
             </div>
           </div>
@@ -13005,4 +13149,3 @@ function Chart() {
 }
 
 export default Chart;
-
