@@ -1,13 +1,13 @@
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
-import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
+import {SimpleBtn, Table} from '~/components';
 import {useEffect, useState} from 'react';
-import {useHttpRequest} from '~/hooks';
 import {useNavigate, useParams} from 'react-router-dom';
 import {
   setnewregionstationlist,
   setnewregionstationliststatus,
 } from './../../store/slices/networkslice';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
+import {$Get} from '~/util/requestapi';
 type UserTableType = {
   id: string;
   name: string;
@@ -37,56 +37,71 @@ const columns = {
 // *****************************************************************************
 const RegionstationlisteditPage = () => {
   const params = useParams<{regionId: string}>();
-  const {network} = useSelector((state: any) => state);
+  const [leftloading, setLeftloading] = useState(false);
+  const [regionstation,setRegionStation]=useState<
+  {
+    id: string,
+    name: string,
+    longitude: string,
+    latitude: string
+  }[]
+>([])
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {state} = useHttpRequest({
-    selector: state => ({
-      regionstationlist: state.http.regionStationList,
-      stations: state.http.networkstations,
-    }),
-    initialRequests: request => {
-      request('regionStationList', {params: {region_id: params.regionId!.split("_")[0]}});
-    
-        request('networkstations', {params: {network_id: params.regionId!.split("_")[1]}});
-
-    },
-  });
-
-  console.log(state.stations,'🤩');
   
-  const allstations =
-    removeCommon(state?.stations?.data, state?.regionstationlist?.data)?.map(
-      (data: any) => ({
-        id: data?.id,
-        name: data?.name,
-        latitude: '-',
-        longitude: '-',
-      }),
-    ) || [];
-  const allsregiontations =
-    state?.regionstationlist?.data?.map((data: any) => ({
-      id: data?.id,
-      name: data?.name,
-      latitude: '-',
-      longitude: '-',
-    })) || [];
-
-console.log("👽",allstations);
-
-
-  const [leftstationsorted, setLeftstationssorted] =
-    useState<UserTableType[]>(allstations);
-
-  useEffect(() => {
-    dispatch(setnewregionstationlist([]));
-    setLeftstationssorted(allstations);
-  }, []);
-
+  const [leftstationsorted, setLeftstationssorted] = useState<UserTableType[]>(
+    [],
+  );
   const [reightstationsorted, setReightstationssorted] =
-    useState<UserTableType[]>(allsregiontations);
+    useState<UserTableType[]>([]);
   const [selectreight, setSelectreight] = useState<UserTableType[]>([]);
   const [selectleft, setSelectleft] = useState<UserTableType[]>([]);
+
+  useEffect(() => {
+    const getnetworkstations = async () => {
+      setLeftloading(true);
+      try {
+        const networkstationresponse = await $Get(
+          `otdr/station/network/${params.regionId!.split('_')[1]}`,
+        );
+        const regionstationresponse = await $Get(
+          `otdr/region/${params.regionId!.split('_')[0]}/stations`,
+        );
+
+        const [networkstations, regionstations] = await Promise.all([
+          networkstationresponse,
+          regionstationresponse,
+        ]);
+        const networkstationresponsedata = await networkstations.json();
+        const regionstationresponsedata = await regionstations.json();
+        setRegionStation(regionstationresponsedata)
+        setReightstationssorted(regionstationresponsedata.map((data: any) => ({
+          id: data?.id,
+          name: data?.name,
+          latitude: '-',
+          longitude: '-',
+        })) || [])
+
+        setLeftstationssorted(
+          removeCommon(
+            networkstationresponsedata,
+            regionstationresponsedata,
+          )?.map((data: any) => ({
+            id: data?.id,
+            name: data?.name,
+            latitude: '-',
+            longitude: '-',
+          })) || [],
+        );
+      } catch (error) {
+      } finally {
+        setLeftloading(false);
+      }
+    };
+    getnetworkstations();
+    dispatch(setnewregionstationlist([]));
+  }, []);
+
 
   const changeSelect =
     (side: 'left' | 'right', value: UserTableType) => (key?: any) => {
@@ -144,7 +159,7 @@ console.log("👽",allstations);
   return (
     <div className="mb-2 flex h-[calc(100vh-150px)]  w-full flex-row items-center justify-between p-6 pb-2">
       <Table
-        loading={state.stations?.httpRequestStatus !== 'success'}
+        loading={leftloading}
         tabicon={'Name'}
         onclicktitle={(tabname: string, sortalfabet: boolean) => {
           const dataa = [...leftstationsorted];
@@ -182,7 +197,7 @@ console.log("👽",allstations);
       />
 
       <Table
-        loading={state.regionstationlist?.httpRequestStatus !== 'success'}
+        loading={leftloading} 
         onclicktitle={(tabname: string, sortalfabet: boolean) => {
           const dataa = [...reightstationsorted];
           if (sortalfabet) {
@@ -205,8 +220,9 @@ console.log("👽",allstations);
         </SimpleBtn>
         <SimpleBtn
           onClick={() => {
+             // .map(data => data.id)
             dispatch(
-              setnewregionstationlist(allsregiontations.map(data => data.id)),
+              setnewregionstationlist(regionstation),
             );
             dispatch(setnewregionstationliststatus(false));
             navigate(-1);
