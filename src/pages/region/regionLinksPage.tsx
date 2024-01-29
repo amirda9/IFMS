@@ -4,10 +4,9 @@ import {useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import {BASE_URL} from '~/constant';
-import {BsChevronDown} from 'react-icons/bs';
-import {string} from 'yup';
 import {setnewregionlinklist,setnewregionlinkliststatus} from './../../store/slices/networkslice';
 import {useDispatch} from 'react-redux';
+import { $Get } from '~/util/requestapi';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   name: {label: 'Name', size: 'w-[30%]', sort: true},
@@ -83,8 +82,16 @@ const RegionLinksPage = () => {
     if(newregionlinkliststatus){
       setItemssorted(newregionlinklist);
     }else{
-      setItemssorted(items.sort((a, b) => a.name.localeCompare(b.name, 'en-US')));
-
+      const getregionlinklist=async()=>{
+        try {
+          const response=await $Get(`otdr/region/${params.regionId!.split("_")[0]}/links`)
+          const responsedata=await response.json()
+          setItemssorted(responsedata.sort((a:any, b:any) => a.name.localeCompare(b.name, 'en-US')));
+        } catch (error) {
+          console.log(error);
+        }       
+      }
+      getregionlinklist()
     }
   }, [newregionlinkliststatus]);
 
