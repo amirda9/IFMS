@@ -76,21 +76,21 @@ const RegionLinksPage = () => {
     })) || [];
 
 
-    
+    const getregionlinklist=async()=>{
+      try {
+        const response=await $Get(`otdr/region/${params.regionId!.split("_")[0]}/links`)
+        const responsedata=await response.json()
+        setItemssorted(responsedata.sort((a:any, b:any) => a.name.localeCompare(b.name, 'en-US')));
+      } catch (error) {
+        console.log(error);
+      }       
+    }
 
   useEffect(() => {
     if(newregionlinkliststatus){
       setItemssorted(newregionlinklist);
     }else{
-      const getregionlinklist=async()=>{
-        try {
-          const response=await $Get(`otdr/region/${params.regionId!.split("_")[0]}/links`)
-          const responsedata=await response.json()
-          setItemssorted(responsedata.sort((a:any, b:any) => a.name.localeCompare(b.name, 'en-US')));
-        } catch (error) {
-          console.log(error);
-        }       
-      }
+     
       getregionlinklist()
     }
   }, [newregionlinkliststatus]);
@@ -154,6 +154,7 @@ const RegionLinksPage = () => {
 
     dispatch(setnewregionlinkliststatus(false))
     dispatch(setnewregionlinklist([]))
+    getregionlinklist()
   };
 
   return (

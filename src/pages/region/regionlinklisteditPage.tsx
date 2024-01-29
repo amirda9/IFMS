@@ -1,14 +1,12 @@
 import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
-import {GroupItem, SimpleBtn, Table, TallArrow} from '~/components';
+import {SimpleBtn, Table} from '~/components';
 import {useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
-import {networkExplored} from '~/constant';
-import Cookies from 'js-cookie';
 import {useNavigate, useParams} from 'react-router-dom';
 import {setnewregionlinklist,setnewregionlinkliststatus} from './../../store/slices/networkslice';
 import {useDispatch} from 'react-redux';
-import {array} from 'yup';
 import { deepcopy } from '~/util';
+import { $Get } from '~/util/requestapi';
 type UserTableType = {
   id: string;
   name: string;
@@ -45,13 +43,9 @@ const RegionlinklisteditPage = () => {
   const {state} = useHttpRequest({
     selector: state => ({
       regionLinkList: state.http.regionLinkList,
-      links: state.http.networklinks,
     }),
     initialRequests: request => {
       request('regionLinkList', {params: {region_id: params.regionId!.split("_")[0]}});
-
-        request('networklinks', {params: {network_id: params.regionId!.split("_")[1]}});
-
     },
   });
 
@@ -62,13 +56,12 @@ const RegionlinklisteditPage = () => {
   const [reighttableselecttab, setReighttableselecttab] = useState('Name');
   const [lefttablesorte, setLefttablesort] = useState(false);
   const [reighttablesorte, setreighttablesort] = useState(false);
-
+  const [loading,setloading]=useState(false)
   const params = useParams<{regionId: string}>();
   const [mount, setmount] = useState(false);
   const [leftlinksorted, setLeftlinksorted] = useState<UserTableType[]>([]);
-  const [tabnameleft, setTabnameleft] = useState('Name');
   const [reightlinksorted, setReightlinksorted] = useState<UserTableType[]>([]);
-  const regionlinklist = state.regionLinkList?.data || [];
+
   useEffect(() => {
     dispatch(setnewregionlinklist([]));
     setReightlinksorted(
@@ -82,25 +75,38 @@ const RegionlinklisteditPage = () => {
         ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
         [],
     );
-    setLeftlinksorted(
-      removeCommon(
-        state?.links?.data?.map(data => ({
-          id: data?.id,
-          name: data?.name,
-          source: data?.source?.name,
-          destination: data?.destination?.name,
-        })),
-        state?.regionLinkList?.data,
-      )
-        ?.map((data: any) => ({
-          id: data?.id,
-          name: data?.name,
-          source: data?.source,
-          destination: data?.destination,
-        }))
-        ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
-        [],
-    );
+    const networklinklist=async()=>{
+      try {
+        setloading(true)
+        const responst=await $Get(`otdr/link/network/${params.regionId!.split("_")[1]}`)
+        const responstdata=await responst.json()
+        setLeftlinksorted(
+          removeCommon(
+            responstdata.map((data:any) => ({
+              id: data?.id,
+              name: data?.name,
+              source: data?.source?.name,
+              destination: data?.destination?.name,
+            })),
+            state?.regionLinkList?.data,
+          )
+            ?.map((data: any) => ({
+              id: data?.id,
+              name: data?.name,
+              source: data?.source,
+              destination: data?.destination,
+            }))
+            ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
+            [],
+        );
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setloading(false)
+      }
+      
+    }
+    networklinklist()
   }, []);
 
   const [selectreight, setSelectreight] = useState<UserTableType[]>([]);
@@ -159,8 +165,6 @@ const RegionlinklisteditPage = () => {
   };
 
   const savestations = () => {
-
-
     let dataa = reightlinksorted.map((data: any) => ({
       name: data?.name,
       id:data.id,
@@ -174,8 +178,6 @@ const RegionlinklisteditPage = () => {
   };
 
   const sortleft = (tabname: string, sortalfabet: boolean) => {
-
-
     const old = deepcopy(leftlinksorted);
     if (tabname != 'Index') {
       if (sortalfabet) {
@@ -245,7 +247,7 @@ const RegionlinklisteditPage = () => {
         onclicktitle={(tabname: string, sortalfabet: boolean) => {
           setLefttableselecttab(tabname), setLefttablesort(sortalfabet);
         }}
-        loading={state.links?.httpRequestStatus !== 'success'}
+        loading={loading}
         tabicon={lefttableselecttab}
         cols={columns}
         items={leftlinksorted}
