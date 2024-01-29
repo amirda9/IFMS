@@ -83,15 +83,12 @@ const LinkDetailPage = () => {
   useEffect(() => {
     const getregionstations = async () => {
       try {
-        const linkdetailresponse = await $Get(
-          `otdr/link/${params.linkId!.split('_')[0]}`,
-        );
-        const regionstationresponse = await $Get(
-          `otdr/region/${params.linkId!.split('_')[1]}/stations`,
-        );
+        let  linkdetailurl=`otdr/link/${params.linkId!.split('_')[0]}`
+        let regionstationurl=`otdr/region/${params.linkId!.split('_')[1]}/stations`
+
         const [linkdetail, regionstation] = await Promise.all([
-          linkdetailresponse,
-          regionstationresponse,
+          $Get(linkdetailurl),
+          $Get(regionstationurl),
         ]);
 
         const linkdetaildata = await linkdetail.json();
