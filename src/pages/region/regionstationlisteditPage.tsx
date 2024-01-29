@@ -61,16 +61,12 @@ const RegionstationlisteditPage = () => {
     const getnetworkstations = async () => {
       setLeftloading(true);
       try {
-        const networkstationresponse = await $Get(
-          `otdr/station/network/${params.regionId!.split('_')[1]}`,
-        );
-        const regionstationresponse = await $Get(
-          `otdr/region/${params.regionId!.split('_')[0]}/stations`,
-        );
-
+        let networlstationurl=`otdr/station/network/${params.regionId!.split('_')[1]}`
+        let regionstationresurl=`otdr/region/${params.regionId!.split('_')[0]}/stations`
+    
         const [networkstations, regionstations] = await Promise.all([
-          networkstationresponse,
-          regionstationresponse,
+          $Get(networlstationurl),
+          $Get(regionstationresurl),
         ]);
         const networkstationresponsedata = await networkstations.json();
         const regionstationresponsedata = await regionstations.json();
