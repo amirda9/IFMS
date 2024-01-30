@@ -20,9 +20,35 @@ type linkpoints = {
   payload: {latitude: number; longitude: number}[];
   type: string;
 };
-const initialState = {
-  type: [],
-  linkdetail:{},
+type initialStatetype={
+  type: any,
+  linkdetail:any,
+  networkviewers: string[],
+  networkviewersstatus: boolean,
+  regionviewers: string[],
+  regionviewersstatus: boolean,
+  stationviewers: string[],
+  stationviewersstatus: boolean,
+  linkviewers: string[],
+  linkviewersstatus: boolean,
+  newregionstationlist: {
+    id: string;
+    name: string;
+    latitude: string;
+    longitude: string;
+}[],
+  newregionstationliststatus: boolean,
+  newregionlinklist: {
+    id: string;
+    name: string;
+    source: string;
+    destination: string;
+}[],
+  newregionlinkliststatus: boolean,
+}
+const initialState:initialStatetype = {
+  type:{},
+  linkdetail:[],
   networkviewers: [],
   networkviewersstatus: false,
   regionviewers: [],
@@ -57,7 +83,7 @@ const changetyperstate = createSlice({
       state.networkviewers = action.payload;
     },
     setLinkdetail: (state, action) => {
-      state.linkDetail = action.payload;
+      state.linkdetail = action.payload;
     },
     setnetworkviewersstatus: (state, action: veiwerlistsstatus) => {
       state.networkviewersstatus = action.payload;

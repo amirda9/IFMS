@@ -21,15 +21,15 @@ const stationSchema = Yup.object().shape({
 const StationDetailPage = () => {
   const dispatch = useDispatch();
   const params = useParams();
-  console.log(params.regionid, 'params');
-  const networkId = Cookies.get(networkExplored);
+  console.log(params, 'params');
+
   const navigate = useNavigate();
   const {state, request} = useHttpRequest({
     selector: state => ({
       regions: state.http.regionList,
     }),
     initialRequests: () => {
-      request('regionList', {params: {network_id: networkId!}});
+      request('regionList', {params: {network_id:  params.regionid?.split("_")[1]!}});
     },
   });
 
@@ -58,6 +58,7 @@ const StationDetailPage = () => {
             // we should update the network tree
             dispatch(
               createStation({
+                networkid: params.regionid?.split("_")[1]!,
                 regionid:params.regionid?.split("_")[0]!,
                 stationid: responsedata.station_id,
                 stationname: values.name,

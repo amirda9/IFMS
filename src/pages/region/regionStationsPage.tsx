@@ -9,6 +9,13 @@ import {
   setnewregionstationliststatus,
 } from './../../store/slices/networkslice';
 import {useDispatch} from 'react-redux';
+import {deepcopy} from '~/util';
+import {$Post} from '~/util/requestapi';
+import {
+  allregionstationstype,
+  setRegionstations,
+} from '~/store/slices/networktreeslice';
+import {RootState} from '~/store';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   name: {label: 'Name', size: 'w-[45%]', sort: true},
@@ -19,13 +26,14 @@ const columns = {
 const RegionStationsPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {newregionstationlist, regionviewers, newregionstationliststatus} =
-    useSelector((state: any) => state.network);
+    useSelector((state: RootState) => state.network);
   const {network} = useSelector((state: any) => state);
+  const {regionstations} = useSelector((state: RootState) => state.networktree);
   const dispatch = useDispatch();
   const login = localStorage.getItem('login');
   const [tabname, setTabname] = useState('Name');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [userrole, setuserrole] = useState<any>('');
+  const [userrole, setuserrole] = useState<string>('');
   const [itemssorted, setItemssorted] = useState<
     {
       name: string;
@@ -75,7 +83,6 @@ const RegionStationsPage = () => {
       }
     },
   });
-  console.log(state.list, '👾');
 
   const dataa =
     state.list?.data?.map(station => ({
@@ -95,8 +102,7 @@ const RegionStationsPage = () => {
   }, [state]);
 
   const sortddata = (tabnamee: string, sortalfabet: boolean) => {
-    console.log(tabnamee, sortalfabet, 'rrrr');
-    const newdataa = newregionstationliststatus
+    const newdataa: any = newregionstationliststatus
       ? [...newregionstationlist]
       : [...dataa];
     if (sortalfabet) {
@@ -133,43 +139,106 @@ const RegionStationsPage = () => {
     setItemssorted(newdataa);
   };
 
-  const save = () => {
-    const appenddata = [];
-    const removedata = [];
+  const save = async () => {
+    const appenddata: {
+      id: string;
+      name: string;
+      latitude: number;
+      longitude: number;
+    }[] = [];
+    const removedata: {
+      id: string;
+      name: string;
+      latitude: number;
+      longitude: number;
+    }[] = [];
     const alllist = state?.list?.data || [];
-    const newregionstationlist2 = newregionstationlist.map(
-      (data: any) => data.id,
-    );
+    const newregionstationlist2: {
+      id: string;
+      name: string;
+      latitude: number;
+      longitude: number;
+    }[] = deepcopy(newregionstationlist);
+
     for (let i = 0; i < alllist.length; i++) {
       const find = newregionstationlist2.findIndex(
-        (data: any) => data == alllist[i].id,
+        data => data.id == alllist[i].id,
       );
       if (find < 0) {
-        removedata.push(alllist[i].id);
+        removedata.push(alllist[i]);
       }
     }
 
     for (let j = 0; j < newregionstationlist2.length; j++) {
       const find = alllist.findIndex(
-        (data: any) => data.id == newregionstationlist2[j],
+        data => data.id == newregionstationlist2[j].id,
       );
       if (find < 0) {
         appenddata.push(newregionstationlist2[j]);
       }
     }
 
+    const regionstationsCopy: allregionstationstype[] =
+      deepcopy(regionstations);
+    const findregionindex = regionstations.findIndex(
+      data => data.regionid == params.regionId!.split('_')[0],
+    );
+
     let first = state?.list?.data || [];
     if (first.length == 0 && newregionstationlist2?.length == 0) {
     } else {
-      request('removeregionStationList', {
-        params: {region_id: params.regionId!.split('_')[0]},
-        data: {stations_id: removedata},
-      });
-      request('addregionStationList', {
-        params: {region_id: params.regionId!.split('_')[0]},
-        data: {stations_id: appenddata},
-      });
+      const append = await $Post(
+        `otdr/region/${
+          params.regionId!.split('_')[0]
+        }/update_stations?action_type=append`,
+        {stations_id: appenddata.map(data => data.id)},
+      );
+      // we should update regionstations in networktree
+      if (append.status == 201) {
+        //add stations to some regionstations in networktree
+        regionstationsCopy[findregionindex].stations = [
+          ...regionstations[findregionindex].stations,
+          ...appenddata.map(data => ({id: data.id, name: data.name})),
+        ];
+        //We remove the stations from some regionstations because we have connected some of the stations to another region.
+
+        for (let k = 0; k < regionstationsCopy.length; k++) {
+          if (
+            regionstationsCopy[k].networkid == params.regionId!.split('_')[1] &&
+            regionstationsCopy[k].regionid != params.regionId!.split('_')[0]
+          ) {
+            for (let x = 0; x < appenddata.length; x++) {
+              let newlist = regionstationsCopy[k].stations.filter(
+                data => data.id != appenddata[x].id,
+              );
+              regionstationsCopy[k].stations = newlist;
+            }
+          }
+        }
+      }
+
+      const remove = await $Post(
+        `otdr/region/${
+          params.regionId!.split('_')[0]
+        }/update_stations?action_type=remove`,
+        {stations_id: removedata.map(data => data.id)},
+      );
+      //remove stations from some regionstations in networktree
+      if (remove.status == 201) {
+        for (let s = 0; s < removedata.length; s++) {
+          const findindexdata = regionstationsCopy[
+            findregionindex
+          ].stations.findIndex(data => data.id == removedata[s].id);
+          if (findindexdata > -1) {
+            regionstationsCopy[findregionindex].stations.splice(
+              findindexdata,
+              1,
+            );
+          }
+        }
+      }
     }
+    dispatch(setRegionstations(regionstationsCopy));
     dispatch(setnewregionstationliststatus(false)),
       dispatch(setnewregionstationlist([]));
   };

@@ -66,7 +66,7 @@ export type networkregionstype = {
 };
 
 export type regionstationstype = {
-  payload: {regionid: string; stations: {name: string; id: string}[]}[];
+  payload: {networkid:string,regionid: string; stations: {name: string; id: string}[]}[];
   type: string;
 };
 export type defaultregionstationstype = {
@@ -151,6 +151,7 @@ type createregiontype = {
 };
 
 export type allregionstationstype = {
+  networkid:string;
   regionid: string;
   stations: {name: string; id: string}[];
 };
@@ -174,7 +175,7 @@ type leftbarStationcheckboxlist = {
   rtues: string[];
 }[];
 type createStationtype = {
-  payload: {regionid: string; stationid: string; stationname: string};
+  payload: {networkid:string,regionid: string; stationid: string; stationname: string};
   type: string;
 };
 
@@ -481,10 +482,15 @@ const networktreeslice = createSlice({
       const findregionstationinddex = state.regionstations.findIndex(
         data => data.regionid == action.payload.regionid,
       );
-      regionStationcopy[findregionstationinddex].stations.push({
-        id: action.payload.stationid,
-        name: action.payload.stationname,
-      });
+      if(findregionstationinddex>-1){
+        regionStationcopy[findregionstationinddex].stations.push({
+          id: action.payload.stationid,
+          name: action.payload.stationname,
+        });
+      }else{
+        regionStationcopy.push({networkid:action.payload.networkid,regionid:action.payload.regionid,stations:[{id:action.payload.stationid,name:action.payload.stationname}]})
+      }
+    
       state.regionstations = regionStationcopy;
     },
     //  -----------------------------
