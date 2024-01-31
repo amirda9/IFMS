@@ -5,6 +5,7 @@ export {default as LinkDetailPage} from './linkDetailPage';
 export {default as LinkAccessPage} from './linkAccessPage';
 export {default as LinkPointsPage} from './linkPointsPage';
 export {default as defaultregionlinkcreatepage} from './defaultregionlinkcreatepage';
+export {default as defaultregionlinkdetailpage} from './defaultregionlinkdetailpage';
 export {default as LinkCablesAndSegmentsPage} from './linkCablesAndSegmentsPage';
 export {default as LinkDuctsAndSegmentsPage} from './linkDuctsAndSegmentsPage';
 export {default as LinkEditViewersPage} from './linkEditViewersPage';

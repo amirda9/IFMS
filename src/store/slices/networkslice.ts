@@ -47,7 +47,7 @@ type initialStatetype={
   newregionlinkliststatus: boolean,
 }
 const initialState:initialStatetype = {
-  type:{},
+  type:[],
   linkdetail:[],
   networkviewers: [],
   networkviewersstatus: false,

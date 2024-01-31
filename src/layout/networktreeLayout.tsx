@@ -723,7 +723,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   ),
                                   onclicklinks(networkdata.id);
                               }}
-                              createurl={`/links/create/${networkdata.id}`}
+                              createurl={`/links/createdefaultregionlink/${networkdata.id}`}
                               id={`&${networkdata.id}&${networkdata.id}`}
                               name="Links"
                             />
@@ -747,7 +747,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   ?.links.map((linksdata, index) => (
                                     <Items
                                       key={Number(index)}
-                                      to={`/links/${linksdata.id}`}
+                                      to={`/links/defaultregionlinkdetailpage/${linksdata.id}`}
                                       createurl={`/links/create`}
                                       selected={false}
                                       onDelete={() =>
