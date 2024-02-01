@@ -14,6 +14,7 @@ import {$Post} from '~/util/requestapi';
 import {
   allregionstationstype,
   setRegionstations,
+  setdefaultRegionstations,
 } from '~/store/slices/networktreeslice';
 import {RootState} from '~/store';
 const columns = {
@@ -28,7 +29,9 @@ const RegionStationsPage = () => {
   const {newregionstationlist, regionviewers, newregionstationliststatus} =
     useSelector((state: RootState) => state.network);
   const {network} = useSelector((state: any) => state);
-  const {regionstations} = useSelector((state: RootState) => state.networktree);
+  const {regionstations, defaultregionstations} = useSelector(
+    (state: RootState) => state.networktree,
+  );
   const dispatch = useDispatch();
   const login = localStorage.getItem('login');
   const [tabname, setTabname] = useState('Name');
@@ -204,7 +207,7 @@ const RegionStationsPage = () => {
 
         for (let k = 0; k < regionstationsCopy.length; k++) {
           if (
-            regionstationsCopy[k].networkid == params.regionId!.split('_')[1] &&
+            // regionstationsCopy[k].networkid == params.regionId!.split('_')[1] &&
             regionstationsCopy[k].regionid != params.regionId!.split('_')[0]
           ) {
             for (let x = 0; x < appenddata.length; x++) {
@@ -223,8 +226,13 @@ const RegionStationsPage = () => {
         }/update_stations?action_type=remove`,
         {stations_id: removedata.map(data => data.id)},
       );
+
       //remove stations from some regionstations in networktree
       if (remove.status == 201) {
+        const defaultregionStationsCopy = deepcopy(defaultregionstations);
+        const findefaultregionindex = defaultregionstations.findIndex(
+          data => data.networkid == params.regionId!.split('_')[1],
+        );
         for (let s = 0; s < removedata.length; s++) {
           const findindexdata = regionstationsCopy[
             findregionindex
@@ -235,9 +243,23 @@ const RegionStationsPage = () => {
               1,
             );
           }
+
+          if (findefaultregionindex > -1) {
+            defaultregionStationsCopy[findefaultregionindex].stations.push({
+              id: removedata[s].id,
+              name: removedata[s].name,
+            });
+          }
         }
+        dispatch(
+          setdefaultRegionstations({
+            networkid: params.regionId!.split('_')[1],
+            stations: defaultregionStationsCopy[findefaultregionindex].stations,
+          }),
+        );
       }
     }
+
     dispatch(setRegionstations(regionstationsCopy));
     dispatch(setnewregionstationliststatus(false)),
       dispatch(setnewregionstationlist([]));
