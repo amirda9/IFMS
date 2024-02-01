@@ -123,6 +123,7 @@ const LinkCreatePage = () => {
         if (response.status == 200) {
           dispatch(
             createLinks({
+              networkid:"",
               regionid: params.regionid!.split("_")[0]!,
               linkid: responsedata.link_id,
               linkname: name,

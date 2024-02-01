@@ -74,7 +74,7 @@ export type defaultregionstationstype = {
   type: string;
 };
 export type regionlinkstype = {
-  payload: {regionid: string; links: {name: string; id: string}[]}[];
+  payload: {networkid:string,regionid: string; links: {name: string; id: string}[]}[];
   type: string;
 };
 export type defaultregionlinkstype = {
@@ -160,6 +160,7 @@ export type alldefaultregionstationstype = {
   stations: {name: string; id: string}[];
 };
 export type allregionlinkstype = {
+  networkid:string,
   regionid: string;
   links: {name: string; id: string}[];
 };
@@ -180,7 +181,7 @@ type createStationtype = {
 };
 
 type createLinktype = {
-  payload: {regionid: string; linkid: string; linkname: string};
+  payload: {networkid:string,regionid: string; linkid: string; linkname: string};
   type: string;
 };
 
@@ -505,7 +506,7 @@ const networktreeslice = createSlice({
           name: action.payload.linkname,
         });
       }else{
-        regionLinkcopy.push({regionid:action.payload.regionid,links:[{id:action.payload.linkid,name:action.payload.linkname}]})
+        regionLinkcopy.push({networkid:action.payload.networkid,regionid:action.payload.regionid,links:[{id:action.payload.linkid,name:action.payload.linkname}]})
       }
     
       state.regionLinks = regionLinkcopy;
@@ -517,7 +518,11 @@ const networktreeslice = createSlice({
       state.networkslist = networklistCopy;
     },
     //  -----------------------------
-    updatelinkname: (state, action: createLinktype) => {
+    updatelinkname: (state, action: {type:string,payload:{
+      regionid: string;
+      linkid: string;
+      linkname: string;
+  }}) => {
       let regionLinksCopy = deepcopy(state.regionLinks);
       const findwithregionindex = state.regionLinks.findIndex(
         data => data.regionid == action.payload.regionid,

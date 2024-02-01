@@ -79,7 +79,9 @@ const RegionlinklisteditPage = () => {
       try {
         setloading(true)
         const responst=await $Get(`otdr/link/network/${params.regionId!.split("_")[1]}`)
-        const responstdata=await responst.json()
+        const responstdata=await responst.json();
+        console.log("🐶",responstdata);
+        
         setLeftlinksorted(
           removeCommon(
             responstdata.map((data:any) => ({
