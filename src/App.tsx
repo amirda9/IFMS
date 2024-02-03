@@ -46,22 +46,23 @@ function App() {
               <Route path="gis" Component={pages.NetworkGISPage} />
             </Route>
           </Route>
-
           <Route
-            path="/regions/:regionId/edit-access"
+            path="/:regionId/edit-access"
             Component={pages.RegionAccessEditPage}
           />
+          
           <Route
-            path="/regions/:regionId/edit-stationlist"
-            Component={pages.RegionstationlisteditPage}
-          />
-          <Route
-            path="/regions/:regionId/edit-linklist"
+            path="/:regionId/edit-linklist"
             Component={pages.RegionlinklisteditPage}
           />
+          
           <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
+            <Route
+            path=":regionId/edit-stationlist"
+            Component={pages.RegionstationlisteditPage}
+          />
             <Route path="create/:networkid" Component={pages.RegionCreatePage} />
             <Route path=":regionId" Component={pages.RegionEmptyPage}>
               <Route path="" Component={pages.RegionDetailPage} />
