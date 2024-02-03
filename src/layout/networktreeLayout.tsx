@@ -26,6 +26,7 @@ import {
   deletedefaultgroupstation,
   deletedefaultgrouplinks,
   deletenetwork,
+  deletedefaultRegion,
 } from './../store/slices/networktreeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
@@ -192,7 +193,7 @@ function NetworktreeLayout({children}: Iprops) {
     );
   };
 
-  const onclickstations = async (id: string) => {
+  const onclickstations = async (networkid:string,id: string) => {
     let old = deepcopy(regionstations);
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if (allstation.status === 200) {
@@ -208,27 +209,56 @@ function NetworktreeLayout({children}: Iprops) {
             name: allstationdata[i].name,
           });
         }
-        old.push({regionid: id, stations: allregionsid});
+        old.push({networkid:networkid,regionid: id, stations: allregionsid});
       }
       dispatch(setRegionstations(old));
     }
   };
 
-  const onclicklinks = async (id: string) => {
+  const onclicklinks = async (networkid:string,id: string) => {
     let old = deepcopy(regionLinks);
-    const alllinks = await $Get(`otdr/region/${id}/links`);
+    const alllinksurl = `otdr/region/${id}/links`;
+  // const  getnetworkstationsurl=`otdr/station/network/${networkid}`;
+  // getnetworkstations
+    const [alllinks]=await Promise.all([
+      $Get(alllinksurl),
+      // $Get(getnetworkstationsurl),
+    ])
+    // const dataaaa=await getnetworkstations.json()
+    // console.log("getnetworkstations",dataaaa);
+    // && getnetworkstations.status == 200
     if (alllinks.status === 200) {
       let alllinksdata = await alllinks.json();
+      // const allnetworkstations:[
+      //   {
+      //     id: string,
+      //     name: string,
+      //     network_id: string,
+      //     time_created: string,
+      //     time_updated: string,
+      //     region_id: string
+      //   }
+      // ]=await getnetworkstations.json()
       const finddata = regionLinks.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
       if (alllinksdata.length > 0 && finddata < 0) {
+
         for (let i = 0; i < alllinksdata?.length; i++) {
+          // const findsouceregionid=allnetworkstations.find(data => data.id == alllinksdata[i].source)
+          // const finddestinationregionid=allnetworkstations.find(data => data.id == alllinksdata[i].destination)
+         
           allregionsid.push({
             id: alllinksdata[i].id,
             name: alllinksdata[i].name,
+            //  source:alllinksdata[i].source,
+            // destination:alllinksdata[i].destination,
+            // sourceregionid:findsouceregionid?.region_id,
+            // destinationregionid:finddestinationregionid?.region_id
           });
         }
-        old.push({regionid: id, links: allregionsid});
+        console.log("allregionsid",allregionsid);
+        
+        old.push({networkid:networkid,regionid: id, links: allregionsid});
       }
       dispatch(setRegionLinks(old));
     }
@@ -312,11 +342,11 @@ function NetworktreeLayout({children}: Iprops) {
     // }
   };
 
-  const Deleteregion = (regionid: string, networkid: string) => {
-    // const response = await $Delete(`otdr/region/${regionid}`);
-    // if (response.status == 200) {
+  const Deleteregion = async(regionid: string, networkid: string) => {
+    const response = await $Delete(`otdr/region/${regionid}`);
+    if (response.status == 200) {
     dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
-    // }
+    }
   };
   const onclickdefaltregion = async (networkid: string) => {
     let allLinks = [];
@@ -404,8 +434,8 @@ function NetworktreeLayout({children}: Iprops) {
         {showAllnetworks ? (
           <div className="relative flex  w-full flex-col border-l-2 border-dashed border-black">
             <div className="absolute bottom-[-3px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
-            {networkslist?.map(networkdata => (
-              <>
+            {networkslist?.map((networkdata,index) => (
+              <div key={index} className='w-full'>
                 <Items
                   key={Number(networkdata.id)}
                   to={`/networks/${networkdata.id}`}
@@ -433,7 +463,7 @@ function NetworktreeLayout({children}: Iprops) {
                             networkregionsdata.networkid == networkdata.id,
                         )
                         ?.regions.map((regionsdata, index) => (
-                          <>
+                          <div key={index} className='full'>
                             <Items
                               key={Number(regionsdata.id)}
                               to={`/regions/${regionsdata.id}_${networkdata.id}`}
@@ -445,8 +475,8 @@ function NetworktreeLayout({children}: Iprops) {
                               onclick={() => {
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(regionsdata.id);
-                                onclickstations(regionsdata.id);
-                                onclicklinks(regionsdata.id);
+                                onclickstations(networkdata.id,regionsdata.id);
+                                onclicklinks(networkdata.id,regionsdata.id);
                               }}
                               id={regionsdata.id}
                               name={regionsdata.name}
@@ -473,7 +503,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       onclikitems(
                                         `${regionsdata.id}${regionsdata.id}`,
                                       );
-                                 onclickstations(regionsdata.id);
+                                 onclickstations(networkdata.id,regionsdata.id);
                                   }}
                                   id={`${regionsdata.id}${regionsdata.id}`}
                                   name="Stations"
@@ -492,7 +522,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       )
                                       ?.stations.map((stationsdata, index) => (
                                         <Items
-                                          key={Number(index)}
+                                          key={index}
                                           to={`/stations/${stationsdata.id}`}
                                           selected={false}
                                           onDelete={() =>
@@ -569,7 +599,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       )
                                       ?.links.map((linksdata, index) => (
                                         <Items
-                                          key={Number(index)}
+                                          key={index}
                                           to={`/links/${linksdata.id}_${regionsdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
@@ -607,7 +637,7 @@ function NetworktreeLayout({children}: Iprops) {
                                 ) : null}
                               </div>
                             ) : null}
-                          </>
+                          </div>
                         ))}
 
                       {/* -----------------------------------------------------------------------------                    */}
@@ -618,7 +648,7 @@ function NetworktreeLayout({children}: Iprops) {
                           canAdd={false}
                           canDelete={false}
                           selected={false}
-                          onDelete={() => {}}
+                          onDelete={() => dispatch(deletedefaultRegion({networkid:networkdata.id}))}
                           onclick={() => {
                             onclikitems(`${networkdata.id}${networkdata.id}&`),
                               onclickdefaltregion(networkdata.id);
@@ -654,8 +684,8 @@ function NetworktreeLayout({children}: Iprops) {
                                 ),
                                   onclikitems(
                                     `&${networkdata.id}${networkdata.id}&`,
-                                  ),
-                                  onclickstations(networkdata.id);
+                                  )
+                                  // onclickstations(networkdata.id);
                               }}
                               id={`&${networkdata.id}${networkdata.id}&`}
                               name="Stations"
@@ -673,7 +703,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   )
                                   ?.stations.map((stationsdata, index) => (
                                     <Items
-                                      key={Number(index)}
+                                      key={index}
                                       to={`/stations/${stationsdata.id}`}
                                       selected={false}
                                       onDelete={() =>
@@ -720,8 +750,8 @@ function NetworktreeLayout({children}: Iprops) {
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(
                                     `&${networkdata.id}&${networkdata.id}`,
-                                  ),
-                                  onclicklinks(networkdata.id);
+                                  )
+                                  // onclicklinks(networkdata.id);
                               }}
                               createurl={`/links/createdefaultregionlink/${networkdata.id}`}
                               id={`&${networkdata.id}&${networkdata.id}`}
@@ -746,7 +776,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   )
                                   ?.links.map((linksdata, index) => (
                                     <Items
-                                      key={Number(index)}
+                                      key={index}
                                       to={`/links/defaultregionlinkdetailpage/${linksdata.id}`}
                                       createurl={`/links/create`}
                                       selected={false}
@@ -787,7 +817,7 @@ function NetworktreeLayout({children}: Iprops) {
                     </div>
                   </>
                 ) : null}
-              </>
+              </div>
             ))}
           </div>
         ) : null}
