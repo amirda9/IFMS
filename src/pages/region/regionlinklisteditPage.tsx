@@ -7,6 +7,7 @@ import {setnewregionlinklist,setnewregionlinkliststatus} from './../../store/sli
 import {useDispatch} from 'react-redux';
 import { deepcopy } from '~/util';
 import { $Get } from '~/util/requestapi';
+import Checkbox from '~/components/checkbox/checkbox';
 type UserTableType = {
   id: string;
   name: string;
@@ -43,9 +44,11 @@ const RegionlinklisteditPage = () => {
   const {state} = useHttpRequest({
     selector: state => ({
       regionLinkList: state.http.regionLinkList,
+      networklinks:state.http.networklinks
     }),
     initialRequests: request => {
       request('regionLinkList', {params: {region_id: params.regionId!.split("_")[0]}});
+      request('networklinks', {params: {network_id: params.regionId!.split("_")[1]}});
     },
   });
 
@@ -64,35 +67,37 @@ const RegionlinklisteditPage = () => {
 
   useEffect(() => {
     dispatch(setnewregionlinklist([]));
-    setReightlinksorted(
-      state.regionLinkList?.data
-        ?.map((data: any) => ({
-          id: data?.id,
-          name: data?.name,
-          source: data?.source,
-          destination: data?.destination,
-        }))
-        ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
-        [],
-    );
+  
     const networklinklist=async()=>{
       try {
         setloading(true)
-        const responst=await $Get(`otdr/link/network/${params.regionId!.split("_")[1]}`)
-        const responstdata=await responst.json();
-        console.log("🐶",responstdata);
-        
+        const networklisturl=`otdr/link/network/${params.regionId!.split("_")[1]}`
+        const regionlisturl=`otdr/region/${params.regionId!.split("_")[0]}/links`
+        const [networklist,regionlist]=await Promise.all([
+          $Get(networklisturl),
+          $Get(regionlisturl),
+        ])
+        const networklistdata=await networklist.json();
+        const regionlistdata=await regionlist.json();
+        console.log("🐶",networklistdata);
+        setSelectleft(
+          regionlistdata
+            ?.map((data: any) => ({
+              id: data?.id,
+              name: data?.name,
+              source: data?.source,
+              destination: data?.destination,
+            }))
+            ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
+            [],
+        );
         setLeftlinksorted(
-          removeCommon(
-            responstdata.map((data:any) => ({
+          networklistdata.map((data:any) => ({
               id: data?.id,
               name: data?.name,
               source: data?.source?.name,
               destination: data?.destination?.name,
-            })),
-            state?.regionLinkList?.data,
-          )
-            ?.map((data: any) => ({
+            }))?.map((data: any) => ({
               id: data?.id,
               name: data?.name,
               source: data?.source,
@@ -116,38 +121,14 @@ const RegionlinklisteditPage = () => {
 
   const changeSelect =
     (side: 'left' | 'right', value: UserTableType) => (key?: any) => {
-      if (side == 'right') {
-        const findremoveselect = selectreight.filter(
-          (data: UserTableType) => data.id == value.id,
-        );
-        const findreightselect = reightlinksorted.filter(
-          (data: UserTableType) => data.id == value.id,
-        );
-        if (findremoveselect.length > 0) {
-          const removeselect = selectreight.filter(
-            (data: UserTableType) => data.id != value.id,
-          );
-          setSelectreight(removeselect);
-        } else {
-          setSelectreight(prev => [...prev, findreightselect[0]]);
-        }
+      let selectleftCopy = deepcopy(selectleft);
+      const findataindex = selectleft.findIndex(data => data.id == value.id);
+      if (findataindex > -1) {
+        selectleftCopy.splice(findataindex, 1);
       } else {
-        const findremoveselect = selectleft.filter(
-          (data: UserTableType) => data.id == value.id,
-        );
-        const findleftselect = leftlinksorted.filter(
-          (data: UserTableType) => data.id == value.id,
-        );
-
-        if (findremoveselect.length > 0) {
-          const removeselectleft = selectleft.filter(
-            (data: UserTableType) => data.id != value.id,
-          );
-          setSelectleft(removeselectleft);
-        } else {
-          setSelectleft(prev => [...prev, findleftselect[0]]);
-        }
+        selectleftCopy.push(value);
       }
+      setSelectleft(selectleftCopy);
     };
 
   const renderDynamicColumn = (side: 'left' | 'right') => {
@@ -155,13 +136,19 @@ const RegionlinklisteditPage = () => {
       if (key === 'index') return index + 1;
       else
         return (
-          <input
-            type="checkbox"
-            checked={(side === 'left' ? selectleft : selectreight).includes(
-              value,
-            )}
-            onChange={changeSelect(side, value)}
-          />
+          <Checkbox
+          checkstatus={
+            selectleft.findIndex(data => data.id == value.id) > -1
+              ? true
+              : false
+          }
+          onclick={changeSelect(side, value)}
+          iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+          classname={
+            ' border-[1px] ml-[10px] text-[#18C047] border-[#000000]'
+          }
+        />
+        
         );
     };
   };
@@ -174,7 +161,7 @@ const RegionlinklisteditPage = () => {
       destination: data?.destination,
     })).sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
 
-    dispatch(setnewregionlinklist(dataa));
+    dispatch(setnewregionlinklist(selectleft));
     dispatch(setnewregionlinkliststatus(true))
     navigate(-1);
   };
@@ -253,57 +240,25 @@ const RegionlinklisteditPage = () => {
         tabicon={lefttableselecttab}
         cols={columns}
         items={leftlinksorted}
-        containerClassName="w-[44%] h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
+        containerClassName="w-full h-[calc(100vh-260px)]  mr-[5px]  overflow-y-auto"
         dynamicColumns={['select', 'index']}
         renderDynamicColumn={renderDynamicColumn('left')}
       />
 
-      <DoubleSideButtonGroup
-        onClickRightButton={() => {
-          if (selectleft.length > 0) {
-            setReightlinksorted(prev => [...prev, ...selectleft]);
-            const oldd = [...leftlinksorted];
-            setLeftlinksorted(removeCommon(oldd, selectleft));
-            setSelectleft([]);
-          }
-          setCange(!change);
-        }}
-        onClickLeftButton={() => {
-          if (selectreight.length > 0) {
-            setLeftlinksorted(prev => [...prev, ...selectreight]);
-            const old = [...reightlinksorted];
-            setReightlinksorted(removeCommon(old, selectreight));
-            setSelectreight([]);
-          }
-          setCange(!change);
-        }}
-      />
-
-      <Table
-        loading={state.regionLinkList?.httpRequestStatus !== 'success'}
-        onclicktitle={(tabname: string, sortalfabet: boolean) => {
-          setReighttableselecttab(tabname), setreighttablesort(sortalfabet);
-        }}
-        cols={columns}
-        tabicon={reighttableselecttab}
-        items={reightlinksorted}
-        containerClassName="w-[44%] h-[calc(100vh-260px)] ml-[5px]  overflow-y-auto"
-        dynamicColumns={['select', 'index']}
-        renderDynamicColumn={renderDynamicColumn('right')}
-      />
       <div className="absolute bottom-[35px] right-0 mr-4 flex flex-row gap-x-4 self-end ">
         <SimpleBtn onClick={savestations} type="button">
           Save
         </SimpleBtn>
         <SimpleBtn
           onClick={() => {
+            dispatch(setnewregionlinklist(selectleft))
             dispatch(
               setnewregionlinkliststatus(false)
               // setnewregionlinklist(
               //   state?.regionLinkList?.data?.map((data: any) => data?.id) || [],
               // ),
             );
-            navigate(-1);
+            navigate(-1)
           }}>
           Cancel
         </SimpleBtn>

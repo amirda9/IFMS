@@ -46,15 +46,9 @@ function App() {
               <Route path="gis" Component={pages.NetworkGISPage} />
             </Route>
           </Route>
-          <Route
-            path="/:regionId/edit-access"
-            Component={pages.RegionAccessEditPage}
-          />
           
-          <Route
-            path="/:regionId/edit-linklist"
-            Component={pages.RegionlinklisteditPage}
-          />
+          
+        
           
           <Route
             path="/regions"
@@ -62,6 +56,14 @@ function App() {
             <Route
             path=":regionId/edit-stationlist"
             Component={pages.RegionstationlisteditPage}
+          />
+            <Route
+            path=":regionId/edit-linklist"
+            Component={pages.RegionlinklisteditPage}
+          />
+          <Route
+            path=":regionId/edit-access"
+            Component={pages.RegionAccessEditPage}
           />
             <Route path="create/:networkid" Component={pages.RegionCreatePage} />
             <Route path=":regionId" Component={pages.RegionEmptyPage}>
@@ -72,11 +74,12 @@ function App() {
             </Route>
           </Route>
 
+          
+          <Route path="/stations" Component={pages.StationsPage}>
           <Route
-            path="/stations/:stationId/edit-access"
+            path=":stationId/edit-access"
             Component={pages.StationEditViewerPage}
           />
-          <Route path="/stations" Component={pages.StationsPage}>
             <Route path="create/:regionid" Component={pages.StationCreatePage} />
             <Route path=":stationId" Component={pages.StationEmptyPage}>
               <Route path="" Component={pages.StationDetailPage} />
@@ -84,11 +87,12 @@ function App() {
             </Route>
           </Route>
 
+         
+          <Route path="/links" Component={pages.LinksPage}>
           <Route
-            path="/links/:linkId/edit-access"
+            path=":linkId/edit-access"
             Component={pages.LinkEditViewersPage}
           />
-          <Route path="/links" Component={pages.LinksPage}>
             <Route path="create/:regionid" Component={pages.LinkCreatePage} />
             <Route path="createdefaultregionlink/:networkid" Component={pages.defaultregionlinkcreatepage} />
             <Route path="defaultregionlinkdetailpage/:linkId" Component={pages.defaultregionlinkdetailpage} />
