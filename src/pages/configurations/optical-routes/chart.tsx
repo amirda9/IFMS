@@ -11407,6 +11407,35 @@ function Chart() {
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [allshapes, setAllshapes] = useState<any>([]);
+  const [fakeevents,setfakeEvents]=useState<any>( [{
+    x: [data?.key_events?.events[0]?.event_location?.x,data?.key_events?.events[0]?.event_location?.x],
+    y: [data?.key_events?.events[0]?.event_location?.y - 10,data?.key_events?.events[0]?.event_location?.y + 10],
+    type: 'line',
+    mode: 'lines+markers',
+    line:{width:10,zIndex: 2,color: 'blue'},
+    marker: {color: 'blue',zIndex: 2},
+    index:0
+  },
+  {
+    x: [data?.key_events?.events[1]?.event_location?.x,data?.key_events?.events[1]?.event_location?.x],
+    y: [data?.key_events?.events[1]?.event_location?.y - 10,data?.key_events?.events[1]?.event_location?.y + 10],
+    type: 'line',
+    mode: 'lines+markers',
+    line:{width:10,zIndex: 2,color: 'blue'},
+    marker: {color: 'blue',zIndex: 2},
+    index:1
+  },
+  {
+    x: [data?.key_events?.events[2]?.event_location?.x,data?.key_events?.events[2]?.event_location?.x],
+    y: [data?.key_events?.events[2]?.event_location?.y - 10,data?.key_events?.events[2]?.event_location?.y + 10],
+    type: 'line',
+    mode: 'lines+markers',
+    line:{width:10,zIndex: 2,color: 'blue'},
+    marker: {color: 'blue',zIndex: 2},
+    index:2,
+
+    // marker: {color: 'blue',zIndex: 2},
+  }])
   const [mousecursor, setMousecursor] = useState(false);
   const [layout, setLayout] = useState<any>({
     clickmode: 'event+select',
@@ -12799,32 +12828,11 @@ console.log("🐜",allshapes[0]);
                     y: allcurveline[0]?.data?.map(dat => dat.y),
                     type: 'scatter',
                     mode: 'lines+markers',
+                    line:{width:10},
                     marker: {color: 'red'},
-                  },
-                  // {
-                  //   x: [chartdata?.key_events?.events[0]?.event_location?.x,chartdata?.key_events?.events[0]?.event_location?.x],
-                  //   y: [chartdata?.key_events?.events[0]?.event_location?.y - 10,chartdata?.key_events?.events[0]?.event_location?.y + 10],
-                  //   type: 'scatter',
-                  //   mode: 'lines',
-                  //   line:{width:10},
-                  //   marker: {color: 'green'},
-                  // },
-                  // {
-                  //   x: [chartdata?.key_events?.events[1]?.event_location?.x,chartdata?.key_events?.events[1]?.event_location?.x],
-                  //   y: [chartdata?.key_events?.events[1]?.event_location?.y - 10,chartdata?.key_events?.events[1]?.event_location?.y + 10],
-                  //   type: 'scatter',
-                  //   mode: 'lines',
-                  //   line:{width:10},
-                  //   marker: {color: 'green'},
-                  // },
-                  // {
-                  //   x: [chartdata?.key_events?.events[2]?.event_location?.x,chartdata?.key_events?.events[2]?.event_location?.x],
-                  //   y: [chartdata?.key_events?.events[2]?.event_location?.y - 10,chartdata?.key_events?.events[2]?.event_location?.y + 10],
-                  //   type: 'scatter',
-                  //   mode: 'lines',
-                  //   line:{width:10},
-                  //   marker: {color: 'green'},
-                  // },
+                  }
+              ,...fakeevents
+                
                 ]}
 
 
@@ -12850,8 +12858,10 @@ console.log("🐜",allshapes[0]);
                 // },
 
                 onButtonClicked={()=>alert("kk")}
-                onClick={()=>alert("kk")}
-                // onHover={(data)=>console.log('🩰',data)}
+                onClickAnnotation={(e)=>console.log("😎🤑",e)}
+                // onWebGlContextLost={(e)=>alert("t")}
+                
+                 onHover={(data)=>console.log('🩰',data)}
                 // onUnhover={data => console.log('🤡', data)}
                 layout={{
                   clickmode: 'event+select',
