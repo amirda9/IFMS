@@ -5,10 +5,11 @@ import {networkExplored} from '~/constant';
 import Selectbox from './../../components/selectbox/selectbox';
 import Cookies from 'js-cookie';
 import {useDispatch, useSelector} from 'react-redux';
-import {createLinks} from './../../store/slices/networktreeslice';
+import {createdefaultRegionLinks} from './../../store/slices/networktreeslice';
 import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
 import {$Post} from '~/util/requestapi';
+import {deepcopy} from '~/util';
 
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
@@ -17,6 +18,8 @@ const typeoptions = [
 
 const LinkCreatePage = () => {
   const params = useParams();
+  console.log(params, 'params');
+
   const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const {
@@ -31,9 +34,7 @@ const LinkCreatePage = () => {
         request('allStations', undefined);
       }
     },
- 
   });
-
 
   const {allStations} = useSelector((state: any) => state.http);
   const [name, setName] = useState('');
@@ -53,7 +54,6 @@ const LinkCreatePage = () => {
   const [destinationid, setDestinationid] = useState<string>('');
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     let data: any = [];
     if (allStations) {
@@ -70,36 +70,35 @@ const LinkCreatePage = () => {
   const changesource = (id: string) => {
     setSourcerror('');
     setSource(id);
-    const data = JSON.parse(JSON.stringify(selectedstations));
+    const data = deepcopy(selectedstations);
     const destinationedata = data?.filter((data: any) => data.value != id);
     setAlldestination(destinationedata);
   };
 
   const changedestination = (id: string) => {
     setDestinationid(id);
-    const data = JSON.parse(JSON.stringify(selectedstations));
+    const data = deepcopy(selectedstations);
     const destinationedata = data?.filter((data: any) => data.value != id);
     setAllsource(destinationedata);
     setDestinationerror('');
   };
-
-
-
 
   const createlink = async () => {
     if (name.length < 1) {
       setNameerror('Please enter link name');
     } else if (source.length == 0) {
       setNameerror('');
-
+      alert(1);
       setTypeerror('');
       setSourcerror('Please select source');
     } else if (destinationid.length == 0) {
+      alert(2);
       setNameerror('');
       setTypeerror('');
       setSourcerror('');
       setDestinationerror('Please select destination');
     } else if (types.length < 1) {
+      alert(3);
       setNameerror('');
       setTypeerror('Please select type');
     } else {
@@ -110,11 +109,10 @@ const LinkCreatePage = () => {
       try {
         const response = await $Post(`otdr/link/`, {
           name: name,
-          network_id: params.regionid!.split("_")[1],
+          network_id: params.networkid,
           source_id: source,
           destination_id: destinationid,
           link_points: [],
-          region_id: params.regionid!.split("_")[0],
           description: comment,
           type: types,
         });
@@ -122,18 +120,15 @@ const LinkCreatePage = () => {
         //we should update the networktree
         if (response.status == 200) {
           dispatch(
-            createLinks({
-              networkid:"",
-              regionid: params.regionid!.split("_")[0]!,
-              linkid: responsedata.link_id,
-              linkname: name,
+            createdefaultRegionLinks({
+              networkid: params.networkid!,
+              links: {id: responsedata.link_id, name: name},
             }),
           );
         }
 
-        navigate(`/links/${responsedata.link_id}`);
+        navigate(`../../links/${responsedata.link_id}/defaultregionlinkdetailpage`);
       } catch (error) {}
-
     }
   };
 

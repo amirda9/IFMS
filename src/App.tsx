@@ -95,9 +95,10 @@ function App() {
           />
             <Route path="create/:regionid" Component={pages.LinkCreatePage} />
             <Route path="createdefaultregionlink/:networkid" Component={pages.defaultregionlinkcreatepage} />
-            <Route path="defaultregionlinkdetailpage/:linkId" Component={pages.defaultregionlinkdetailpage} />
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
+              <Route path="defaultregionlinkdetailpage" Component={pages.defaultregionlinkdetailpage} />
+
               <Route path="access" Component={pages.LinkAccessPage} />
               <Route
                 path="cables-segments"

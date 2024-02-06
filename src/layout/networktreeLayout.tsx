@@ -528,6 +528,7 @@ function NetworktreeLayout({children}: Iprops) {
                                           onDelete={() =>
                                             deletegroupsationds(regionsdata.id)
                                           }
+                                          canAdd={false}
                                           enabelcheck={true}
                                           onclickcheckbox={() =>
                                             dispatch(
@@ -600,6 +601,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       ?.links.map((linksdata, index) => (
                                         <Items
                                           key={index}
+                                          canAdd={false}
                                           to={`/links/${linksdata.id}_${regionsdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
@@ -777,8 +779,9 @@ function NetworktreeLayout({children}: Iprops) {
                                   ?.links.map((linksdata, index) => (
                                     <Items
                                       key={index}
-                                      to={`/links/defaultregionlinkdetailpage/${linksdata.id}`}
+                                      to={`/links/${linksdata.id}/defaultregionlinkdetailpage`}
                                       createurl={`/links/create`}
+                                      canAdd={false}
                                       selected={false}
                                       onDelete={() =>
                                         ondeletedefaultlinksgroup(
