@@ -674,8 +674,9 @@ function NetworktreeLayout({children}: Iprops) {
                             <Items
                               key={Number(`${networkdata.id}`)}
                               to={`/regions/${networkdata.id}`}
-                              createurl={`/stations/create/${networkdata.id}`}
+                              createurl={`../stations/createdefault/${networkdata.id}`}
                               canDelete={false}
+                              
                               selected={false}
                               onDelete={() => {}}
                               onclick={() => {
@@ -707,6 +708,7 @@ function NetworktreeLayout({children}: Iprops) {
                                     <Items
                                       key={index}
                                       to={`/stations/${stationsdata.id}`}
+                                      canAdd={false}
                                       selected={false}
                                       onDelete={() =>
                                         deletedefaultgroupsationds(

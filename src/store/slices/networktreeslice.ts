@@ -568,6 +568,32 @@ const networktreeslice = createSlice({
 
       state.regionstations = regionStationcopy;
     },
+     //  -----------------------------
+     createdefaultStation: (state, action: {payload:{
+      networkid: string;
+      stationid: string;
+      stationname: string;
+  },type:string}) => {
+      const regiondefaultStationcopy = deepcopy(state.defaultregionstations);
+      const findregionstationinddex = state.defaultregionstations.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+      if (findregionstationinddex > -1) {
+        regiondefaultStationcopy[findregionstationinddex].stations.push({
+          id: action.payload.stationid,
+          name: action.payload.stationname,
+        });
+      } else {
+        regiondefaultStationcopy.push({
+          networkid: action.payload.networkid,
+          stations: [
+            {id: action.payload.stationid, name: action.payload.stationname},
+          ],
+        });
+      }
+
+      state.defaultregionstations = regiondefaultStationcopy;
+    },
     //  -----------------------------
     createLinks: (state, action: createLinktype) => {
       const regionLinkcopy = deepcopy(state.regionLinks);
@@ -895,7 +921,8 @@ export const {
   deletenetwork,
   deletedefaultRegion,
   createdefaultRegionLinks,
-  updatedefaltlinkname
+  updatedefaltlinkname,
+  createdefaultStation
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;
