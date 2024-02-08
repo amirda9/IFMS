@@ -24,15 +24,14 @@ const AlarmTypeDetailsPage: FC = () => {
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex w-2/3 flex-col gap-y-4">
-            <span>jhhiuyhiuoyyyyyyyu</span>
             <Description label="Name" className="flex-grow">
               <InputFormik name="name" wrapperClassName="w-full" />
             </Description>
 
-            <Description label="Comment">
+            <Description label="Comment" labelClassName="mt-[-30px]">
               <TextareaFormik name="comment" />
             </Description>
-
+            {/* 
             <Description label="Source Data Set">
               <ControlledSelect
                 options={[{label: 'Fiber Result'}]}
@@ -40,6 +39,21 @@ const AlarmTypeDetailsPage: FC = () => {
                 onChange={() => {}}
                 className="min-w-[19rem]"
               />
+            </Description> */}
+            <Description label="Owner" className="flex-grow">
+              <span className="text-[20px] font-normal leading-[24.2px]">
+                Admin
+              </span>
+            </Description>
+            <Description label="Created" className="flex-grow">
+              <span className="text-[20px] font-normal leading-[24.2px]">
+                2023-12-30 20:18:43
+              </span>
+            </Description>
+            <Description label="Last Modified" className="flex-grow">
+              <span className="text-[20px] font-normal leading-[24.2px]">
+                2024-8-23 20:18:43
+              </span>
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">
