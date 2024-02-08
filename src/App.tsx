@@ -178,7 +178,9 @@ function App() {
             </Route>
 
             <Route path="alarm-types" Component={pages.AlarmTypesLayout}>
+            <Route path="create" Component={pages.AlarmTypeCreatePage} />
               <Route path=":alarmId" Component={pages.SingleAlarmTypeLayout}>
+             
                 <Route index Component={pages.AlarmTypeDetailsPage} />
                 <Route
                   path="definition"

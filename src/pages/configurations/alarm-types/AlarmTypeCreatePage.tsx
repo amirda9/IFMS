@@ -2,21 +2,27 @@ import {Form, FormikProvider, useFormik} from 'formik';
 import {FC} from 'react';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
+import { $Post } from '~/util/requestapi';
 
 type FormType = {
   name: string;
   comment: string;
-  sourceDataSet: string;
+  // sourceDataSet: string;
 };
 
-const AlarmTypeDetailsPage: FC = () => {
+const AlarmTypeCreatePage: FC = () => {
   const formik = useFormik<FormType>({
     initialValues: {
-      name: 'Fiber Fault',
+      name: '',
       comment: '',
-      sourceDataSet: 'Fiber Result',
+      // sourceDataSet: 'Fiber Result',
     },
-    onSubmit: () => {},
+    onSubmit: async(values) => {
+const response=await $Post(`otdr/alarm/`,{name:values.name,comment:values.comment})
+if(response.status == 200){
+ 
+}
+    },
   });
 
   return (
@@ -24,7 +30,6 @@ const AlarmTypeDetailsPage: FC = () => {
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex w-2/3 flex-col gap-y-4">
-            <span>jhhiuyhiuoyyyyyyyu</span>
             <Description label="Name" className="flex-grow">
               <InputFormik name="name" wrapperClassName="w-full" />
             </Description>
@@ -33,14 +38,14 @@ const AlarmTypeDetailsPage: FC = () => {
               <TextareaFormik name="comment" />
             </Description>
 
-            <Description label="Source Data Set">
+            {/* <Description label="Source Data Set">
               <ControlledSelect
                 options={[{label: 'Fiber Result'}]}
                 value={formik.values.sourceDataSet || ''}
                 onChange={() => {}}
                 className="min-w-[19rem]"
               />
-            </Description>
+            </Description> */}
           </div>
           <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn type="submit">Save</SimpleBtn>
@@ -54,4 +59,4 @@ const AlarmTypeDetailsPage: FC = () => {
   );
 };
 
-export default AlarmTypeDetailsPage;
+export default AlarmTypeCreatePage;
