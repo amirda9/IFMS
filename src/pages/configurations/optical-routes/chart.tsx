@@ -11407,35 +11407,7 @@ function Chart() {
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [allshapes, setAllshapes] = useState<any>([]);
-  const [fakeevents,setfakeEvents]=useState<any>( [{
-    x: [data?.key_events?.events[0]?.event_location?.x,data?.key_events?.events[0]?.event_location?.x],
-    y: [data?.key_events?.events[0]?.event_location?.y - 10,data?.key_events?.events[0]?.event_location?.y + 10],
-    type: 'line',
-    mode: 'lines+markers',
-    line:{width:10,zIndex: 2,color: 'blue'},
-    marker: {color: 'blue',zIndex: 2},
-    index:0
-  },
-  {
-    x: [data?.key_events?.events[1]?.event_location?.x,data?.key_events?.events[1]?.event_location?.x],
-    y: [data?.key_events?.events[1]?.event_location?.y - 10,data?.key_events?.events[1]?.event_location?.y + 10],
-    type: 'line',
-    mode: 'lines+markers',
-    line:{width:10,zIndex: 2,color: 'blue'},
-    marker: {color: 'blue',zIndex: 2},
-    index:1
-  },
-  {
-    x: [data?.key_events?.events[2]?.event_location?.x,data?.key_events?.events[2]?.event_location?.x],
-    y: [data?.key_events?.events[2]?.event_location?.y - 10,data?.key_events?.events[2]?.event_location?.y + 10],
-    type: 'line',
-    mode: 'lines+markers',
-    line:{width:10,zIndex: 2,color: 'blue'},
-    marker: {color: 'blue',zIndex: 2},
-    index:2,
-
-    // marker: {color: 'blue',zIndex: 2},
-  }])
+  const [fakeevents,setfakeEvents]=useState<any>( [])
   const [mousecursor, setMousecursor] = useState(false);
   const [layout, setLayout] = useState<any>({
     clickmode: 'event+select',
@@ -11687,7 +11659,7 @@ function Chart() {
           },
         );
       }
-      setAllshapes(allshapesCopy);
+      // setAllshapes(allshapesCopy);
     });
     // }
 
@@ -11753,7 +11725,7 @@ function Chart() {
   }, []);
 
   // const get
-console.log("🐜",allshapes[0]);
+// console.log("🐜",allshapes[0]);
 
   const [reightbar, setReightbar] = useState('Result');
   const [isDraggingname, setIsDraggingname] = useState<string | number>('');
@@ -11821,30 +11793,54 @@ console.log("🐜",allshapes[0]);
           y1: data?.event_location?.y - 10, // y coordinate of the first point
           editable: true,
           showlegend: false,
-          onClick: () => alert('pp'),
           label: {
             text: 'jhjkhjk',
-            textposition: 'bottom center',
-            onclick: () => alert('luul'),
+            textposition: 'bottom center'
           },
           line: {
-            onclick: () => alert('ll'),
+            layer: 'below',
             editable: true,
             color: 'green', // color of the line
             width: 10, // width of the line
-            onClick: () => alert('pp'),
+            zindex:1
           },
         }),
       );
 
-      for (let c = 0; c < allevents.length; c++) {
-        setAllcurveline2(prev => [
-          ...prev,
-          {id: (c + 10).toString(), data: [{x: allevents[c].x0, y: allevents[c].y0}]},
-        ]);
-      }
+    //   for (let c = 0; c < allevents.length; c++) {
+    //     setAllcurveline2(prev => [
+    //       ...prev,
+    //       {id: (c + 10).toString(), data: [{x: allevents[c].x0, y: allevents[c].y0}]},
+    //     ]);
+    //   }
 
-       setAllshapes((prev: any) => [...prev, ...allevents]);
+    //  setAllshapes((prev: any) => [...prev, ...allevents]);
+     setfakeEvents([{
+      x: [data?.key_events?.events[0]?.event_location?.x,data?.key_events?.events[0]?.event_location?.x],
+      y: [data?.key_events?.events[0]?.event_location?.y - 10,data?.key_events?.events[0]?.event_location?.y + 10],
+      type: 'line',
+      mode: 'lines+markers',
+      line:{width:10,zindex: 10,color: 'blue'},
+      marker: {color: 'blue',zIndex: 10},
+    },
+    {
+      x: [data?.key_events?.events[1]?.event_location?.x,data?.key_events?.events[1]?.event_location?.x],
+      y: [data?.key_events?.events[1]?.event_location?.y - 10,data?.key_events?.events[1]?.event_location?.y + 10],
+      type: 'line',
+      mode: 'lines+markers',
+      line:{width:10,zIndex: 10,color: 'blue'},
+      marker: {color: 'blue',zIndex: 10},
+    },
+    {
+      x: [data?.key_events?.events[2]?.event_location?.x,data?.key_events?.events[2]?.event_location?.x],
+      y: [data?.key_events?.events[2]?.event_location?.y - 10,data?.key_events?.events[2]?.event_location?.y + 10],
+      type: 'line',
+      mode: 'lines+markers',
+      line:{width:10,zIndex: 10,color: 'blue'},
+      marker: {color: 'blue',zIndex: 10},
+  
+      // marker: {color: 'blue',zIndex: 2},
+    }])
       setShowEwents(true);
     }
     // let allevents = chartdata?.key_events?.events?.map((data: eventstype) => ({
@@ -11950,6 +11946,9 @@ console.log("🐜",allshapes[0]);
     return '#D4AC0D';
   };
 
+console.log('🐿️',allshapes);
+
+
   const showcurveline = (name: string) => {
     const find = allcurve.findIndex(data => data.id == name);
     const find2 = allcurveline.findIndex(data => data.id == name);
@@ -11986,53 +11985,53 @@ console.log("🐜",allshapes[0]);
     //   {x: finevent.marker_location_5, name: 'B', type: 'bigline'},
     //   {x: finevent.marker_location_4, name: 'b', type: 'bigline'},
     // ]);
-    setAllshapes([
-      {
-        type: 'line',
-        x0: finevent.marker_location_1, // x coordinate of the first point
-        y0: 10, // y coordinate of the first point
-        x1: finevent.marker_location_1, // x coordinate of the second point
-        y1: 1000, // y coordinate of the second point
+    // setAllshapes([
+    //   {
+    //     type: 'line',
+    //     x0: finevent.marker_location_1, // x coordinate of the first point
+    //     y0: 10, // y coordinate of the first point
+    //     x1: finevent.marker_location_1, // x coordinate of the second point
+    //     y1: 1000, // y coordinate of the second point
 
-        line: {
-          color: 'blue', // color of the line
-          width: 10, // width of the line
-        },
-      },
-      {
-        type: 'line',
-        x0: finevent.marker_location_2, // x coordinate of the first point
-        y0: 10, // y coordinate of the first point
-        x1: finevent.marker_location_2, // x coordinate of the second point
-        y1: 1000, // y coordinate of the second point
-        line: {
-          color: 'blue', // color of the line
-          width: 10, // width of the line
-        },
-      },
-      {
-        type: 'line',
-        x0: finevent.marker_location_5, // x coordinate of the first point
-        y0: 10, // y coordinate of the first point
-        x1: finevent.marker_location_5, // x coordinate of the second point
-        y1: 1000, // y coordinate of the second point
-        line: {
-          color: 'blue', // color of the line
-          width: 10, // width of the line
-        },
-      },
-      {
-        type: 'line',
-        x0: finevent.marker_location_4, // x coordinate of the first point
-        y0: 10, // y coordinate of the first point
-        x1: finevent.marker_location_4, // x coordinate of the second point
-        y1: 1000, // y coordinate of the second point
-        line: {
-          color: 'blue', // color of the line
-          width: 10, // width of the line
-        },
-      },
-    ]);
+    //     line: {
+    //       color: 'blue', // color of the line
+    //       width: 10, // width of the line
+    //     },
+    //   },
+    //   {
+    //     type: 'line',
+    //     x0: finevent.marker_location_2, // x coordinate of the first point
+    //     y0: 10, // y coordinate of the first point
+    //     x1: finevent.marker_location_2, // x coordinate of the second point
+    //     y1: 1000, // y coordinate of the second point
+    //     line: {
+    //       color: 'blue', // color of the line
+    //       width: 10, // width of the line
+    //     },
+    //   },
+    //   {
+    //     type: 'line',
+    //     x0: finevent.marker_location_5, // x coordinate of the first point
+    //     y0: 10, // y coordinate of the first point
+    //     x1: finevent.marker_location_5, // x coordinate of the second point
+    //     y1: 1000, // y coordinate of the second point
+    //     line: {
+    //       color: 'blue', // color of the line
+    //       width: 10, // width of the line
+    //     },
+    //   },
+    //   {
+    //     type: 'line',
+    //     x0: finevent.marker_location_4, // x coordinate of the first point
+    //     y0: 10, // y coordinate of the first point
+    //     x1: finevent.marker_location_4, // x coordinate of the second point
+    //     y1: 1000, // y coordinate of the second point
+    //     line: {
+    //       color: 'blue', // color of the line
+    //       width: 10, // width of the line
+    //     },
+    //   },
+    // ]);
   };
 
   const eventhandleMouseMove = (event_number: number, e: any) => {
@@ -12454,10 +12453,11 @@ console.log("🐜",allshapes[0]);
 
   // تعریف تابع برای ذخیره مختصات پایان وقتی موس حرکت کند
   const handleMouseMove2 = (event: any) => {
-    if (startdraw) {
-      setEndX(event.clientX);
-      setEndY(event.clientY);
-    }
+    setYvalue(event.clientX)
+    // if (startdraw) {
+    //   setEndX(event.clientX);
+    //   setEndY(event.clientY);
+    // }
   };
 
   const finddata = (linename: string) => {
@@ -12647,7 +12647,7 @@ console.log("🐜",allshapes[0]);
   // plotref?.current?.on('plotly_click', function(){
   //     alert('You clicked this Plotly chart!');
   // });
-  console.log('🌷', [chartdata?.key_events?.events[0]?.event_location?.x,chartdata?.key_events?.events[0]]);
+  // console.log('🌷', [chartdata?.key_events?.events[0]?.event_location?.x,chartdata?.key_events?.events[0]]);
   const zoomIn = () => {
     // define a function to zoom in the plot
     const newZoom = zoom + 0.5; // increase the zoom value by 0.5
@@ -12722,6 +12722,15 @@ console.log("🐜",allshapes[0]);
   //     // alert(`You clicked on a ${shape.type} with coordinates ${shape.x0}, ${shape.y0}, ${shape.x1}, ${shape.y1}`);
   //   }
   // };
+  const onclickshap=(x:any)=>{
+    console.log(fakeevents ,'🐫');
+    console.log(x ,'❤️‍🔥');
+    
+const fakeeventsCopy=deepcopy(fakeevents)
+const finddataindex=fakeevents.find((data:any) => (data.x[0] <= x+10 && data.x[0] >=x-10))
+console.log("🌄",finddataindex);
+
+  }
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
@@ -12805,7 +12814,7 @@ console.log("🐜",allshapes[0]);
           <div className="h-[calc(100%-50px)] w-full">
             <div
               // onMouseDown={handleMouseDown2}
-              // onMouseMove={handleMouseMove2}
+              // onClick={()=>alert("hhh")}
               // onMouseUp={handelMouseup2}
               // ref={svgRef}
               // onMouseMove={e => getchartcoordinate(e)}
@@ -12814,7 +12823,7 @@ console.log("🐜",allshapes[0]);
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
               <button
                 className="mx-[50px]"
-                onClick={() => console.log(plotref.current)}>
+                onClick={() => console.log("🏮",plotref.current)}>
                 zoomin
               </button>
               <button onClick={() => zoomout()}>zoomout</button>
@@ -12822,6 +12831,7 @@ console.log("🐜",allshapes[0]);
                 ref={plotref}
                 onRelayout={e => console.log('🦞', e)}
                 className="h-[600px] w-full"
+                onSelected={(e)=>onclickshap(e.points[0].x)}
                 data={[
                   {
                     x: allcurveline[0]?.data?.map(dat => dat.x),
@@ -12857,11 +12867,11 @@ console.log("🐜",allshapes[0]);
                 //   },
                 // },
 
-                onButtonClicked={()=>alert("kk")}
-                onClickAnnotation={(e)=>console.log("😎🤑",e)}
+                // onButtonClicked={()=>alert("kk")}
+                // onClickAnnotation={(e)=>console.log("😎🤑",e)}
                 // onWebGlContextLost={(e)=>alert("t")}
                 
-                 onHover={(data)=>console.log('🩰',data)}
+                //  onHover={(data)=>console.log('🩰',data)}
                 // onUnhover={data => console.log('🤡', data)}
                 layout={{
                   clickmode: 'event+select',
