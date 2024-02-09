@@ -13,7 +13,7 @@ const Description: FC<PropsType> = ({
   children,
   items = 'center',
   className,
-  labelClassName="text-[20px]",
+  labelClassName="text-sm",
 }) => {
   return (
     <div className={classNames(`items-${items}`, 'flex flex-row', className)}>

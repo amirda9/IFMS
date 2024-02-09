@@ -41,17 +41,17 @@ const AlarmTypeDetailsPage: FC = () => {
               />
             </Description> */}
             <Description label="Owner" className="flex-grow">
-              <span className="text-[20px] font-normal leading-[24.2px]">
+              <span className="text-sm font-normal leading-[24.2px]">
                 Admin
               </span>
             </Description>
             <Description label="Created" className="flex-grow">
-              <span className="text-[20px] font-normal leading-[24.2px]">
+              <span className="text-sm font-normal leading-[24.2px]">
                 2023-12-30 20:18:43
               </span>
             </Description>
             <Description label="Last Modified" className="flex-grow">
-              <span className="text-[20px] font-normal leading-[24.2px]">
+              <span className="text-sm font-normal leading-[24.2px]">
                 2024-8-23 20:18:43
               </span>
             </Description>
