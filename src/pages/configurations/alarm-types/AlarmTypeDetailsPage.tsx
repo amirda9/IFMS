@@ -1,7 +1,13 @@
 import {Form, FormikProvider, useFormik} from 'formik';
-import {FC} from 'react';
+import {FC, useEffect, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
+import { RootState } from '~/store';
+import { setalarmsdetail } from '~/store/slices/alarmstypeslice';
+import { $Get } from '~/util/requestapi';
+import { getPrettyDateTime } from '~/util/time';
 
 type FormType = {
   name: string;
@@ -10,15 +16,32 @@ type FormType = {
 };
 
 const AlarmTypeDetailsPage: FC = () => {
+  const params=useParams()
+  const dispatch=useDispatch()
+
+  const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypeslice);
+console.log(params.alarmId);
+
+  useEffect(()=>{
+const getalarmdetail=async ()=>{
+  const alarmdetailresponse=await $Get(`otdr/alarm/${params.alarmId}`)
+  if(alarmdetailresponse.status == 200){
+    const alarmdetailresponsedata=await alarmdetailresponse.json()
+    dispatch(setalarmsdetail(alarmdetailresponsedata))
+  }
+}
+getalarmdetail()
+  },[])
+
+  console.log("🏩",alarmtypedetail);
   const formik = useFormik<FormType>({
     initialValues: {
-      name: 'Fiber Fault',
-      comment: '',
+      name: alarmtypedetail.name,
+      comment: alarmtypedetail.comment,
       sourceDataSet: 'Fiber Result',
     },
     onSubmit: () => {},
   });
-
   return (
     <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
@@ -47,12 +70,12 @@ const AlarmTypeDetailsPage: FC = () => {
             </Description>
             <Description label="Created" className="flex-grow">
               <span className="text-sm font-normal leading-[24.2px]">
-                2023-12-30 20:18:43
+              {getPrettyDateTime(alarmtypedetail.time_created)}
               </span>
             </Description>
             <Description label="Last Modified" className="flex-grow">
               <span className="text-sm font-normal leading-[24.2px]">
-                2024-8-23 20:18:43
+              {getPrettyDateTime(alarmtypedetail.time_modified)}
               </span>
             </Description>
           </div>

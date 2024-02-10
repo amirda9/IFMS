@@ -1,6 +1,7 @@
 import {configureStore, Middleware} from '@reduxjs/toolkit';
 import {httpReducer} from './slices/http.slice';
 import changetyperstate from './slices/networkslice';
+import alarmstype from './slices/alarmstypeslice';
 import opticalroute from './slices/opticalroutslice'
 import rtu from './slices/rtu'
 import networktreeslice from './slices/networktreeslice'
@@ -18,7 +19,8 @@ export const store = configureStore({
     network:changetyperstate,
     opticalroute:opticalroute,
     rtu:rtu,
-    networktree:networktreeslice
+    networktree:networktreeslice,
+    alarmtypeslice:alarmstype
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),
