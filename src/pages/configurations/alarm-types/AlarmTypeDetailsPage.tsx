@@ -2,11 +2,12 @@ import {Form, FormikProvider, useFormik} from 'formik';
 import {FC, useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import {ControlledSelect, Description, SimpleBtn} from '~/components';
+import {Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import { RootState } from '~/store';
-import { setalarmsdetail } from '~/store/slices/alarmstypeslice';
-import { $Get } from '~/util/requestapi';
+import { alarmtypedetailtype, setalarmlist, setalarmsdetail } from '~/store/slices/alarmstypeslice';
+import { deepcopy } from '~/util';
+import { $Get, $Put } from '~/util/requestapi';
 import { getPrettyDateTime } from '~/util/time';
 
 type FormType = {
@@ -19,7 +20,7 @@ const AlarmTypeDetailsPage: FC = () => {
   const params=useParams()
   const dispatch=useDispatch()
 
-  const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypeslice);
+  const {alarmtypedetail,alarmtypelist} = useSelector((state: RootState) => state.alarmtypes);
 console.log(params.alarmId);
 
   useEffect(()=>{
@@ -27,20 +28,51 @@ const getalarmdetail=async ()=>{
   const alarmdetailresponse=await $Get(`otdr/alarm/${params.alarmId}`)
   if(alarmdetailresponse.status == 200){
     const alarmdetailresponsedata=await alarmdetailresponse.json()
-    dispatch(setalarmsdetail(alarmdetailresponsedata))
+    let alarmdetailresponsedataCopy:alarmtypedetailtype=deepcopy(alarmdetailresponsedata)
+    if(!alarmdetailresponsedataCopy.alarm_definition){
+      alarmdetailresponsedataCopy={...alarmdetailresponsedata,alarm_definition:{
+        low_severity: {
+          conditions: [
+          ],
+          fault: 'No'
+        },
+        medium_severity: {
+          conditions: [
+        
+          ] ,
+          fault: "No"
+        },
+        high_severity: {
+          conditions: [
+        
+          ],
+          fault: "No"
+        }
+      },}
+    }
+    dispatch(setalarmsdetail(alarmdetailresponsedataCopy))
   }
 }
 getalarmdetail()
   },[])
 
-  console.log("🏩",alarmtypedetail);
   const formik = useFormik<FormType>({
+    enableReinitialize: true,
     initialValues: {
       name: alarmtypedetail.name,
       comment: alarmtypedetail.comment,
       sourceDataSet: 'Fiber Result',
     },
-    onSubmit: () => {},
+    onSubmit: async(values) => {
+      const updatealarmtypedetail=await $Put(`otdr/alarm/${params!.alarmId!}`,{name:values.name,
+      comment:values.comment})
+      if(updatealarmtypedetail.status == 201){
+        const alarmtypelistCopy=deepcopy(alarmtypelist)
+        const findalarmindex=alarmtypelist.findIndex(data => data.id == params!.alarmId!)
+        alarmtypelistCopy[findalarmindex].name =values.name
+        dispatch(setalarmlist(alarmtypelistCopy))
+      }
+    },
   });
   return (
     <div className="flex flex-grow flex-col">

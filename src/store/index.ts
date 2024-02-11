@@ -20,7 +20,7 @@ export const store = configureStore({
     opticalroute:opticalroute,
     rtu:rtu,
     networktree:networktreeslice,
-    alarmtypeslice:alarmstype
+    alarmtypes:alarmstype
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),
