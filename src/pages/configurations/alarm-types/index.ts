@@ -7,3 +7,4 @@ export {default as AlarmTypeAlertPage} from './AlarmTypeAlertPage';
 export {default as AlarmTypeEventPage} from './AlarmTypeEventPage';
 export {default as AlarmTypeAccessPage} from './AlarmTypeAccessPage';
 export {default as AlarmTypeCreatePage} from './AlarmTypeCreatePage';
+export {default as AlarmDetailCheckboxList} from './AlarmDetailCheckboxList';

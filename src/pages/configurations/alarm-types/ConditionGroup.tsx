@@ -63,11 +63,13 @@ const andoroptions = [
   {label: 'XOR', value: 'XOR'},
 ];
 
+const Faultoptins = [{label: 'Yes'}, {label: 'No'}];
+
 // **************************************************************
 const ConditionGroup: FC<Props> = ({title, conditions}) => {
   const dispatch = useDispatch();
   const params = useParams();
-  const [titlesecurity, setTitlesecurity] = useState("");
+  const [titlesecurity, setTitlesecurity] = useState('');
   useEffect(() => {
     setTitlesecurity(title!);
   }, []);
@@ -84,39 +86,32 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
     }
   };
 
-
   const Add = () => {
     const alarmsdetailCopy = deepcopy(alarmtypedetail);
-      alarmsdetailCopy!.alarm_definition![security()]!.conditions!.push({
-        index:alarmsdetailCopy!.alarm_definition![security()]!.conditions!.length,
-        parameter: 'Fault: Type',
-        operator: '=',
-        value: 'Break',
-        logical_operator: 'AND',
-        coef: 1,
-      });
-      dispatch(setalarmsdetail(alarmsdetailCopy));
-    }
-
+    alarmsdetailCopy!.alarm_definition![security()]!.conditions!.push({
+      index:
+        alarmsdetailCopy!.alarm_definition![security()]!.conditions!.length,
+      parameter: 'Switch Status',
+      operator: '=',
+      value: 'Offline',
+      logical_operator: 'AND',
+      coef: 1,
+    });
+    dispatch(setalarmsdetail(alarmsdetailCopy));
+  };
 
   const DeleteRow = (index: number) => {
     const alarmsdetailCopy: alarmtypedetailtype = deepcopy(alarmtypedetail);
-    if ((title = 'Low Severity Condition')) {
       const finLowindex =
-        alarmsdetailCopy!.alarm_definition!.low_severity!.conditions!.findIndex(
+        alarmsdetailCopy!.alarm_definition![security()]!.conditions!.findIndex(
           data => data.index == index,
         );
-      alarmsdetailCopy!.alarm_definition!.low_severity!.conditions!.splice(
+      alarmsdetailCopy!.alarm_definition![security()]!.conditions!.splice(
         finLowindex,
         1,
       );
-      //  console.log("lowconditionsfilter",lowconditionsfilter);
-
-      //   alarmsdetailCopy!.alarm_definition!.low_severity!.conditions = lowconditionsfilter
       dispatch(setalarmsdetail(alarmsdetailCopy));
-    }
   };
-
 
   const changeandor = (name: string, index: number) => {
     const alarmsdetailCopy: alarmtypedetailtype = deepcopy(alarmtypedetail);
@@ -161,10 +156,27 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
     ]!.value = name;
     dispatch(setalarmsdetail(alarmsdetailCopy));
   };
+
+  const changeFault = (name: string) => {
+    const alarmsdetailCopy: alarmtypedetailtype = deepcopy(alarmtypedetail);
+    alarmsdetailCopy!.alarm_definition![security()]!.fault = name;
+    dispatch(setalarmsdetail(alarmsdetailCopy));
+  };
   return (
     <div className="flex flex-col gap-y-6 rounded-lg bg-arioCyan px-6 py-4">
-      <div className="flex">
+      <div className="flex flex-row items-center">
         <span className="flex-grow font-semibold">{title}</span>
+        <span className="mr-[10px]">Fault</span>
+        <Select
+          onChange={e => {
+            changeFault(e.target.value)
+          }}
+          value={alarmtypedetail!.alarm_definition![security()]!.fault}
+          className="mr-[50px] w-[100px] disabled:text-gray-400 disabled:opacity-100">
+          {Faultoptins.map(data => (
+            <option>{data.label}</option>
+          ))}
+        </Select>
         <span className="flex flex-row">
           <IoAddOutline
             onClick={Add}
