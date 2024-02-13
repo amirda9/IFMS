@@ -12,30 +12,46 @@ type Props = {
   type:string
 };
 
-const renderItemGroup = (item: Item) => {
-  return (
-    <>
-      <div className="pb-2">
-        <span className="mr-2">
-          <input type="checkbox" />
-        </span>
-        <span>{item.label}</span>
-      </div>
-      {item?.items?.map(item => (
-        <div className="pl-4">
-          <div className="pb-2">
-            <span className="mr-2">
-              <input type="checkbox" />
-            </span>
-            <span>{item.label}</span>
-          </div>
-        </div>
-      ))}
-    </>
-  );
-};
+
 
 const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items,type}) => {
+ 
+  const renderItemGroup = (item: Item) => {
+    return (
+      <>
+        <div className="pb-2">
+          <span className="mr-2">
+            <input 
+            onChange={()=>{
+              if(type == "Primary"){
+                alert("kk")
+              }
+            }}
+            type="checkbox" />
+          </span>
+          <span>{item.label}</span>
+        </div>
+        {item?.items?.map(item => (
+          <div className="pl-4">
+            <div className="pb-2">
+              <span className="mr-2">
+                <input
+                 onChange={()=>{
+              if(type == "Primary"){
+                alert("kk")
+              }
+            }}
+                
+                type="checkbox" />
+              </span>
+              <span>{item.label}</span>
+            </div>
+          </div>
+        ))}
+      </>
+    );
+  };
+ 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
       {(title || titleCheckbox) && (

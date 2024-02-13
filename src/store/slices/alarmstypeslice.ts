@@ -48,16 +48,16 @@ export type alarmtypedetailtype = {
       fault: string;
     };
   };
-  alarm_content?: {
+  alarm_content: {
     primary_source: string;
     secondary_source: string;
     alarm_details: {
-      date_and_time: [string];
-      network: [string];
-      rtu: [string];
-      optical_route: [string];
-      test_setup: [string];
-      test_result: [string];
+      date_and_time: string[];
+      network: string[];
+      rtu:string[];
+      optical_route: string[];
+      test_setup: string[];
+      test_result: string[];
     };
   };
   alert_sending?: {
@@ -130,6 +130,18 @@ const initialState: initialStatetype = {
     owner_id: '',
     time_created: '',
     time_modified: '',
+    alarm_content: {
+      primary_source: "",
+      secondary_source: "",
+      alarm_details: {
+        date_and_time:[],
+        network: [],
+        rtu: [],
+        optical_route: [],
+        test_setup: [],
+        test_result: [],
+      }
+    }
   },
   alarmtypelist: [],
 };

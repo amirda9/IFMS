@@ -28,6 +28,8 @@ const getalarmdetail=async ()=>{
   const alarmdetailresponse=await $Get(`otdr/alarm/${params.alarmId}`)
   if(alarmdetailresponse.status == 200){
     const alarmdetailresponsedata=await alarmdetailresponse.json()
+    console.log("🤑",alarmdetailresponsedata);
+    
     let alarmdetailresponsedataCopy:alarmtypedetailtype=deepcopy(alarmdetailresponsedata)
     if(!alarmdetailresponsedataCopy.alarm_definition){
       alarmdetailresponsedataCopy={...alarmdetailresponsedata,alarm_definition:{
@@ -48,8 +50,65 @@ const getalarmdetail=async ()=>{
           ],
           fault: "No"
         }
-      },}
+      }}
     }
+    if(alarmdetailresponsedataCopy.alarm_content == null){
+      alarmdetailresponsedataCopy={...alarmdetailresponsedataCopy,alarm_content: {
+        primary_source: "",
+        secondary_source: "",
+        alarm_details: {
+          date_and_time:[],
+          network: [],
+          rtu: [],
+          optical_route: [],
+          test_setup: [],
+          test_result: [],
+        }
+      }}
+    }
+    // if(alarmdetailresponsedataCopy.alert_sending == null){
+    //   alarmdetailresponsedataCopy={...alarmdetailresponsedataCopy,alert_sending: {
+    //     about: "",
+    //     user: [],
+    //   }}
+    // }
+
+    // if(alarmdetailresponsedataCopy.automatic_events == null){
+    //   alarmdetailresponsedataCopy={...alarmdetailresponsedata, automatic_events: {
+    //     escalate_alarm: {
+    //       severity_at_least: "",
+    //       escalate_pending_after: {
+    
+    //       },
+    //       escalate_acknowledged_after: {
+      
+    //       },
+    //     },
+    //     timeout_alarm: {
+    //       timeout_pending_after: {
+    
+    //       },
+    //       timeout_acknowledged_after: {
+  
+    //       },
+    //     },
+    //     delete_alarm: {
+    //       delete_resolved_after: {
+     
+    //       },
+    //       delete_in_progress_after: {
+      
+    //       },
+    //       delete_timeout_after: {
+         
+    //       },
+    //     },
+    //   },
+    //   alarm_networks: {
+    //     network_id_list: [],
+    //   },
+    // }}
+    
     dispatch(setalarmsdetail(alarmdetailresponsedataCopy))
   }
 }
