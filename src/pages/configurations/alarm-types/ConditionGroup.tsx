@@ -64,7 +64,23 @@ const andoroptions = [
 ];
 
 const Faultoptins = [{label: 'Yes'}, {label: 'No'}];
-
+const onlineoflineOptions = [{label: 'Offline'}, {label: 'Online'}];
+const SuccessOptions = [{label: 'Successful'}, {label: 'Unsuccessful'}];
+const RTUPortOptions = [{label: 'Connected'}, {label: 'Open'}];
+const ReferenceNominalOptions = [
+  {label: 'Reference Value'},
+  {label: 'Nominal Value'},
+];
+const ReferenceOptions = [{label: 'Reference Value'}];
+const OpticalRouteOptions = [{label: 'Valid'}, {label: 'Available'}];
+const equaloperatorOptions = [{label: '='}];
+const alloperatorOptions = [
+  {label: '='},
+  {label: '!='},
+  {label: '<'},
+  {label: '>'},
+];
+const twoOptions = [{label: '='}, {label: '!='}];
 // **************************************************************
 const ConditionGroup: FC<Props> = ({title, conditions}) => {
   const dispatch = useDispatch();
@@ -95,22 +111,21 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
       operator: '=',
       value: 'Offline',
       logical_operator: 'AND',
-      coef: 1,
+      coef: 0,
     });
     dispatch(setalarmsdetail(alarmsdetailCopy));
   };
 
   const DeleteRow = (index: number) => {
     const alarmsdetailCopy: alarmtypedetailtype = deepcopy(alarmtypedetail);
-      const finLowindex =
-        alarmsdetailCopy!.alarm_definition![security()]!.conditions!.findIndex(
-          data => data.index == index,
-        );
-      alarmsdetailCopy!.alarm_definition![security()]!.conditions!.splice(
-        finLowindex,
-        1,
-      );
-      dispatch(setalarmsdetail(alarmsdetailCopy));
+    const finLowindex = alarmsdetailCopy!.alarm_definition![
+      security()
+    ]!.conditions!.findIndex(data => data.index == index);
+    alarmsdetailCopy!.alarm_definition![security()]!.conditions!.splice(
+      finLowindex,
+      1,
+    );
+    dispatch(setalarmsdetail(alarmsdetailCopy));
   };
 
   const changeandor = (name: string, index: number) => {
@@ -132,6 +147,12 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
     alarmsdetailCopy!.alarm_definition![security()]!.conditions[
       finLowindex
     ]!.parameter = name;
+    alarmsdetailCopy!.alarm_definition![security()]!.conditions[
+      finLowindex
+    ]!.operator = operatoroptions(name)[0].label;
+    alarmsdetailCopy!.alarm_definition![security()]!.conditions[
+      finLowindex
+    ]!.value = valueoptions(name)[0].label;
     dispatch(setalarmsdetail(alarmsdetailCopy));
   };
 
@@ -157,11 +178,94 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
     dispatch(setalarmsdetail(alarmsdetailCopy));
   };
 
+
+  const changecoef=(name: number, index: number)=>{
+    const alarmsdetailCopy: alarmtypedetailtype = deepcopy(alarmtypedetail);
+    const finLowindex = alarmsdetailCopy!.alarm_definition![
+      security()
+    ]!.conditions!.findIndex(data => data.index == index);
+    alarmsdetailCopy!.alarm_definition![security()]!.conditions[
+      finLowindex
+    ]!.coef = name;
+    dispatch(setalarmsdetail(alarmsdetailCopy));
+  }
+
   const changeFault = (name: string) => {
     const alarmsdetailCopy: alarmtypedetailtype = deepcopy(alarmtypedetail);
     alarmsdetailCopy!.alarm_definition![security()]!.fault = name;
     dispatch(setalarmsdetail(alarmsdetailCopy));
   };
+
+  const valueoptions = (parametername: string) => {
+    if (parametername == 'Switch Status' || parametername == 'OTDR Status') {
+      return onlineoflineOptions;
+    } else if (
+      parametername == 'Switching Status' ||
+      parametername == 'Applying Test Parameters' ||
+      parametername == 'Test Execution' ||
+      parametername == 'Receiving Results'
+    ) {
+      return SuccessOptions;
+    } else if (parametername == 'RTU Port Status') {
+      return RTUPortOptions;
+    } else if (parametername == 'Optical Route Reference') {
+      return OpticalRouteOptions;
+    } else if (
+      parametername == 'Link Length' ||
+      parametername == 'Optical Route Length' ||
+      parametername == 'Link Loss' ||
+      parametername == 'Optical Route Loss' ||
+      parametername == 'Splice Loss' ||
+      parametername == 'Connector Loss' ||
+      parametername == 'Connector Loss'
+    ) {
+      return ReferenceNominalOptions;
+    } else {
+      return ReferenceOptions;
+    }
+  };
+
+  const operatoroptions = (operatorname: string) => {
+    if (
+      operatorname == 'Switch Status' ||
+      operatorname == 'OTDR Status' ||
+      operatorname == 'Switching Status' ||
+      operatorname == 'Applying Test Parameters' ||
+      operatorname == 'Test Execution' ||
+      operatorname == 'Receiving Results' ||
+      operatorname == 'RTU Port Status'
+    ) {
+      return equaloperatorOptions;
+    } else if (operatorname == 'Optical Route Reference') {
+      return twoOptions;
+    } else {
+      return alloperatorOptions;
+    }
+  };
+
+  const hasecoef = (parametername: string) => {
+    if (
+      parametername == 'Link Length' ||
+      parametername == 'Optical Route Length' ||
+      parametername == 'Link Loss' ||
+      parametername == 'Optical Route Loss' ||
+      parametername == 'ORL' ||
+      parametername == 'Noise Floor' ||
+      parametername == 'Splice Loss' ||
+      parametername == 'Connector Loss' ||
+      parametername == 'Splice Reflectance' ||
+      parametername == 'Connector Reflectance' ||
+      parametername == 'Event Location' ||
+      parametername == 'Event Loss' ||
+      parametername == 'Event Reflectance'
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+
   return (
     <div className="flex flex-col gap-y-6 rounded-lg bg-arioCyan px-6 py-4">
       <div className="flex flex-row items-center">
@@ -169,7 +273,7 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
         <span className="mr-[10px]">Fault</span>
         <Select
           onChange={e => {
-            changeFault(e.target.value)
+            changeFault(e.target.value);
           }}
           value={alarmtypedetail!.alarm_definition![security()]!.fault}
           className="mr-[50px] w-[100px] disabled:text-gray-400 disabled:opacity-100">
@@ -186,9 +290,9 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
         </span>
       </div>
       <div className="grid grid-cols-11 gap-y-2">
-        <span className="col-span-3">Parameter</span>
-        <span className="col-span-2">Operator</span>
-        <span className="col-span-3">Value</span>
+        <span className="col-span-3 text-center">Parameter</span>
+        <span className="col-span-2 text-center">Operator</span>
+        <span className="col-span-3 text-center">Value</span>
         <span className="col-span-2">AND/OR</span>
         <span className="col-span-1 flex justify-center">Delete</span>
 
@@ -201,38 +305,83 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
                   changeParameter(e.target.value, cond.index);
                 }}
                 value={cond.parameter}
-                className="w-3/5 disabled:text-gray-400 disabled:opacity-100">
+                className="w-full disabled:text-gray-400 disabled:opacity-100">
                 {parameteroptins.map(data => (
                   <option>{data.label}</option>
                 ))}
               </Select>
             </div>
             {/* Operator */}
-            <div className="col-span-2">
+            <div className="col-span-2 text-center">
               <Select
                 onChange={e => {
                   changeoperator(e.target.value, cond.index);
                 }}
                 value={cond.operator}
-                className="w-3/5 disabled:text-gray-400 disabled:opacity-100">
-                {Operatoroptions.map(data => (
+                className="w-4/5 disabled:text-gray-400 disabled:opacity-100">
+                {operatoroptions(
+                  alarmtypedetail!.alarm_definition![
+                    security()
+                  ]!.conditions!.find(data => data.index == cond.index)!
+                    .parameter,
+                ).map(data => (
                   <option>{data.label}</option>
                 ))}
               </Select>
             </div>
             {/* Value */}
-            <div className="col-span-3">
-              <Select
-                onChange={e => {
-                  changevalue(e.target.value, cond.index);
+
+            {hasecoef(
+              alarmtypedetail!.alarm_definition![security()]!.conditions!.find(
+                data => data.index == cond.index,
+              )!.parameter,
+            ) ? (
+              <div className="fle-row  col-span-3 flex justify-between">
+                <input
+                value={cond.coef}
+                 onChange={e => {
+                  changecoef(Number(e.target.value), cond.index);
                 }}
-                value={cond.value}
-                className="w-3/5 disabled:text-gray-400 disabled:opacity-100">
-                {Operatoroptions.map(data => (
-                  <option>{data.label}</option>
-                ))}
-              </Select>
-            </div>
+                  type="number"
+                  className="w-[36%] rounded-[7px] border-[1px] pl-[10px] border-black disabled:text-gray-400 disabled:opacity-100"
+                />
+                x
+                <Select
+                  onChange={e => {
+                    changevalue(e.target.value, cond.index);
+                  }}
+                  value={cond.value}
+                  className="w-[57%] disabled:text-gray-400 disabled:opacity-100">
+                  {valueoptions(
+                    alarmtypedetail!.alarm_definition![
+                      security()
+                    ]!.conditions!.find(data => data.index == cond.index)!
+                      .parameter,
+                  )!.map(data => (
+                    <option>{data.label}</option>
+                  ))}
+                </Select>
+              </div>
+            ) : (
+              <div className="col-span-3 bg-[red] text-center">
+                <Select
+                  onChange={e => {
+                    changevalue(e.target.value, cond.index);
+                  }}
+                  value={cond.value}
+                  className="w-[90%] disabled:text-gray-400 disabled:opacity-100">
+                  {valueoptions(
+                    alarmtypedetail!.alarm_definition![
+                      security()
+                    ]!.conditions!.find(data => data.index == cond.index)!
+                      .parameter,
+                  )!.map(data => (
+                    <option>{data.label}</option>
+                  ))}
+                </Select>
+              </div>
+            )}
+
             {/* AND / OR */}
             <div className="col-span-2">
               <Select
@@ -240,7 +389,7 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
                   changeandor(e.target.value, cond.index);
                 }}
                 value={cond.logical_operator}
-                className="w-26">
+                className="ml-[4px] w-[100px]">
                 {andoroptions.map(data => (
                   <option>{data.label}</option>
                 ))}

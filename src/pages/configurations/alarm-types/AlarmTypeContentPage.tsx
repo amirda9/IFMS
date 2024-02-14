@@ -2,6 +2,11 @@ import {FC} from 'react';
 import {SimpleBtn} from '~/components';
 import AlarmCheckboxList from './AlarmCheckboxList';
 import AlarmDetailCheckboxList from './AlarmDetailCheckboxList';
+import { $Put } from '~/util/requestapi';
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '~/store';
+import { toast } from 'react-toastify';
 
 const items = [
   {
@@ -415,7 +420,21 @@ const testresultitems = [
   },
 ];
 
+
+
 const AlarmTypeContentPage: FC = () => {
+  const params=useParams()
+  const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypes);
+  const updatedefinition = async () => {
+    const response = await $Put(`otdr/alarm/${params.alarmId}`, {
+      alarm_content:alarmtypedetail.alarm_content
+    });
+    if (response.status == 201) {
+      toast('با موفقیت انجام شد', {type: 'success',autoClose:1000});
+    } else {
+      toast('با خطا مواجه شد', {type: 'error',autoClose:1000});
+    }
+  };
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow gap-x-8">
@@ -433,7 +452,7 @@ const AlarmTypeContentPage: FC = () => {
         <AlarmDetailCheckboxList title="Alarm Details" items={items} />
       </div>
       <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn type="submit">Save</SimpleBtn>
+        <SimpleBtn onClick={updatedefinition} type="button">Save</SimpleBtn>
         <SimpleBtn link to="../">
           Cancel
         </SimpleBtn>

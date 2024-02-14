@@ -60,7 +60,13 @@ path.leaflet-interactive:focus {
 }
 
 
-
 *{
   font-family: "Inter", serif;
+
+
+}
+
+.Toastify__toast-container {
+  --toastify-z-index: 11999;
+  text-align: right;
 }
