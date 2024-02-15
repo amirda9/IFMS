@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { deepcopy } from '~/util';
 
 export type alarmtypedetailtype = {
   id: string;
@@ -18,7 +19,7 @@ export type alarmtypedetailtype = {
           value: string;
           logical_operator: string;
         },
-      ];
+      ] | [];
       fault: string;
     };
     medium_severity?: {
@@ -31,7 +32,7 @@ export type alarmtypedetailtype = {
           value: string;
           logical_operator: string;
         },
-      ];
+      ] | [];
       fault: string;
     };
     high_severity?: {
@@ -44,7 +45,7 @@ export type alarmtypedetailtype = {
           value: string;
           logical_operator: string;
         },
-      ];
+      ] | [];
       fault: string;
     };
   };
@@ -130,6 +131,26 @@ const initialState: initialStatetype = {
     owner_id: '',
     time_created: '',
     time_modified: '',
+    alarm_definition: {
+      low_severity: {
+        conditions: [
+        
+        ],
+        fault: "No"
+      },
+      medium_severity: {
+        conditions: [
+       
+        ],
+        fault: "No"
+      },
+      high_severity: {
+        conditions: [
+      
+        ],
+        fault: "No",
+      },
+    },
     alarm_content: {
       primary_source: "",
       secondary_source: "",
@@ -157,9 +178,17 @@ const alarmtypeslice = createSlice({
     setalarmlist: (state, action) => {
       state.alarmtypelist = action.payload;
     },
+
+    cretealarmtype: (state, action:{type:string,payload:{id:string,name:string}}) => {
+      state.alarmtypelist.push({id:action.payload.id,name:action.payload.name})
+    },
+
+    deletealarmtype:(state,action:{type:string,payload:string})=>{
+      state.alarmtypelist= state.alarmtypelist.filter(data => data.id != action.payload)
+    }
   },
 });
 
-export const {setalarmsdetail, setalarmlist} = alarmtypeslice.actions;
+export const {setalarmsdetail, setalarmlist,cretealarmtype,deletealarmtype} = alarmtypeslice.actions;
 
 export default alarmtypeslice.reducer;

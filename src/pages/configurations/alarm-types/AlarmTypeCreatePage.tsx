@@ -1,8 +1,11 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 import {FC} from 'react';
+import {useDispatch} from 'react-redux';
+import {useNavigate} from 'react-router-dom';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
-import { $Post } from '~/util/requestapi';
+import {cretealarmtype} from '~/store/slices/alarmstypeslice';
+import {$Post} from '~/util/requestapi';
 
 type FormType = {
   name: string;
@@ -11,17 +14,24 @@ type FormType = {
 };
 
 const AlarmTypeCreatePage: FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const formik = useFormik<FormType>({
     initialValues: {
       name: '',
       comment: '',
       // sourceDataSet: 'Fiber Result',
     },
-    onSubmit: async(values) => {
-const response=await $Post(`otdr/alarm/`,{name:values.name,comment:values.comment})
-if(response.status == 200){
- 
-}
+    onSubmit: async values => {
+      const response = await $Post(`otdr/alarm/`, {
+        name: values.name,
+        comment: values.comment,
+      });
+      if (response.status == 200) {
+        const responsedata = await response.json();
+        dispatch(cretealarmtype({id: responsedata, name: values.name}));
+        navigate(`../${responsedata}`);
+      }
     },
   });
 

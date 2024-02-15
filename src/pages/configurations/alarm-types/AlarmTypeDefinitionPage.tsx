@@ -64,23 +64,14 @@ const AlarmTypeDefinitionPage: FC = () => {
       <div className="flex w-4/5 flex-grow flex-col gap-y-8">
         <ConditionGroup
           title="Low Severity Condition"
-          conditions={
-            alarmtypedetail?.alarm_definition?.low_severity?.conditions
-          }
         />
 
         <ConditionGroup
           title="Medium Severity Condition"
-          conditions={
-            alarmtypedetail?.alarm_definition?.medium_severity?.conditions
-          }
         />
 
         <ConditionGroup
           title="High Severity Condition"
-          conditions={
-            alarmtypedetail?.alarm_definition?.high_severity?.conditions
-          }
         />
       </div>
       <div className="flex flex-row gap-x-4 self-end">

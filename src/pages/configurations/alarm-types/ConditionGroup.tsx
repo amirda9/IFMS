@@ -11,7 +11,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 type Props = {
   title?: string;
-  conditions: any;
+  // conditions: any;
 
   // {
   //       parameter: string;
@@ -82,12 +82,14 @@ const alloperatorOptions = [
 ];
 const twoOptions = [{label: '='}, {label: '!='}];
 // **************************************************************
-const ConditionGroup: FC<Props> = ({title, conditions}) => {
+const ConditionGroup: FC<Props> = ({title}) => {
+  const [allconditions,setAllconditions]=useState([])
   const dispatch = useDispatch();
   const params = useParams();
   const [titlesecurity, setTitlesecurity] = useState('');
   useEffect(() => {
     setTitlesecurity(title!);
+    // setAllconditions(conditions)
   }, []);
   const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypes);
   useEffect(() => {}, []);
@@ -275,7 +277,7 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
           onChange={e => {
             changeFault(e.target.value);
           }}
-          value={alarmtypedetail!.alarm_definition![security()]!.fault}
+          value={alarmtypedetail!.alarm_definition![security()]!.fault || "No"}
           className="mr-[50px] w-[100px] disabled:text-gray-400 disabled:opacity-100">
           {Faultoptins.map(data => (
             <option>{data.label}</option>
@@ -296,7 +298,9 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
         <span className="col-span-2">AND/OR</span>
         <span className="col-span-1 flex justify-center">Delete</span>
 
-        {conditions?.map((cond: any, index: number) => (
+        {alarmtypedetail!.alarm_definition![
+                    security()
+                  ]!.conditions?.map((cond: any, index: number) => (
           <Fragment key={index}>
             {/* Parameter */}
             <div className="col-span-3">
@@ -334,7 +338,7 @@ const ConditionGroup: FC<Props> = ({title, conditions}) => {
             {hasecoef(
               alarmtypedetail!.alarm_definition![security()]!.conditions!.find(
                 data => data.index == cond.index,
-              )!.parameter,
+              )!.parameter
             ) ? (
               <div className="fle-row  col-span-3 flex justify-between">
                 <input

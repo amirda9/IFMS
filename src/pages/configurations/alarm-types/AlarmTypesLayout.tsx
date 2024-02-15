@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import {SidebarItem} from '~/components';
 import {SidebarLayout} from '~/layout';
 import { RootState } from '~/store';
-import { setalarmlist } from '~/store/slices/alarmstypeslice';
+import { deletealarmtype, setalarmlist } from '~/store/slices/alarmstypeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 
 const AlarmTypesLayout: FC = () => {
@@ -23,9 +23,10 @@ const AlarmTypesLayout: FC = () => {
   }, []);
 
 
-  const deletealarms = async (id: string) => {
+  const Deletealarms = async (id: string) => {
     const deletealarmsresponse = await $Delete(`otdr/alarm/${id}`);
     if (deletealarmsresponse.status == 200) {
+      dispatch(deletealarmtype(id))
       navigate('./');
     }
   };
@@ -36,7 +37,7 @@ const AlarmTypesLayout: FC = () => {
         <SidebarItem
           selected={true}
           canDelete={true}
-          onDelete={() => deletealarms(data.id)}
+          onDelete={() => Deletealarms(data.id)}
           name={data.name}
           to={data.id}
         />
