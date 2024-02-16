@@ -45,8 +45,8 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
                     type == 'Primary'
                       ? alarmtypedetail.alarm_content.primary_source ==
                         item.label
-                      : alarmtypedetail.alarm_content.secondary_source ==
-                        item.label
+                      :type == 'Secondary'? alarmtypedetail.alarm_content.secondary_source ==
+                        item.label:alarmtypedetail.alert_sending?.user?.findIndex((data:string)=> data == item.label)>-1 || false
                   }
                   onChange={() => {
                     const alarmtypedetailCopy = deepcopy(alarmtypedetail);
@@ -57,7 +57,7 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
                         alarmtypedetailCopy.alarm_content.primary_source =
                         item.label;
                       }
-                    } else {
+                    } else if(type == 'Secondary') {
                       if(alarmtypedetail.alarm_content.secondary_source == item.label){
                         alarmtypedetailCopy.alarm_content.secondary_source =null
                        
@@ -66,6 +66,13 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
                         item.label;
                       }
              
+                    }else{
+                      if(alarmtypedetail.alert_sending!.user.findIndex((data:string)=> data == item.label)>-1){
+                        alarmtypedetailCopy.alert_sending.user =alarmtypedetail.alert_sending!.user.filter((data)=> data != item.label)
+                       
+                      }else{
+                        alarmtypedetailCopy.alert_sending!.user.push(item.label)
+                      }
                     }
                     dispatch(setalarmsdetail(alarmtypedetailCopy));
                   }}

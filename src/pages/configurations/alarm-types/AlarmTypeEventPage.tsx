@@ -20,6 +20,8 @@ const AlarmTypeEventPage: FC = () => {
 
             <Select>
               <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
             </Select>
           </div>
 
