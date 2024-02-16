@@ -63,7 +63,7 @@ export type alarmtypedetailtype = {
   };
   alert_sending?: {
     about: string;
-    user: [string];
+    user: [string] | [];
   };
   automatic_events?: {
     escalate_alarm: {

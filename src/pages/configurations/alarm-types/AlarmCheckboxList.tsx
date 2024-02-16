@@ -40,7 +40,7 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
             <div className="pb-2">
               <span className="mr-2">
                 <input
-                disabled={type == 'Primary'?false:!disabled}
+                disabled={type == 'Primary' || type == "sending"?false:!disabled}
                   checked={
                     type == 'Primary'
                       ? alarmtypedetail.alarm_content.primary_source ==

@@ -66,12 +66,12 @@ const getalarmdetail=async ()=>{
         }
       }}
     }
-    // if(alarmdetailresponsedataCopy.alert_sending == null){
-    //   alarmdetailresponsedataCopy={...alarmdetailresponsedataCopy,alert_sending: {
-    //     about: "",
-    //     user: [],
-    //   }}
-    // }
+    if(alarmdetailresponsedataCopy.alert_sending == null){
+      alarmdetailresponsedataCopy={...alarmdetailresponsedataCopy,alert_sending: {
+        about: "",
+        user: [],
+      }}
+    }
 
     // if(alarmdetailresponsedataCopy.automatic_events == null){
     //   alarmdetailresponsedataCopy={...alarmdetailresponsedata, automatic_events: {
