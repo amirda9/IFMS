@@ -77,38 +77,54 @@ const getalarmdetail=async ()=>{
     if(alarmdetailresponsedataCopy.automatic_events == null){
       alarmdetailresponsedataCopy={...alarmdetailresponsedataCopy, automatic_events: {
         escalate_alarm: {
-          severity_at_least: "",
+          severity_at_least: "High",
           escalate_pending_after: {
-    
+            days: 0,
+            hours: 0,
+            minutes: 0,
           },
           escalate_acknowledged_after: {
-      
+            days: 0,
+            hours: 0,
+            minutes: 0,
           },
         },
         timeout_alarm: {
           timeout_pending_after: {
-    
+            days: 0,
+            hours: 0,
+            minutes: 0,
           },
           timeout_acknowledged_after: {
-  
+            days: 0,
+            hours: 0,
+            minutes: 0,
           },
         },
         delete_alarm: {
           delete_resolved_after: {
-     
+            days: 0,
+            hours: 0,
+            minutes: 0,
           },
           delete_in_progress_after: {
-      
+            days: 0,
+            hours: 0,
+            minutes: 0,
           },
           delete_timeout_after: {
-         
+            days: 0,
+            hours: 0,
+            minutes: 0,
           },
         },
       },
       alarm_networks: {
         network_id_list: [],
       },
-    }}
+    }}else{
+
+    }
     
     dispatch(setalarmsdetail(alarmdetailresponsedataCopy))
   }

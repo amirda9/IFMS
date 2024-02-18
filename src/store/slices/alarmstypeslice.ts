@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { deepcopy } from '~/util';
+import {deepcopy} from '~/util';
 
 export type alarmtypedetailtype = {
   id: string;
@@ -10,42 +10,48 @@ export type alarmtypedetailtype = {
   time_modified: string;
   alarm_definition?: {
     low_severity?: {
-      conditions: [
-        {
-          index: number;
-          parameter: string;
-          operator: string;
-          coef: number;
-          value: string;
-          logical_operator: string;
-        },
-      ] | [];
+      conditions:
+        | [
+            {
+              index: number;
+              parameter: string;
+              operator: string;
+              coef: number;
+              value: string;
+              logical_operator: string;
+            },
+          ]
+        | [];
       fault: string;
     };
     medium_severity?: {
-      conditions: [
-        {
-          index: number;
-          parameter: string;
-          operator: string;
-          coef: number;
-          value: string;
-          logical_operator: string;
-        },
-      ] | [];
+      conditions:
+        | [
+            {
+              index: number;
+              parameter: string;
+              operator: string;
+              coef: number;
+              value: string;
+              logical_operator: string;
+            },
+          ]
+        | [];
       fault: string;
     };
     high_severity?: {
-      conditions: [
-        {
-          index: number;
-          parameter: string;
-          operator: string;
-          coef: number;
-          value: string;
-          logical_operator: string;
-        },
-      ] | [];
+      conditions:
+        | [
+            {
+              index: number;
+              parameter: string;
+              operator: string;
+              coef: number;
+              value: string;
+              logical_operator: string;
+            },
+          ]
+        | [];
       fault: string;
     };
   };
@@ -55,7 +61,7 @@ export type alarmtypedetailtype = {
     alarm_details: {
       date_and_time: string[];
       network: string[];
-      rtu:string[];
+      rtu: string[];
       optical_route: string[];
       test_setup: string[];
       test_result: string[];
@@ -65,48 +71,48 @@ export type alarmtypedetailtype = {
     about: string;
     user: [string] | [];
   };
-  automatic_events?: {
+  automatic_events: {
     escalate_alarm: {
       severity_at_least: string;
-      escalate_pending_after: {
-        days: number;
-        hours: number;
-        minutes: number;
-      } | {};
-      escalate_acknowledged_after: {
-        days: number;
-        hours: number;
-        minutes: number;
-      } | {};
+      escalate_pending_after:{
+            days: number;
+            hours: number;
+            minutes: number;
+          };
+      escalate_acknowledged_after:{
+            days: number;
+            hours: number;
+            minutes: number;
+          };
     };
     timeout_alarm: {
-      timeout_pending_after: {
-        days: number;
-        hours: number;
-        minutes: number;
-      } | {};
-      timeout_acknowledged_after: {
-        days: number;
-        hours: number;
-        minutes: number;
-      } | {};
+      timeout_pending_after:{
+            days: number;
+            hours: number;
+            minutes: number;
+          };
+      timeout_acknowledged_after:{
+            days: number;
+            hours: number;
+            minutes: number;
+          };
     };
     delete_alarm: {
-      delete_resolved_after: {
-        days: number;
-        hours: number;
-        minutes: number;
-      } | {};
-      delete_in_progress_after: {
-        days: number;
-        hours: number;
-        minutes: number;
-      } | {};
-      delete_timeout_after: {
-        days: number;
-        hours: number;
-        minutes: number;
-      } | {};
+      delete_resolved_after:{
+            days: number;
+            hours: number;
+            minutes: number;
+          };
+      delete_in_progress_after:{
+            days: number;
+            hours: number;
+            minutes: number;
+          };
+      delete_timeout_after:{
+            days: number;
+            hours: number;
+            minutes: number;
+          };
     };
   };
   alarm_networks?: {
@@ -121,6 +127,7 @@ export type alarmtypelist = {
 export type initialStatetype = {
   alarmtypedetail: alarmtypedetailtype;
   alarmtypelist: alarmtypelist;
+  selectedautomaticevents:string[]
 };
 
 const initialState: initialStatetype = {
@@ -133,86 +140,81 @@ const initialState: initialStatetype = {
     time_modified: '',
     alarm_definition: {
       low_severity: {
-        conditions: [
-        
-        ],
-        fault: "No"
+        conditions: [],
+        fault: 'No',
       },
       medium_severity: {
-        conditions: [
-       
-        ],
-        fault: "No"
+        conditions: [],
+        fault: 'No',
       },
       high_severity: {
-        conditions: [
-      
-        ],
-        fault: "No",
+        conditions: [],
+        fault: 'No',
       },
     },
     alarm_content: {
-      primary_source: "",
-      secondary_source: "",
+      primary_source: '',
+      secondary_source: '',
       alarm_details: {
-        date_and_time:[],
+        date_and_time: [],
         network: [],
         rtu: [],
         optical_route: [],
         test_setup: [],
         test_result: [],
-      }
+      },
     },
     alert_sending: {
-      about:"Pending",
+      about: 'Pending',
       user: [],
-    }
-    // automatic_events: {
-    //   escalate_alarm: {
-    //     severity_at_least:"",
-    //     escalate_pending_after: {
-    //       // days: number;
-    //       // hours: number;
-    //       // minutes: number;
-    //     },
-    //     escalate_acknowledged_after: {
-    //       // days: number;
-    //       // hours: number;
-    //       // minutes: number;
-    //     },
-    //   },
-    //   timeout_alarm: {
-    //     timeout_pending_after: {
-    //       // days: number;
-    //       // hours: number;
-    //       // minutes: number;
-    //     },
-    //     timeout_acknowledged_after: {
-    //       // days: number;
-    //       // hours: number;
-    //       // minutes: number;
-    //     },
-    //   },
-    //   delete_alarm: {
-    //     delete_resolved_after: {
-    //       // days: number;
-    //       // hours: number;
-    //       // minutes: number;
-    //     },
-    //     delete_in_progress_after: {
-    //       // days: number;
-    //       // hours: number;
-    //       // minutes: number;
-    //     },
-    //     delete_timeout_after: {
-    //       // days: number;
-    //       // hours: number;
-    //       // minutes: number;
-    //     },
-    //   },
-    // },
+    },
+    automatic_events: {
+      escalate_alarm: {
+        severity_at_least: 'High',
+        escalate_pending_after: {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+        },
+        escalate_acknowledged_after: {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+        },
+      },
+      timeout_alarm: {
+        timeout_pending_after: {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+        },
+        timeout_acknowledged_after: {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+        },
+      },
+      delete_alarm: {
+        delete_resolved_after: {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+        },
+        delete_in_progress_after: {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+        },
+        delete_timeout_after: {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+        },
+      },
+    },
   },
   alarmtypelist: [],
+  selectedautomaticevents:[]
 };
 
 // ********** slices ********* slices ******************* slice *********
@@ -227,16 +229,54 @@ const alarmtypeslice = createSlice({
       state.alarmtypelist = action.payload;
     },
 
-    cretealarmtype: (state, action:{type:string,payload:{id:string,name:string}}) => {
-      state.alarmtypelist.push({id:action.payload.id,name:action.payload.name})
+    cretealarmtype: (
+      state,
+      action: {type: string; payload: {id: string; name: string}},
+    ) => {
+      state.alarmtypelist.push({
+        id: action.payload.id,
+        name: action.payload.name,
+      });
     },
 
-    deletealarmtype:(state,action:{type:string,payload:string})=>{
-      state.alarmtypelist= state.alarmtypelist.filter(data => data.id != action.payload)
+    deletealarmtype: (state, action: {type: string; payload: string}) => {
+      state.alarmtypelist = state.alarmtypelist.filter(
+        data => data.id != action.payload,
+      );
+    },
+
+    changeAutomaticEventDate: (
+      state,
+      action: {
+        type: string;
+        payload: {
+          inputname: "days" | "hours" | "minutes",
+          value: number;
+          parentName: "escalate_alarm" | "timeout_alarm" | "delete_alarm",
+          name: "delete_resolved_after" | "delete_in_progress_after" | "delete_timeout_after" | "timeout_pending_after" | "timeout_acknowledged_after" | "escalate_acknowledged_after" | "escalate_pending_after";
+        };
+      },
+    ) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+      state.alarmtypedetail.automatic_events[action.payload.parentName][action.payload.name][action.payload.inputname] = action.payload.value;
+    },
+
+
+    setSelectedautomaticevent:(state,
+      action)=>{
+      const findevents=state.selectedautomaticevents.findIndex(data => data == action.payload)
+      if(findevents > -1){
+        state.selectedautomaticevents=state.selectedautomaticevents.filter(data => data != action.payload)
+      }else{
+        state.selectedautomaticevents.push(action.payload)
+      }
     }
   },
 });
 
-export const {setalarmsdetail, setalarmlist,cretealarmtype,deletealarmtype} = alarmtypeslice.actions;
+ 
+export const {setalarmsdetail, setalarmlist, cretealarmtype, deletealarmtype,changeAutomaticEventDate,setSelectedautomaticevent} =
+  alarmtypeslice.actions;
 
 export default alarmtypeslice.reducer;
