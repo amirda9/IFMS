@@ -115,8 +115,8 @@ export type alarmtypedetailtype = {
           };
     };
   };
-  alarm_networks?: {
-    network_id_list: [string] | [];
+  alarm_networks: {
+    network_id_list: {id:string,name:string}[];
   };
 };
 
@@ -211,7 +211,11 @@ const initialState: initialStatetype = {
           minutes: 0,
         },
       },
+   
     },
+    alarm_networks: {
+      network_id_list: [ ]
+    }
   },
   alarmtypelist: [],
   selectedautomaticevents:[]
@@ -263,20 +267,30 @@ const alarmtypeslice = createSlice({
     },
 
 
-    setSelectedautomaticevent:(state,
-      action)=>{
+    setSelectedautomaticevent:(state,action)=>{
       const findevents=state.selectedautomaticevents.findIndex(data => data == action.payload)
       if(findevents > -1){
         state.selectedautomaticevents=state.selectedautomaticevents.filter(data => data != action.payload)
       }else{
         state.selectedautomaticevents.push(action.payload)
       }
+    },
+
+    setAlarmNetworks:(state,
+      action:{type:string,payload:{id:string,name:string}})=>{
+      const findeventsindex=state.alarmtypedetail.alarm_networks.network_id_list.findIndex(data => data.id == action.payload.id)
+      if(findeventsindex > -1){
+        state.alarmtypedetail.alarm_networks.network_id_list.splice(findeventsindex,1)
+      }else{
+        state.alarmtypedetail.alarm_networks.network_id_list.push(action.payload)
+      }
     }
+
   },
 });
 
  
-export const {setalarmsdetail, setalarmlist, cretealarmtype, deletealarmtype,changeAutomaticEventDate,setSelectedautomaticevent} =
+export const {setalarmsdetail, setalarmlist, cretealarmtype, deletealarmtype,changeAutomaticEventDate,setSelectedautomaticevent,setAlarmNetworks} =
   alarmtypeslice.actions;
 
 export default alarmtypeslice.reducer;

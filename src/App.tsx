@@ -192,6 +192,14 @@ function App() {
                   Component={pages.AlarmTypeAlertPage}
                 />
                 <Route
+                  path="alert-networks"
+                  Component={pages.Alarmtypenetworks}
+                />
+                   <Route
+                  path="edit-alert-networks"
+                  Component={pages.Editalarmtypenetwork}
+                />
+                <Route
                   path="automatic-events"
                   Component={pages.AlarmTypeEventPage}
                 />

@@ -14,6 +14,7 @@ const SingleAlarmTypeLayout: FC = () => {
         <TabItem to="alert-sending" name="Alert Sending" />
         <TabItem to="automatic-events" name="Automatic Events" />
         <TabItem to="access" name="Access" />
+        <TabItem to="alert-networks" name="Networks" />
       </div>
 
       <Outlet key={params.alarmId} />

@@ -8,3 +8,5 @@ export {default as AlarmTypeEventPage} from './AlarmTypeEventPage';
 export {default as AlarmTypeAccessPage} from './AlarmTypeAccessPage';
 export {default as AlarmTypeCreatePage} from './AlarmTypeCreatePage';
 export {default as AlarmDetailCheckboxList} from './AlarmDetailCheckboxList';
+export {default as Alarmtypenetworks} from './alarmtypenetworks';
+export {default as Editalarmtypenetwork} from './Editalarmtypenetwork';
