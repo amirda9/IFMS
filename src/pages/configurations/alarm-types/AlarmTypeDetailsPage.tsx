@@ -78,7 +78,7 @@ const AlarmTypeDetailsPage: FC = () => {
           alarmdetailresponsedataCopy = {
             ...alarmdetailresponsedataCopy,
             alert_sending: {
-              about: '',
+              about: 'Pending',
               user: [],
             },
           };
