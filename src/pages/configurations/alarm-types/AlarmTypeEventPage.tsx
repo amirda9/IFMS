@@ -3,7 +3,8 @@ import {Select, SimpleBtn} from '~/components';
 import ScheduleSelector from './ScheduleSelector';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  setSelectedautomaticevent,
+  changeallSelectedautomaticEvent,
+  setSelectedautomaticEvent,
   setalarmsdetail,
 } from '~/store/slices/alarmstypeslice';
 import {RootState} from '~/store';
@@ -20,39 +21,42 @@ const AlarmTypeEventPage: FC = () => {
   );
 
 useEffect(()=>{
-  const selectedautomaticeventsCopy=deepcopy(selectedautomaticevents)
-if(alarmtypedetail.automatic_events.escalate_alarm.escalate_acknowledged_after){
+  const selectedautomaticeventsCopy=[]
+if(Number(alarmtypedetail.automatic_events.escalate_alarm.escalate_acknowledged_after.days) >0 || Number(alarmtypedetail.automatic_events.escalate_alarm.escalate_acknowledged_after.hours)>0 || (alarmtypedetail.automatic_events.escalate_alarm.escalate_acknowledged_after.minutes) >0){
   selectedautomaticeventsCopy.push("escalate_acknowledged_after")
 }
-if(alarmtypedetail.automatic_events.escalate_alarm.escalate_pending_after){
+if(Number(alarmtypedetail.automatic_events.escalate_alarm.escalate_pending_after.days) >0 || Number(alarmtypedetail.automatic_events.escalate_alarm.escalate_pending_after.hours) >0 || Number(alarmtypedetail.automatic_events.escalate_alarm.escalate_pending_after.minutes) >0){
+  
   selectedautomaticeventsCopy.push("escalate_pending_after")
 }
 
-if(alarmtypedetail.automatic_events.escalate_alarm.severity_at_least){
+if(alarmtypedetail.automatic_events.escalate_alarm.severity_at_least != ''){
   selectedautomaticeventsCopy.push("severity_at_least")
+
 }
 
-if(alarmtypedetail.automatic_events.escalate_alarm.severity_at_least){
-  selectedautomaticeventsCopy.push("severity_at_least")
-}
-
-if(alarmtypedetail.automatic_events.timeout_alarm.timeout_acknowledged_after){
+if(Number(alarmtypedetail.automatic_events.timeout_alarm.timeout_acknowledged_after.days)>0 || Number(alarmtypedetail.automatic_events.timeout_alarm.timeout_acknowledged_after.hours)>0 || Number(alarmtypedetail.automatic_events.timeout_alarm.timeout_acknowledged_after.minutes)>0){
   selectedautomaticeventsCopy.push("timeout_acknowledged_after")
+
 }
 
-if(alarmtypedetail.automatic_events.timeout_alarm.timeout_pending_after){
+if(Number(alarmtypedetail.automatic_events.timeout_alarm.timeout_pending_after.days)>0 || Number(alarmtypedetail.automatic_events.timeout_alarm.timeout_pending_after.hours)>0 || Number(alarmtypedetail.automatic_events.timeout_alarm.timeout_pending_after.minutes)>0){
   selectedautomaticeventsCopy.push("timeout_pending_after")
 }
-if(alarmtypedetail.automatic_events.delete_alarm.delete_in_progress_after){
+if(Number(alarmtypedetail.automatic_events.delete_alarm.delete_in_progress_after.days)>0 || Number(alarmtypedetail.automatic_events.delete_alarm.delete_in_progress_after.hours)>0 || Number(alarmtypedetail.automatic_events.delete_alarm.delete_in_progress_after.minutes)>0){
   selectedautomaticeventsCopy.push("delete_in_progress_after")
+
 }
-if(alarmtypedetail.automatic_events.delete_alarm.delete_resolved_after){
+
+if(Number(alarmtypedetail.automatic_events.delete_alarm.delete_resolved_after.days)>0 || Number(alarmtypedetail.automatic_events.delete_alarm.delete_resolved_after.hours)>0 || Number(alarmtypedetail.automatic_events.delete_alarm.delete_resolved_after.minutes)>0){
   selectedautomaticeventsCopy.push("delete_resolved_after")
+
 }
-if(alarmtypedetail.automatic_events.delete_alarm.delete_timeout_after){
+
+if(Number(alarmtypedetail.automatic_events.delete_alarm.delete_timeout_after.days)>0 || Number(alarmtypedetail.automatic_events.delete_alarm.delete_timeout_after.hours)>0 || Number(alarmtypedetail.automatic_events.delete_alarm.delete_timeout_after.minutes)>0){
   selectedautomaticeventsCopy.push("delete_timeout_after")
 }
-dispatch(setSelectedautomaticevent(selectedautomaticeventsCopy))
+dispatch(changeallSelectedautomaticEvent(selectedautomaticeventsCopy))
 },[])
 
   const updateevents = async () => {
@@ -61,7 +65,7 @@ dispatch(setSelectedautomaticevent(selectedautomaticeventsCopy))
         data => data == 'severity_at_least',
       ) > -1 && {
         severity_at_least:
-          alarmtypedetail.automatic_events.escalate_alarm.severity_at_least,
+          alarmtypedetail.automatic_events.escalate_alarm.severity_at_least.length>0?alarmtypedetail.automatic_events.escalate_alarm.severity_at_least:"High",
       }),
       ...(selectedautomaticevents.findIndex(
         data => data == 'escalate_pending_after',
@@ -142,8 +146,15 @@ dispatch(setSelectedautomaticevent(selectedautomaticeventsCopy))
           <div className="flex items-center gap-x-2">
             <span>
               <input
+              checked={
+                selectedautomaticevents.findIndex(
+                  data => data == "severity_at_least",
+                ) > -1
+                  ? true
+                  : false
+              }
                 onChange={() =>
-                  dispatch(setSelectedautomaticevent('severity_at_least'))
+                  dispatch(setSelectedautomaticEvent('severity_at_least'))
                 }
                 type="checkbox"
               />
@@ -156,7 +167,7 @@ dispatch(setSelectedautomaticevent(selectedautomaticeventsCopy))
             <Select
               disabled={
                 selectedautomaticevents.findIndex(
-                  data => data == 'severity_at_least',
+                  data => data == "severity_at_least",
                 ) > -1
                   ? false
                   : true

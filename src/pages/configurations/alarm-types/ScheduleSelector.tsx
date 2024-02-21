@@ -2,7 +2,10 @@ import {FC} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Select} from '~/components';
 import {RootState} from '~/store';
-import {changeAutomaticEventDate, setSelectedautomaticevent} from '~/store/slices/alarmstypeslice';
+import {
+  changeAutomaticEventDate,
+  setSelectedautomaticEvent,
+} from '~/store/slices/alarmstypeslice';
 import classNames from '~/util/classNames';
 
 type Props = {
@@ -29,15 +32,21 @@ const ScheduleSelector: FC<Props> = ({
   parentName,
   name,
 }) => {
-  const {alarmtypedetail,selectedautomaticevents} = useSelector((state: RootState) => state.alarmtypes);
+  const {alarmtypedetail, selectedautomaticevents} = useSelector(
+    (state: RootState) => state.alarmtypes,
+  );
   const dispatch = useDispatch();
   return (
     <div className={classNames('flex items-center', className)}>
       {hasCheckbox && (
         <span className="mr-2">
-          <input 
-          checked={selectedautomaticevents.findIndex(data => data ==  name)>-1}
-          onChange={()=> dispatch(setSelectedautomaticevent(name))} type="checkbox" />
+          <input
+            checked={
+              selectedautomaticevents.findIndex(data => data == name) > -1?true:false
+            }
+            onChange={() => dispatch(setSelectedautomaticEvent(name))}
+            type="checkbox"
+          />
         </span>
       )}
 
@@ -45,10 +54,14 @@ const ScheduleSelector: FC<Props> = ({
 
       <div className="flex flex-row justify-between gap-x-8">
         <Select
-           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           value={alarmtypedetail.automatic_events[parentName][name]['days']! || 0}
-          disabled={selectedautomaticevents.findIndex(data => data ==  name)>-1?false:true}
+          disabled={
+            selectedautomaticevents.findIndex(data => data == name) > -1
+              ? false
+              : true
+          }
           onChange={e =>
             dispatch(
               changeAutomaticEventDate({
@@ -68,7 +81,11 @@ const ScheduleSelector: FC<Props> = ({
           <option>5</option>
         </Select>
         <Select
-    disabled={selectedautomaticevents.findIndex(data => data ==  name)>-1?false:true}
+          disabled={
+            selectedautomaticevents.findIndex(data => data == name) > -1
+              ? false
+              : true
+          }
           onChange={e =>
             dispatch(
               changeAutomaticEventDate({
@@ -79,10 +96,9 @@ const ScheduleSelector: FC<Props> = ({
               }),
             )
           }
-           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-value={alarmtypedetail.automatic_events[parentName][name]['hours']!}
-
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          value={alarmtypedetail.automatic_events[parentName][name]['hours']!}
           className={classNames('w-16', selectsClassName)}>
           <option>0</option>
           <option>1</option>
@@ -92,7 +108,11 @@ value={alarmtypedetail.automatic_events[parentName][name]['hours']!}
           <option>5</option>
         </Select>
         <Select
-         disabled={selectedautomaticevents.findIndex(data => data ==  name)>-1?false:true}
+          disabled={
+            selectedautomaticevents.findIndex(data => data == name) > -1
+              ? false
+              : true
+          }
           onChange={e =>
             dispatch(
               changeAutomaticEventDate({
@@ -103,9 +123,9 @@ value={alarmtypedetail.automatic_events[parentName][name]['hours']!}
               }),
             )
           }
-           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-value={alarmtypedetail.automatic_events[parentName][name]['minutes']!}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          value={alarmtypedetail.automatic_events[parentName][name]['minutes']!}
           className={classNames('w-16', selectsClassName)}>
           <option>0</option>
           <option>1</option>

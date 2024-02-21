@@ -33,6 +33,8 @@ const AlarmTypeDetailsPage: FC = () => {
       const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
       if (alarmdetailresponse.status == 200) {
         const alarmdetailresponsedata = await alarmdetailresponse.json();
+        console.log("alarmdetailresponsedata",alarmdetailresponsedata);
+        
         let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
           alarmdetailresponsedata,
         );
@@ -87,7 +89,7 @@ const AlarmTypeDetailsPage: FC = () => {
             ...alarmdetailresponsedataCopy,
             automatic_events: {
               escalate_alarm: {
-                severity_at_least: 'High',
+                severity_at_least: '',
                 escalate_pending_after: {
                   days: 0,
                   hours: 0,
@@ -130,8 +132,56 @@ const AlarmTypeDetailsPage: FC = () => {
               },
             },
           };
-        }
+        } else{
+          if(alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_in_progress_after == null){
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_in_progress_after={
+              days: 0,
+              hours: 0,
+              minutes: 0,}
+          } 
+          if(alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_resolved_after == null){
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_resolved_after={
+              days: 0,
+              hours: 0,
+              minutes: 0,}
+          }
+          if(alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_timeout_after == null){
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_timeout_after={
+              days: 0,
+              hours: 0,
+              minutes: 0,}
+          }
+          if(alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_acknowledged_after == null){
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_acknowledged_after={
+              days: 0,
+              hours: 0,
+              minutes: 0,}
+          }
+          if(alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_pending_after == null){
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_pending_after ={
+              days: 0,
+              hours: 0,
+              minutes: 0,}
+          }
+          if(alarmdetailresponsedataCopy.automatic_events.escalate_alarm.severity_at_least == null){
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.severity_at_least=""
+          }
 
+          if(alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_acknowledged_after == null){
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_acknowledged_after={
+              days: 0,
+              hours: 0,
+              minutes: 0,}
+          }
+
+          if(alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_pending_after == null){
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_pending_after={
+              days: 0,
+              hours: 0,
+              minutes: 0,}
+          }
+        }
+     
         if (alarmdetailresponsedataCopy.alarm_networks == null) {
           alarmdetailresponsedataCopy = {
             ...alarmdetailresponsedataCopy,
