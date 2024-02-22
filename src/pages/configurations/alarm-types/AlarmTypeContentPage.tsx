@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '~/store';
 import { toast } from 'react-toastify';
+import { deepcopy } from '~/util';
 
 const items = [
   {
@@ -426,13 +427,18 @@ const AlarmTypeContentPage: FC = () => {
   const params=useParams()
   const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypes);
   const updatedefinition = async () => {
+    const alarmtypedetailCopy=deepcopy(alarmtypedetail)
+    if(alarmtypedetail.alarm_content.secondary_source == ""){
+      delete alarmtypedetailCopy.alarm_content.secondary_source
+    }
+   
     const response = await $Put(`otdr/alarm/${params.alarmId}`, {
-      alarm_content:alarmtypedetail.alarm_content
+      alarm_content:alarmtypedetailCopy.alarm_content
     });
     if (response.status == 201) {
-      toast('با موفقیت انجام شد', {type: 'success',autoClose:1000});
+      toast('It was done successfully', {type: 'success',autoClose:1000});
     } else {
-      toast('با خطا مواجه شد', {type: 'error',autoClose:1000});
+      toast('Encountered an error', {type: 'error',autoClose:1000});
     }
   };
   return (

@@ -1,4 +1,4 @@
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 import {setalarmsdetail} from '~/store/slices/alarmstypeslice';
@@ -40,7 +40,7 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
             <div className="pb-2">
               <span className="mr-2">
                 <input
-                disabled={type == 'Primary' || type == "sending"?false:!disabled}
+                disabled={(type == 'Primary' || type == "sending") && alarmtypedetail.alarm_content.secondary_source == item.label?true:(type == 'Primary' || type == "sending") && alarmtypedetail.alarm_content.secondary_source != item.label?false:alarmtypedetail.alarm_content.primary_source == item.label?true:!disabled}
                   checked={
                     type == 'Primary'
                       ? alarmtypedetail.alarm_content.primary_source ==
@@ -86,7 +86,20 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
       </>
     );
   };
+  useEffect(()=>{
+if(alarmtypedetail?.alarm_content?.secondary_source?.length>0 && type == "Secondary"){
+  setDisabled(true)
+}
+  },[])
 
+   const onclicsecondery=()=>{
+    if(disabled == true){
+      let alarmtypedetailCopy=deepcopy(alarmtypedetail)
+      alarmtypedetailCopy.alarm_content.secondary_source =""
+ dispatch(setalarmsdetail(alarmtypedetailCopy))
+    }
+    setDisabled(!disabled)
+  }
   return (
     <div className="flex flex-1 flex-col gap-y-4">
       {(title || titleCheckbox) && (
@@ -95,7 +108,7 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
             <span className="mr-2">
               <input
               checked={disabled}
-              onChange={()=> setDisabled(!disabled)} type="checkbox" />
+              onChange={()=> onclicsecondery()} type="checkbox" />
             </span>
           )}
           {title && <span>{title}</span>}
