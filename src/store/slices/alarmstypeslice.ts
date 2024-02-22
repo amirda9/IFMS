@@ -6,6 +6,7 @@ export type alarmtypedetailtype = {
   name: string;
   comment: string;
   owner_id: string;
+  owner_username:string;
   time_created: string;
   time_modified: string;
   alarm_definition?: {
@@ -138,6 +139,7 @@ const initialState: initialStatetype = {
     owner_id: '',
     time_created: '',
     time_modified: '',
+    owner_username:"",
     alarm_definition: {
       low_severity: {
         conditions: [],

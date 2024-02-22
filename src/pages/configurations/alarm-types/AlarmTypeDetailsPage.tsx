@@ -33,8 +33,6 @@ const AlarmTypeDetailsPage: FC = () => {
       const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
       if (alarmdetailresponse.status == 200) {
         const alarmdetailresponsedata = await alarmdetailresponse.json();
-        console.log("alarmdetailresponsedata",alarmdetailresponsedata);
-        
         let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
           alarmdetailresponsedata,
         );
@@ -233,7 +231,7 @@ const AlarmTypeDetailsPage: FC = () => {
 
             <Description label="Owner" className="flex-grow">
               <span className="text-sm font-normal leading-[24.2px]">
-                Admin
+                {alarmtypedetail.owner_username}
               </span>
             </Description>
             <Description label="Created" className="flex-grow">
