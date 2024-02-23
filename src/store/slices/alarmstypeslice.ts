@@ -11,8 +11,7 @@ export type alarmtypedetailtype = {
   time_modified: string;
   alarm_definition?: {
     low_severity?: {
-      conditions:
-        | [
+      conditions: [
             {
               index: number;
               parameter: string;

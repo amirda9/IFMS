@@ -340,7 +340,7 @@ const ConditionGroup: FC<Props> = ({title}) => {
                 data => data.index == cond.index,
               )!.parameter
             ) ? (
-              <div className="fle-row  col-span-3 flex justify-between">
+              <div className="fle-row  col-span-3 flex justify-between px-[10px]">
                 <input
                 value={cond.coef}
                  onChange={e => {
@@ -367,7 +367,8 @@ const ConditionGroup: FC<Props> = ({title}) => {
                 </Select>
               </div>
             ) : (
-              <div className="col-span-3 bg-[red] text-center">
+              <div className="col-span-3 text-center">
+        
                 <Select
                   onChange={e => {
                     changevalue(e.target.value, cond.index);

@@ -6,7 +6,16 @@ import {SidebarLayout} from '~/layout';
 import { RootState } from '~/store';
 import { deletealarmtype, setalarmlist } from '~/store/slices/alarmstypeslice';
 import {$Delete, $Get} from '~/util/requestapi';
-
+import Swal from 'sweetalert2';
+const swalsetting: any = {
+  title: 'Are you sure you want to delete these components?',
+  // text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!',
+};
 const AlarmTypesLayout: FC = () => {
   const dispatch=useDispatch()
   const navigate = useNavigate();
@@ -24,11 +33,15 @@ const AlarmTypesLayout: FC = () => {
 
 
   const Deletealarms = async (id: string) => {
-    const deletealarmsresponse = await $Delete(`otdr/alarm/${id}`);
-    if (deletealarmsresponse.status == 200) {
-      dispatch(deletealarmtype(id))
-      navigate('./');
-    }
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        const deletealarmsresponse = await $Delete(`otdr/alarm/${id}`);
+        if (deletealarmsresponse.status == 200) {
+          dispatch(deletealarmtype(id))
+          navigate('./');
+        }
+      }})
+   
   };
 
   return (

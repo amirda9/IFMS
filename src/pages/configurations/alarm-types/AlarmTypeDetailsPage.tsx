@@ -33,10 +33,12 @@ const AlarmTypeDetailsPage: FC = () => {
       const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
       if (alarmdetailresponse.status == 200) {
         const alarmdetailresponsedata = await alarmdetailresponse.json();
+        console.log("alarmdetailresponsedata🏆",alarmdetailresponsedata);
+        
         let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
           alarmdetailresponsedata,
         );
-        if (!alarmdetailresponsedataCopy.alarm_definition) {
+        if (alarmdetailresponsedataCopy.alarm_definition == null) {
           alarmdetailresponsedataCopy = {
             ...alarmdetailresponsedataCopy,
             alarm_definition: {
@@ -54,6 +56,27 @@ const AlarmTypeDetailsPage: FC = () => {
               },
             },
           };
+        }else{
+          // Here we need to add index to the objects so that when we click the Add button on the front side or delete a row, the rows are arranged in order.
+          alarmdetailresponsedataCopy.alarm_definition.low_severity!.conditions=alarmdetailresponsedata.alarm_definition.low_severity!.conditions.map((data:{parameter: string
+            operator: string
+            coef: number
+            value: string
+            logical_operator: string},index:number)=>({...data,index:index}))
+
+
+            alarmdetailresponsedataCopy.alarm_definition.medium_severity!.conditions=alarmdetailresponsedata.alarm_definition.medium_severity!.conditions.map((data:{parameter: string
+              operator: string
+              coef: number
+              value: string
+              logical_operator: string},index:number)=>({...data,index:index}))
+
+
+              alarmdetailresponsedataCopy.alarm_definition.high_severity!.conditions=alarmdetailresponsedata.alarm_definition.high_severity!.conditions.map((data:{parameter: string
+                operator: string
+                coef: number
+                value: string
+                logical_operator: string},index:number)=>({...data,index:index}))     
         }
         if (alarmdetailresponsedataCopy.alarm_content == null) {
           alarmdetailresponsedataCopy = {
@@ -188,6 +211,8 @@ const AlarmTypeDetailsPage: FC = () => {
             },
           };
         }
+
+     
         dispatch(setalarmsdetail(alarmdetailresponsedataCopy));
       }
     };
