@@ -1,8 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Plot from 'react-plotly.js';
-import Plotly from 'plotly.js';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
-import {ResponsiveLine} from '@nivo/line';
 import Resultdata from '~/components/chart/result';
 import Opticalroute from '~/components/chart/opticalroute';
 import Group from './../../../assets/icons/Group 29.png';
@@ -20,11 +18,10 @@ import Ref from '~/assets/icons/Ref.png';
 import Max from '~/assets/icons/Max.png';
 import Min from '~/assets/icons/Min.png';
 import Avg from '~/assets/icons/Avg.png';
-import {SimpleBtn, Table} from '~/components';
+import { Table} from '~/components';
 import {MdOutlineArrowBackIos} from 'react-icons/md';
 import {deepcopy} from '~/util';
 import {BiPlus} from 'react-icons/bi';
-import {number} from 'yup';
 import {JSX} from 'react/jsx-runtime';
 import {useParams} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
@@ -11307,17 +11304,6 @@ const data = JSON.parse(
     },
   }),
 );
-
-const columns = {
-  index: {label: 'Index', size: 'w-[9%]'},
-  Position: {label: 'Position/Length (km)', size: 'w-[14%]', sort: true},
-  Loss: {label: 'Loss (dB)', size: 'w-[7%]'},
-  Reflectance: {label: 'Reflectance (dB)', size: 'w-[12%]'},
-  Peak: {label: 'Peak Reflectance (dB)', size: 'w-[13%]'},
-  Attenuation: {label: 'Attenuation (dB/km)', size: 'w-[13%]'},
-  Cumulative: {label: 'Cumulative Loss (dB)', size: 'w-[13%]'},
-};
-
 const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
   {
     id: 'Cur',
@@ -11395,6 +11381,15 @@ const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
     ],
   },
 ];
+const columns = {
+  index: {label: 'Index', size: 'w-[9%]'},
+  Position: {label: 'Position/Length (km)', size: 'w-[14%]', sort: true},
+  Loss: {label: 'Loss (dB)', size: 'w-[7%]'},
+  Reflectance: {label: 'Reflectance (dB)', size: 'w-[12%]'},
+  Peak: {label: 'Peak Reflectance (dB)', size: 'w-[13%]'},
+  Attenuation: {label: 'Attenuation (dB/km)', size: 'w-[13%]'},
+  Cumulative: {label: 'Cumulative Loss (dB)', size: 'w-[13%]'},
+};
 
 // -----------main --------------main ---------------- main ------------------- main --------------
 function Chart() {
@@ -11407,38 +11402,28 @@ function Chart() {
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [allshapes, setAllshapes] = useState<any>([]);
-  const [fakeevents,setfakeEvents]=useState<any>( [])
+  const [fakeevents, setfakeEvents] = useState<any>([]);
   const [mousecursor, setMousecursor] = useState(false);
-  const [layout, setLayout] = useState<any>({
-    clickmode: 'event+select',
-    uirevision: 'constant',
-    title: 'A Fancy Plot',
-    dragmode: false,
-    shapes: allshapes,
-    xaxis: {range: [0, 2500]},
-  }); // use useState hook to define layout state
-  const [zoom, setZoom] = useState(1);
+  const [fixedyaxies, setFixedyaxies] = useState(false);
+  const [selectedevents, setSelectedEvents] = useState<any>(null);
+  const [dragmode, setDragmode] = useState<string | boolean>(false);
   const [allcurveline, setAllcurveline] = useState<
     {
       id: string;
       data: {x: number; y: number}[];
     }[]
   >([]);
+  const [autotick, setAutodic] = useState(true);
 
-  const [allcurveline2, setAllcurveline2] = useState<
-    {
-      id: string;
-      data: {x: number; y: number}[];
-    }[]
-  >([]);
 
   useEffect(() => {
     // let data:any;
     const getchartdata = async () => {
-      // const getdata = await $Get(
-      //   `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
-      // );
-      // data = await getdata.json();
+//       const getdata = await $Get(
+//         `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
+//       );
+//       let datass = await getdata.json();
+// console.log("datass",datass);
 
       // if (getdata.status == 200) {
       //  setChartdata(data)
@@ -11489,7 +11474,7 @@ function Chart() {
         });
       }
     }
-    setArrowevents(Arrowevents);
+ 
     // ###################################################################################################
     let allshapesCopy = deepcopy(allshapes);
     let elements: JSX.Element[] = [];
@@ -11505,9 +11490,10 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11516,10 +11502,10 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y + 10, // y coordinate of the second point
-
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11528,9 +11514,10 @@ function Chart() {
             y0: Y - 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11539,9 +11526,10 @@ function Chart() {
             y0: Y - 10, // y coordinate of the first point
             x1: X + 15, // x coordinate of the second point
             y1: Y - 11, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11550,9 +11538,10 @@ function Chart() {
             y0: Y - 10, // y coordinate of the first point
             x1: X + 15, // x coordinate of the second point
             y1: Y - 9, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11561,9 +11550,10 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X + 15, // x coordinate of the second point
             y1: Y + 9, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11572,9 +11562,10 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X + 15, // x coordinate of the second point
             y1: Y + 11, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
         );
@@ -11586,9 +11577,13 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
+
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+              zindex: 10,
+              // layer: 'below',
             },
           },
           {
@@ -11597,9 +11592,10 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y + 10, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11608,9 +11604,10 @@ function Chart() {
             y0: Y - 10, // y coordinate of the first point
             x1: X, // x coordinate of the second point
             y1: Y - 10, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11619,9 +11616,10 @@ function Chart() {
             y0: Y - 10, // y coordinate of the first point
             x1: X - 15, // x coordinate of the second point
             y1: Y - 11, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11630,9 +11628,10 @@ function Chart() {
             y0: Y - 10, // y coordinate of the first point
             x1: X - 15, // x coordinate of the second point
             y1: Y - 9, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11641,9 +11640,10 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X - 15, // x coordinate of the second point
             y1: Y + 9, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
             },
           },
           {
@@ -11652,15 +11652,18 @@ function Chart() {
             y0: Y + 10, // y coordinate of the first point
             x1: X - 15, // x coordinate of the second point
             y1: Y + 11, // y coordinate of the second point
+            editable: false,
             line: {
-              color: 'blue', // color of the line
-              width: 2, // width of the line
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+              zindex: 10,
             },
           },
         );
       }
-      // setAllshapes(allshapesCopy);
+     
     });
+    setAllshapes(allshapesCopy);
     // }
 
     // ###################################################################################################
@@ -11681,7 +11684,7 @@ function Chart() {
         Attenuation: '',
         Cumulative: sumloss.toString().substring(0, 7),
         event_code: Allevents[c].event_code || undefined,
-        onclickrow: () => onclickevent(Allevents[c].event_number),
+
         // tabbodybg: [{name: "Position", onclick: ()=>alert("Position")}],
       });
       if (c < Allevents.length - 1) {
@@ -11724,29 +11727,21 @@ function Chart() {
     setTabelitems(items);
   }, []);
 
-  // const get
-// console.log("🐜",allshapes[0]);
+
 
   const [reightbar, setReightbar] = useState('Result');
-  const [isDraggingname, setIsDraggingname] = useState<string | number>('');
-  const [showeventdetail, setShoweventdetail] = useState(false);
-  const [rectangelzoom, setRectangelzoom] = useState(false);
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
 
-  const [scrollValue, setScrollValue] = useState(0);
-  const [startdraw, setStartDraw] = useState(false);
+
+
   const [maxx, setMaxx] = useState(0);
   const [tabelItems, setTabelitems] = useState<tabelItemstype[]>([]);
   const [maxy, setMaxy] = useState(0);
   const [selectedVerticalline, setSelectedVerticalline] = useState('');
   const [showevents, setShowEwents] = useState(false);
-  const [events, setEvents] = useState<
-    {x: number; y: number; event_number?: number; type: string}[]
-  >([]);
 
-  const [arrowevents, setArrowevents] = useState<
-    {x: number; y: number; event_number: number; location: string}[]
-  >([]);
+
+
 
   const [verticalLines, setVerticalLines] = useState<
     {
@@ -11759,194 +11754,337 @@ function Chart() {
     }[]
   >([]);
 
-  const [yvalue, setYvalue] = useState('');
-  const [basescale, setbasescale] = useState(2);
-  const [xScale, setXScale] = useState<any>({
-    type: 'linear',
-    min: 0,
-  });
 
-  const [yScale, setYScale] = useState<any>({
-    type: 'linear',
-    min: 0,
-  });
-
+  const filterArray = (a: string[], b: string[]) => {
+    var c = a.filter(function (item) {
+      return !b.includes(item); // یا return b.indexOf(item) === -1;
+    });
+    return c;
+  };
   // ---- func ------func --------------- func ---------------- func ------------- func --------
   const Events = () => {
     if (showevents) {
     } else {
-      //   <text
-      //   key={index}
-      //   x={X}
-      //   y={Y + 84}
-      //   fill="red"
-      //   fontSize={12}
-      //   textAnchor="middle">
-      //   {point!.event_number!}
-      // </text>,
-      let allevents = chartdata?.key_events?.events?.map(
-        (data: eventstype) => ({
-          type: 'line',
-          x0: data?.event_location?.x, // x coordinate of the first point
-          y0: data?.event_location?.y + 10, // y coordinate of the first point
-          x1: data?.event_location?.x, // x coordinate of the second point,
-          y1: data?.event_location?.y - 10, // y coordinate of the first point
-          editable: true,
+      setfakeEvents([
+        {
+          x: [...Array(41).keys()].map(
+            dataa => data?.key_events?.events[0]?.event_location?.x,
+          ),
+          y: [...Array(41).keys()].map(
+            (dat, index) =>
+              data?.key_events?.events[0]?.event_location?.y + index / 2 - 10,
+          ),
+          //   data?.key_events?.events[0]?.event_location?.y - 10,
+          // ],
+
+          text: [data?.key_events?.events[0]?.event_number],
+          textfont: {color: ['#A80000']},
           showlegend: false,
-          label: {
-            text: 'jhjkhjk',
-            textposition: 'bottom center'
-          },
-          line: {
-            layer: 'below',
-            editable: true,
-            color: 'green', // color of the line
-            width: 10, // width of the line
-            zindex:1
-          },
-        }),
-      );
-
-    //   for (let c = 0; c < allevents.length; c++) {
-    //     setAllcurveline2(prev => [
-    //       ...prev,
-    //       {id: (c + 10).toString(), data: [{x: allevents[c].x0, y: allevents[c].y0}]},
-    //     ]);
-    //   }
-
-    //  setAllshapes((prev: any) => [...prev, ...allevents]);
-     setfakeEvents([{
-      x: [data?.key_events?.events[0]?.event_location?.x,data?.key_events?.events[0]?.event_location?.x],
-      y: [data?.key_events?.events[0]?.event_location?.y - 10,data?.key_events?.events[0]?.event_location?.y + 10],
-      type: 'line',
-      mode: 'lines+markers',
-      line:{width:10,zindex: 10,color: 'blue'},
-      marker: {color: 'blue',zIndex: 10},
-    },
-    {
-      x: [data?.key_events?.events[1]?.event_location?.x,data?.key_events?.events[1]?.event_location?.x],
-      y: [data?.key_events?.events[1]?.event_location?.y - 10,data?.key_events?.events[1]?.event_location?.y + 10],
-      type: 'line',
-      mode: 'lines+markers',
-      line:{width:10,zIndex: 10,color: 'blue'},
-      marker: {color: 'blue',zIndex: 10},
-    },
-    {
-      x: [data?.key_events?.events[2]?.event_location?.x,data?.key_events?.events[2]?.event_location?.x],
-      y: [data?.key_events?.events[2]?.event_location?.y - 10,data?.key_events?.events[2]?.event_location?.y + 10],
-      type: 'line',
-      mode: 'lines+markers',
-      line:{width:10,zIndex: 10,color: 'blue'},
-      marker: {color: 'blue',zIndex: 10},
+          textposition: 'bottom',
+          mode: 'lines+markers+text',
+          line: {width: 6, zindex: 10, color: '#A80000'},
+          marker: {color: '#A80000', zIndex: 10},
+          event_number: data?.key_events?.events[0]?.event_number,
+          name: 'events',
+        },
+        {
+          x: [...Array(41).keys()].map(
+            dataa => data?.key_events?.events[1]?.event_location?.x,
+          ),
+          y: [...Array(41).keys()].map(
+            (dat, index) =>
+              data?.key_events?.events[1]?.event_location?.y + index / 2 - 10,
+          ),
   
-      // marker: {color: 'blue',zIndex: 2},
-    }])
+          text: [data?.key_events?.events[1]?.event_number],
+          textfont: {color: ['#A80000']},
+          showlegend: false,
+          textposition: 'bottom',
+          mode: 'lines+markers+text',
+          line: {width: 6, zindex: 10, color: '#A80000'},
+          marker: {color: '#A80000', zIndex: 10},
+          event_number: data?.key_events?.events[1]?.event_number,
+          name: 'events',
+        },
+        {
+          x: [...Array(41).keys()].map(
+            dataa => data?.key_events?.events[2]?.event_location?.x,
+          ),
+          y: [...Array(41).keys()].map(
+            (dat, index) =>
+              data?.key_events?.events[2]?.event_location?.y + index / 2 - 10,
+          ),
+        
+          type: 'line',
+          text: [data?.key_events?.events[2]?.event_number],
+          textfont: {color: ['#A80000']},
+          showlegend: false,
+          textposition: 'bottom',
+          mode: 'lines+markers+text',
+          line: {width: 6, zindex: 10, color: '#A80000'},
+          marker: {color: '#A80000', zIndex: 10},
+          event_number: data?.key_events?.events[2]?.event_number,
+          // marker: {color: 'blue',zIndex: 2},
+        },
+      ]);
+      setSelectedEvents(null);
+      addarowevents();
       setShowEwents(true);
     }
-    // let allevents = chartdata?.key_events?.events?.map((data: eventstype) => ({
-    //   x: data?.event_location?.x,
-    //   y: data?.event_location?.y,
-    //   event_number: data?.event_number,
-    //   type: 'event',
-    // }));
 
-    // for (let i = 0; i < chartdata.key_events.events.length; i++) {
-    //   if (chartdata.key_events.events[i].event_code == 'Start of fiber') {
-    //     allevents.push({
-    //       x: chartdata.key_events.events[i].event_location.x,
-    //       y: chartdata.key_events.events[i].event_location.y,
-    //       type: 'arrowevent',
-    //       location: 'start',
-    //     });
-    //   } else if (
-    //     chartdata.key_events.events[i].event_code == 'End of fiber'
-    //   ) {
-    //     allevents.push({
-    //       x: chartdata.key_events.events[i].event_location.x,
-    //       y: chartdata.key_events.events[i].event_location.y,
-    //       type: 'arrowevent',
-    //       location: 'end',
-    //     });
-    //   }
-    // }
-    setShoweventdetail(false);
+
     setLeftverticaltab('Events');
-    // setEvents(allevents);
-    // setVerticalLines(allevents);
   };
 
-  const getchartcoordinate = (event: any) => {
-    // گرفتن مختصات موس نسبت به صفحه مرورگر
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
 
-    // گرفتن مرجع به المنت مربع
-    const square = svgRef;
 
-    // گرفتن مختصات مربع نسبت به صفحه مرورگر
-    const rect: any = square?.current?.getBoundingClientRect();
-    const x = mouseX - 157.8;
-    const y = mouseY;
-    // setYvalue(
-    //   -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min,
-    // );
 
-    setMousecoordinate({
-      x: x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min,
-      y:
-        -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
-        yScale.min,
+
+  const addarowevents = () => {
+    let Arrowevents = [];
+    for (let i = 0; i < data?.key_events?.events?.length; i++) {
+      if (data?.key_events?.events[i]?.event_code == 'Start of fiber') {
+        Arrowevents.push({
+          x: data?.key_events.events[i]?.event_location?.x,
+          y: data.key_events.events[i].event_location.y,
+          type: 'arrowevent',
+          location: 'start',
+          event_number: data.key_events.events[i].event_number,
+        });
+      } else if (data.key_events.events[i].event_code == 'End of fiber') {
+        Arrowevents.push({
+          x: data.key_events.events[i].event_location.x,
+          y: data.key_events.events[i].event_location.y,
+          type: 'arrowevent',
+          location: 'end',
+          event_number: data.key_events.events[i].event_number,
+        });
+      }
+    }
+
+    let allshapesCopy: any = [];
+    let elements: JSX.Element[] = [];
+    // if (!showeventdetail) {
+    Arrowevents?.forEach((point, index) => {
+      const X = point.x;
+      const Y = point.y!;
+      if (point.location == 'start') {
+        allshapesCopy.push(
+          {
+            type: 'line',
+            x0: X, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X + 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y + 10, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X + 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X + 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X + 15, // x coordinate of the second point
+            y1: Y - 11, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X + 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X + 15, // x coordinate of the second point
+            y1: Y - 9, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X + 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X + 15, // x coordinate of the second point
+            y1: Y + 9, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X + 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X + 15, // x coordinate of the second point
+            y1: Y + 11, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+        );
+      } else {
+        allshapesCopy.push(
+          {
+            type: 'line',
+            x0: X, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+              zindex: 10,
+              // layer: 'below',
+            },
+          },
+          {
+            type: 'line',
+            x0: X - 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y + 10, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X - 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X, // x coordinate of the second point
+            y1: Y - 10, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X - 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X - 15, // x coordinate of the second point
+            y1: Y - 11, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X - 20, // x coordinate of the first point
+            y0: Y - 10, // y coordinate of the first point
+            x1: X - 15, // x coordinate of the second point
+            y1: Y - 9, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X - 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X - 15, // x coordinate of the second point
+            y1: Y + 9, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+            },
+          },
+          {
+            type: 'line',
+            x0: X - 20, // x coordinate of the first point
+            y0: Y + 10, // y coordinate of the first point
+            x1: X - 15, // x coordinate of the second point
+            y1: Y + 11, // y coordinate of the second point
+            editable: false,
+            showlegend: false,
+            line: {
+              color: '#A80000', // color of the line
+              width: 3, // width of the line
+              zindex: 10,
+            },
+          },
+        );
+      }
     });
+    setAllshapes(allshapesCopy);
   };
-
-  const getScrollValue = () => {
-    setScrollValue(scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', getScrollValue);
-  }, []);
-
   const Trace = () => {
     setLeftverticaltab('Trace');
-    setShoweventdetail(false);
+    setShowEwents(false);
+    addarowevents();
+    setfakeEvents([]);
   };
 
   const Measure = () => {
-    setLeftverticaltab('Measure');
+    // setSelectedEvents(null);
+    if (selectedevents != null) {
+      if (fakeevents.length >= 3) {
+        setLeftverticaltab('Measure');
+      }
+    }
+
   };
 
   const LinkView = () => {
     setLeftverticaltab('LinkView');
   };
 
-  // const zoom = (x: boolean, y: number) => {
-  //   setXScale({
-  //     type: 'linear',
-  //     min: y,
-  //     // max: 4,
-  //   });
-  //   // setYScale({
-  //   //   type: 'linear',
-  //   //   min: y,
-  //   //   // max: 20,
-  //   // });
-  //   if (x) {
-  //     setbasescale(basescale + 100);
-  //   } else {
-  //     setbasescale(basescale - 100);
-  //   }
-  // };
-
-  const getColorForId = (id: string) => {
-    if (id === 'Cur') return '#273746';
-    if (id === 'Ref') return '#229954';
-    if (id === 'Max') return '#A93226';
-    if (id === 'Min') return '#2471A3';
-    return '#D4AC0D';
-  };
-
-console.log('🐿️',allshapes);
 
 
   const showcurveline = (name: string) => {
@@ -11974,109 +12112,7 @@ console.log('🐿️',allshapes);
     }
   };
 
-  const onclickevent = (event_number: number) => {
-    setShoweventdetail(true);
-    const finevent = chartdata.key_events.events.find(
-      (data: eventstype) => data.event_number == event_number,
-    );
-    // setVerticalLines([
-    //   {x: finevent.marker_location_1, name: 'a', type: 'bigline'},
-    //   {x: finevent.marker_location_2, name: 'A', type: 'bigline'},
-    //   {x: finevent.marker_location_5, name: 'B', type: 'bigline'},
-    //   {x: finevent.marker_location_4, name: 'b', type: 'bigline'},
-    // ]);
-    // setAllshapes([
-    //   {
-    //     type: 'line',
-    //     x0: finevent.marker_location_1, // x coordinate of the first point
-    //     y0: 10, // y coordinate of the first point
-    //     x1: finevent.marker_location_1, // x coordinate of the second point
-    //     y1: 1000, // y coordinate of the second point
 
-    //     line: {
-    //       color: 'blue', // color of the line
-    //       width: 10, // width of the line
-    //     },
-    //   },
-    //   {
-    //     type: 'line',
-    //     x0: finevent.marker_location_2, // x coordinate of the first point
-    //     y0: 10, // y coordinate of the first point
-    //     x1: finevent.marker_location_2, // x coordinate of the second point
-    //     y1: 1000, // y coordinate of the second point
-    //     line: {
-    //       color: 'blue', // color of the line
-    //       width: 10, // width of the line
-    //     },
-    //   },
-    //   {
-    //     type: 'line',
-    //     x0: finevent.marker_location_5, // x coordinate of the first point
-    //     y0: 10, // y coordinate of the first point
-    //     x1: finevent.marker_location_5, // x coordinate of the second point
-    //     y1: 1000, // y coordinate of the second point
-    //     line: {
-    //       color: 'blue', // color of the line
-    //       width: 10, // width of the line
-    //     },
-    //   },
-    //   {
-    //     type: 'line',
-    //     x0: finevent.marker_location_4, // x coordinate of the first point
-    //     y0: 10, // y coordinate of the first point
-    //     x1: finevent.marker_location_4, // x coordinate of the second point
-    //     y1: 1000, // y coordinate of the second point
-    //     line: {
-    //       color: 'blue', // color of the line
-    //       width: 10, // width of the line
-    //     },
-    //   },
-    // ]);
-  };
-
-  const eventhandleMouseMove = (event_number: number, e: any) => {
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-    const square = svgRef;
-    const rect: any = square?.current?.getBoundingClientRect();
-    const x = mouseX - 157.8;
-    if (isDraggingname == event_number) {
-      const arroweventsCopy = deepcopy(arrowevents);
-      const findarroweventsdex = arrowevents.findIndex(
-        data => data.event_number && data.event_number == event_number,
-      );
-      arroweventsCopy[findarroweventsdex].x =
-        x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
-      arroweventsCopy[findarroweventsdex].y =
-        -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
-        yScale.min;
-      setArrowevents(arroweventsCopy);
-    }
-  };
-
-  const biglinehandleMouseMove = (
-    name: string,
-    e: React.MouseEvent<SVGLineElement, MouseEvent>,
-  ) => {
-    setSelectedVerticalline(name);
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-    const square = svgRef;
-    const rect: any = square?.current?.getBoundingClientRect();
-    const x = mouseX - 157.8;
-    if (isDraggingname == name) {
-      const verticalLinesCopy = deepcopy(verticalLines);
-      const findverticalindex = verticalLines.findIndex(
-        data => data.name && data.name == name,
-      );
-      verticalLinesCopy[findverticalindex].x =
-        x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
-      // verticalLinesCopy[findverticalindex].y =
-      //   -(mouseY - 540 + scrollValue) / (440 / (maxy - yScale.min)) +
-      //   yScale.min;
-      setVerticalLines(verticalLinesCopy);
-    }
-  };
 
   const movebigline = (name: string, direction: string) => {
     // if (isDraggingname == name) {
@@ -12092,267 +12128,6 @@ console.log('🐿️',allshapes);
 
     setVerticalLines(verticalLinesCopy);
     // }
-  };
-
-  const Eventline = ({xScale, yScale}: any) => {
-    let elements: JSX.Element[] = [];
-    if (!showeventdetail && leftverticaltab == 'Events') {
-      events?.forEach((point, index) => {
-        const X = xScale(point.x);
-        const Y = yScale(point!.y!);
-        elements?.push(
-          <line
-            key={index}
-            x1={X}
-            y1={Y + 70}
-            x2={X}
-            y2={Y - 70}
-            stroke="red"
-          />,
-        );
-        elements.push(
-          <line
-            strokeWidth={20}
-            onClick={() => onclickevent(point.event_number!)}
-            key={index}
-            x1={X}
-            y1={Y + 70}
-            x2={X}
-            y2={Y - 70}
-            stroke="red"
-            style={{opacity: 1, zIndex: 5}}
-          />,
-        );
-        elements.push(
-          <text
-            key={index}
-            x={X}
-            y={Y + 84}
-            fill="red"
-            fontSize={12}
-            textAnchor="middle">
-            {point!.event_number!}
-          </text>,
-        );
-      });
-    }
-
-    return elements;
-  };
-
-  const Arrowline = ({xScale, yScale}: any) => {
-    let elements: JSX.Element[] = [];
-    if (!showeventdetail) {
-      arrowevents?.forEach((point, index) => {
-        const X = xScale(point.x);
-        const Y = yScale(point.y!);
-        if (point.location == 'start') {
-          elements.push(
-            <line
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-              style={{zIndex: 1}}
-            />,
-            <line
-              key={index}
-              x1={X + 20}
-              y1={Y + 40}
-              x2={X}
-              y2={Y + 40}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X + 20}
-              y1={Y - 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X + 20}
-              y1={Y - 40}
-              x2={X + 15}
-              y2={Y - 45}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X + 20}
-              y1={Y - 40}
-              x2={X + 15}
-              y2={Y - 35}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X + 20}
-              y1={Y + 40}
-              x2={X + 15}
-              y2={Y + 35}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X + 20}
-              y1={Y + 40}
-              x2={X + 15}
-              y2={Y + 45}
-              stroke="red"
-            />,
-            // ----------------------------------------------------------------
-            // <line
-            //   className="cursor-pointer opacity-0"
-            //   key={index}
-            //   x1={X}
-            //   y1={Y + 40}
-            //   x2={X}
-            //   y2={Y - 40}
-            //   stroke="red"
-            // />,
-            // <line
-            //   className="cursor-pointer"
-            //   key={index}
-            //   x1={X}
-            //   y1={Y + 40}
-            //   x2={X}
-            //   y2={Y - 40}
-            //   stroke="red"
-            // />,
-          );
-        } else {
-          elements.push(
-            // ----------------------------------------------------------------
-            <line
-              key={index}
-              x1={X}
-              y1={Y + 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-              style={{zIndex: 1}}
-            />,
-
-            <line
-              key={index}
-              x1={X - 20}
-              y1={Y + 40}
-              x2={X}
-              y2={Y + 40}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X - 20}
-              y1={Y - 40}
-              x2={X}
-              y2={Y - 40}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X - 20}
-              y1={Y - 40}
-              x2={X - 15}
-              y2={Y - 45}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X - 20}
-              y1={Y - 40}
-              x2={X - 15}
-              y2={Y - 35}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X - 20}
-              y1={Y + 40}
-              x2={X - 15}
-              y2={Y + 35}
-              stroke="red"
-            />,
-            <line
-              key={index}
-              x1={X - 20}
-              y1={Y + 40}
-              x2={X - 15}
-              y2={Y + 45}
-              stroke="red"
-            />,
-          );
-        }
-      });
-      return elements;
-    }
-  };
-
-  const VerticalLine = ({xScale, yScale}: any) => {
-    const elements: JSX.Element[] = [];
-    if (showeventdetail) {
-      verticalLines?.forEach((point, index) => {
-        const X = xScale(point.x);
-        const Y = yScale(point!.y!);
-        elements?.push(
-          <line
-            key={index}
-            x1={X}
-            y1={400}
-            x2={X}
-            y2={-400}
-            stroke="red"
-            onMouseDown={() => handleMouseDown(point.name!)}
-            onMouseUp={handleMouseUp}
-          />,
-          <line
-            key={index}
-            x1={X}
-            y1={400}
-            x2={X}
-            y2={-400}
-            stroke="red"
-            style={{opacity: 0}}
-            strokeWidth={isDraggingname === point.name ? 0 : 10}
-            onMouseDown={() => handleMouseDown(point.name!)}
-            onMouseUp={handleMouseUp}
-          />,
-          <line
-            key={index}
-            x1={X}
-            y1={400}
-            x2={X}
-            y2={-400}
-            style={{opacity: 0}}
-            stroke="green"
-            strokeWidth={isDraggingname === point.name ? 250 : 0}
-            onMouseMove={e => biglinehandleMouseMove(point.name!, e)}
-            onMouseUp={handleMouseUp}
-          />,
-        );
-        elements.push(
-          <text
-            key={index}
-            x={X}
-            y={420}
-            fill="red"
-            fontSize={12}
-            textAnchor="middle">
-            {point!.name!}
-          </text>,
-        );
-      });
-    }
-
-    return elements;
-  };
-  const handleMouseUp = () => {
-    setIsDraggingname('');
   };
 
   // ------ component --------- component ------------ component --------------- component ------------------
@@ -12398,70 +12173,37 @@ console.log('🐿️',allshapes);
       <div className="flex w-full flex-row justify-between">
         <Datatext value={name} />
         <Datatext
-          value={(verticalLines.find(data => data.name == name)?.x! / 1000)
+          value={(
+            (fakeevents.find((data: any) => data.text[0] == name)?.x[0]! ||
+              selectedevents?.x[0]) / 1000
+          )
             .toString()
             .substring(0, 5)}
         />
         <Datatext value="km" />
         <Datatext
-          value={
-            finddata(name) && finddata(name)[1]?.toString().substring(0, 5)
-          }
+          value={(finddata(name) ? finddata(name)[1] : selectedevents?.y[36])
+            ?.toString()
+            .substring(0, 5)}
         />
         <Datatext value="dB" />
       </div>
     );
   };
 
-  const handleMouseDown = (x: number | string) => {
-    // set the flag to true
-    setIsDraggingname(x);
-  };
+  var X2 = fakeevents.find((data: any) => data.text[0] == 'a')?.x[0];
 
-  // ***********************************
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [endX, setEndX] = useState(0);
-  const [endY, setEndY] = useState(0);
+  let findequal2 = chartdata?.datapoints?.data_points?.find(
+    (data: [number, number]) => data[0] == X2,
+  );
 
-  // تعریف استایل برای div container
-  const containerStyle = {
-    width: '500px',
-    height: '500px',
-    border: '1px solid black',
-    position: 'relative',
-  };
-
-  // تعریف استایل برای div rectangle
-  const rectangleStyle = {
-    width: Math.abs(endX - startX) + 'px', // عرض برابر با فاصله افقی شروع و پایان
-    height: Math.abs(endY - startY) + 'px', // ارتفاع برابر با فاصله عمودی شروع و پایان
-    left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
-    top: Math.min(startY - 80 + scrollValue, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
-    border: '1px solid red', // حاشیه قرمز رنگ
-    // موقعیت نسبی به div container
-  };
-
-  // تعریف تابع برای ذخیره مختصات شروع وقتی دکمه موس فشار داده شود
-  const handleMouseDown2 = (event: any) => {
-    setStartDraw(true);
-    setStartX(event.clientX);
-    setStartY(event.clientY);
-    setEndX(event.clientX);
-    setEndY(event.clientY);
-  };
-
-  // تعریف تابع برای ذخیره مختصات پایان وقتی موس حرکت کند
-  const handleMouseMove2 = (event: any) => {
-    setYvalue(event.clientX)
-    // if (startdraw) {
-    //   setEndX(event.clientX);
-    //   setEndY(event.clientY);
-    // }
-  };
+  let findbigger = chartdata?.datapoints?.data_points?.find(
+    (data: [number, number]) => data[0] >= X2,
+  );
 
   const finddata = (linename: string) => {
-    let X = verticalLines!.find(data => data.name == linename)?.x!;
+    var X = fakeevents.find((data: any) => data.text[0] == linename)?.x[0];
+    // let X = verticalLines!.find(data => data.name == linename)?.x!;
     let findequal = chartdata?.datapoints?.data_points?.find(
       (data: [number, number]) => data[0] == X,
     );
@@ -12470,6 +12212,8 @@ console.log('🐿️',allshapes);
     );
     return (findequal && findequal) || findbigger;
   };
+
+
 
   const Tabbox = ({name}: {name: string}) => {
     return (
@@ -12480,13 +12224,20 @@ console.log('🐿️',allshapes);
 
         {name == 'A-B' ? (
           <span className="2xl:tex-[20px] w-[63.6px]  text-[16px] leading-[26px] text-[#000000]">
-            {((finddata('B')[0] - finddata('A')[0]) / 1000)
+            {(
+              ((finddata('B') ? finddata('B')[0] : selectedevents.x[0]) -
+                (finddata('A') ? finddata('A')[0] : selectedevents.x[0])) /
+              1000
+            )
               .toString()
               .substring(0, 5)}
           </span>
         ) : (
           <span className="2xl:tex-[20px] w-[63.6px]  text-[16px] leading-[26px] text-[#000000]">
-            {(verticalLines.find(data => data.name == name)!.x! / 1000)
+            {(
+              fakeevents.find((data: any) => data.text[0] == name)?.x[0] /
+                1000 || selectedevents.x[0] / 1000
+            )
               .toString()
               .substring(0, 5)}
           </span>
@@ -12497,11 +12248,18 @@ console.log('🐿️',allshapes);
         </span>
         {name == 'A-B' ? (
           <span className="2xl:tex-[20px] w-[63.6px] text-[16px] leading-[26px] text-[#000000]">
-            {(finddata('B')[1] - finddata('A')[1]).toString().substring(0, 5)}
+            {(
+              (finddata('B') ? finddata('B')[1] : selectedevents.y[36]) -
+              (finddata('A') ? finddata('A')[1] : selectedevents.y[36])
+            )
+              .toString()
+              .substring(0, 5)}
           </span>
         ) : (
           <span className="2xl:tex-[20px] w-[63.6px] text-[16px] leading-[26px] text-[#000000]">
-            {finddata(name)[1].toString().substring(0, 5)}
+            {(finddata(name) ? finddata(name)[1] : selectedevents.y[36])
+              .toString()
+              .substring(0, 5)}
           </span>
         )}
 
@@ -12512,230 +12270,239 @@ console.log('🐿️',allshapes);
     );
   };
 
-  const handelMouseup2 = () => {
-    setStartDraw(false);
-    const square = svgRef;
 
-    // گرفتن مختصات مربع نسبت به صفحه مرورگر
-    const rect: any = square?.current?.getBoundingClientRect();
-    // setYvalue(((startX+endX)/2)/ ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min)
-    const xstart =
-      (startX - 158) / ((rect.width - rect.x) / (maxx - xScale.min)) +
-      xScale.min;
-    const xend =
-      (endX - 158) / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
-    const ystart =
-      -(startY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min;
-    const yend =
-      -(endY - 540 + scrollValue) / (440 / (maxy - yScale.min)) + yScale.min;
-    setYvalue(yend);
-    // left: Math.min(startX, endX) + 'px', // چپ برابر با کمترین مقدار شروع و پایان در جهت افقی
-    // top: Math.min(startY-80, endY) + 'px', // بالا برابر با کمترین مقدار شروع و پایان در جهت عمودی
-    // border: '1px solid red', // حاشیه قرمز رنگ
+
+  const onclickshap = () => {
+    let x = mousecoordinate.x;
+    const fakeeventsCopy = deepcopy(fakeevents);
+    const finddataindex = fakeevents.findIndex(
+      (data: any) => data.x[0] <= x + 20 && data.x[0] >= x - 20,
+    );
+
+
+    if (finddataindex > -1) {
+      if (fakeevents[finddataindex].name) {
+        // setSelectedEvents(fakeevents[finddataindex]);
+        const finevent = chartdata.key_events.events.find(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          (data: eventstype) =>
+            data.event_number == fakeevents[finddataindex].event_number,
+        );
+
+        setAllshapes([]);
+        setShowEwents(false);
+        setSelectedEvents(fakeevents[finddataindex]);
+        setfakeEvents([
+          {
+            x: [...new Array(71).keys()].map(
+              data => finevent.marker_location_1,
+            ),
+            y: [...new Array(71).keys()].map(data => Number(data) / 2),
+            type: 'line',
+            text: ['a'],
+            textfont: {color: ['#A80000']},
+            showlegend: false,
+            textposition: 'bottom',
+            mode: 'lines+markers+text',
+            line: {width: 6, zindex: 10, color: '#A80000'},
+            marker: {color: '#A80000', zIndex: 10},
+            event_number: data?.key_events?.events[0]?.event_number,
+          },
+          {
+            x: [...new Array(71).keys()].map(
+              data => Number(finevent.marker_location_2) * 20,
+            ),
+            y: [...new Array(71).keys()].map(data => data / 2),
+            text: ['A'],
+            textfont: {color: ['#A80000']},
+            textposition: 'bottom',
+            mode: 'lines+markers+text',
+            type: 'line',
+            showlegend: false,
+            line: {width: 6, zindex: 10, color: '#A80000'},
+            marker: {color: '#A80000', zIndex: 10},
+            event_number: data?.key_events?.events[0]?.event_number,
+          },
+          {
+            x: [...new Array(71).keys()].map(
+              data => Number(finevent.marker_location_5) * 40,
+            ),
+            y: [...new Array(71).keys()].map(data => data / 2),
+            text: ['b'],
+            textposition: 'bottom',
+            textfont: {color: ['#A80000']},
+            mode: 'lines+markers+text',
+            type: 'line',
+            showlegend: false,
+            line: {
+              width: 6,
+              zindex: 10,
+              color: 'textfont: {color:["#A80000"]},',
+            },
+            marker: {color: '#A80000', zIndex: 10},
+            event_number: data?.key_events?.events[0]?.event_number,
+          },
+          {
+            x: [...new Array(71).keys()].map(
+              data => Number(finevent.marker_location_4) * 70,
+            ),
+            y: [...new Array(71).keys()].map(data => data / 2),
+            text: ['B'],
+            textposition: 'bottom',
+            mode: 'lines+markers+text',
+            type: 'line',
+            showlegend: false,
+            textfont: {color: ['#A80000']},
+            line: {width: 6, zindex: 10, color: '#A80000'},
+            marker: {color: '#A80000', zIndex: 10},
+            event_number: data?.key_events?.events[0]?.event_number,
+          },
+        ]);
+
+        // **************************************
+      } else {
+        if (
+          ['a', 'A', 'b', 'B'].findIndex(
+            data => data == fakeevents[finddataindex].text[0],
+          ) > -1
+        ) {
+          if (!selectedevents.name) {
+            let selectedeventsCopy = deepcopy(selectedevents);
+            (selectedeventsCopy.showlegend = false),
+              fakeeventsCopy.push(selectedeventsCopy);
+          }
+
+          if (leftverticaltab == 'Measure') {
+            setAllshapes([
+              {
+                type: 'line',
+                x0: fakeevents[finddataindex].x[0], // x coordinate of the first point
+                y0: fakeevents[finddataindex].y[0], // y coordinate of the first point
+                x1: fakeevents[finddataindex].x[0], // x coordinate of the second point,
+                y1: fakeevents[finddataindex].y[70], // y coordinate of the first point
+                editable: true,
+                showlegend: false,
+                label: {
+                  text: 'jhjkhjk',
+                  textposition: 'bottom center',
+                },
+                line: {
+                  showlegend: false,
+                  layer: 'below',
+                  editable: true,
+                  color: 'green', // color of the line
+                  width: 6, // width of the line
+                  zindex: 10,
+                },
+              },
+    
+            ]);
+            setSelectedEvents(fakeevents[finddataindex]);
+            fakeeventsCopy.splice(finddataindex, 1);
+            setfakeEvents(fakeeventsCopy);
+          }
+        } else {
+       
+          // **********************************
+        }
+
+        
+      }
+    }
+  
   };
-  // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-  var data11 = [
-    {
-      x: [
-        '2015-02-01',
-        '2015-02-02',
-        '2015-02-03',
-        '2015-02-04',
-        '2015-02-05',
-        '2015-02-06',
-        '2015-02-07',
-        '2015-02-08',
-        '2015-02-09',
-        '2015-02-10',
-        '2015-02-11',
-        '2015-02-12',
-        '2015-02-13',
-        '2015-02-14',
-        '2015-02-15',
-        '2015-02-16',
-        '2015-02-17',
-        '2015-02-18',
-        '2015-02-19',
-        '2015-02-20',
-        '2015-02-21',
-        '2015-02-22',
-        '2015-02-23',
-        '2015-02-24',
-        '2015-02-25',
-        '2015-02-26',
-        '2015-02-27',
-        '2015-02-28',
-      ],
-      y: [
-        14, 17, 8, 4, 7, 10, 12, 14, 12, 11, 10, 9, 18, 14, 14, 16, 13, 8, 8, 7,
-        7, 3, 9, 9, 4, 13, 9, 6,
-      ],
-      mode: 'line',
-    },
-  ];
 
-  var layout11 = {
-    title: 'Product price changes and revenue growth',
-    xaxis: {title: 'Date'},
-    yaxis: {title: 'Revenue Growth'},
-    dragmode: 'drawline',
-
-    shapes: [
-      {
-        type: 'rect',
-        xref: 'x',
-        yref: 'paper',
-        x0: '2015-02-02',
-        y0: 0,
-        x1: '2015-02-08',
-        y1: 1,
-        fillcolor: '#d3d3d3',
-        opacity: 0.2,
-        editable: true,
-        line: {
-          width: 0,
-        },
-        label: {
-          text: 'Price drop',
-          font: {size: 10, color: 'green'},
-          textposition: 'top center',
-        },
-      },
+  const onclickwordtab = (a: string) => {
+    const fakeeventsCopy = deepcopy(fakeevents);
+    if (selectedevents != null) {
+      let selectedeventsCopy = deepcopy(selectedevents);
+      (selectedeventsCopy.showlegend = false),
+        fakeeventsCopy.push(selectedeventsCopy);
+    }
+    const findeventsindex = fakeeventsCopy.findIndex(
+      (data: any) => data.text[0] == a,
+    );
+    setAllshapes([
       {
         type: 'line',
-        x0: '2015-02-01',
-        y0: 8,
-        x1: '2015-02-28',
-        y1: 8,
-        fillcolor: '#d3d3d3',
-        opacity: 0.2,
+        x0: fakeevents[findeventsindex].x[0], // x coordinate of the first point
+        y0: fakeevents[findeventsindex].y[0], // y coordinate of the first point
+        x1: fakeevents[findeventsindex].x[0], // x coordinate of the second point,
+        y1: fakeevents[findeventsindex].y[70], // y coordinate of the first point
         editable: true,
+        showlegend: false,
         label: {
-          text: 'January average',
-          yanchor: 'top',
+          text: 'jhjkhjk',
+          textposition: 'bottom center',
+        },
+        line: {
+          layer: 'below',
+          editable: true,
+          color: 'green', // color of the line
+          width: 6, // width of the line
+          zindex: 10,
         },
       },
-    ],
-    newshape: {label: {text: 'New shape text'}},
-    height: 500,
-    width: 500,
+      // {
+      //   x:[fakeevents[finddataindex].x[0], fakeevents[finddataindex].x[0]],
+      //   y: [0, 35],
+      //   type: 'line',
+      //   mode: 'lines+markers',
+      //   line: {width: 10, zindex: 10, color: 'blue'},
+      //   marker: {color: 'blue', zIndex: 10},
+      //   event_number: fakeevents[finddataindex].event_number,
+      // },
+    ]);
+
+    setSelectedEvents(fakeevents[findeventsindex]);
+
+    fakeeventsCopy.splice(findeventsindex, 1);
+    setfakeEvents(fakeeventsCopy);
   };
 
-  var config = {
-    modeBarButtonsToAdd: [
-      'drawline',
-      'drawopenpath',
-      'drawclosedpath',
-      'drawcircle',
-      'drawrect',
-      'eraseshape',
-    ],
+  const moveshapes = (e: any) => {
+ 
+    const dataaa = filterArray(
+      ['a', 'A', 'b', 'B'],
+      [fakeevents[0].text[0], fakeevents[1].text[0], fakeevents[2].text[0]],
+    );
+
+    // if (leftverticaltab == 'Measure') {
+    if (dataaa.length > 0) {
+      setSelectedEvents({
+        x: [...new Array(71).keys()].map(data => e[`shapes[0].x0`]),
+        y: [...new Array(71).keys()].map(
+          (data, index) => e[`shapes[0].y0`] + index / 2,
+        ),
+        text: [dataaa[0]],
+        textposition: 'bottom',
+        type: 'line',
+        mode: 'lines+markers+text',
+        event_number: data?.key_events?.events[0]?.event_number,
+        textfont: {color: ['#A80000']},
+        line: {width: 6, zindex: 10, color: '#A80000'},
+        marker: {color: '#A80000', zIndex: 10},
+        // event_number: data?.key_events?.events[0]?.event_number,
+      });
+    } else {
+      setSelectedEvents({
+        x: [...Array(41).keys()].map(dataa => e[`shapes[0].x0`]),
+        y: [...Array(41).keys()].map(
+          (dat, index) => e[`shapes[0].y0`] + index / 2,
+        ),
+        //   data?.key_events?.events[0]?.event_location?.y - 10,
+        // ],
+        type: 'line',
+        mode: 'lines+markers',
+        line: {width: 6, zindex: 10, color: '#A80000'},
+        marker: {color: '#A80000', zIndex: 10},
+        event_number: data?.key_events?.events[0]?.event_number,
+      });
+    }
   };
-
-  //   var myPlot = document.getElementById('myDiv'),
-  //     x = [1, 2, 3, 4, 5],
-  //     y = [10, 20, 30, 20, 10],
-  //     data = [{x:x, y:y, type:'scatter',
-  //              mode:'markers', marker:{size:20}
-  //             }],
-  //     layout = {hovermode:'closest',
-  //               title:'Click on Points'
-  //      };
-
-  // Plotly.newPlot('myDiv', data, layout);
-
-  // plotref?.current?.on('plotly_click', function(){
-  //     alert('You clicked this Plotly chart!');
-  // });
-  // console.log('🌷', [chartdata?.key_events?.events[0]?.event_location?.x,chartdata?.key_events?.events[0]]);
-  const zoomIn = () => {
-    // define a function to zoom in the plot
-    const newZoom = zoom + 0.5; // increase the zoom value by 0.5
-    const newLayout = {
-      // create a new layout object
-      ...layout, // keep the previous layout properties
-      xaxis: {
-        // update the x-axis properties
-        ...layout.xaxis, // keep the previous x-axis properties
-        range: [
-          // set the new x-axis range according to the zoom value
-          layout.xaxis.range[0] / newZoom,
-          layout.xaxis.range[1] / newZoom,
-        ],
-      },
-      yaxis: {
-        // update the y-axis properties
-        ...layout.yaxis, // keep the previous y-axis properties
-        range: [
-          // set the new y-axis range according to the zoom value
-          layout.yaxis.range[0] / newZoom,
-          layout.yaxis.range[1] / newZoom,
-        ],
-      },
-    };
-    setLayout(newLayout); // use the setState function to update the layout state
-    setZoom(newZoom); // use the setState function to update the zoom state
-    plotref?.current?.relayout(newLayout); // use the relayout method to update the plot
-  };
-
-  const zoomout = () => {
-    // define a function to zoom in the plot
-    const newZoom = zoom + 0.5; // decrease the zoom value by 0.5
-    // const newData = [...this.state.data]; // create a new data array
-    const newLayout = {
-      // create a new layout object
-      ...layout, // keep the previous layout properties
-      xaxis: {
-        // update the x-axis properties
-        ...layout.xaxis, // keep the previous x-axis properties
-        range: [
-          // set the new x-axis range according to the zoom value
-          layout.xaxis.range[0] * newZoom,
-          layout.xaxis.range[1] * newZoom,
-        ],
-      },
-      yaxis: {
-        // update the y-axis properties
-        ...layout.yaxis, // keep the previous y-axis properties
-        range: [
-          // set the new y-axis range according to the zoom value
-          layout.yaxis.range[0] * newZoom,
-          layout.yaxis.range[1] * newZoom,
-        ],
-      },
-    };
-    setLayout(newLayout); // use the setState function to update the layout state
-    setZoom(newZoom);
-    plotref?.current?.relayout(newLayout); // use the update method to update the plot
-  };
-
-  // const showAlert = data => {
-  //   // define a function to show an alert
-  //   // check if the clicked point is a shape
-  //   alert('gyty');
-  //   if (data.points[0].pointNumber === undefined) {
-  //     // get the index of the clicked shape
-  //     // const shapeIndex = data.points[0].curveNumber;
-  //     // // get the shape object from the layout
-  //     // const shape = plotref.current.layout.shapes[shapeIndex];
-  //     // // show an alert with the shape type and coordinates
-  //     // alert(`You clicked on a ${shape.type} with coordinates ${shape.x0}, ${shape.y0}, ${shape.x1}, ${shape.y1}`);
-  //   }
-  // };
-  const onclickshap=(x:any)=>{
-    console.log(fakeevents ,'🐫');
-    console.log(x ,'❤️‍🔥');
-    
-const fakeeventsCopy=deepcopy(fakeevents)
-const finddataindex=fakeevents.find((data:any) => (data.x[0] <= x+10 && data.x[0] >=x-10))
-console.log("🌄",finddataindex);
-
-  }
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
-      <span className="absolute right-[300px] top-[200px] my-10 text-[red]">
-        {yvalue}
-      </span>
       <div className="flex h-[540px]  w-full flex-row">
         {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
         <div className="flex h-full w-[87px] flex-col">
@@ -12752,7 +12519,7 @@ console.log("🌄",finddataindex);
                 classname="pb-[15px] h-[79px]"
               />
               <Verticalbotton
-                onClick={showeventdetail ? () => Measure() : () => {}}
+                onClick={() => Measure()}
                 name="Measure"
                 classname="pb-[27px] h-[79px]"
               />
@@ -12765,17 +12532,21 @@ console.log("🌄",finddataindex);
 
             <div className="ml-[15px] flex w-[30px] flex-col">
               <img
-                onClick={() => setMousecursor(false)}
+                onClick={() => {
+                  setFixedyaxies(false), setDragmode(false);
+                }}
                 src={arrowupchart}
                 className="h-[30px] w-[30px] cursor-pointer"
               />
               <img
-                onClick={() => setMousecursor(true)}
+                onClick={() => {
+                  setFixedyaxies(true), setDragmode('pan');
+                }}
                 src={hand}
                 className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
               />
               <GoZoomIn
-                // onClick={() => zoom(true, basescale + 100)}
+                //  onClick={() => zoom(true, basescale + 100)}
                 size={30}
                 className="mt-[20px] cursor-pointer"
               />
@@ -12785,7 +12556,9 @@ console.log("🌄",finddataindex);
                 className="mt-[20px] cursor-pointer"
               />
               <img
-                onClick={() => setRectangelzoom(true)}
+                onClick={() => {
+                  setFixedyaxies(true), setDragmode('zoom');
+                }}
                 src={ZoomArea}
                 className="mt-[20px] h-[30px] w-[30px] cursor-pointer"
               />
@@ -12813,73 +12586,69 @@ console.log("🌄",finddataindex);
         <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
           <div className="h-[calc(100%-50px)] w-full">
             <div
-              // onMouseDown={handleMouseDown2}
-              // onClick={()=>alert("hhh")}
-              // onMouseUp={handelMouseup2}
-              // ref={svgRef}
-              // onMouseMove={e => getchartcoordinate(e)}
+
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
-              <button
-                className="mx-[50px]"
-                onClick={() => console.log("🏮",plotref.current)}>
-                zoomin
-              </button>
-              <button onClick={() => zoomout()}>zoomout</button>
+
               <Plot
                 ref={plotref}
-                onRelayout={e => console.log('🦞', e)}
-                className="h-[600px] w-full"
-                onSelected={(e)=>onclickshap(e.points[0].x)}
+                onRelayout={e => moveshapes(e)}
+                className="h-[538px] w-full bg-[red] p-0"
+                onHover={e =>
+                  setMousecoordinate({
+                    x: Number(e.points[0].x),
+                    y: Number(e.points[0].y),
+                  })
+                }
+                onClick={e => onclickshap()}
+                // onclickshap(e.points[0].x)
                 data={[
                   {
+                    showlegend: false,
                     x: allcurveline[0]?.data?.map(dat => dat.x),
                     y: allcurveline[0]?.data?.map(dat => dat.y),
                     type: 'scatter',
-                    mode: 'lines+markers',
-                    line:{width:10},
+                    mode: 'lines',
+                    line: {width: 6},
                     marker: {color: 'red'},
-                  }
-              ,...fakeevents
-                
+                  },
+                  ...fakeevents,
                 ]}
 
-
-                // let allevents = chartdata?.key_events?.events?.map(
-                //   (data: eventstype) => ({
-                //     type: 'line',
-                //     x0: data?.event_location?.x, // x coordinate of the first point
-                //     y0: data?.event_location?.y + 10, // y coordinate of the first point
-                //     x1: data?.event_location?.x, // x coordinate of the second point,
-                //     y1: data?.event_location?.y - 10, // y coordinate of the first point
-
-                // {
-                //   type: 'line',
-                //   x0: finevent.marker_location_1, // x coordinate of the first point
-                //   y0: 10, // y coordinate of the first point
-                //   x1: finevent.marker_location_1, // x coordinate of the second point
-                //   y1: 1000, // y coordinate of the second point
-          
-                //   line: {
-                //     color: 'blue', // color of the line
-                //     width: 10, // width of the line
-                //   },
-                // },
-
-                // onButtonClicked={()=>alert("kk")}
-                // onClickAnnotation={(e)=>console.log("😎🤑",e)}
-                // onWebGlContextLost={(e)=>alert("t")}
-                
-                //  onHover={(data)=>console.log('🩰',data)}
-                // onUnhover={data => console.log('🤡', data)}
+                config={
+                  {
+                    displayModeBar: true
+                    // modeBarButtonsRemove: [
+                    //   'zoom2d', // this will remove the zoom button
+                    //   'zoomIn2d', // this will remove the zoom in button
+                    //   'zoomOut2d' // this will remove the zoom out button
+                    //   ],
+                  }
+                }
                 layout={{
+                  margin: {
+                    l: 20,
+                    r: 20,
+                    t: 20,
+                    b: 20,
+                  },
                   clickmode: 'event+select',
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  dragmode: dragmode,
                   uirevision: 'constant',
-                  title: 'A Fancy Plot',
-                  dragmode: false,
+                  // title: 'A Fancy Plot',
                   shapes: allshapes,
-                  //  xaxis:{range: [0, 2500]},
+                  leggend: false,
+                  yaxis: {
+                    // this is the key property to fix the y axis
+                    fixedrange: true,
+                  },
+                  xaxis: {
+                    autotick: autotick,
+                    dtick: 100,
+                  },
                 }}
               />
             </div>
@@ -12939,7 +12708,7 @@ console.log("🌄",finddataindex);
         {leftverticaltab == 'Measure' ? (
           <>
             <div className="ml-[80px] mt-[55px] flex w-[calc(100vw-504px)] flex-row justify-between">
-              <div className="box-border  flex  w-[35.4%] flex-col">
+              <div className="box-border  flex  w-[35.4%] flex-col ">
                 <div className="relative box-border h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px]">
                   <Tabbox name="a" />
                   <Tabbox name="A" />
@@ -12952,17 +12721,19 @@ console.log("🌄",finddataindex);
                     <MdOutlineArrowBackIos
                       size={40}
                       onClick={() => {
-                        setIsDraggingname(selectedVerticalline),
+                
                           movebigline(selectedVerticalline, 'left');
                       }}
                     />
                   </button>
                   <button
                     onClick={() => {
-                      setSelectedVerticalline('a'), setIsDraggingname('a');
+                      onclickwordtab('a'),
+                        setSelectedVerticalline('a')
+                        
                     }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedVerticalline == 'a'
+                      selectedevents != null && selectedevents.text[0] == 'a'
                         ? 'bg-[#006BBC] text-white'
                         : 'bg-[#C6DFF8] text-black'
                     }  text-[20px]`}>
@@ -12970,10 +12741,11 @@ console.log("🌄",finddataindex);
                   </button>
                   <button
                     onClick={() => {
-                      setSelectedVerticalline('A'), setIsDraggingname('A');
+                      onclickwordtab('A'),
+                        setSelectedVerticalline('A')
                     }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedVerticalline == 'A'
+                      selectedevents != null && selectedevents.text[0] == 'A'
                         ? 'bg-[#006BBC] text-white'
                         : 'bg-[#C6DFF8] text-black'
                     } text-[20px]`}>
@@ -12981,10 +12753,11 @@ console.log("🌄",finddataindex);
                   </button>
                   <button
                     onClick={() => {
-                      setSelectedVerticalline('B'), setIsDraggingname('B');
+                      onclickwordtab('B'),
+                        setSelectedVerticalline('B')  
                     }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedVerticalline == 'B'
+                      selectedevents != null && selectedevents.text[0] == 'B'
                         ? 'bg-[#006BBC] text-white'
                         : 'bg-[#C6DFF8] text-black'
                     } text-[20px]`}>
@@ -12992,10 +12765,11 @@ console.log("🌄",finddataindex);
                   </button>
                   <button
                     onClick={() => {
-                      setSelectedVerticalline('b'), setIsDraggingname('b');
+                      onclickwordtab('b'),
+                        setSelectedVerticalline('b')
                     }}
                     className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedVerticalline == 'b'
+                      selectedevents != null && selectedevents.text[0] == 'b'
                         ? 'bg-[#006BBC] text-white'
                         : 'bg-[#C6DFF8] text-black'
                     } text-[20px]`}>
@@ -13005,10 +12779,10 @@ console.log("🌄",finddataindex);
                     <MdOutlineArrowBackIos
                       size={40}
                       onClick={() => {
-                        setIsDraggingname(selectedVerticalline),
+                    
                           movebigline(selectedVerticalline, 'right');
                       }}
-                      onMouseLeave={() => setIsDraggingname('')}
+      
                       className="rotate-180"
                     />
                   </button>
@@ -13021,14 +12795,14 @@ console.log("🌄",finddataindex);
                     <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
                       Avg. A-B Loss:
                     </span>
-                    <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                    {/* <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
                       {(
                         (finddata('B')[1] - finddata('A')[1]) /
                         (finddata('B')[0] - finddata('A')[0])
                       )
                         .toString()
                         .substring(0, 9)}
-                    </span>
+                    </span> */}
                   </div>
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
                     <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
@@ -13141,7 +12915,11 @@ console.log("🌄",finddataindex);
         <div className={`flex flex-col `}>
           <div
             className={`w-auto ${
-              showeventdetail ? 'opacity-100' : 'opacity-0'
+              fakeevents.length >= 3 &&
+              allshapes.length <= 1 &&
+              leftverticaltab != 'Measure'
+                ? 'opacity-100'
+                : 'opacity-0'
             }`}>
             <div className="mt-[20px] box-border h-[195px] w-[370px] rounded-[10px] bg-[#C6DFF8] p-[20px]">
               <Row name="a" />
@@ -13160,12 +12938,9 @@ console.log("🌄",finddataindex);
           </div>
         </div>
       </div>
-
-      {rectangelzoom == true && startdraw == true ? (
-        <div className="absolute" style={rectangleStyle}></div>
-      ) : null}
     </div>
   );
 }
 
 export default Chart;
+
