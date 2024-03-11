@@ -6,8 +6,9 @@ import {useSelector} from 'react-redux';
 const LinkEmptyPage = () => {
   const {network, http} = useSelector((state: any) => state);
   let findtaype = network.type.find(
-    (data: any) => data.id == network.linkDetail?.id,
+    (data: any) => data.id == network.linkdetail?.id,
   );
+
   const params = useParams<{linkId: string}>();
   return (
     <div className="flex h-full w-full flex-col">
