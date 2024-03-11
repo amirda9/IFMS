@@ -81,7 +81,7 @@ const OpticalRouteTestSetupPage: FC = () => {
     const getsetup = async () => {
       try {
         const getalldata = await $Get(
-          `otdr/optical-route/${params.opticalRouteId}/test-setups`,
+          `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups`,
         );
         const getdata=await getalldata.json();
         if(getalldata.status == 200){
@@ -140,7 +140,7 @@ const OpticalRouteTestSetupPage: FC = () => {
 
   const save = () => {
     request('opticalrouteDeletTestsetup', {
-      params: {optical_route_id: params.opticalRouteId || ''},
+      params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
       data: alldelets,
     });
     setAlldelets([]);

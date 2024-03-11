@@ -297,7 +297,7 @@ const OpticalRouteLayout: FC = () => {
 
         {openall ? (
           <>
-            {list?.data?.map((dataaa, index) => (
+            {list?.data?.map((networkdata, index) => (
               <div
                 key={index}
                 className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
@@ -310,7 +310,7 @@ const OpticalRouteLayout: FC = () => {
                 ) : null}
                 <div
                   className={`absolute z-10 ${
-                    networkselectedlist.indexOf(dataaa.id) > -1
+                    networkselectedlist.indexOf(networkdata.id) > -1
                       ? 'bottom-[-2px]'
                       : 'bottom-[-7px]'
                   }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
@@ -318,15 +318,15 @@ const OpticalRouteLayout: FC = () => {
                 <div className="relative flex flex-col">
                   <Itembtn
                     classname="mb-[-10px]"
-                    name={dataaa.name}
-                    id={dataaa.id}
+                    name={networkdata.name}
+                    id={networkdata.id}
                   />
 
-                  {networkselectedlist.indexOf(dataaa.id) > -1 ? (
+                  {networkselectedlist.indexOf(networkdata.id) > -1 ? (
                     <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
                       <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
                       {networkoptical
-                        ?.find(dataa => dataa.networkid == dataaa.id)
+                        ?.find(dataa => dataa.networkid == networkdata.id)
                         ?.opticalrouts.map((data, index: number) => (
                           <div
                             key={index}
@@ -337,16 +337,16 @@ const OpticalRouteLayout: FC = () => {
                               selected={selectedId == data.id ? true : false}
                               onclick={() => setSelectedId(data.id)}
                               onclickcheckbox={e =>
-                                onclickopticalchecbox(e, data.id, dataaa.id)
+                                onclickopticalchecbox(e, data.id, networkdata.id)
                               }
-                              checkstatus={findoptical(dataaa.id, data.id)}
+                              checkstatus={findoptical(networkdata.id, data.id)}
                               onDelete={() =>
-                                deleteoneopticalroute(data.id, dataaa.id)
+                                deleteoneopticalroute(data.id, networkdata.id)
                               }
                               enabelcheck={true}
                               className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
                               name={data.name}
-                              to={data.id}
+                              to={`${data.id}_${networkdata.id}`}
                             />
                           </div>
                         ))}

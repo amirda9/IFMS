@@ -6,7 +6,7 @@ import {IoTrashOutline} from 'react-icons/io5';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
-import {$GET} from '~/util/requestapi';
+import {$GET, $Get} from '~/util/requestapi';
 import { deepcopy } from '~/util';
 // ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
@@ -94,7 +94,7 @@ const Addbox = ({classname, onclick}: Iprops) => {
 // ------------main ---------------main -------------------main ------------main -----------
 const OpticalRouteRoutePage: FC = () => {
   const params = useParams();
-  const networkId = Cookies.get(networkExplored);
+  const networkId = params.opticalRouteId!.split("_")[1];
 
   const [allroutes, setAllroutes] = useState<allroutestype[]>([]);
   const [alldeleteroutes, setAllDeleteroutes] = useState<string[]>([]);
@@ -219,14 +219,14 @@ console.log("⏰",allcreatedroutes);
   };
 
   const deleteroute = (index: number, id: string) => {
-    const old = JSON.parse(JSON.stringify(allroutes));
+    const old = deepcopy(allroutes);
     const findroute = finrouteIndex(index);
     if (old[findroute].new) {
       //first check if the route is new we dont need to send delete request api and we just delete that from front
       const newroutsdata = old.filter((data: any) => data.index != index);
       setAllroutes(newroutsdata);
       // ------------------------
-      const oldcreated = JSON.parse(JSON.stringify(allcreatedroutes));
+      const oldcreated = deepcopy(allcreatedroutes);
       const newdata = oldcreated.filter((data: any) => data.index != index);
       setAllCreatedroutes(newdata);
     } else {
@@ -242,7 +242,7 @@ console.log("⏰",allcreatedroutes);
     // ---------------------------------------------------------------------------------
     // We first find the desired route among all the routes and change the name of its source station
     const finddataaallroutesindex = finrouteIndex(index);
-    let oldallroutesindex = JSON.parse(JSON.stringify(allroutes));
+    let oldallroutesindex = deepcopy(allroutes);
     oldallroutesindex[finddataaallroutesindex].source.name = name;
     setAllroutes(oldallroutesindex);
     // ---------------------------------------------------------------------------------------
@@ -332,13 +332,15 @@ console.log("⏰",allcreatedroutes);
   };
 
   const onclickdestination = async (index: number) => {
-    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const old = deepcopy(allselectedsource);
     const findroute = fndseletedsourceIndex(index);
     if (findroute > -1) {
       //We first get the list of links that have the same source as the desired source.
-      const getdata = await $GET(
+      const getdataa = await $Get(
         `otdr/link/network/${networkId}?source_id=${old[findroute].sourceId}`,
       );
+      let getdata=await getdataa.json()
+console.log("getdata",getdata);
 
       old[findroute].data = getdata;
       setAllselectedsource(old);
@@ -346,7 +348,7 @@ console.log("⏰",allcreatedroutes);
   };
 
   const onclickcabel = async (index: number) => {
-    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const old = deepcopy(allselectedsource);
     const findroute = fndseletedsourceIndex(index);
     console.log("findroute",findroute);
     
@@ -377,11 +379,11 @@ console.log("⏰",allcreatedroutes);
     // ----------1 ------------------------1 ------------------
     // We first find the desired route among all the routes and change the name of its cabel
     const finddataaallroutesindex = finrouteIndex(index);
-    let oldallroutesindex = JSON.parse(JSON.stringify(allroutes));
+    let oldallroutesindex = deepcopy(allroutes);
     oldallroutesindex[finddataaallroutesindex].cable = value;
     setAllroutes(oldallroutesindex);
     // -----------------2-------------------2-------------------2-----
-    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const old = deepcopy(allselectedsource);
     const findselectedroute = fndseletedsourceIndex(index);
     old[findselectedroute].cableid = value;
     console.log(old, 'oldold');
@@ -452,7 +454,7 @@ console.log("⏰",allcreatedroutes);
     const finddataaallroutesindex = finrouteIndex(index);
     console.log(finddataaallroutesindex, 'find');
 
-    let oldallroutesindex = JSON.parse(JSON.stringify(allroutes));
+    let oldallroutesindex = deepcopy(allroutes);
     oldallroutesindex[finddataaallroutesindex].destination.name =
       id.split('_')[1];
       oldallroutesindex[finddataaallroutesindex].destination.id =
@@ -465,7 +467,7 @@ console.log("⏰",allcreatedroutes);
     }
     setAllroutes(oldallroutesindex);
     // --------------------------2------------------2------------------
-    let olddata = JSON.parse(JSON.stringify(allselectedsource));
+    let olddata = deepcopy(allselectedsource);
     let finselected = fndseletedsourceIndex(index);
 
     olddata[finselected] = {
@@ -549,7 +551,7 @@ console.log("⏰",allcreatedroutes);
   };
 
   const onclickcore = async (index: number) => {
-    const old = JSON.parse(JSON.stringify(allselectedsource));
+    const old = deepcopy(allselectedsource);
     const findroute = fndseletedsourceIndex(index);
     if (findroute > -1) {
       //We get the link specifications because we need the cable and duct specifications of it.
@@ -572,8 +574,9 @@ console.log("⏰",allcreatedroutes);
       setAllselectedsource(old);
     }
   };
+
   const onchangecore = async (index: number, value: string) => {
-    const old = JSON.parse(JSON.stringify(allroutes));
+    const old = deepcopy(allroutes);
     const findrouteindex = finrouteIndex(index);
     old[findrouteindex].core = value;
     setAllroutes(old);
@@ -648,7 +651,7 @@ console.log("⏰",allcreatedroutes);
 
   const getallroute = async () => {
     const allroutes = await $GET(
-      `otdr/optical-route/${params.opticalRouteId || ''}/routes`,
+      `otdr/optical-route/${params.opticalRouteId!.split("_")[0] || ''}/routes`,
     );
     setAllroutes(
       allroutes.map((data: any, index: any) => ({
@@ -682,13 +685,13 @@ console.log("⏰",allcreatedroutes);
   const save = () => {
     if (alldeleteroutes.length > 0) {
       request('opticalrouteDeleteRoute', {
-        params: {optical_route_id: params.opticalRouteId || ''},
+        params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
         data: alldeleteroutes,
       });
     }
     if (allcreatedroutes.length > 0) {
       request('opticalrouteCreateRoute', {
-        params: {optical_route_id: params.opticalRouteId || ''},
+        params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
         data: allcreatedroutes.map((data,index) => ({
           link_id: data.link_id,
           cable: data.cable,
@@ -700,7 +703,7 @@ console.log("⏰",allcreatedroutes);
 
     if (allupdatedroutes.length > 0) {
       request('opticalrouteUpdateRoute', {
-        params: {optical_route_id: params.opticalRouteId || ''},
+        params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
         data: allupdatedroutes.map((data,index) => ({
           link_id: data.link_id,
           cable: data.cable,

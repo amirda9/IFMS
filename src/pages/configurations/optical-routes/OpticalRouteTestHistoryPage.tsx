@@ -76,7 +76,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
   const gethistory = async () => {
     try {
       const getdata = await $Get(
-        `otdr/optical-route/${params.opticalRouteId}/test-setups/history`,
+        `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups/history`,
       );
 
       
@@ -147,12 +147,12 @@ const OpticalRouteTestHistoryPage: FC = () => {
   const deletehistory = async (measurement_id: string) => {
     try {
       const deleteonehistory = await $Delete(
-        `otdr/optical-route/${params.opticalRouteId}/measurements/${measurement_id}`,
+        `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/measurements/${measurement_id}`,
       );
       const data = await deleteonehistory.json();
       if (deleteonehistory.status == 201) {
         const getdata = await $Get(
-          `otdr/optical-route/${params.opticalRouteId}/test-setups/history`,
+          `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups/history`,
         );
         const data: {
           measurement_id: string;
@@ -191,7 +191,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
                   onClick={() =>
                     navigate(`../../../chart`, {
                       state: {
-                        opticalrout_id: params.opticalRouteId,
+                        opticalrout_id: params.opticalRouteId!.split("_")[0],
                         measurement_id: value.measurement_id,
                       },
                     })

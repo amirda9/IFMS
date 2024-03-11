@@ -26,7 +26,7 @@ const OpticalRouteDetailsPage: FC = () => {
     initialRequests: request => {
       // if (list?.httpRequestStatus !== 'success') {
       request('opticalrouteDetail', {
-        params: {optical_route_id: params.opticalRouteId || ''},
+        params: {optical_route_id:params.opticalRouteId!.split("_")[0] || ''},
       });
       // }
     },
@@ -52,7 +52,7 @@ const OpticalRouteDetailsPage: FC = () => {
     onSubmit: () => {
       
       request('opticalrouteUpdate', {
-        params: {optical_route_id: params.opticalRouteId || ''},
+        params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
         data: {
           name: formik.values.name || '',
           comment: formik.values.comment || '',
