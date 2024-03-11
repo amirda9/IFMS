@@ -9,7 +9,6 @@ import {AccessEnum} from '~/types';
 import {useDispatch, useSelector} from 'react-redux';
 import {setlinkviewers,setlinkviewersstatus} from './../../store/slices/networkslice'
 const RegionAccessPage = () => {
-  const {linkDetail} = useSelector((state: any) => state.http);
   const editor = useRef<EditorRefType>(null);
   const params = useParams<{linkId: string}>();
   const dispatch = useDispatch();
@@ -23,7 +22,7 @@ const RegionAccessPage = () => {
       update: state.http.linkAccessUpdate,
     }),
     initialRequests: request => {
-      request('linkAccessList', {params: {link_id: params.linkId!}});
+      request('linkAccessList', {params: {link_id: params.linkId!.split("_")[0]}});
       editor.current?.setAdminid(
         viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
           '',
@@ -42,7 +41,7 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('linkAccessList', {params: {link_id: params.linkId!}});
+        request('linkAccessList', {params: {link_id: params.linkId!.split("_")[0]}});
         navigate('../access', {replace: true, relative: 'path'});
       }
     },

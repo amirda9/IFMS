@@ -3,10 +3,7 @@ import {SimpleBtn, TextInput} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
 import {BsPlusLg} from 'react-icons/bs';
 import {useHttpRequest} from '~/hooks';
-import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
 import {useParams} from 'react-router-dom';
-
 type Iprops = {
   classname: string;
   onclick: Function;
@@ -32,9 +29,9 @@ const Addbox = ({classname, onclick}: Iprops) => {
   );
 };
 const LinkPointsPage = () => {
-  // const {linkDetail} = useSelector((state: any) => state.http);
-  const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
+  const networkId = params.linkId!.split("_")[2];
+
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [linkpoints, setlinkpoints] = useState<linkpointstype[]>([
     {latitude: 0, longitude: 0, id: 0},
@@ -55,15 +52,12 @@ const LinkPointsPage = () => {
       detail: state.http.linkDetail,
       update: state.http.linkUpdate,
     }),
-    // initialRequests: request => {
-    //   request('linkDetail', {params: {link_id: params.linkId!}});
-    // },
     onUpdate: (lastState, state) => {
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkDetail', {params: {link_id: params.linkId!}});
+        request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
       }
     },
   });
@@ -153,7 +147,7 @@ const LinkPointsPage = () => {
       type: 'cable',
     };
     request('linkUpdate', {
-      params: {link_id: params.linkId || ''},
+      params: {link_id: params.linkId!.split("_")[0] || ''},
       data: newlink,
     });
   };

@@ -602,7 +602,7 @@ function NetworktreeLayout({children}: Iprops) {
                                         <Items
                                           key={index}
                                           canAdd={false}
-                                          to={`/links/${linksdata.id}_${regionsdata.id}`}
+                                          to={`/links/${linksdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
                                           onDelete={() =>

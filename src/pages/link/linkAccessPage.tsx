@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
-import {Description, Select, SimpleBtn, Table} from '~/components';
+import {Select, SimpleBtn, Table} from '~/components';
 import {BASE_URL} from '~/constant';
 import {useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
@@ -16,16 +16,9 @@ const columns = {
   region: {label: 'Region', size: 'w-[30%]'},
   station: {label: 'Station', size: 'w-[30%]'},
 };
-const dummy = [
-  {index: 1, user: 'USER1', region: 'Region', station: 'Station'},
-  {index: 2, user: 'USER2', region: 'Region', station: 'Station'},
-  {index: 3, user: 'USER3', region: 'Region', station: 'Station'},
-  {index: 4, user: 'USER4', region: 'Region', station: 'Station'},
-  {index: 5, user: 'USER5', region: 'Region', station: 'Station'},
-  {index: 6, user: 'USER6', region: 'Region', station: 'Station'},
-];
+
 const LinkAccessPage = () => {
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const {networkDetail} = useSelector((state: any) => state.http);
   const {network} = useSelector((state: any) => state);
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
@@ -65,7 +58,7 @@ const LinkAccessPage = () => {
       update: state.http.linkAccessUpdate,
     }),
     initialRequests: request => {
-      request('linkAccessList', {params: {link_id: params.linkId!}});
+      request('linkAccessList', {params: {link_id: params.linkId!.split("_")[0]}});
       request('userList', undefined);
     },
     onUpdate: (lastState, state) => {
@@ -73,7 +66,7 @@ const LinkAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkAccessList', {params: {link_id: params.linkId!}});
+        request('linkAccessList', {params: {link_id:params.linkId!.split("_")[0]}});
       }
     },
   });
@@ -133,11 +126,11 @@ const LinkAccessPage = () => {
       access_types: AccessEnum.admin,
     });
     request('linkAddadmin', {
-      params: {link_id: params.linkId!},
+      params: {link_id: params.linkId!.split("_")[0]},
       data: {user_id: userAdmin || admin!.user.id!},
     });
     request('linkAccessUpdate', {
-      params: {link_id: params.linkId!},
+      params: {link_id: params.linkId!.split("_")[0]!},
       data: {users: network?.linkviewers},
     });
     dispatch(setlinkviewersstatus(false)), dispatch(setlinkviewers([]));
@@ -189,25 +182,7 @@ const LinkAccessPage = () => {
             ))}
           </Select>
         </div>
-        {/* <Description label="Link Admin" className="mb-4">
-          <Select
-            value={userAdmin || admin?.user.id}
-            disabled={
-              userrole == 'superuser' ||
-              linkDetail?.data?.access.role == 'superuser' ||
-              networkDetail?.data?.access?.access == 'ADMIN'
-                ? false
-                : true
-            }
-            onChange={e => setUserAdmin(e.target.value)}
-            className="w-80 text-sm">
-            {userList.map(user => (
-              <option onClick={() => alert('kk')} value={user.id} key={user.id}>
-                {user.username}
-              </option>
-            ))}
-          </Select>
-        </Description> */}
+  
 
         <div className="mb-6 flex flex-col">
           <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
@@ -226,23 +201,7 @@ const LinkAccessPage = () => {
             containerClassName="w-full mt-[-5px]"
           />
         </div>
-        {/* <Description
-          label="Link Viewer(s)"
-          items="start"
-          className="h-full text-sm">
-          <Table
-            dynamicColumns={['index']}
-            renderDynamicColumn={data => data.index + 1}
-            onclicktitle={(tabname: string, sortalfabet: boolean) => {
-              sortddata(tabname, sortalfabet);
-              setTabname(tabname);
-            }}
-            tabicon={tabname}
-            cols={columns}
-            items={itemssorted.length > 0 ? itemssorted : items}
-            containerClassName="w-3/5 mt-[-5px]"
-          />
-        </Description> */}
+       
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
         {userrole == 'superuser' ||

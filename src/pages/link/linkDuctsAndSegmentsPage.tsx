@@ -1,8 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
-import {BASE_URL, networkExplored} from '~/constant';
-import Cookies from 'js-cookie';
+import {BASE_URL} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
 import useHttpRequest from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
@@ -47,10 +46,10 @@ const LinkCablesAndSegmentsPage = () => {
   useEffect(() => {
     getrole();
   }, []);
-
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
-  const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
+  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const networkId =params.linkId!.split("_")[2];
+
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
 
@@ -189,9 +188,8 @@ const LinkCablesAndSegmentsPage = () => {
   const addcabledata = (id: number, index: number) => {
     let beforadddata = deepcopy(parentcabl?.ducts);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
-    let beforslicecabl = JSON.parse(
-      JSON.stringify(beforadddata[findcable].segments),
-    );
+    let beforslicecabl =deepcopy(beforadddata[findcable].segments);
+    
     let newArray = beforslicecabl.map(function (item: any) {
       if (item.id > index + 1) {
         item.id = item.id + 1;
@@ -327,7 +325,7 @@ const LinkCablesAndSegmentsPage = () => {
        update: state.http.linkupdatecables,
     }),
     initialRequests: request => {
-      request('linkDetail', {params: {link_id: params.linkId!}});
+      request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
       if (networkId) {
         request('allStations', undefined);
       }
@@ -338,7 +336,7 @@ const LinkCablesAndSegmentsPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkDetail', {params: {link_id: params.linkId!}});
+        request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
       }
     },
   });
@@ -365,7 +363,7 @@ const LinkCablesAndSegmentsPage = () => {
       }
     }
     request('linkupdatecables', {
-      params: {link_id: params.linkId!},
+      params: {link_id: params.linkId!.split("_")[0]},
       data: {cables: beforadddata.cables, ducts: newcable},
     });
   };
@@ -374,7 +372,7 @@ const LinkCablesAndSegmentsPage = () => {
     const Cables = state?.detail?.data?.data?.cables || [];
     const Ducts = state?.detail?.data?.data?.ducts || [];
 
-    let allcables = JSON.parse(JSON.stringify(Cables));
+    let allcables = deepcopy(Cables);
 
     for (let r = 0; r < Cables?.length; r++) {
       allcables[r].cableId = allcables[r]?.id;

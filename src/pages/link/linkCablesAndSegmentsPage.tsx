@@ -1,8 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
-import {BASE_URL, networkExplored} from '~/constant';
-import Cookies from 'js-cookie';
+import {BASE_URL} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
 import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
@@ -29,6 +28,7 @@ const Addbox = ({classname, onclick}: Iprops) => {
 };
 // *******************************
 const LinkCablesAndSegmentsPage = () => {
+  const params = useParams<{linkId: string}>();
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
@@ -46,10 +46,10 @@ const LinkCablesAndSegmentsPage = () => {
     getrole();
   }, []);
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
-  const networkId = Cookies.get(networkExplored);
+  const networkId =params.linkId!.split("_")[2];
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
-  const params = useParams<{linkId: string}>();
+
 
   const [parentcabl, setParentcable] = useState<{
     cables: {
@@ -97,7 +97,7 @@ const LinkCablesAndSegmentsPage = () => {
       update: state.http.linkupdatecables,
     }),
     initialRequests: request => {
-      request('linkDetail', {params: {link_id: params.linkId!}});
+      request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
       if (networkId) {
         request('allStations', undefined);
       }
@@ -107,7 +107,7 @@ const LinkCablesAndSegmentsPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkDetail', {params: {link_id: params.linkId!}});
+        request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
       }
     },
   });
@@ -150,7 +150,7 @@ const LinkCablesAndSegmentsPage = () => {
     }
 
     request('linkupdatecables', {
-      params: {link_id: params.linkId!},
+      params: {link_id: params.linkId!.split("_")[0]},
       data: {cables: newcable, ducts: beforadddata.ducts},
     });
   };
@@ -253,11 +253,9 @@ const LinkCablesAndSegmentsPage = () => {
 
   const addcabledata = (id: number, index: number) => {
     const Length = parentcabl?.cables?.length || 0;
-    let beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
+    let beforadddata = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
-    let beforslicecabl = JSON.parse(
-      JSON.stringify(beforadddata[findcable].segments),
-    );
+    let beforslicecabl =deepcopy(beforadddata[findcable].segments);
     let newArray = beforslicecabl.map(function (item: any) {
       if (item.id > index + 1) {
         item.id = item.id + 1;
@@ -287,7 +285,7 @@ const LinkCablesAndSegmentsPage = () => {
   };
 
   const deletecable = (id: number) => {
-    let beforadddata = JSON.parse(JSON.stringify(parentcabl?.cables));
+    let beforadddata = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
 
     beforadddata.splice(findcable, 1);
