@@ -13,6 +13,8 @@ const convertDate = (date: string, time: string) => {
 };
 const TestSetupDetailsModal: FC = () => {
   const params = useParams();
+  console.log("paramspp",params);
+  
   const navigate = useNavigate();
   const [validateeror, setvalidateeror] = useState(false);
   const {opticalroutUpdateTestsetupDetail} = useSelector(
@@ -32,7 +34,7 @@ const TestSetupDetailsModal: FC = () => {
     initialRequests: request => {
       request('opticalrouteTestSetupDetail', {
         params: {
-          optical_route_id: params.opticalRouteId || '',
+          optical_route_id: params.opticalRouteId!.split("_")[0] || '',
           test_setup_id: params.testId || '',
         },
       });
@@ -44,7 +46,7 @@ const TestSetupDetailsModal: FC = () => {
         state.opticalrouteCreateTestSetup!.httpRequestStatus === 'success'
       ) {
         request('opticalrouteTestSetup', {
-          params: {optical_route_id: params.opticalRouteId || ''},
+          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
         });
       }
     },
@@ -114,19 +116,19 @@ const TestSetupDetailsModal: FC = () => {
       //We first check whether we want to create a testsetup or update it
       if (params.testId == 'create') {
         request('opticalrouteCreateTestSetup', {
-          params: {optical_route_id: params.opticalRouteId || ''},
+          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
           data: newdata,
         });
       } else {
         request('opticalrouteUpdateTestSetup', {
           params: {
-            optical_route_id: params.opticalRouteId || '',
+            optical_route_id: params.opticalRouteId!.split("_")[0] || '',
             test_setup_id: params.testId || '',
           },
           data: newdata,
         });
       }
-      navigate(`/config/optical-routes/${params.opticalRouteId}/test-setup`);
+      navigate(`/config/optical-routes/${params.opticalRouteId!.split("_")[0]}/test-setup`);
     }
   };
 
