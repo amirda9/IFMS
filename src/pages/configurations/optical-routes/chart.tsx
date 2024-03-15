@@ -165,6 +165,7 @@ function Chart() {
   const [allchart, setAllchart] = useState<string[]>([]);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [fakeevents, setfakeEvents] = useState<any>([]);
+  const [arrowevents,setArrowevents]=useState<any>([])
   const [loading, setLoading] = useState(false);
   const [mousecursor, setMousecursor] = useState(false);
   const [fixedyaxies, setFixedyaxies] = useState(false);
@@ -245,6 +246,7 @@ function Chart() {
         Arrowevents?.forEach((point, index) => {
           const X = point.x;
           const Y = point.y!;
+     
           if (point.location == 'start') {
             allshapesCopy.push(
               {
@@ -426,7 +428,7 @@ function Chart() {
             );
           }
         });
-        setAllshapes(allshapesCopy);
+         setAllshapes(allshapesCopy);
         // }
 
         // ###################################################################################################
@@ -531,90 +533,6 @@ function Chart() {
     return c;
   };
   // ---- func ------func --------------- func ---------------- func ------------- func --------
-  const Events = () => {
-    if (showevents) {
-    } else {
-      setfakeEvents([
-        {
-          x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[0]?.event_location?.x,
-          ),
-          y: [...Array(41).keys()].map(
-            (dat, index) =>
-              chartdata?.key_events?.events[0]?.event_location?.y +
-              index / 2 -
-              10,
-          ),
-          //   data?.key_events?.events[0]?.event_location?.y - 10,
-          // ],
-
-          text: [chartdata?.key_events?.events[0]?.event_number],
-          textfont: {color: ['#A80000']},
-          showlegend: false,
-          textposition: 'bottom',
-          mode: 'lines+markers+text',
-          line: {width: 6, zindex: 10, color: '#A80000'},
-          marker: {color: '#A80000', zIndex: 10},
-          event_number: chartdata?.key_events?.events[0]?.event_number,
-          name: 'events',
-         layer:"above"
-        },
-        {
-          x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[1]?.event_location?.x,
-          ),
-          y: [...Array(41).keys()].map(
-            (dat, index) =>
-              chartdata?.key_events?.events[1]?.event_location?.y +
-              index / 2 -
-              10,
-          ),
-
-          text: [chartdata?.key_events?.events[1]?.event_number],
-          textfont: {color: ['#A80000']},
-          showlegend: false,
-          textposition: 'bottom',
-          mode: 'lines+markers+text',
-          line: {width: 6, zindex: 10, color: '#A80000'},
-          marker: {color: '#A80000', zIndex: 10},
-          event_number: chartdata?.key_events?.events[1]?.event_number,
-          name: 'events',
-          layer:"above"
-        },
-        {
-          x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[2]?.event_location?.x,
-          ),
-          y: [...Array(41).keys()].map(
-            (dat, index) =>
-              chartdata?.key_events?.events[2]?.event_location?.y +
-              index / 2 -
-              10,
-          ),
-
-          type: 'line',
-          text: [chartdata?.key_events?.events[2]?.event_number],
-          textfont: {color: ['#A80000']},
-          showlegend: false,
-          textposition: 'bottom',
-          mode: 'lines+markers+text',
-          line: {width: 6, zindex: 10, color: '#A80000'},
-          marker: {color: '#A80000', zIndex: 10},
-          event_number: chartdata?.key_events?.events[2]?.event_number,
-          layer:"above"
-          // marker: {color: 'blue',zIndex: 2},
-        },
-      ]);
-      setSelectedEvents(null);
-      addarowevents();
-      setShowEwents(true);
-    }
-
-    setLeftverticaltab('Events');
-  };
-
-  console.log('maxy', Math.floor(2 * maxy), typeof maxy);
-
   const addarowevents = () => {
     let Arrowevents = [];
     for (let i = 0; i < chartdata?.key_events?.events?.length; i++) {
@@ -640,9 +558,19 @@ function Chart() {
     let allshapesCopy: any = [];
     let elements: JSX.Element[] = [];
     // if (!showeventdetail) {
+  
     Arrowevents?.forEach((point, index) => {
       const X = point.x;
       const Y = point.y!;
+    
+     
+        
+      
+       
+      
+      
+
+   
       if (point.location == 'start') {
         allshapesCopy.push(
           {
@@ -837,8 +765,97 @@ function Chart() {
         );
       }
     });
-    setAllshapes(allshapesCopy);
+     setAllshapes(allshapesCopy);
+   
   };
+
+
+  const Events = () => {
+    if (showevents) {
+    } else {
+      setfakeEvents([
+        {
+          x: [...Array(41).keys()].map(
+            dataa => chartdata?.key_events?.events[0]?.event_location?.x,
+          ),
+          y: [...Array(41).keys()].map(
+            (dat, index) =>
+              chartdata?.key_events?.events[0]?.event_location?.y +
+              index / 2 -
+              10,
+          ),
+          //   data?.key_events?.events[0]?.event_location?.y - 10,
+          // ],
+          type: 'lines',
+          text: [chartdata?.key_events?.events[0]?.event_number],
+          textfont: {color: ['#A80000']},
+          showlegend: false,
+          textposition: 'bottom',
+          mode: 'lines+text',
+          line: {width: 6, zindex: 10, color: '#A80000'},
+          // marker: {color: '#A80000', zIndex: 10},
+          event_number: chartdata?.key_events?.events[0]?.event_number,
+          name: 'events',
+         layer:"above"
+        },
+        {
+          x: [...Array(41).keys()].map(
+            dataa => chartdata?.key_events?.events[1]?.event_location?.x,
+          ),
+          y: [...Array(41).keys()].map(
+            (dat, index) =>
+              chartdata?.key_events?.events[1]?.event_location?.y +
+              index / 2 -
+              10,
+          ),
+          type: 'lines',
+          text: [chartdata?.key_events?.events[1]?.event_number],
+          textfont: {color: ['#A80000']},
+          showlegend: false,
+          textposition: 'bottom',
+          mode: 'lines+text',
+          line: {width: 6, zindex: 10, color: '#A80000'},
+          // marker: {color: '#A80000', zIndex: 10},
+          event_number: chartdata?.key_events?.events[1]?.event_number,
+          name: 'events',
+          layer:"above"
+        },
+        {
+          x: [...Array(41).keys()].map(
+            dataa => chartdata?.key_events?.events[2]?.event_location?.x,
+          ),
+          y: [...Array(41).keys()].map(
+            (dat, index) =>
+              chartdata?.key_events?.events[2]?.event_location?.y +
+              index / 2 -
+              10,
+          ),
+
+          type: 'lines',
+          text: [chartdata?.key_events?.events[2]?.event_number],
+          textfont: {color: ['#A80000']},
+          showlegend: false,
+          textposition: 'bottom',
+          mode: 'lines+text',
+          line: {width: 6, zindex: 10, color: '#A80000'},
+          // marker: {color: '#A80000', zIndex: 10},
+          name: 'events',
+          event_number: chartdata?.key_events?.events[2]?.event_number,
+          layer:"above"
+          // marker: {color: 'blue',zIndex: 2},
+        },
+      ]);
+      setSelectedEvents(null);
+      addarowevents();
+      setShowEwents(true);
+    }
+
+    setLeftverticaltab('Events');
+  };
+
+  console.log('maxy', Math.floor(2 * maxy), typeof maxy);
+
+
   const Trace = () => {
     setLeftverticaltab('Trace');
     setShowEwents(false);
@@ -1397,6 +1414,8 @@ function Chart() {
                     line: {width: 6},
                     marker: {color: 'red'},
                   },
+                
+             
                   ...fakeevents,
                 ]}
                 config={{
