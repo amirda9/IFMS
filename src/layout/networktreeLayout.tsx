@@ -210,7 +210,7 @@ function NetworktreeLayout({children}: Iprops) {
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if (allstation.status === 200) {
       let allstationdata = await allstation.json();
-      console.log('🥵', allstationdata);
+     
 
       const finddata = regionstations.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
@@ -281,84 +281,106 @@ function NetworktreeLayout({children}: Iprops) {
   };
 
   const deletegroupsationds = async (regionid: string) => {
-    const deletestationlist = selectedstations.find(
-      data => data.regionid == regionid,
-    );
-    const response = await $Delete(
-      `otdr/station/batch_delete`,
-      deletestationlist?.stationsID,
-    );
-    if (response.status == 200) {
-      dispatch(
-        deletegroupstation({
-          regionid: regionid,
-          stationsid: deletestationlist?.stationsID || [],
-        }),
-      );
-    }
+
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        const deletestationlist = selectedstations.find(
+          data => data.regionid == regionid,
+        );
+        const response = await $Delete(
+          `otdr/station/batch_delete`,
+          deletestationlist?.stationsID,
+        );
+        if (response.status == 200) {
+          dispatch(
+            deletegroupstation({
+              regionid: regionid,
+              stationsid: deletestationlist?.stationsID || [],
+            }),
+          );
+        }
+      }})
   };
 
-  console.log("😋",defaultregionstations);
+
   
   const deletedefaultgroupsationds = async (networkid: string) => {
-    const deletestationlist = selecteddefaultstations.find(
-      data => data.networkid == networkid,
-    );
-    const response = await $Delete(
-      `otdr/station/batch_delete`,
-      deletestationlist?.stationsID,
-    );
-    if (response.status == 200) {
-      dispatch(
-        deletedefaultgroupstation({
-          networkid: networkid,
-          stationsid: deletestationlist?.stationsID || [],
-        }),
-      );
-    }
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        const deletestationlist = selecteddefaultstations.find(
+          data => data.networkid == networkid,
+        );
+        const response = await $Delete(
+          `otdr/station/batch_delete`,
+          deletestationlist?.stationsID,
+        );
+        if (response.status == 200) {
+          dispatch(
+            deletedefaultgroupstation({
+              networkid: networkid,
+              stationsid: deletestationlist?.stationsID || [],
+            }),
+          );
+        }
+      }})
+
   };
 
   const ondeletelinksgroup = async (regionid: string) => {
-    const deletestationlist = selectedlinks.find(
-      data => data.regionid == regionid,
-    );
-    const response = await $Delete(
-      `otdr/link/batch_delete`,
-      deletestationlist?.linkID,
-    );
-    if (response.status == 200) {
-      dispatch(
-        deletegrouplinks({
-          regionid: regionid,
-          linksid: deletestationlist?.linkID || [],
-        }),
-      );
-    }
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        const deletestationlist = selectedlinks.find(
+          data => data.regionid == regionid,
+        );
+        const response = await $Delete(
+          `otdr/link/batch_delete`,
+          deletestationlist?.linkID,
+        );
+        if (response.status == 200) {
+          dispatch(
+            deletegrouplinks({
+              regionid: regionid,
+              linksid: deletestationlist?.linkID || [],
+            }),
+          );
+        }
+
+      }})
+  
   };
 
   const ondeletedefaultlinksgroup = async (networkid: string) => {
-    const deletestationlist = selectedefaultdlinks.find(
-      data => data.networkid == networkid,
-    );
-    // const response = await $Delete(
-    //   `otdr/link/batch_delete`,
-    //   deletestationlist?.linkID,
-    // );
-    // if (response.status == 200) {
-    dispatch(
-      deletedefaultgrouplinks({
-        networkid: networkid,
-        linksid: deletestationlist?.linkID || [],
-      }),
-    );
-    // }
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        const deletestationlist = selectedefaultdlinks.find(
+          data => data.networkid == networkid,
+        );
+        // const response = await $Delete(
+        //   `otdr/link/batch_delete`,
+        //   deletestationlist?.linkID,
+        // );
+        // if (response.status == 200) {
+        dispatch(
+          deletedefaultgrouplinks({
+            networkid: networkid,
+            linksid: deletestationlist?.linkID || [],
+          }),
+        );
+        // }
+      }})
+
+    
   };
 
   const Deleteregion = async(regionid: string, networkid: string) => {
-    const response = await $Delete(`otdr/region/${regionid}`);
-    if (response.status == 200) {
-    dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
-    }
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        const response = await $Delete(`otdr/region/${regionid}`);
+        if (response.status == 200) {
+        dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
+        }
+      }})
+    
   };
   const onclickdefaltregion = async (networkid: string) => {
     let allLinks = [];
@@ -366,7 +388,7 @@ function NetworktreeLayout({children}: Iprops) {
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
     const responsestationData = await responsestation.json();
     const responselink = await $Get(`otdr/link/network/${networkid}`);
-    console.log('👺', responsestationData);
+
 
     const responselinkData = await responselink.json();
     if (responsestation.status == 200 && responselink.status == 200) {
@@ -394,11 +416,15 @@ function NetworktreeLayout({children}: Iprops) {
   };
 
   const Deletenetwork = async (networkid: string) => {
-      const deletenetworkresponse = await $Delete(`otdr/network/${networkid}`);
-      if (deletenetworkresponse.status == 200) {
-        dispatch(deletenetwork(networkid));
-        navigate('./')
-      }
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        const deletenetworkresponse = await $Delete(`otdr/network/${networkid}`);
+        if (deletenetworkresponse.status == 200) {
+          dispatch(deletenetwork(networkid));
+          navigate('./')
+        }
+      }})
+     
   };
   return (
     <>
