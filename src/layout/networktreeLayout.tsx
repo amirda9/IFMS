@@ -152,13 +152,13 @@ function NetworktreeLayout({children}: Iprops) {
   }: ItemspROPS) => {
     return (
       <div className="relative mb-[15px] flex h-[40px] flex-row items-center">
-        <span className="mr-[4px] text-[20px]">....</span>
+        <span className="mr-[4px] text-[10px]">........</span>
         {pluse ? (
           <>
             {allselectedId.indexOf(id) > -1 ? (
               <span
                 // onClick={() => onclikitems(id)}
-                className="z-50 mt-[-4px] cursor-pointer text-[20px]">
+                className="z-50 mt-[-6.5px] cursor-pointer font-light">
                 _
               </span>
             ) : (
@@ -398,8 +398,8 @@ function NetworktreeLayout({children}: Iprops) {
             {showAllnetworks ? (
               <span
                 onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
-                className="mr-[7px] mt-[-14px] cursor-pointer text-[20px]">
-                _
+                className="mr-[7px] mt-[-14px] cursor-pointer font-light">
+               -
               </span>
             ) : (
               <span
@@ -432,8 +432,8 @@ function NetworktreeLayout({children}: Iprops) {
         </div>
 
         {showAllnetworks ? (
-          <div className="relative flex  w-full flex-col border-l-2 border-dashed border-black">
-            <div className="absolute bottom-[-3px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
+          <div className="relative flex  w-full flex-col border-l-[1px] mt-[-22px]  ml-[3px] pt-[45px] border-dotted border-black">
+            
             {networkslist?.map((networkdata,index) => (
               <div key={index} className='w-full'>
                 <Items
@@ -452,11 +452,14 @@ function NetworktreeLayout({children}: Iprops) {
                   id={networkdata.id}
                   name={networkdata.name}
                 />
+                {index == networkslist.length-1?
+              <div className="z-10 absolute h-full mt-[-30px] left-[-5px] w-[20px] bg-[#E7EFF7]"></div>
+              : null}
 
                 {allselectedId.indexOf(networkdata.id) > -1 ? (
                   <>
-                    <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
-                      <div className="absolute bottom-[-3px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
+                    <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
+                      <div className="absolute bottom-[-3px] left-[-10px] z-10 h-[33.6px] w-[20px] bg-[#E7EFF7]"></div>
                       {networkregions
                         .find(
                           networkregionsdata =>
@@ -482,15 +485,15 @@ function NetworktreeLayout({children}: Iprops) {
                               name={regionsdata.name}
                             />
                             {allselectedId.indexOf(regionsdata.id) > -1 ? (
-                              <div className="relative ml-[32px]  mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
+                              <div className="relative ml-[32px]  mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
                                 <div
                                   className={`absolute ${
                                     allselectedId.indexOf(
                                       `${regionsdata.id}&${regionsdata.id}`,
                                     ) > -1
-                                      ? 'bottom-[-7px]'
+                                      ? 'bottom-[-9px]'
                                       : 'bottom-[-3px]'
-                                  } left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]`}></div>
+                                  } left-[-10px] z-10 h-[34px] w-[20px] bg-[#E7EFF7]`}></div>
                                 <Items
                                   key={Number(`${index}`)}
                                   to={`/regions/${regionsdata.id}`}
@@ -512,8 +515,8 @@ function NetworktreeLayout({children}: Iprops) {
                                 {allselectedId.indexOf(
                                   `${regionsdata.id}${regionsdata.id}`,
                                 ) > -1 ? (
-                                  <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
-                                    <div className="absolute bottom-[-4px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
+                                  <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
+                                    <div className="absolute bottom-[-4px] left-[-10px] z-10 h-[35px] w-[20px] bg-[#E7EFF7]"></div>
 
                                     {regionstations
                                       .find(
@@ -583,7 +586,7 @@ function NetworktreeLayout({children}: Iprops) {
                                 {allselectedId.indexOf(
                                   `${regionsdata.id}&${regionsdata.id}`,
                                 ) > -1 ? (
-                                  <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
+                                  <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
                                     <div
                                       className={`absolute ${
                                         allselectedId.indexOf(
@@ -591,8 +594,8 @@ function NetworktreeLayout({children}: Iprops) {
                                         ) > -1
                                           ? 'bottom-[-4px]'
                                           : 'bottom-[-8px]'
-                                      } left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]`}></div>
-                                    <div className="absolute bottom-[3px] left-[-40px] z-10 h-full w-[20px] bg-[#E7EFF7]"></div>
+                                      } left-[-10px] z-10 h-[35px] w-[20px] bg-[#E7EFF7]`}></div>
+                                    <div className="absolute bottom-[5.8px] left-[-40px] z-10 h-full w-[20px] bg-[#E7EFF7]"></div>
                                     {regionLinks
                                       .find(
                                         dataa =>
@@ -641,7 +644,7 @@ function NetworktreeLayout({children}: Iprops) {
                             ) : null}
                           </div>
                         ))}
-
+     
                       {/* -----------------------------------------------------------------------------                    */}
                       <>
                         <Items
@@ -661,16 +664,25 @@ function NetworktreeLayout({children}: Iprops) {
                         {allselectedId.indexOf(
                           `${networkdata.id}${networkdata.id}&`,
                         ) > -1 ? (
-                          <div className="relative ml-[32px]  mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
-                           <div className='absolute z-10 left-[-40px] top-[-3px] h-full bg-[#E7EFF7] w-[20px]'></div>
-                            <div
-                              className={`absolute ${
-                                allselectedId.indexOf(
-                                  `${networkdata.id}${networkdata.id}&`,
-                                ) > -1
-                                  ? 'bottom-[-7px]'
-                                  : 'bottom-[-3px]'
-                              } left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]`}></div>
+                          <div className="relative ml-[32px]  mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
+                           <div className='absolute z-10 left-[-40px] top-[-6px] h-full bg-[#E7EFF7] w-[20px]'></div>
+                           {/* {defaultregionLinks.length == 0?
+                           null
+                          : */}
+                          
+                       
+                          <div
+                          className={`absolute ${
+                            allselectedId.indexOf(
+                              `&${networkdata.id}&${networkdata.id}`,
+                            ) > -1
+                              ? 'bottom-[-6px]'
+                              : 'bottom-[-1px]'
+                          } left-[-10px] z-10 h-[32px] w-[20px] bg-[#E7EFF7]`}></div>
+                          
+              
+                          {/* // } */}
+                           
                             <Items
                               key={Number(`${networkdata.id}`)}
                               to={`/regions/${networkdata.id}`}
@@ -697,8 +709,8 @@ function NetworktreeLayout({children}: Iprops) {
                             {allselectedId.indexOf(
                               `&${networkdata.id}${networkdata.id}&`,
                             ) > -1 ? (
-                              <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
-                                <div className="absolute bottom-[-4px] left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]"></div>
+                              <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
+                                <div className="absolute bottom-[-4px] left-[-10px] z-10 h-[35px] w-[20px] bg-[#E7EFF7]"></div>
 
                                 {defaultregionstations
                                   .find(
@@ -764,7 +776,7 @@ function NetworktreeLayout({children}: Iprops) {
                             {allselectedId.indexOf(
                               `&${networkdata.id}&${networkdata.id}`,
                             ) > -1 ? (
-                              <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[2px] border-dashed border-black pt-[20px]">
+                              <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
                                 <div
                                   className={`absolute ${
                                     allselectedId.indexOf(
@@ -772,8 +784,8 @@ function NetworktreeLayout({children}: Iprops) {
                                     ) > -1
                                       ? 'bottom-[-4px]'
                                       : 'bottom-[-8px]'
-                                  } left-[-10px] z-10 h-[30px] w-[20px] bg-[#E7EFF7]`}></div>
-                                <div className="absolute bottom-[3px] left-[-40px] z-10 h-full w-[20px] bg-[#E7EFF7]"></div>
+                                  } left-[-10px] z-10 h-[35px] w-[20px] bg-[#E7EFF7]`}></div>
+                                <div className="absolute bottom-[5px] left-[-40px] z-10 h-full w-[20px] bg-[#E7EFF7]"></div>
                                 {defaultregionLinks
                                   .find(
                                     dataa => dataa.networkid == networkdata.id,
@@ -824,6 +836,7 @@ function NetworktreeLayout({children}: Iprops) {
                 ) : null}
               </div>
             ))}
+       
           </div>
         ) : null}
 
