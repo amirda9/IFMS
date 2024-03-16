@@ -28,7 +28,7 @@ const NetworkCreatePage = () => {
   });
   return (
     <div className="flex w-full flex-col gap-4">
-      <h1 className="mb-4 font-bold">Create Network</h1>
+      <h1 className="mb-4 text-md font-bold">Create Network</h1>
       <Formik
         validationSchema={networkSchema}
         initialValues={{name: '', description: ''}}

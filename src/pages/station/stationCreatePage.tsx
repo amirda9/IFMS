@@ -72,7 +72,7 @@ const StationDetailPage = () => {
       <Form className="w-full">
         <div className="relative flex min-h-[calc(100vh-160px)] flex-grow flex-col justify-between ">
           <div className="flex flex-col gap-y-4">
-            <span  className='text-sm text-black mb-4 mt-4'>Create station</span>
+            <span  className='text-md font-bold text-black mb-4 mt-4'>Create station</span>
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" className="w-2/3 disabled:bg-white" />
             </Description>

@@ -65,7 +65,7 @@ const RegionDetailPage = () => {
   );
   return (
     <FormLayout buttons={buttons}>
-      <h1 className="mb-4 font-bold">Create Region</h1>
+      <h1 className="mb-4 text-md font-bold">Create Region</h1>
       <Formik
         initialValues={{
           name: '',

@@ -5,6 +5,7 @@ import {SidebarItem} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {RootState} from '~/store';
 import {deepcopy} from '~/util';
+import Swal from 'sweetalert2';
 import {
   setNetworkregions,
   setRegionstations,
@@ -48,6 +49,17 @@ type ItemspROPS = {
 };
 type Iprops = {
   children: React.ReactNode;
+};
+
+
+const swalsetting: any = {
+  title: 'Are you sure you want to delete these components?',
+  // text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!',
 };
 
 function NetworktreeLayout({children}: Iprops) {
@@ -385,6 +397,7 @@ function NetworktreeLayout({children}: Iprops) {
       const deletenetworkresponse = await $Delete(`otdr/network/${networkid}`);
       if (deletenetworkresponse.status == 200) {
         dispatch(deletenetwork(networkid));
+        navigate('./')
       }
   };
   return (
