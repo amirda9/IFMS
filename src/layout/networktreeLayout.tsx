@@ -210,7 +210,7 @@ function NetworktreeLayout({children}: Iprops) {
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if (allstation.status === 200) {
       let allstationdata = await allstation.json();
-     
+      console.log('🥵', allstationdata);
 
       const finddata = regionstations.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
@@ -300,9 +300,12 @@ function NetworktreeLayout({children}: Iprops) {
           );
         }
       }})
+
+
+  
   };
 
-
+  console.log("😋",defaultregionstations);
   
   const deletedefaultgroupsationds = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
@@ -388,7 +391,7 @@ function NetworktreeLayout({children}: Iprops) {
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
     const responsestationData = await responsestation.json();
     const responselink = await $Get(`otdr/link/network/${networkid}`);
-
+    console.log('👺', responsestationData);
 
     const responselinkData = await responselink.json();
     if (responsestation.status == 200 && responselink.status == 200) {
