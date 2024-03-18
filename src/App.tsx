@@ -66,6 +66,8 @@ function App() {
             Component={pages.RegionAccessEditPage}
           />
             <Route path="create/:networkid" Component={pages.RegionCreatePage} />
+            <Route path="defaultregionemptypage/:id" Component={pages.defaultregionemptypage} />
+
             <Route path=":regionId" Component={pages.RegionEmptyPage}>
               <Route path="" Component={pages.RegionDetailPage} />
               <Route path="access" Component={pages.RegionAccessPage} />

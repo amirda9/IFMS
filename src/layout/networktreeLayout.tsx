@@ -538,7 +538,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   } left-[-10px] z-10 h-[34px] w-[20px] bg-[#E7EFF7]`}></div>
                                 <Items
                                   key={Number(`${index}`)}
-                                  to={`/regions/${regionsdata.id}`}
+                                  to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
                                   createurl={`/stations/create/${regionsdata.id}_${networkdata.id}`}
                                   canDelete={false}
                                   selected={false}
@@ -610,7 +610,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   key={Number(
                                     `${regionsdata.id}${networkdata.id}`,
                                   )}
-                                  to={`/regions/${regionsdata.id}`}
+                                  to={`/regions/defaultregionemptypage/${networkdata.id}_Linkss`}
                                   selected={false}
                                   canDelete={false}
                                   onDelete={() => {}}
@@ -691,7 +691,7 @@ function NetworktreeLayout({children}: Iprops) {
                       <>
                         <Items
                           key={Number(networkdata.id)}
-                          to={'dede'}
+                          to={`/regions/defaultregionemptypage/${networkdata.id}`}
                           canAdd={false}
                           canDelete={false}
                           selected={false}
@@ -727,7 +727,7 @@ function NetworktreeLayout({children}: Iprops) {
                            
                             <Items
                               key={Number(`${networkdata.id}`)}
-                              to={`/regions/${networkdata.id}`}
+                              to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
                               createurl={`../stations/createdefault/${networkdata.id}`}
                               canDelete={false}
                               
@@ -798,9 +798,12 @@ function NetworktreeLayout({children}: Iprops) {
                                   ))}
                               </div>
                             ) : null}
+
+
+                            
                             <Items
                               key={Number(`${networkdata.id}${networkdata.id}`)}
-                              to={`/regions/${networkdata.id}`}
+                              to={`/regions/defaultregionemptypage/_Links_${networkdata.id}`}
                               selected={false}
                               canDelete={false}
                               onDelete={() => {}}
@@ -812,7 +815,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   // onclicklinks(networkdata.id);
                               }}
                               createurl={`/links/createdefaultregionlink/${networkdata.id}`}
-                              id={`&${networkdata.id}&${networkdata.id}`}
+                              id={`&${networkdata.id}&${networkdata.id}&`}
                               name="Links"
                             />
                             {allselectedId.indexOf(

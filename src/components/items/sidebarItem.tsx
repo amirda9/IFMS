@@ -84,19 +84,20 @@ const SidebarItem: FC<PropsType> = ({
       ) : null}
 
       {canDelete && onDelete && result > -1 && selected ? (
-        <button
-          className={`ml-[-4px] rounded-r-lg px-[4px] ${
-            result > -1 ? 'bg-[#C0E7F2]' : 'white'
-          } `}
-          onClick={onDelete}>
+        // <button
+        //   className={`ml-[-4px] rounded-r-lg px-[4px] ${
+        //     result > -1 ? 'bg-[#C0E7F2]' : 'white'
+        //   } `}
+        //   onClick={onDelete}>
           <IoTrashOutline
-            size={24}
+          onClick={onDelete}
+            size={32}
             className={classNames(
               disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500',
-              'active:text-red-300',
+              'active:text-red-300',"ml-[-4px] rounded-r-lg px-[4px] absolute right-0 top-[4px]",
             )}
           />
-        </button>
+        // </button>
       ) : null}
     </div>
   );

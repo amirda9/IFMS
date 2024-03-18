@@ -8,3 +8,4 @@ export {default as RegionCreatePage} from './regionCreatePage';
 export {default as RegionAccessEditPage} from './regionAccessEditPage';
 export {default as RegionstationlisteditPage} from './regionstationlisteditPage';
 export {default as RegionlinklisteditPage} from './regionlinklisteditPage';
+export {default as defaultregionemptypage} from './defaultregionemptypage';
