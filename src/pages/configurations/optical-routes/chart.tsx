@@ -28,6 +28,7 @@ import {useLocation} from 'react-router-dom';
 import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
+import { log } from 'util';
 
 type chatrtabtype = {
   name: string;
@@ -187,6 +188,8 @@ function Chart() {
     }[]
   >([]);
   const [autotick, setAutodic] = useState(true);
+
+console.log(location,"location");
 
   useEffect(() => {
     // let data:any;
@@ -492,6 +495,22 @@ function Chart() {
           }
         }
         setTabelitems(items);
+
+
+        // get optical route links and segment
+        const getopticalroteRoute=async()=>{
+         const getopticalroteRouteResponse=await $Get(`otdr/optical-route/${location.state.opticalrout_id}/routes`)
+         const getopticalroteRoutedata=await getopticalroteRouteResponse.json()
+         console.log(getopticalroteRoutedata,'getopticalroteRoutedata.');
+     const promises = getopticalroteRoutedata.map((data:any) => $Get(`otdr/link/${data.link_id}`));
+        
+   const [alll]=await Promise.all(promises)
+   let alllinksdata = await alll.json();
+  console.log(alllinksdata,'alll');
+  
+    }
+        getopticalroteRoute()
+
       } catch (error) {
         console.log(error);
       } finally {
@@ -1395,7 +1414,7 @@ function Chart() {
               <Plot
                 ref={plotref}
                 onRelayout={e => moveshapes(e)}
-                className="h-[538px] w-full bg-[red] p-0"
+                className="h-[500px] w-full bg-[red] p-0"
                 onHover={e =>
                   setMousecoordinate({
                     x: Number(e.points[0].x),
@@ -1454,12 +1473,12 @@ function Chart() {
             </div>
           </div>
 
-          {/* <div className="relative mt-[30px] flex h-[10px] w-[720px] bg-[#18C047]">
+          <div className="relative mt-[30px] flex h-[10px] w-[720px] bg-[#18C047]">
             <div className="absolute left-0 top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
             <div className="absolute right-0  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
             <div className="absolute right-[100px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
             <div className="absolute right-[150px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
-          </div> */}
+          </div>
         </div>
         {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}
         <div className="w-[370px]">
