@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
 import {BASE_URL} from '~/constant';
@@ -6,7 +6,7 @@ import {BsPlusLg} from 'react-icons/bs';
 import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
-import { deepcopy } from '~/util';
+import {deepcopy} from '~/util';
 
 type Iprops = {
   classname: string;
@@ -46,18 +46,20 @@ const LinkCablesAndSegmentsPage = () => {
     getrole();
   }, []);
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
-  const networkId =params.linkId!.split("_")[2];
+  const networkId = params.linkId!.split('_')[2];
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
-
 
   const [parentcabl, setParentcable] = useState<{
     cables: {
       id: number;
       cableId: string;
       number_of_cores: number;
+      helix_factor: number,
       segments: [
         {
+          connection_type:string,
+          connection_loss: number,
           id: number;
           start: number;
           length: number;
@@ -90,6 +92,7 @@ const LinkCablesAndSegmentsPage = () => {
       | [];
   }>();
 
+
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.linkDetail,
@@ -97,7 +100,7 @@ const LinkCablesAndSegmentsPage = () => {
       update: state.http.linkupdatecables,
     }),
     initialRequests: request => {
-      request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
+      request('linkDetail', {params: {link_id: params.linkId!.split('_')[0]}});
       if (networkId) {
         request('allStations', undefined);
       }
@@ -107,10 +110,30 @@ const LinkCablesAndSegmentsPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
+        request('linkDetail', {
+          params: {link_id: params.linkId!.split('_')[0]},
+        });
       }
     },
   });
+
+
+
+  // const findlinkdetail=state.detail?.data?.versions?.find(
+  //   (version: any) =>
+  //     version.id === state.detail?.data?.current_version?.id,
+  // )
+
+  const findlinkdetail = useMemo(
+    () =>
+      state.detail?.data?.versions?.find(
+        (version: any) =>
+          version.id === state.detail?.data?.current_version?.id,
+      ),
+    [state?.detail],
+  );
+
+
 
   useEffect(() => {
     const Cables = state?.detail?.data?.data?.cables || [];
@@ -121,10 +144,12 @@ const LinkCablesAndSegmentsPage = () => {
       allcables[i].cableId = allcables[i]?.id;
       allcables[i].id = Number(i) + 1;
       allcables[i].number_of_cores = allcables[i]?.number_of_cores;
+      allcables[i].helix_factor = allcables[i]?.helix_factor;
+      
       for (let j = 0; j < allcables[i]?.segments?.length; j++) {
         allcables[i].segments[j] = {
           ...allcables[i]?.segments[j],
-          id: Number(j),
+          id: Number(j)+1,
           fixId: true,
         };
       }
@@ -139,6 +164,7 @@ const LinkCablesAndSegmentsPage = () => {
       newcable.push({
         id: beforadddata.cables[i].cableId,
         number_of_cores: beforadddata.cables[i].number_of_cores,
+        helix_factor:beforadddata.cables[i].helix_factor,
         segments: beforadddata?.cables[i]?.segments,
       });
       for (let j = 0; j < beforadddata?.ducts[i]?.segments?.length; j++) {
@@ -150,11 +176,10 @@ const LinkCablesAndSegmentsPage = () => {
     }
 
     request('linkupdatecables', {
-      params: {link_id: params.linkId!.split("_")[0]},
+      params: {link_id: params.linkId!.split('_')[0]},
       data: {cables: newcable, ducts: beforadddata.ducts},
     });
   };
-
 
   const finddataindex = (x: string) => {
     let alldatabasecabel = state?.detail?.data?.data?.cables?.findIndex(
@@ -172,9 +197,16 @@ const LinkCablesAndSegmentsPage = () => {
   let timer: string | number | NodeJS.Timeout | undefined;
 
   const setcores = (id: number, x: string) => {
-    let beforadddata =deepcopy(parentcabl?.cables);
+    let beforadddata = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
     beforadddata[findcable].number_of_cores = Number(x);
+    setParentcable({cables: beforadddata, ducts: []});
+  };
+
+  const sethelixfactor = (id: number, x: string) => {
+    let beforadddata = deepcopy(parentcabl?.cables);
+    const findcable = beforadddata.findIndex((data: any) => data.id == id);
+    beforadddata[findcable].helix_factor = Number(x);
     setParentcable({cables: beforadddata, ducts: []});
   };
 
@@ -190,20 +222,26 @@ const LinkCablesAndSegmentsPage = () => {
     slicecablId: number,
     x: string,
     name: string,
+    index: number,
   ) => {
     let beforadddata = deepcopy(parentcabl?.cables);
     let beforadddata2 = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
-    const findcableslicecabl = beforadddata[findcable].segments.findIndex(
-      (data: any) => data.id == slicecablId,
-    );
-    beforadddata[findcable].segments[findcableslicecabl][name] =
-      name == 'fiber_type' ? x : Number(x);
+    beforadddata[findcable].segments[index][name] =
+      (name == 'fiber_type' || name == "connection_type") ? x : Number(x);
     if (name == 'start') {
-      beforadddata[findcable].segments[findcableslicecabl - 1].length =
-        beforadddata[findcable].segments[findcableslicecabl] -
-        beforadddata[findcable].segments[findcableslicecabl - 1];
-      // beforadddata[findcable].segments[findcableslicecabl - 1].length=beforadddata2[findcable].segments[(findcableslicecabl - 1)].length-Number(x);
+      beforadddata[findcable].segments[index - 1].length =
+        beforadddata[findcable].segments[index].start -
+        beforadddata[findcable].segments[index - 1].start;
+      if (index == beforadddata[findcable].segments.length - 1) {
+        beforadddata[findcable].segments[index].length =
+          findlinkdetail?.length! -
+            beforadddata[findcable].segments[index].start || 0;
+      } else {
+        beforadddata[findcable].segments[index].length =
+        beforadddata[findcable].segments[index+1].start -
+          beforadddata[findcable].segments[index].start || 0;
+      }
     }
     setParentcable({cables: beforadddata, ducts: []});
   };
@@ -238,8 +276,18 @@ const LinkCablesAndSegmentsPage = () => {
     newArray.push({
       id: index + 1,
       cableId: '',
+      helix_factor:1,
       segments: [
-        {id: 1, start: 0, length: 0, offset: 0, loss: 0, fiber_type: ''},
+        {
+          connection_type:"connector",
+          connection_loss:1,
+          id: 1,
+          start: 0,
+          length: findlinkdetail?.length,
+          offset: 0,
+          loss: 0,
+          fiber_type: '',
+        },
       ],
       number_of_cores: 0,
     });
@@ -255,33 +303,48 @@ const LinkCablesAndSegmentsPage = () => {
     const Length = parentcabl?.cables?.length || 0;
     let beforadddata = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
-    let beforslicecabl =deepcopy(beforadddata[findcable].segments);
-    let newArray = beforslicecabl.map(function (item: any) {
-      if (item.id > index + 1) {
-        item.id = item.id + 1;
-        return item;
-      } else {
-        return item;
+    if(index == beforadddata[findcable].segments.length-1 && (beforadddata[findcable].segments[beforadddata[findcable].segments.length-1].start == findlinkdetail?.length)){
+
+    }else{
+      let beforslicecabl = deepcopy(beforadddata[findcable].segments);
+      let newArray = beforslicecabl.map(function (item: any) {
+        if (item.id > index + 1) {
+          item.id = item.id + 1;
+          return item;
+        } else {
+          return item;
+        }
+      });
+      
+   
+      newArray.push({
+        connection_type:"connector",
+        connection_loss:1,
+        id: index + 2,
+        start:
+          index < newArray.length - 1
+            ? (newArray[index].start + newArray[index + 1].start) / 2
+            : findlinkdetail?.length,
+        length: index < newArray.length - 1
+        ? newArray[index].start+((newArray[index].start + newArray[index + 1].start) / 2)
+        : 0,
+        offset: 0,
+        loss: 0,
+        fiber_type: '',
+      });
+  
+      const sortarray = newArray.sort((a: any, b: any) => {
+        return a.id - b.id;
+      });
+  
+      beforadddata[findcable].segments = sortarray;
+      if(index != beforadddata[findcable].segments.length-1){
+       beforadddata[findcable].segments[index].length=(beforadddata[findcable].segments[index+1].start - beforadddata[findcable].segments[index].start)
       }
-    });
-    newArray.push({
-      id: index + 2,
-      start:
-        index < newArray.length - 1
-          ? (newArray[index].start + newArray[index + 1].start) / 2
-          : 8,
-      length: 0,
-      offset: 0,
-      loss: 0,
-      fiber_type: '',
-    });
-
-    const sortarray = newArray.sort((a: any, b: any) => {
-      return a.id - b.id;
-    });
-
-    beforadddata[findcable].segments = sortarray;
-    setParentcable({cables: beforadddata, ducts: parentcabl?.ducts || []});
+      setParentcable({cables: beforadddata, ducts: parentcabl?.ducts || []});
+    }
+   
+   
   };
 
   const deletecable = (id: number) => {
@@ -293,8 +356,11 @@ const LinkCablesAndSegmentsPage = () => {
       id: number;
       cableId: string;
       number_of_cores: number;
+      helix_factor:number
       segments: [
         {
+          connection_type:string,
+          connection_loss: number,
           id: number;
           start: number;
           length: number;
@@ -310,16 +376,30 @@ const LinkCablesAndSegmentsPage = () => {
         segments: beforadddata[i].segments,
         number_of_cores: beforadddata[i].number_of_cores,
         cableId: beforadddata[i].cableId,
+        helix_factor: beforadddata[i].helix_factor,
       });
     }
     setParentcable({cables: data, ducts: parentcabl?.ducts || []});
   };
 
-  const deletecabledata = (cableid: number, cabledataid: number) => {
+  const deletecabledata = (cableid: number, cabledataid: number,index:number) => {
     let beforadddata = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == cableid);
-    let beforslicecabl = deepcopy(beforadddata[findcable].segments)
-    
+    let beforslicecabl = deepcopy(beforadddata[findcable].segments);
+    if(index ==0){
+      if(beforslicecabl.length >0){
+        beforslicecabl[index+1].start=0
+        beforslicecabl[index+1].length=beforslicecabl[index+1].length+beforslicecabl[index].length
+      }
+
+    }else{
+      if(index == beforslicecabl.length-1){
+        beforslicecabl[index-1].length=(beforadddata[findcable].segments[index].length+beforadddata[findcable].segments[index].start)-beforadddata[findcable].segments[index-1].start
+      }else{
+        beforslicecabl[index-1].length=(beforadddata[findcable].segments[index+1].start)-beforadddata[findcable].segments[index-1].start
+      }
+    }
+
     beforslicecabl.splice(cabledataid - 1, 1);
     let data: {
       id: number;
@@ -329,10 +409,14 @@ const LinkCablesAndSegmentsPage = () => {
       loss: number;
       fiber_type: string;
       fixId: boolean;
+      connection_type:string,
+      connection_loss:number,
     }[] = [];
 
     for (let i = 0; i < beforslicecabl.length; i++) {
       data.push({
+        connection_type:beforslicecabl[i]?.connection_type,
+        connection_loss:beforslicecabl[i]?.connection_loss,
         id: i + 1,
         start: beforslicecabl[i]?.start,
         length: beforslicecabl[i]?.length,
@@ -400,7 +484,7 @@ const LinkCablesAndSegmentsPage = () => {
                   }  w-[30px] bg-b`}></div>
 
                 <div className="z-40 flex w-full flex-row items-center justify-between">
-                  <div className="flex w-full justify-between flex-row">
+                  <div className="flex w-full flex-row justify-between">
                     <span className="w-14"> {idd + 1}</span>
                     <Description
                       label="ID:"
@@ -417,7 +501,7 @@ const LinkCablesAndSegmentsPage = () => {
                     <Description
                       label="Number of Cores:"
                       labelClassName="pr-0"
-                      className="w-[270px] pr-4 ml-[-20px]">
+                      className="ml-[-20px] w-[270px] pr-4">
                       <TextInput
                         value={data.number_of_cores}
                         onChange={e => setcores(data.id, e.target.value)}
@@ -430,8 +514,8 @@ const LinkCablesAndSegmentsPage = () => {
                       labelClassName="pr-2"
                       className="w-[235px] pr-4">
                       <TextInput
-                        value={data.number_of_cores}
-                        onChange={e => setcores(data.id, e.target.value)}
+                        value={data.helix_factor}
+                        onChange={e => sethelixfactor(data.id, e.target.value)}
                         type="number"
                         className="w-28 "
                       />
@@ -490,78 +574,89 @@ const LinkCablesAndSegmentsPage = () => {
                     </div>
                     {data?.segments?.map((dataa: any, index: number) => {
                       let finddata = finddataindex(data.cableId);
-                      // console.log(data.segments[index-1],'😁');
+                      
 
                       return (
-                        <div className="w-full bg-[#ACD3DE] p-4 mb-[15px] rounded-[10px]" key={index}>
+                        <div
+                          className="relative mb-[15px] w-full rounded-[10px] bg-[#ACD3DE] p-4"
+                          key={index}>
                           <div
-                            className="flex relative flex-col justify-between pr-[40px]"
+                            className="relative flex flex-col justify-between pr-[40px]"
                             key={index}>
-                                <div className="flex flex-row gap-x-12 absolute top-[5px] right-[10px]">
+                            <div className="absolute right-[10px] top-[5px] flex flex-row gap-x-12">
                               <IoTrashOutline
                                 onClick={() =>
-                                  deletecabledata(data.id, dataa.id)
+                                  deletecabledata(data.id, dataa.id,index)
                                 }
                                 size={24}
                                 className="cursor-pointer  text-red-500   active:text-red-300"
                               />
-                           
                             </div>
                             <div className="flex w-full flex-row justify-between">
-                            <div className="flex w-[65%] flex-row justify-between ">
+                               <div className="flex w-[65%] flex-row justify-between ">
                             <span className="mr-[5px] text-left">Connection Type</span>
-                                <TextInput
-                                  defaultValue={10}
-                                  value={
-                                    index == 0
-                                      ? 0
-                                      : dataa.start == 0
-                                      ? data.segments[index - 1].length
-                                      : dataa.start
+                            <Select
+                                  value={dataa.connection_type}
+                                  onChange={e =>
+                                    setcableslicecabsegment(
+                                      data.id,
+                                      dataa.id,
+                                      e.target.value,
+                                      'connection_type',
+                                      index,
+                                    )
                                   }
+                                  className="w-[80%]"
+                                  // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
+                                >
+                                  <option value="" className="hidden">
+                                  {dataa.connection_type}
+                                  </option>
+                                  <option value={undefined} className="hidden">
+                                    {dataa.connection_type}
+                                  </option>
+                                  <option value="connector">connector</option>
+                                  <option value="fusion_splice">fusion_splice</option>
+                                </Select>
+                                {/* <TextInput
+                              
+                                  value={dataa.connection_type}
+
                                   onChange={
-                                    index == 0
-                                      ? () => {}
-                                      : e =>
+                                    e =>
                                           setcableslicecabsegment(
                                             data.id,
                                             dataa.id,
                                             e.target.value,
-                                            'start',
+                                            'connection_type',
+                                            index
                                           )
                                   }
+
                                   className="w-[80%]"
                                   type="number"
-                                />
-                            </div>
-                              <div className="flex w-[30%]   box-border flex-row justify-between ">
+                                /> */}
+                            </div> 
+                               <div className="flex w-[30%]   box-border flex-row justify-between ">
                                 <span className="mr-[5px] w-[100px]  text-left">
                                   Connection Loss (dB)
                                 </span>
                                 <TextInput
-                                  defaultValue={10}
-                                  value={
-                                    index == 0
-                                      ? 0
-                                      : dataa.start == 0
-                                      ? data.segments[index - 1].length
-                                      : dataa.start
-                                  }
-                                  onChange={
-                                    index == 0
-                                      ? () => {}
-                                      : e =>
+                             
+                                  value={dataa.connection_loss}
+                                  onChange={e =>
                                           setcableslicecabsegment(
                                             data.id,
                                             dataa.id,
                                             e.target.value,
-                                            'start',
+                                            'connection_loss',
+                                            index
                                           )
                                   }
                                   className="w-[60%]"
                                   type="number"
                                 />
-                              </div>
+                              </div> 
                             </div>
                             <div className="flex w-full flex-row justify-between">
                               <div className="flex w-[30%] flex-row justify-between ">
@@ -569,7 +664,7 @@ const LinkCablesAndSegmentsPage = () => {
                                   Start (km)
                                 </span>
                                 <TextInput
-                                  defaultValue={10}
+                                  // defaultValue={10}
                                   value={
                                     index == 0
                                       ? 0
@@ -577,6 +672,10 @@ const LinkCablesAndSegmentsPage = () => {
                                       ? data.segments[index - 1].length
                                       : dataa.start
                                   }
+                                  max={index == data?.segments.length-1? findlinkdetail?.length:data?.segments[index+1].start-.1}
+                                  min={index == 0?0:data?.segments[index-1].start+.1}
+                                  step={0.1}
+                             
                                   onChange={
                                     index == 0
                                       ? () => {}
@@ -586,6 +685,7 @@ const LinkCablesAndSegmentsPage = () => {
                                             dataa.id,
                                             e.target.value,
                                             'start',
+                                            index,
                                           )
                                   }
                                   className="w-[60%]"
@@ -598,17 +698,20 @@ const LinkCablesAndSegmentsPage = () => {
                                 </span>
                                 <TextInput
                                   value={dataa.length}
-                                  onChange={
-                                    data?.segments?.length > 1
-                                      ? () => {}
-                                      : e =>
-                                          setcableslicecabsegment(
-                                            data.id,
-                                            dataa.id,
-                                            e.target.value,
-                                            'length',
-                                          )
-                                  }
+                                  onChange={() => {}}
+                                  // onChange={
+                                  //   data?.segments?.length > 1
+                                  //     ? () => {}
+                                  //     : e =>
+                                  //         setcableslicecabsegment(
+                                  //           data.id,
+                                  //           dataa.id,
+                                  //           e.target.value,
+                                  //           'length',
+                                  //           index,
+
+                                  //         )
+                                  // }
                                   className="w-[60%]"
                                   type="number"
                                 />
@@ -625,6 +728,7 @@ const LinkCablesAndSegmentsPage = () => {
                                       dataa.id,
                                       e.target.value,
                                       'offset',
+                                      index,
                                     )
                                   }
                                   className="w-[60%]"
@@ -637,33 +741,15 @@ const LinkCablesAndSegmentsPage = () => {
                                 <span className="mr-[5px]  text-left">
                                   Fiber Type
                                 </span>
-                                <TextInput
-                                  value={dataa.loss}
-                                  onChange={e =>
-                                    setcableslicecabsegment(
-                                      data.id,
-                                      dataa.id,
-                                      e.target.value,
-                                      'loss',
-                                    )
-                                  }
-                                  className="w-[60%]"
-                                  type="number"
-                                />
-                              </div>
-
-                              <div className="flex w-[30%] justify-between">
-                                <span className="mr-[5px]  text-left">
-                                  Loss
-                                </span>
                                 <Select
-                                  value={data.loss}
+                                  value={dataa.fiber_type}
                                   onChange={e =>
                                     setcableslicecabsegment(
                                       data.id,
                                       dataa.id,
                                       e.target.value,
                                       'fiber_type',
+                                      index,
                                     )
                                   }
                                   className="w-[60%]"
@@ -684,14 +770,34 @@ const LinkCablesAndSegmentsPage = () => {
                                   <option value="SMF">SMF</option>
                                 </Select>
                               </div>
+
+                              <div className="flex w-[30%] justify-between">
+                                <span className="mr-[5px]  text-left">
+                                  Loss
+                                </span>
+                                <TextInput
+                                  value={dataa.loss}
+                                  onChange={e =>
+                                    setcableslicecabsegment(
+                                      data.id,
+                                      dataa.id,
+                                      e.target.value,
+                                      'loss',
+                                      index,
+                                    )
+                                  }
+                                  className="w-[60%]"
+                                  type="number"
+                                />
+                               
+                              </div>
                               <div className="flex w-[30%] justify-between"></div>
                             </div>
-                          
                           </div>
 
                           <Addbox
                             classname={
-                              'ml-[calc(5%-56px)] absolute bottom-[0px] left-0 w-[calc(100%-20px)]  h-[30px] xl:ml-[calc(6%-56px)]'
+                              'ml-[calc(5%-56px)] absolute z-50 bottom-[-23px] left-[-10px] w-[calc(100%-20px)]  h-[30px] xl:ml-[calc(6%-56px)]'
                             }
                             onclick={() => addcabledata(data.id, index)}
                           />

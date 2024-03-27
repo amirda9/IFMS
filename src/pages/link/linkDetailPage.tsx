@@ -96,35 +96,28 @@ const LinkDetailPage = () => {
 
         setLinkDetails(linkdetaildata);
         setName(linkdetaildata?.name || '');
+
+        const findlinkdetail=linkdetaildata.versions?.find(
+          (version: any) =>
+            version.id === linkdetaildata?.current_version?.id,
+        )
+
+     
+        
         setComment(
-          linkdetaildata.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.description || '',
+          findlinkdetail?.description || '',
         );
         setDestinationid(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.destination.id || '',
+          findlinkdetail?.destination.id || '',
         );
         setDefaultdestinationname(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.destination.name || '',
+          findlinkdetail?.destination.name || '',
         );
         setSource(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.source.id || '',
+          findlinkdetail?.source.id || '',
         );
         setdefaultsource(
-          linkdetaildata?.versions?.find(
-            (version: any) =>
-              version.id === linkdetaildata?.current_version?.id,
-          )?.source.name || '',
+          findlinkdetail?.source.name || '',
         );
         let findtaype = type.findIndex(
           (data: any) => data.id == linkdetaildata?.id,
@@ -134,17 +127,11 @@ const LinkDetailPage = () => {
           setType(type[findtaype].type);
         } else {
           setType(
-            linkdetaildata?.versions?.find(
-              (version: any) =>
-                version.id === linkdetaildata?.current_version?.id,
-            )?.type || '',
+            findlinkdetail?.type || '',
           );
           dispatch(
             settypestate({
-              type: linkdetaildata?.versions?.find(
-                (version: any) =>
-                  version.id === linkdetaildata?.current_version?.id,
-              )?.type,
+              type: findlinkdetail?.type,
               id: linkdetaildata?.id,
             }),
           );

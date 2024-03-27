@@ -65,7 +65,7 @@ const MainLayout: FC = () => {
       <div  className="flex min-h-[100vh] pt-[20px] pb-[20px] flex-row bg-[#E7EFF7]">
         <Outlet />
       </div>
-      <div className="h-[25px] fixed bottom-0 right-0 left-0 bg-[red]">footer</div>
+      <div className="h-[25px] z-[1000] fixed bottom-0 right-0 left-0 bg-[red]">footer</div>
     </div>
   );
 };
