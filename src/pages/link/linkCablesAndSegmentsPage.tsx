@@ -347,6 +347,7 @@ const LinkCablesAndSegmentsPage = () => {
    
   };
 
+  
   const deletecable = (id: number) => {
     let beforadddata = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
@@ -381,6 +382,7 @@ const LinkCablesAndSegmentsPage = () => {
     }
     setParentcable({cables: data, ducts: parentcabl?.ducts || []});
   };
+
 
   const deletecabledata = (cableid: number, cabledataid: number,index:number) => {
     let beforadddata = deepcopy(parentcabl?.cables);
