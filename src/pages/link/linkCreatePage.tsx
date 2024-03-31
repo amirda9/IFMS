@@ -116,6 +116,8 @@ const LinkCreatePage = () => {
               regionid: params.regionid!.split('_')[0]!,
               linkid: responsedata.link_id,
               linkname: name,
+              source_id:source,
+              destination_id: destinationid
             }),
           );
         }

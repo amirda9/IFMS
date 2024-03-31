@@ -1,4 +1,4 @@
-import {Outlet, useParams} from 'react-router-dom';
+import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {Field, Form, Formik} from 'formik';
 import {InputFormik, SelectFormik, TextareaFormik} from '~/container';
@@ -33,23 +33,24 @@ type regionlisttype = {
   time_updated: string
 };
 const StationDetailPage = () => {
+  const params = useParams<{stationId: string}>();
   const dispatch = useDispatch();
   const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
-  const [selectedregion,setSelectedregion]=useState("")
+  const [selectedregion,setSelectedregion]=useState(params.stationId!.split("_")[1])
   const [defaultnetworkname,setDefaultnetworkname]=useState("")
   const [defaultregionkname,setDefaultregionname]=useState("")
   const [rtuPlacement,setRtuPlacement]=useState("yes")
-  const [selectenetwork,setSelectednetwork]=useState("")
+  const [selectenetwork,setSelectednetwork]=useState(params.stationId!.split("_")[2])
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [userrole, setuserrole] = useState<any>('');
   const {stationDetail} = useSelector((state: any) => state.http);
-  const params = useParams<{stationId: string}>();
-
+  
+const navigate=useNavigate()
   const initialRequests = (request: Request) => {
-    request('stationDetail', {params: {station_id: params.stationId!}});
+    request('stationDetail', {params: {station_id: params.stationId!.split("_")[0]}});
   };
   const {state, request} = useHttpRequest({
     selector: state => ({
@@ -77,7 +78,7 @@ const StationDetailPage = () => {
     //   }
     // }
     const getnetworks = async () => {
-      const getstationdetail=await $Get(`otdr/station/${params.stationId!}`)
+      const getstationdetail=await $Get(`otdr/station/${params.stationId!.split("_")[0]}`)
       if(getstationdetail.status == 200){
         const getstationdetaildata=await getstationdetail.json()
         const response = await $Get(`otdr/network`);
@@ -142,25 +143,33 @@ const StationDetailPage = () => {
           )?.time_created || '',
       }}
       onSubmit={async values => {
+        console.log(values,'values');
         
-        // try {
-        //   const response = await $Put(`otdr/station/${params.stationId!}`, {
-        //     name: values.name,
-        //     longitude: Number(values.longitude),
-        //     latitude: Number(values.latitude),
-        //     description: values.description,
-        //     model: 'cables',
-        //   });
-        //   if (response.status == 200) {
-        //     dispatch(
-        //       updateStationName({
-        //         regionid: state!.detail!.data!.region_id,
-        //         stationid: params.stationId!,
-        //         stationname: values.name,
-        //       }),
-        //     );
-        //   }
-        // } catch (error) {}
+        try {
+          const response = await $Put(`otdr/station/${params.stationId!.split("_")[0]}`, {
+            network_id:selectenetwork,
+            region_id:selectedregion,
+            name: values.name,
+            longitude: Number(values.longitude),
+            latitude: Number(values.latitude),
+            description: values.description,
+            model: 'cables',
+          });
+          console.log("response.status",response.status);
+          
+          if (response.status == 200) {
+            dispatch(
+              updateStationName({
+                newregionid:selectedregion,
+                networkid:params.stationId!.split("_")[2],
+                regionid: params.stationId!.split("_")[1],
+                stationid: params.stationId!.split("_")[0],
+                stationname: values.name,
+              }),
+            );
+            navigate(`/regions/${params.stationId!.split("_")[1]}_${params.stationId!.split("_")[2]}`)
+          }
+        } catch (error) {}
       }}
       validationSchema={stationSchema}>
       <Form>
@@ -177,16 +186,7 @@ const StationDetailPage = () => {
             <Description label="Comment" items="start">
               <TextareaFormik name="description" className="w-2/3 text-sm" />
             </Description>
-            <Description label="Network" items="start">
-            <Selectbox
-                defaultvalue={defaultnetworkname}
-                placeholder={defaultnetworkname}
-                onclickItem={(e: { value: string; label: string; }) => onclicknetwork(e.value)} 
-                options={networklist.map(data => ({ value: data.id, label: data.name }))}
-                borderColor={'black'}
-                classname="w-[21%] h-[32px] rounded-[5px]"
-                   />
-            </Description>
+         
 
 
             <Description label="Region" items="start">

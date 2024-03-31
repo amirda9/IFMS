@@ -122,7 +122,8 @@ const LinkCreatePage = () => {
           dispatch(
             createdefaultRegionLinks({
               networkid: params.networkid!,
-              links: {id: responsedata.link_id, name: name},
+              links: {id: responsedata.link_id, name: name,source_id: source,
+                destination_id: destinationid,},
             }),
           );
         }

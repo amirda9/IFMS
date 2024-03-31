@@ -241,6 +241,8 @@ function NetworktreeLayout({children}: Iprops) {
     // && getnetworkstations.status == 200
     if (alllinks.status === 200) {
       let alllinksdata = await alllinks.json();
+      console.log("alllinksdata",alllinksdata);
+      
       // const allnetworkstations:[
       //   {
       //     id: string,
@@ -568,7 +570,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       ?.stations.map((stationsdata, index) => (
                                         <Items
                                           key={index}
-                                          to={`/stations/${stationsdata.id}`}
+                                          to={`/stations/${stationsdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           selected={false}
                                           onDelete={() =>
                                             deletegroupsationds(regionsdata.id)

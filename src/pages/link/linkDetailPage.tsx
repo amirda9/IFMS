@@ -196,6 +196,8 @@ const LinkDetailPage = () => {
         const response = await $Put(
           `otdr/link/${params.linkId!.split('_')[0]}`,
           {
+            network_id:params.linkId!.split('_')[2],
+            region_id: params.linkId!.split('_')[1],
             description: comment,
             name: name,
             link_points: [],
@@ -208,7 +210,7 @@ const LinkDetailPage = () => {
           dispatch(
             updatelinkname({
               // state!.detail!.data!.region_id!
-              regionid: '',
+              regionid:params.linkId!.split('_')[1],
               linkid: params.linkId!.split('_')[0],
               linkname: name,
             }),

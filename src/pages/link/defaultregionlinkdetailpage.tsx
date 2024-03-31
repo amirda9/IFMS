@@ -283,6 +283,8 @@ const LinkDetailPage = () => {
       try {
         const response = await $Put(`otdr/link/${params.linkId}`, {
           description: comment,
+          // network_id: "string",
+          // region_id: null,
           name: name,
           link_points: [],
           source_id: source,
