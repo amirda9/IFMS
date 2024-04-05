@@ -13,6 +13,8 @@ type UserTableType = {
   name: string;
   source: string;
   destination: string;
+  destination_id:string;
+  source_id:string
 };
 
 type RenderDynamicColumnType = {
@@ -87,6 +89,8 @@ const RegionlinklisteditPage = () => {
               name: data?.name,
               source: data?.source,
               destination: data?.destination,
+              source_id:data.source_id,
+              destination_id:data.destination_id,
             }))
             ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
             [],

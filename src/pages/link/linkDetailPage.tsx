@@ -81,6 +81,7 @@ const LinkDetailPage = () => {
   const [destinationid, setDestinationid] = useState<string>('');
   const [linkDetails, setLinkDetails] = useState<LinksType>();
   useEffect(() => {
+    setSelectedregion(params.linkId!.split('_')[1])
     const getregionstations = async () => {
       try {
         let  linkdetailurl=`otdr/link/${params.linkId!.split('_')[0]}`
@@ -197,7 +198,7 @@ const LinkDetailPage = () => {
           `otdr/link/${params.linkId!.split('_')[0]}`,
           {
             network_id:params.linkId!.split('_')[2],
-            region_id: params.linkId!.split('_')[1],
+            region_id:selectedregion ,
             description: comment,
             name: name,
             link_points: [],
@@ -210,6 +211,8 @@ const LinkDetailPage = () => {
           dispatch(
             updatelinkname({
               // state!.detail!.data!.region_id!
+              networkid:params.linkId!.split('_')[2],
+              newregionid:selectedregion,
               regionid:params.linkId!.split('_')[1],
               linkid: params.linkId!.split('_')[0],
               linkname: name,
@@ -311,7 +314,7 @@ const LinkDetailPage = () => {
         ) : null}
       </div>
 
-      <Description className="mt-[21px]" label="Network" items="center">
+      {/* <Description className="mt-[21px]" label="Network" items="center">
         <Selectbox
           defaultvalue={defaultnetworkname}
           placeholder={defaultnetworkname}
@@ -325,7 +328,7 @@ const LinkDetailPage = () => {
           borderColor={'black'}
           classname="w-[28%] h-[32px] rounded-[5px]"
         />
-      </Description>
+      </Description> */}
 
       <Description className="mt-[21px]" label="Region" items="center">
         <Selectbox

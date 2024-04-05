@@ -147,6 +147,8 @@ const RegionLinksPage = () => {
       name: string;
       source: string;
       destination: string;
+      destination_id:string;
+      source_id:string
     }[] = [];
     const removedata: {
       id: string;
@@ -157,7 +159,8 @@ const RegionLinksPage = () => {
     const regionLinksCopy: {
       networkid: string;
       regionid: string;
-      links: {name: string; id: string}[];
+      links: {name: string; id: string,source_id: string;
+        destination_id: string;}[];
     }[] = deepcopy(regionLinks);
     const alllist = list?.data || [];
     const newregionlinklist2 = deepcopy(newregionlinklist);
@@ -195,7 +198,8 @@ const RegionLinksPage = () => {
       if (addregionLinkList.status == 201) {
         regionLinksCopy[findregionlinkindex].links = [
           ...regionLinks[findregionlinkindex].links,
-          ...appenddata.map(data => ({id: data.id, name: data.name})),
+          ...appenddata.map(data => ({id: data.id, name: data.name,source_id:data.source_id ,
+            destination_id:data.destination_id})),
         ];
         console.log('regionLinksCopy', regionLinksCopy);
         for (let k = 0; k < regionLinksCopy.length; k++) {

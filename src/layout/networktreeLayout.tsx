@@ -6,6 +6,7 @@ import {useHttpRequest} from '~/hooks';
 import {RootState} from '~/store';
 import {deepcopy} from '~/util';
 import Swal from 'sweetalert2';
+import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {
   setNetworkregions,
   setRegionstations,
@@ -31,6 +32,7 @@ import {
 } from './../store/slices/networktreeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
+import Mainloading from '~/components/loading/mainloading';
 type ItemspROPS = {
   to: string;
   selected: boolean;
@@ -50,7 +52,6 @@ type ItemspROPS = {
 type Iprops = {
   children: React.ReactNode;
 };
-
 
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
@@ -84,6 +85,7 @@ function NetworktreeLayout({children}: Iprops) {
     defaultregionLinks,
     selecteddefaultstations,
     selectedefaultdlinks,
+    loading,
   } = useSelector((state: RootState) => state.networktree);
   const {
     request,
@@ -205,12 +207,11 @@ function NetworktreeLayout({children}: Iprops) {
     );
   };
 
-  const onclickstations = async (networkid:string,id: string) => {
+  const onclickstations = async (networkid: string, id: string) => {
     let old = deepcopy(regionstations);
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if (allstation.status === 200) {
       let allstationdata = await allstation.json();
-      console.log('🥵', allstationdata);
 
       const finddata = regionstations.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
@@ -221,28 +222,27 @@ function NetworktreeLayout({children}: Iprops) {
             name: allstationdata[i].name,
           });
         }
-        old.push({networkid:networkid,regionid: id, stations: allregionsid});
+        old.push({networkid: networkid, regionid: id, stations: allregionsid});
       }
       dispatch(setRegionstations(old));
     }
   };
 
-  const onclicklinks = async (networkid:string,id: string) => {
+  const onclicklinks = async (networkid: string, id: string) => {
     let old = deepcopy(regionLinks);
     const alllinksurl = `otdr/region/${id}/links`;
-  // const  getnetworkstationsurl=`otdr/station/network/${networkid}`;
-  // getnetworkstations
-    const [alllinks]=await Promise.all([
+    // const  getnetworkstationsurl=`otdr/station/network/${networkid}`;
+    // getnetworkstations
+    const [alllinks] = await Promise.all([
       $Get(alllinksurl),
       // $Get(getnetworkstationsurl),
-    ])
+    ]);
     // const dataaaa=await getnetworkstations.json()
     // console.log("getnetworkstations",dataaaa);
     // && getnetworkstations.status == 200
     if (alllinks.status === 200) {
       let alllinksdata = await alllinks.json();
-      console.log("alllinksdata",alllinksdata);
-      
+
       // const allnetworkstations:[
       //   {
       //     id: string,
@@ -256,23 +256,23 @@ function NetworktreeLayout({children}: Iprops) {
       const finddata = regionLinks.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
       if (alllinksdata.length > 0 && finddata < 0) {
-
         for (let i = 0; i < alllinksdata?.length; i++) {
           // const findsouceregionid=allnetworkstations.find(data => data.id == alllinksdata[i].source)
           // const finddestinationregionid=allnetworkstations.find(data => data.id == alllinksdata[i].destination)
-         
+
           allregionsid.push({
             id: alllinksdata[i].id,
             name: alllinksdata[i].name,
+            source_id: alllinksdata[i].source.id,
+            destination_id: alllinksdata[i].destination.id,
             //  source:alllinksdata[i].source,
             // destination:alllinksdata[i].destination,
             // sourceregionid:findsouceregionid?.region_id,
             // destinationregionid:finddestinationregionid?.region_id
           });
         }
-        console.log("allregionsid",allregionsid);
-        
-        old.push({networkid:networkid,regionid: id, links: allregionsid});
+
+        old.push({networkid: networkid, regionid: id, links: allregionsid});
       }
       dispatch(setRegionLinks(old));
     }
@@ -283,7 +283,6 @@ function NetworktreeLayout({children}: Iprops) {
   };
 
   const deletegroupsationds = async (regionid: string) => {
-
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         const deletestationlist = selectedstations.find(
@@ -301,14 +300,10 @@ function NetworktreeLayout({children}: Iprops) {
             }),
           );
         }
-      }})
-
-
-  
+      }
+    });
   };
 
-  console.log("😋",defaultregionstations);
-  
   const deletedefaultgroupsationds = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
@@ -327,8 +322,8 @@ function NetworktreeLayout({children}: Iprops) {
             }),
           );
         }
-      }})
-
+      }
+    });
   };
 
   const ondeletelinksgroup = async (regionid: string) => {
@@ -349,9 +344,8 @@ function NetworktreeLayout({children}: Iprops) {
             }),
           );
         }
-
-      }})
-  
+      }
+    });
   };
 
   const ondeletedefaultlinksgroup = async (networkid: string) => {
@@ -372,20 +366,19 @@ function NetworktreeLayout({children}: Iprops) {
           }),
         );
         // }
-      }})
-
-    
+      }
+    });
   };
 
-  const Deleteregion = async(regionid: string, networkid: string) => {
+  const Deleteregion = async (regionid: string, networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         const response = await $Delete(`otdr/region/${regionid}`);
         if (response.status == 200) {
-        dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
+          dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
         }
-      }})
-    
+      }
+    });
   };
   const onclickdefaltregion = async (networkid: string) => {
     let allLinks = [];
@@ -393,7 +386,6 @@ function NetworktreeLayout({children}: Iprops) {
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
     const responsestationData = await responsestation.json();
     const responselink = await $Get(`otdr/link/network/${networkid}`);
-    console.log('👺', responsestationData);
 
     const responselinkData = await responselink.json();
     if (responsestation.status == 200 && responselink.status == 200) {
@@ -410,6 +402,8 @@ function NetworktreeLayout({children}: Iprops) {
           allLinks.push({
             id: responselinkData[j].id,
             name: responselinkData[j].name,
+            source_id: responselinkData[j].source.id,
+            destination_id: responselinkData[j].destination.id,
           });
         }
       }
@@ -423,27 +417,35 @@ function NetworktreeLayout({children}: Iprops) {
   const Deletenetwork = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        const deletenetworkresponse = await $Delete(`otdr/network/${networkid}`);
+        const deletenetworkresponse = await $Delete(
+          `otdr/network/${networkid}`,
+        );
         if (deletenetworkresponse.status == 200) {
           dispatch(deletenetwork(networkid));
-          navigate('./')
+          navigate('./');
         }
-      }})
-     
+      }
+    });
   };
   return (
     <>
-    {/* <div className="flex h-[calc(100vh-120px)] opacity-0 w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
+      {/* <div className="flex h-[calc(100vh-120px)] opacity-0 w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
 
-    </div> */}
-      <div className="flex h-[calc(100vh-120px)] fixed left-0  top-20 bottom-[0px] w-[30%] flex-col  border-r-2 overflow-scroll  bg-[#E7EFF7] no-scrollbar border-g p-4 ">
+    </div> */}{
+      loading?
+
+      <Mainloading />
+      :null
+    }
+      
+      <div className="no-scrollbar fixed bottom-[0px] left-0  top-20 flex h-[calc(100vh-120px)] w-[30%]  flex-col overflow-scroll  border-r-2 border-g bg-[#E7EFF7] p-4 ">
         <div className="flex w-full flex-row items-center">
           <>
             {showAllnetworks ? (
               <span
                 onClick={() => dispatch(setShowallnetworks(!showAllnetworks))}
                 className="mr-[7px] mt-[-14px] cursor-pointer font-light">
-               -
+                -
               </span>
             ) : (
               <span
@@ -476,10 +478,9 @@ function NetworktreeLayout({children}: Iprops) {
         </div>
 
         {showAllnetworks ? (
-          <div className="relative flex  w-full flex-col border-l-[1px] mt-[-22px]  ml-[3px] pt-[45px] border-dotted border-black">
-            
-            {networkslist?.map((networkdata,index) => (
-              <div key={index} className='w-full'>
+          <div className="relative ml-[3px]  mt-[-22px] flex w-full flex-col  border-l-[1px] border-dotted border-black pt-[45px]">
+            {networkslist?.map((networkdata, index) => (
+              <div key={index} className="w-full">
                 <Items
                   key={Number(networkdata.id)}
                   to={`/networks/${networkdata.id}`}
@@ -496,9 +497,9 @@ function NetworktreeLayout({children}: Iprops) {
                   id={networkdata.id}
                   name={networkdata.name}
                 />
-                {index == networkslist.length-1?
-              <div className="z-10 absolute h-full mt-[-30px] left-[-5px] w-[20px] bg-[#E7EFF7]"></div>
-              : null}
+                {index == networkslist.length - 1 ? (
+                  <div className="absolute left-[-5px] z-10 mt-[-30px] h-full w-[20px] bg-[#E7EFF7]"></div>
+                ) : null}
 
                 {allselectedId.indexOf(networkdata.id) > -1 ? (
                   <>
@@ -510,7 +511,7 @@ function NetworktreeLayout({children}: Iprops) {
                             networkregionsdata.networkid == networkdata.id,
                         )
                         ?.regions.map((regionsdata, index) => (
-                          <div key={index} className='full'>
+                          <div key={index} className="full">
                             <Items
                               key={Number(regionsdata.id)}
                               to={`/regions/${regionsdata.id}_${networkdata.id}`}
@@ -522,8 +523,8 @@ function NetworktreeLayout({children}: Iprops) {
                               onclick={() => {
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(regionsdata.id);
-                                onclickstations(networkdata.id,regionsdata.id);
-                                onclicklinks(networkdata.id,regionsdata.id);
+                                onclickstations(networkdata.id, regionsdata.id);
+                                onclicklinks(networkdata.id, regionsdata.id);
                               }}
                               id={regionsdata.id}
                               name={regionsdata.name}
@@ -550,7 +551,10 @@ function NetworktreeLayout({children}: Iprops) {
                                       onclikitems(
                                         `${regionsdata.id}${regionsdata.id}`,
                                       );
-                                 onclickstations(networkdata.id,regionsdata.id);
+                                    onclickstations(
+                                      networkdata.id,
+                                      regionsdata.id,
+                                    );
                                   }}
                                   id={`${regionsdata.id}${regionsdata.id}`}
                                   name="Stations"
@@ -619,8 +623,12 @@ function NetworktreeLayout({children}: Iprops) {
                                   onclick={() => {
                                     dispatch(setSelectedid(regionsdata.id)),
                                       onclikitems(
-                                        `${regionsdata.id}&${regionsdata.id}`,
+                                        `${regionsdata.id}&${regionsdata.id}_Linkss`,
                                       );
+                                    onclicklinks(
+                                      networkdata.id,
+                                      regionsdata.id,
+                                    );
                                     // onclicklinks(regionsdata.id);
                                   }}
                                   createurl={`/links/create/${regionsdata.id}_${networkdata.id}`}
@@ -628,13 +636,13 @@ function NetworktreeLayout({children}: Iprops) {
                                   name="Links"
                                 />
                                 {allselectedId.indexOf(
-                                  `${regionsdata.id}&${regionsdata.id}`,
+                                  `${regionsdata.id}&${regionsdata.id}_Linkss`,
                                 ) > -1 ? (
                                   <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
                                     <div
                                       className={`absolute ${
                                         allselectedId.indexOf(
-                                          `${regionsdata.id}&${regionsdata.id}`,
+                                          `${regionsdata.id}&${regionsdata.id}_Linkss`,
                                         ) > -1
                                           ? 'bottom-[-4px]'
                                           : 'bottom-[-8px]'
@@ -688,7 +696,7 @@ function NetworktreeLayout({children}: Iprops) {
                             ) : null}
                           </div>
                         ))}
-     
+
                       {/* -----------------------------------------------------------------------------                    */}
                       <>
                         <Items
@@ -697,7 +705,11 @@ function NetworktreeLayout({children}: Iprops) {
                           canAdd={false}
                           canDelete={false}
                           selected={false}
-                          onDelete={() => dispatch(deletedefaultRegion({networkid:networkdata.id}))}
+                          onDelete={() =>
+                            dispatch(
+                              deletedefaultRegion({networkid: networkdata.id}),
+                            )
+                          }
                           onclick={() => {
                             onclikitems(`${networkdata.id}${networkdata.id}&`),
                               onclickdefaltregion(networkdata.id);
@@ -709,30 +721,27 @@ function NetworktreeLayout({children}: Iprops) {
                           `${networkdata.id}${networkdata.id}&`,
                         ) > -1 ? (
                           <div className="relative ml-[32px]  mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
-                           <div className='absolute z-10 left-[-40px] top-[-6px] h-full bg-[#E7EFF7] w-[20px]'></div>
-                           {/* {defaultregionLinks.length == 0?
+                            <div className="absolute left-[-40px] top-[-6px] z-10 h-full w-[20px] bg-[#E7EFF7]"></div>
+                            {/* {defaultregionLinks.length == 0?
                            null
                           : */}
-                          
-                       
-                          <div
-                          className={`absolute ${
-                            allselectedId.indexOf(
-                              `&${networkdata.id}&${networkdata.id}`,
-                            ) > -1
-                              ? 'bottom-[-6px]'
-                              : 'bottom-[-1px]'
-                          } left-[-10px] z-10 h-[32px] w-[20px] bg-[#E7EFF7]`}></div>
-                          
-              
-                          {/* // } */}
-                           
+
+                            <div
+                              className={`absolute ${
+                                allselectedId.indexOf(
+                                  `&${networkdata.id}&${networkdata.id}`,
+                                ) > -1
+                                  ? 'bottom-[-6px]'
+                                  : 'bottom-[-1px]'
+                              } left-[-10px] z-10 h-[32px] w-[20px] bg-[#E7EFF7]`}></div>
+
+                            {/* // } */}
+
                             <Items
                               key={Number(`${networkdata.id}`)}
                               to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
                               createurl={`../stations/createdefault/${networkdata.id}`}
                               canDelete={false}
-                              
                               selected={false}
                               onDelete={() => {}}
                               onclick={() => {
@@ -743,8 +752,8 @@ function NetworktreeLayout({children}: Iprops) {
                                 ),
                                   onclikitems(
                                     `&${networkdata.id}${networkdata.id}&`,
-                                  )
-                                  // onclickstations(networkdata.id);
+                                  );
+                                // onclickstations(networkdata.id);
                               }}
                               id={`&${networkdata.id}${networkdata.id}&`}
                               name="Stations"
@@ -801,8 +810,6 @@ function NetworktreeLayout({children}: Iprops) {
                               </div>
                             ) : null}
 
-
-                            
                             <Items
                               key={Number(`${networkdata.id}${networkdata.id}`)}
                               to={`/regions/defaultregionemptypage/_Links_${networkdata.id}`}
@@ -812,16 +819,16 @@ function NetworktreeLayout({children}: Iprops) {
                               onclick={() => {
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(
-                                    `&${networkdata.id}&${networkdata.id}`,
-                                  )
-                                  // onclicklinks(networkdata.id);
+                                    `&${networkdata.id}&${networkdata.id}_Linkss`,
+                                  );
+                                // onclicklinks(networkdata.id);
                               }}
                               createurl={`/links/createdefaultregionlink/${networkdata.id}`}
                               id={`&${networkdata.id}&${networkdata.id}&`}
                               name="Links"
                             />
                             {allselectedId.indexOf(
-                              `&${networkdata.id}&${networkdata.id}`,
+                              `&${networkdata.id}&${networkdata.id}_Linkss`,
                             ) > -1 ? (
                               <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
                                 <div
@@ -883,7 +890,6 @@ function NetworktreeLayout({children}: Iprops) {
                 ) : null}
               </div>
             ))}
-       
           </div>
         ) : null}
 
@@ -891,7 +897,7 @@ function NetworktreeLayout({children}: Iprops) {
                {children}
             </div> */}
       </div>
-      <div className="flex w-full pr-8 pl-[32%] pt-[70px] pb-10 ">
+      <div className="flex w-full pb-10 pl-[32%] pr-8 pt-[70px] ">
         <Outlet />
       </div>
     </>

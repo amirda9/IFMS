@@ -167,6 +167,7 @@ const navigate=useNavigate()
                 stationname: values.name,
               }),
             );
+          
             navigate(`/regions/${params.stationId!.split("_")[1]}_${params.stationId!.split("_")[2]}`)
           }
         } catch (error) {}

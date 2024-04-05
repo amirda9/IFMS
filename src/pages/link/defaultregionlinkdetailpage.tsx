@@ -297,6 +297,8 @@ const LinkDetailPage = () => {
               networkid: state!.detail!.data!.network_id!,
               linkid: params.linkId!,
               linkname: name,
+              source_id:source,
+              destination_id:destinationid,
             }),
           );
         }
