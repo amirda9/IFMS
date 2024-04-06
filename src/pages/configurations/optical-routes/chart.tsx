@@ -28,7 +28,6 @@ import {useLocation} from 'react-router-dom';
 import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-import { log } from 'util';
 
 type chatrtabtype = {
   name: string;
@@ -68,6 +67,12 @@ type eventstype = {
   marker_location_5: number;
   comment: string;
 };
+
+type linklengthtype = {
+  id: string;
+  Length: Number;
+  segments: {Length: number; offset: number; position: number}[];
+}[];
 
 const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
   {
@@ -160,13 +165,13 @@ const columns = {
 function Chart() {
   const plotref: any = useRef();
   let location = useLocation();
-
+  const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>([]);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [fakeevents, setfakeEvents] = useState<any>([]);
-  const [arrowevents,setArrowevents]=useState<any>([])
+  const [arrowevents, setArrowevents] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [mousecursor, setMousecursor] = useState(false);
   const [fixedyaxies, setFixedyaxies] = useState(false);
@@ -189,8 +194,6 @@ function Chart() {
   >([]);
   const [autotick, setAutodic] = useState(true);
 
-console.log(location,"location");
-
   useEffect(() => {
     // let data:any;
     setLoading(true);
@@ -200,6 +203,7 @@ console.log(location,"location");
           `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
         );
         let datass = await getdata.json();
+
         let allpointsdata = datass?.datapoints?.data_points?.map(
           (data: [number, number]) => ({x: data[0], y: data[1]}),
         );
@@ -249,7 +253,7 @@ console.log(location,"location");
         Arrowevents?.forEach((point, index) => {
           const X = point.x;
           const Y = point.y!;
-     
+
           if (point.location == 'start') {
             allshapesCopy.push(
               {
@@ -262,7 +266,7 @@ console.log(location,"location");
                 line: {
                   color: '#A80000', // color of the line
                   width: 3, // width of the line
-                  zIndex:-1
+                  zIndex: -1,
                 },
               },
               {
@@ -322,7 +326,7 @@ console.log(location,"location");
                 editable: false,
                 line: {
                   color: '#A80000', // color of the line
-                  width:1, // width of the line
+                  width: 1, // width of the line
                 },
               },
               {
@@ -364,7 +368,7 @@ console.log(location,"location");
                 editable: false,
                 line: {
                   color: '#A80000', // color of the line
-                  width:3, // width of the line
+                  width: 3, // width of the line
                 },
               },
               {
@@ -388,7 +392,7 @@ console.log(location,"location");
                 editable: false,
                 line: {
                   color: '#A80000', // color of the line
-                  width:1, // width of the line
+                  width: 1, // width of the line
                 },
               },
               {
@@ -431,7 +435,7 @@ console.log(location,"location");
             );
           }
         });
-         setAllshapes(allshapesCopy);
+        setAllshapes(allshapesCopy);
         // }
 
         // ###################################################################################################
@@ -496,21 +500,58 @@ console.log(location,"location");
         }
         setTabelitems(items);
 
-
         // get optical route links and segment
-        const getopticalroteRoute=async()=>{
-         const getopticalroteRouteResponse=await $Get(`otdr/optical-route/${location.state.opticalrout_id}/routes`)
-         const getopticalroteRoutedata=await getopticalroteRouteResponse.json()
-         console.log(getopticalroteRoutedata,'getopticalroteRoutedata.');
-     const promises = getopticalroteRoutedata.map((data:any) => $Get(`otdr/link/${data.link_id}`));
-        
-   const [alll]=await Promise.all(promises)
-   let alllinksdata = await alll.json();
-  console.log(alllinksdata,'alll');
-  
-    }
-        getopticalroteRoute()
+        const getopticalroteRoute = async () => {
+          const getopticalroteRouteResponse = await $Get(
+            `otdr/optical-route/${location.state.opticalrout_id}/routes`,
+          );
+          const getopticalroteRoutedata =
+            await getopticalroteRouteResponse.json();
 
+          const promises = getopticalroteRoutedata.map((data: any) =>
+            $Get(`otdr/link/${data.link_id}`),
+          );
+
+          const alllinksdata = await Promise.all(promises);
+          const results = await Promise.all(
+            alllinksdata.map(response => response.json()),
+          );
+          // type linklengthtype = {
+          //   id: string;
+          //   length: Number;
+          //   cabledata:{cableid:string,
+          //   segments: {length: number; offset: number; position: number}[];
+          // }[]
+          let allLinkdata: linklengthtype = [];
+          for (let i = 0; i < results.length; i++) {
+            let sementsdata =
+              results[i].current_version.type == 'cable'
+                ? results[i].data.cables
+                : results[i].data.ducts;
+
+            // for(let j=0;j<sementsdata.length;j++){
+            let data = [];
+            for (let c = 0; c < sementsdata[0].segments.length; c++) {
+              data.push({
+                Length: sementsdata[0].segments[c].length,
+                offset: sementsdata[0].segments[c].offset,
+                position:
+                  sementsdata[0].segments[c].start +
+                  sementsdata[0].segments[c].length +
+                  sementsdata[0].segments[c].offset,
+              });
+            }
+
+            // }
+            allLinkdata.push({
+              id: results[i].id,
+              Length: results[i].current_version.length,
+              segments: data,
+            });
+          }
+          setLinkslengthdata(allLinkdata);
+        };
+        getopticalroteRoute();
       } catch (error) {
         console.log(error);
       } finally {
@@ -523,8 +564,6 @@ console.log(location,"location");
     // *******************************************************************
   }, []);
 
-  console.log('allcurveline', allcurveline);
-  console.log('😁', allcurveline);
   const [reightbar, setReightbar] = useState('Result');
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
 
@@ -577,19 +616,11 @@ console.log(location,"location");
     let allshapesCopy: any = [];
     let elements: JSX.Element[] = [];
     // if (!showeventdetail) {
-  
+
     Arrowevents?.forEach((point, index) => {
       const X = point.x;
       const Y = point.y!;
-    
-     
-        
-      
-       
-      
-      
 
-   
       if (point.location == 'start') {
         allshapesCopy.push(
           {
@@ -784,10 +815,8 @@ console.log(location,"location");
         );
       }
     });
-     setAllshapes(allshapesCopy);
-   
+    setAllshapes(allshapesCopy);
   };
-
 
   const Events = () => {
     if (showevents) {
@@ -815,7 +844,7 @@ console.log(location,"location");
           // marker: {color: '#A80000', zIndex: 10},
           event_number: chartdata?.key_events?.events[0]?.event_number,
           name: 'events',
-         layer:"above"
+          layer: 'above',
         },
         {
           x: [...Array(41).keys()].map(
@@ -837,7 +866,7 @@ console.log(location,"location");
           // marker: {color: '#A80000', zIndex: 10},
           event_number: chartdata?.key_events?.events[1]?.event_number,
           name: 'events',
-          layer:"above"
+          layer: 'above',
         },
         {
           x: [...Array(41).keys()].map(
@@ -860,7 +889,7 @@ console.log(location,"location");
           // marker: {color: '#A80000', zIndex: 10},
           name: 'events',
           event_number: chartdata?.key_events?.events[2]?.event_number,
-          layer:"above"
+          layer: 'above',
           // marker: {color: 'blue',zIndex: 2},
         },
       ]);
@@ -871,9 +900,6 @@ console.log(location,"location");
 
     setLeftverticaltab('Events');
   };
-
-  console.log('maxy', Math.floor(2 * maxy), typeof maxy);
-
 
   const Trace = () => {
     setLeftverticaltab('Trace');
@@ -1119,7 +1145,7 @@ console.log(location,"location");
             line: {width: 6, zindex: 10, color: '#A80000'},
             marker: {color: '#A80000', zIndex: 10},
             event_number: chartdata?.key_events?.events[0]?.event_number,
-            layer:"above"
+            layer: 'above',
           },
           {
             x: [...new Array(Math.floor(2 * maxy)).keys()].map(
@@ -1137,7 +1163,7 @@ console.log(location,"location");
             line: {width: 6, zindex: 10, color: '#A80000'},
             marker: {color: '#A80000', zIndex: 10},
             event_number: chartdata?.key_events?.events[0]?.event_number,
-            layer:"above"
+            layer: 'above',
           },
           {
             x: [...new Array(Math.floor(2 * maxy)).keys()].map(
@@ -1159,7 +1185,7 @@ console.log(location,"location");
             },
             marker: {color: '#A80000', zIndex: 10},
             event_number: chartdata?.key_events?.events[0]?.event_number,
-            layer:"above"
+            layer: 'above',
           },
           {
             x: [...new Array(Math.floor(2 * maxy)).keys()].map(
@@ -1177,7 +1203,7 @@ console.log(location,"location");
             line: {width: 6, zindex: 10, color: '#A80000'},
             marker: {color: '#A80000', zIndex: 10},
             event_number: chartdata?.key_events?.events[0]?.event_number,
-            layer:"above"
+            layer: 'above',
           },
         ]);
 
@@ -1405,11 +1431,11 @@ console.log(location,"location");
               className={`relative ${
                 mousecursor ? 'cursor-pointer' : 'cursor-default'
               } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
-              {loading ?  <div className="absolute left-[50%] top-[130px] z-20">
-                  <GeneralLoadingSpinner size='h-14 w-14'/>
-                </div> : (
-               null
-              )}
+              {loading ? (
+                <div className="absolute left-[50%] top-[130px] z-20">
+                  <GeneralLoadingSpinner size="h-14 w-14" />
+                </div>
+              ) : null}
 
               <Plot
                 ref={plotref}
@@ -1433,8 +1459,7 @@ console.log(location,"location");
                     line: {width: 6},
                     marker: {color: 'red'},
                   },
-                
-             
+
                   ...fakeevents,
                 ]}
                 config={{
@@ -1472,12 +1497,29 @@ console.log(location,"location");
               />
             </div>
           </div>
+          <div className="flex flex-row">
+            {linkslengthdata.map(segmentsdata => {
+              let linklength = Number(segmentsdata.Length) * 100;
 
-          <div className="relative mt-[30px] flex h-[10px] w-[720px] bg-[#18C047]">
-            <div className="absolute left-0 top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
-            <div className="absolute right-0  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
+              return (
+                <div
+                  style={{width: `${linklength}px`}}
+                  className={`relative mt-[30px] flex h-[10px]  bg-[#18C047]`}>
+                  {segmentsdata.segments.map(data => {
+                    let position = data.position * 100;
+                    return (
+                      <div
+                        style={{left: `${position}px`}}
+                        className={`absolute left-[${data.position}px] top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]`}></div>
+                    );
+                  })}
+
+                  {/* <div className="absolute right-0  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
             <div className="absolute right-[100px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
-            <div className="absolute right-[150px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
+            <div className="absolute right-[150px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div> */}
+                </div>
+              );
+            })}
           </div>
         </div>
         {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}

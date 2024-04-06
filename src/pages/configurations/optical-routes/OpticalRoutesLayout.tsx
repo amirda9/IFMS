@@ -260,6 +260,8 @@ const OpticalRouteLayout: FC = () => {
   const lastnetwork =
     (list?.data && list?.data[list?.data?.length - 1]?.id) || '';
 
+    console.log('🧑‍🏫',list?.data);
+    
   return (
     <SidebarLayout createTitle="" canAdd>
       <div className="flex flex-row items-center ">
