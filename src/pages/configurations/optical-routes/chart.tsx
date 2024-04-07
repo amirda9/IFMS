@@ -523,6 +523,7 @@ function Chart() {
           //   segments: {length: number; offset: number; position: number}[];
           // }[]
           let allLinkdata: linklengthtype = [];
+          let alloffset=0
           for (let i = 0; i < results.length; i++) {
             let sementsdata =
               results[i].current_version.type == 'cable'
@@ -532,6 +533,7 @@ function Chart() {
             // for(let j=0;j<sementsdata.length;j++){
             let data = [];
             for (let c = 0; c < sementsdata[0].segments.length; c++) {
+              alloffset +=sementsdata[0].segments[c].offset,
               data.push({
                 Length: sementsdata[0].segments[c].length,
                 offset: sementsdata[0].segments[c].offset,
@@ -545,7 +547,7 @@ function Chart() {
             // }
             allLinkdata.push({
               id: results[i].id,
-              Length: results[i].current_version.length,
+              Length: results[i].current_version.length+alloffset,
               segments: data,
             });
           }
