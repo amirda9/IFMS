@@ -711,10 +711,12 @@ const networktreeslice = createSlice({
           regionid: string;
           linkid: string;
           linkname: string;
+          source_id: string;
+          destination_id: string;
         };
       },
     ) => {
-      let regionLinksCopy = deepcopy(state.regionLinks);
+      let regionLinksCopy:allregionlinkstype[] = deepcopy(state.regionLinks);
       const findwithregionindex = state.regionLinks.findIndex(
         data => data.regionid == action.payload.regionid,
       );
@@ -723,6 +725,7 @@ const networktreeslice = createSlice({
       );
       regionLinksCopy[findwithregionindex].links[findlinkid].name =
         action.payload.linkname;
+
       if (action.payload.regionid != action.payload.newregionid) {
         const findwithnewregionindex = state.regionLinks.findIndex(
           data => data.regionid == action.payload.newregionid,
@@ -731,6 +734,8 @@ const networktreeslice = createSlice({
           regionLinksCopy[findwithnewregionindex].links.push({
             id: action.payload.linkid,
             name: action.payload.linkname,
+            source_id:action.payload.source_id,
+            destination_id:action.payload.destination_id
           });
         } else {
           //   type allregionlinkstype = {
@@ -744,10 +749,21 @@ const networktreeslice = createSlice({
           regionLinksCopy.push({
             networkid: action.payload.networkid,
             regionid: action.payload.newregionid,
-            links: [{id: action.payload.linkid, name: action.payload.linkname}],
+            links: [{id: action.payload.linkid, name: action.payload.linkname, source_id:action.payload.source_id,
+              destination_id:action.payload.destination_id}],
           });
         }
         regionLinksCopy[findwithregionindex].links.splice(findlinkid, 1);
+
+        // ******************************
+        // const promises = getopticalroteRoutedata.map((data: any) =>
+        //     $Get(`otdr/link/${data.link_id}`),
+        //   );
+
+        //   const [sourcedetail,destinationdetail] = await Promise.all([$Get(`otdr/station/${action.payload.source_id}`),$Get(`otdr/station/${action.payload.destination_id}`)]);
+        //   const results = await Promise.all(
+        //     alllinksdata.map(response => response.json()),
+        //   );
       }
       state.regionLinks = regionLinksCopy;
     },
@@ -954,18 +970,18 @@ const networktreeslice = createSlice({
             ],
           });
         }
-        const selectedidCopy = state.allselectedId.filter(
-          data => data.indexOf('Linkss') < 0,
-        );
 
-        state.allselectedId = selectedidCopy;
+       let newselectedid=[action.payload.networkid,action.payload.regionid,action.payload.newregionid]
+       state.showAllnetworks=true
+        state.allselectedId = newselectedid;
 
         // *********************
+        state.regionLinks = [];
+      state.defaultregionLinks = [];
       }
       state.loading = false;
       state.regionstations = regionStationsCopy;
-      state.regionLinks = [];
-      state.defaultregionLinks = [];
+   
     },
     //---------------------------------
     updateregionname: (state, action: createregiontype) => {

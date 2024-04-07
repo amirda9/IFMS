@@ -106,6 +106,8 @@ function NetworktreeLayout({children}: Iprops) {
   };
 
   useEffect(() => {
+
+    
     const element = document.getElementById(selectedid);
     if (element) {
       // 👇 Will scroll smoothly to the top of the next section

@@ -216,6 +216,8 @@ const LinkDetailPage = () => {
               regionid:params.linkId!.split('_')[1],
               linkid: params.linkId!.split('_')[0],
               linkname: name,
+              source_id:source,
+              destination_id:destinationid,
             }),
           );
         }
