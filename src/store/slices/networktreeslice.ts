@@ -716,7 +716,7 @@ const networktreeslice = createSlice({
         };
       },
     ) => {
-      let regionLinksCopy:allregionlinkstype[] = deepcopy(state.regionLinks);
+      let regionLinksCopy: allregionlinkstype[] = deepcopy(state.regionLinks);
       const findwithregionindex = state.regionLinks.findIndex(
         data => data.regionid == action.payload.regionid,
       );
@@ -734,8 +734,8 @@ const networktreeslice = createSlice({
           regionLinksCopy[findwithnewregionindex].links.push({
             id: action.payload.linkid,
             name: action.payload.linkname,
-            source_id:action.payload.source_id,
-            destination_id:action.payload.destination_id
+            source_id: action.payload.source_id,
+            destination_id: action.payload.destination_id,
           });
         } else {
           //   type allregionlinkstype = {
@@ -749,21 +749,65 @@ const networktreeslice = createSlice({
           regionLinksCopy.push({
             networkid: action.payload.networkid,
             regionid: action.payload.newregionid,
-            links: [{id: action.payload.linkid, name: action.payload.linkname, source_id:action.payload.source_id,
-              destination_id:action.payload.destination_id}],
+            links: [
+              {
+                id: action.payload.linkid,
+                name: action.payload.linkname,
+                source_id: action.payload.source_id,
+                destination_id: action.payload.destination_id,
+              },
+            ],
           });
         }
         regionLinksCopy[findwithregionindex].links.splice(findlinkid, 1);
 
         // ******************************
-        // const promises = getopticalroteRoutedata.map((data: any) =>
-        //     $Get(`otdr/link/${data.link_id}`),
-        //   );
+        const getstationdetail = async () => {
+          const [sourcedetailresponse, destinationdetailresponse] =
+            await Promise.all([
+              $Get(`otdr/station/${action.payload.source_id}`),
+              $Get(`otdr/station/${action.payload.destination_id}`),
+            ]);
 
-        //   const [sourcedetail,destinationdetail] = await Promise.all([$Get(`otdr/station/${action.payload.source_id}`),$Get(`otdr/station/${action.payload.destination_id}`)]);
-        //   const results = await Promise.all(
-        //     alllinksdata.map(response => response.json()),
-        //   );
+          const sourceresponsedata = await sourcedetailresponse.json();
+          const destinationresponsedata =
+            await destinationdetailresponse.json();
+          let soursedetaildata = sourceresponsedata?.versions?.find(
+            (version: any) =>
+              version.id === sourceresponsedata?.current_version?.id,
+          );
+          let destinationdetaildata = destinationresponsedata?.versions?.find(
+            (version: any) =>
+              version.id === destinationresponsedata?.current_version?.id,
+          );
+          // When we change the regionid of a link, we must transfer the stations of that link to the defaultregion, meaning we set their regionid to null.
+          const updatesource = await $Put(
+            `otdr/station/${action.payload.source_id}`,
+            {
+              region_id: null,
+              longitude: soursedetaildata.longitude,
+              latitude: soursedetaildata.latitude,
+              description: soursedetaildata.description,
+              name: sourceresponsedata.name,
+              rtu_placement: sourceresponsedata.rtu_placement,
+            },
+          );
+          const updatedestination = await $Put(
+            `otdr/station/${action.payload.destination_id}`,
+            {
+              region_id: null,
+              longitude: destinationdetaildata.longitude,
+              latitude: destinationdetaildata.latitude,
+              description: destinationdetaildata.description,
+              name: destinationresponsedata.name,
+              rtu_placement: destinationresponsedata.rtu_placement,
+            },
+          );
+         
+        };
+
+        getstationdetail();
+        state.allselectedId=[action.payload.networkid,action.payload.newregionid,action.payload.regionid]
       }
       state.regionLinks = regionLinksCopy;
     },
@@ -843,12 +887,11 @@ const networktreeslice = createSlice({
             defaultlinkwithstationid?.source_id,
             defaultlinkwithstationid?.destination_id,
           ];
-  
 
           let newlinkstations = linkstations.filter(
             data => data != action.payload.stationid,
           );
-         
+
           if (findwithnewregionindex > -1) {
             for (
               let i = 0;
@@ -876,7 +919,7 @@ const networktreeslice = createSlice({
                   (version: any) =>
                     version.id === linkDetailsdata?.current_version?.id,
                 );
-            
+
                 const updatelinkresponse = await $Put(
                   `otdr/link/${defaultlinkwithstationid?.id}`,
                   {
@@ -891,7 +934,6 @@ const networktreeslice = createSlice({
                 );
               } catch (error) {
               } finally {
-             
               }
             };
             updatelinkwithnewregionid();
@@ -918,7 +960,7 @@ const networktreeslice = createSlice({
                 const linkDetails = await $Get(
                   `otdr/link/${findlinkwithstatonid!.id!}`,
                 );
-              
+
                 const linkDetailsdata = await linkDetails.json();
                 const findversion = linkDetailsdata?.versions?.find(
                   (version: any) =>
@@ -938,7 +980,6 @@ const networktreeslice = createSlice({
                 );
               } catch (error) {
               } finally {
-        
               }
             };
             updatelink();
@@ -971,17 +1012,20 @@ const networktreeslice = createSlice({
           });
         }
 
-       let newselectedid=[action.payload.networkid,action.payload.regionid,action.payload.newregionid]
-       state.showAllnetworks=true
+        let newselectedid = [
+          action.payload.networkid,
+          action.payload.regionid,
+          action.payload.newregionid,
+        ];
+        state.showAllnetworks = true;
         state.allselectedId = newselectedid;
 
         // *********************
         state.regionLinks = [];
-      state.defaultregionLinks = [];
+        state.defaultregionLinks = [];
       }
       state.loading = false;
       state.regionstations = regionStationsCopy;
-   
     },
     //---------------------------------
     updateregionname: (state, action: createregiontype) => {
