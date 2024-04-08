@@ -203,6 +203,7 @@ function Chart() {
           `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
         );
         let datass = await getdata.json();
+console.log("😶‍🌫️",datass);
 
         let allpointsdata = datass?.datapoints?.data_points?.map(
           (data: [number, number]) => ({x: data[0], y: data[1]}),

@@ -83,9 +83,12 @@ function App() {
             Component={pages.StationEditViewerPage}
           />
             <Route path="create/:regionid" Component={pages.StationCreatePage} />
-            <Route path="createdefault/:networkid" Component={pages.defaultStationDetailPage} />
+            <Route path="createdefault/:networkid" Component={pages.defaultstationCreatePage} />
             <Route path=":stationId" Component={pages.StationEmptyPage}>
               <Route path="" Component={pages.StationDetailPage} />
+              <Route path="defaultstationDetailPage" Component={pages.defaultStationDetailPage} />
+
+
               <Route path="access" Component={pages.StationAccessPage} />
             </Route>
           </Route>

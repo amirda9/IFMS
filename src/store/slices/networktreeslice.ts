@@ -216,6 +216,16 @@ type createStationtype = {
   type: string;
 };
 
+type updatedefaultStationtype = {
+  payload: {
+    networkid: string;
+    regionid: string | null;
+    stationid: string;
+    stationname: string;
+  };
+  type: string;
+};
+
 type updateStationtype = {
   payload: {
     newregionid: string;
@@ -1027,6 +1037,17 @@ const networktreeslice = createSlice({
       state.loading = false;
       state.regionstations = regionStationsCopy;
     },
+    // -------------------------------------------------------------
+    updatedefaultStationName: (state, action: updatedefaultStationtype) => {
+  
+      
+   let defaultregionstationsCopy=deepcopy(state.defaultregionstations)
+   const findstationwithnetworkid=state.defaultregionstations.findIndex(data => data.networkid == action.payload.networkid)
+    const findstationwithid=state.defaultregionstations[findstationwithnetworkid].stations.findIndex(data => data.id == action.payload.stationid)
+    defaultregionstationsCopy[findstationwithnetworkid].stations[findstationwithid].name=action.payload.stationname
+    console.log("🥰",defaultregionstationsCopy);
+    state.defaultregionstations=defaultregionstationsCopy
+  },
     //---------------------------------
     updateregionname: (state, action: createregiontype) => {
       const networkregionsCopy = deepcopy(state.networkregions);
@@ -1261,6 +1282,7 @@ export const {
   createdefaultRegionLinks,
   updatedefaltlinkname,
   createdefaultStation,
+  updatedefaultStationName
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

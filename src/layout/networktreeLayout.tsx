@@ -774,7 +774,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   ?.stations.map((stationsdata, index) => (
                                     <Items
                                       key={Number(stationsdata.id)}
-                                      to={`/stations/${stationsdata.id}`}
+                                      to={`/stations/${stationsdata.id}_${networkdata.id}/defaultstationDetailPage`}
                                       canAdd={false}
                                       selected={false}
                                       onDelete={() =>

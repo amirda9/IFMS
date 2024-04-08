@@ -4,4 +4,5 @@ export {default as StationDetailPage} from './stationDetailPage';
 export {default as StationAccessPage} from './stationAccessPage';
 export {default as StationCreatePage} from './stationCreatePage';
 export {default as StationEditViewerPage} from './stationEditViewersPage';
-export {default as defaultStationDetailPage} from './defaultstationCreatePage';
+export {default as defaultstationCreatePage} from './defaultstationCreatePage';
+export {default as defaultStationDetailPage} from './defaultstationDetailPage';
