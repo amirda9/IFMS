@@ -1,4 +1,5 @@
 import {FC, useState} from 'react';
+import { FaTruckDroplet } from 'react-icons/fa6';
 import {useLocation} from 'react-router-dom';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
@@ -43,8 +44,9 @@ const UsersLayout: FC = () => {
         userListQuery.state.data!.map(user => (
           <SidebarItem
             name={user.username}
-            to={user.id}
+            to={loggedInUser.role === UserRole.SUPER_USER?user.id:"#"}
             key={user.id}
+            selected={true}
             onDelete={
               loggedInUser.role === UserRole.SUPER_USER
                 ? handleDeleteButtonClick

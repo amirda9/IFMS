@@ -19,6 +19,8 @@ const NetworkDetailPage = () => {
   const dispatch=useDispatch()
   const login = localStorage.getItem('login');
   const accesstoken = JSON.parse(login || '')?.data.access_token;
+  console.log("login",login);
+  console.log("accesstoken",accesstoken);
   const [userrole, setuserrole] = useState<any>('');
   const getrole = async () => {
     const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
@@ -28,6 +30,8 @@ const NetworkDetailPage = () => {
         'Content-Type': 'application/json',
       },
     }).then(res => res.json());
+    
+    
     setuserrole(role.role);
   };
   useEffect(() => {
