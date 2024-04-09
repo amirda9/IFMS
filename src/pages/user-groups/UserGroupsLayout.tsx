@@ -4,6 +4,7 @@ import {toast} from 'react-toastify';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
+import { UserRole } from '~/constant/users';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
@@ -16,6 +17,8 @@ const UserGroupsLayout: FC = () => {
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
+  console.log("loggedInUser",loggedInUser);
+  
   const {
     request,
     state: {groupList, deleteGroup},
@@ -69,7 +72,7 @@ const UserGroupsLayout: FC = () => {
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Groups"
-      canAdd={loggedInUser.is_admin}
+      canAdd={loggedInUser.is_admin || loggedInUser.role == UserRole.SUPER_USER}
       hideSidebar={location.state?.fullLayout}>
       {groupList?.httpRequestStatus === 'success' ? (
         groupListSorted.map(group => (
