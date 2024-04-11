@@ -12,6 +12,7 @@ const UsersLayout: FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+console.log(loggedInUser,'loggedInUser');
 
   const location = useLocation();
 
@@ -30,7 +31,7 @@ const UsersLayout: FC = () => {
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Users"
-      canAdd={loggedInUser.role === UserRole.SUPER_USER}
+      canAdd={loggedInUser.role === UserRole.SUPER_USER || loggedInUser.is_admin}
       addButtonLink="register"
       hideSidebar={location.state?.isEditingUserAccess}>
       <SidebarItem

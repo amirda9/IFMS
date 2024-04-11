@@ -1,60 +1,48 @@
 import {Description, SimpleBtn} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useDispatch, useSelector} from 'react-redux';
 import * as Yup from 'yup';
 import {Request} from '~/hooks/useHttpRequest';
-import {changeNetworkname} from './../../store/slices/networktreeslice'
-import Cookies from 'js-cookie';
+import {changeNetworkname, setNetworkidadmin} from './../../store/slices/networktreeslice'
 import {getPrettyDateTime} from '~/util/time';
-import {useEffect, useState} from 'react';
-import {BASE_URL} from './../../constant';
+import {useEffect} from 'react';
 import { $Put } from '~/util/requestapi';
+import { UserRole } from '~/constant/users';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
 const NetworkDetailPage = () => {
   const dispatch=useDispatch()
   const login = localStorage.getItem('login');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
-  console.log("login",login);
-  console.log("accesstoken",accesstoken);
-  const [userrole, setuserrole] = useState<any>('');
-  const getrole = async () => {
-    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res.json());
-    
-    
-    setuserrole(role.role);
-  };
-  useEffect(() => {
-    getrole();
-  }, []);
   const {networkDetail} = useSelector((state: any) => state.http);
-
   const params = useParams<{networkId: string}>();
   const navigate = useNavigate();
   const initialRequests = (request: Request) => {
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
 
+
   const {
-    state: {detail},
+    state: {detail,viewers},
     request,
   } = useHttpRequest({
     selector: state => ({
       detail: state.http.networkDetail,
+      viewers: state.http.networkAccessList,
     }),
     initialRequests,
   });
 
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
+  useEffect(()=>{
+    if(detail?.data?.access.role == "superuser" || detail?.data?.access.access == "ADMIN" || loggedInUser.role === UserRole.SUPER_USER){
+      dispatch(setNetworkidadmin(detail?.data?.id!))
+    }
+      },[])
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
     return <>loading</>;
   return (
@@ -104,12 +92,8 @@ const NetworkDetailPage = () => {
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">
-            {/* <SimpleBtn
-              onClick={() => Cookies.set('networkExplored', params.networkId!)}>
-              Explore
-            </SimpleBtn> */}
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
-            {userrole == 'superuser' ||
+            {loggedInUser.role === UserRole.SUPER_USER ||
             networkDetail?.data?.access?.access == 'ADMIN' ? (
               <SimpleBtn
                 type="submit"

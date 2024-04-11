@@ -1,36 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {SimpleBtn} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
 import {FormLayout} from '~/layout';
 import {useSelector} from 'react-redux';
-import {log} from 'console';
-import { useHttpRequest } from '~/hooks';
+import { useAppSelector, useHttpRequest } from '~/hooks';
 import {Request} from '~/hooks/useHttpRequest';
 import { useParams } from 'react-router-dom';
-import { BASE_URL } from '~/constant';
+import { UserRole } from '~/constant/users';
+import ErrorPage403 from '../errors/403';
 const NetworkGisPage = () => {
   const login = localStorage.getItem('login');
-  const accesstoken=JSON.parse(login || "")?.data.access_token
-  const [userrole,setuserrole]=useState<any>("")
-  const getrole=async()=>{
-    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
-      headers: {
-        Authorization:`Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json'},
-    }).then(res =>res.json())
-    setuserrole(role.role)
-
-  }
-useEffect(()=>{
-  getrole()
-},[])
   const params = useParams<{networkId: string}>();
   const {networkDetail} = useSelector((state: any) => state.http);
+  const {networkidadmin} = useSelector((state: any) => state.networktree);
+
   const initialRequests = (request: Request) => {
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
-
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     state: {detail, update},
     request,
@@ -49,24 +36,33 @@ useEffect(()=>{
       }
     },
   });
+
+  const canchange=useMemo(()=>  {
+    let isnetworkadmin=networkidadmin.findIndex((data:string) => data ==params.networkId!)>-1?true:false;
+    if(isnetworkadmin && loggedInUser.role == UserRole.SUPER_USER){
+      return true
+    }else{
+      return false
+    }
+  }
+  ,[params.networkId])
   const buttons = (
     <>
-    {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN'?
+    {canchange?
       <SimpleBtn link to="../edit-access">
         Add Shapefile
       </SimpleBtn>:null}
       <SimpleBtn>History</SimpleBtn>
-      {userrole == 'superuser' || networkDetail.data.access.access == 'ADMIN'?
+      {canchange?
       <SimpleBtn>Save</SimpleBtn>:null}
       <SimpleBtn>Cancel</SimpleBtn>
     </>
   );
-  console.log(networkDetail?.data?.shapefiles, '😁');
 
 const deleteshapefile=(id:string)=>{
   request('deleteShapefile', {params: {shapefile_id: id}});
 }                                                        
-
+if(canchange){
   return (
     <FormLayout buttons={buttons}>
       <div className="flex flex-col gap-y-4">
@@ -86,11 +82,12 @@ const deleteshapefile=(id:string)=>{
               </div>
               <div className="flex flex-row gap-x-8">
                 <SimpleBtn >Download</SimpleBtn>
+                {canchange?
                 <IoTrashOutline
                 onClick={()=>deleteshapefile(data.id)}
                   size={24}
                   className="text-red-500 active:text-red-300"
-                />
+                />:null}
               </div>
             </div>
           ),
@@ -98,6 +95,11 @@ const deleteshapefile=(id:string)=>{
       </div>
     </FormLayout>
   );
+}else{
+  return <ErrorPage403 />;
+ 
+}
+
 };
 
 export default NetworkGisPage;

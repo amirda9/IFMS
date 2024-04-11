@@ -44,7 +44,6 @@ const NetworkCreatePage = () => {
             
           }
           
-          // request('networkCreate', {data: values});
         }}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col gap-y-4">

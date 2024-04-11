@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Outlet, useNavigate} from 'react-router-dom';
 import {SidebarItem} from '~/components';
-import {useHttpRequest} from '~/hooks';
 import {RootState} from '~/store';
 import {deepcopy} from '~/util';
 import Swal from 'sweetalert2';
@@ -33,6 +32,9 @@ import {
 import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
 import Mainloading from '~/components/loading/mainloading';
+import {useAppSelector, useHttpRequest} from '~/hooks';
+import { UserRole } from '~/constant/users';
+
 type ItemspROPS = {
   to: string;
   selected: boolean;
@@ -87,6 +89,7 @@ function NetworktreeLayout({children}: Iprops) {
     selectedefaultdlinks,
     loading,
   } = useSelector((state: RootState) => state.networktree);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     request,
     state: {list, regions},
@@ -467,7 +470,7 @@ function NetworktreeLayout({children}: Iprops) {
                 className="ml-[5px] cursor-pointer text-[20px] font-bold">
                 Networks
               </span>
-              {showAllnetworks ? (
+              {showAllnetworks && loggedInUser.role === UserRole.SUPER_USER ? (
                 <BsPlusLg
                   onClick={() => navigate('/networks/create')}
                   color="#18C047"
@@ -485,9 +488,10 @@ function NetworktreeLayout({children}: Iprops) {
               <div key={index} className="w-full">
                 <Items
                   key={Number(networkdata.id)+index}
-                  to={`/networks/${networkdata.id}`}
+                  to={loggedInUser.role === UserRole.SUPER_USER ? `/networks/${networkdata.id}`:"#"}
                   createurl={`/regions/create/${networkdata.id}`}
                   selected={false}
+                  canDelete={loggedInUser.role === UserRole.SUPER_USER}
                   onDelete={() => Deletenetwork(networkdata.id)}
                   onclick={() => {
                     dispatch(setSelectedid(networkdata.id)),
