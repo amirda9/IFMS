@@ -34,6 +34,7 @@ type PropsType<
   onclicktitle?: Function;
   tdclassname?:string;
   thclassname?:string;
+  onclickrow?:Function
 };
 const Table = <
   C extends string,
@@ -53,6 +54,7 @@ const Table = <
   keyExtractor,
   bordered,
   onclicktitle = () => {},
+  onclickrow=(e:any)=>{}
 }: PropsType<C, DC, Item>) => {
   const headerItems = Object.entries(cols) as Array<[C, ColType]>;
   const [selectedtab, setselectedtab] = useState<string>(tabicon || '');
@@ -106,10 +108,12 @@ const Table = <
         )}
         key={keyExtractor ? keyExtractor(row) : Object.values(row).join('')}>
         {headerItems.map(([key]) => {
-            let BG =row.tabbodybg?.find((data: any) => data.name == key)?.bg || row.tabrowbg || 'white';
+          const findtab=row.tabbodybg?.find((data: any) => data.name == key)
+            let BG =findtab?findtab.bg:row.tabrowbg;
           return (
             <td
-              style={{backgroundColor: BG}}
+              onClick={()=>onclickrow(row)}
+              style={{backgroundColor: BG || "white"}}
               key={key}
               className={classNames(
 

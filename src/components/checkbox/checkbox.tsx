@@ -24,7 +24,7 @@ function Checkbox({onclick,classname,iconclassnam="w-[20px] h-[19.5px]",checksta
   // },[check])
 
   return (
-    <button type='button' onClick={()=>onclick(!check)} className={`w-[20px] flex flex-row justify-center items-center  h-[20px] bg-[#FFFFFF] ${classname}`}>
+    <button type='button' onClick={(e)=>{e.stopPropagation(),onclick(!check)}} className={`w-[20px] flex flex-row justify-center items-center  h-[20px] bg-[#FFFFFF] ${classname}`}>
       {check ? <HiMiniCheck  size={30} />: null}
     </button>
   );
