@@ -1111,6 +1111,7 @@ console.log("😶‍🌫️",datass);
     );
   };
 
+  
   const onclickshap = () => {
     let x = mousecoordinate.x;
     const fakeeventsCopy = deepcopy(fakeevents);
@@ -1257,6 +1258,7 @@ console.log("😶‍🌫️",datass);
     }
   };
 
+
   const onclickwordtab = (a: string) => {
     const fakeeventsCopy = deepcopy(fakeevents);
     if (selectedevents != null) {
@@ -1305,6 +1307,7 @@ console.log("😶‍🌫️",datass);
     setfakeEvents(fakeeventsCopy);
   };
 
+
   const moveshapes = (e: any) => {
     const dataaa = filterArray(
       ['a', 'A', 'b', 'B'],
@@ -1346,6 +1349,12 @@ console.log("😶‍🌫️",datass);
       });
     }
   };
+
+  const plotwidth=window.innerWidth-510
+  console.log(window.innerWidth-510);
+  console.log("maxx",maxx);
+  const ratio=plotwidth/maxx
+  console.log("ratio",ratio);
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       <div className="flex h-[540px]  w-full flex-row">
@@ -1503,7 +1512,8 @@ console.log("😶‍🌫️",datass);
           <div className="flex flex-row">
             {linkslengthdata.map(segmentsdata => {
               let linklength = Number(segmentsdata.Length) * 100;
-
+                  console.log("linklength",linklength);
+                  
               return (
                 <div
                   style={{width: `${linklength}px`}}
