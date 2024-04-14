@@ -7,7 +7,7 @@ import {IoTrashOutline} from 'react-icons/io5';
 import {Select} from '~/components';
 import Rectangle from '~/assets/icons/Rectangle 112.png';
 import Checkbox from '~/components/checkbox/checkbox';
-import {$Get} from '~/util/requestapi';
+import {$Delete, $Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import {deepcopy} from '~/util';
 // *********************** type ***************************
@@ -93,7 +93,6 @@ const usertabelitems = [
   },
 ];
 
-
 const bottomcolumns = {
   secondarysource: {label: 'Secondary Source', size: 'w-[22.5%]'},
   alarmsime: {label: 'Alarm Time', size: 'w-[22.5%]'},
@@ -101,7 +100,6 @@ const bottomcolumns = {
   linksestination: {label: 'Link Destination', size: 'w-[22.5%]'},
   cablesuct: {label: 'Cable / Duct', size: 'w-[10%]'},
 };
-
 
 const topcolumns = {
   source_name: {label: 'Primary Source', size: 'w-[16%]'},
@@ -158,9 +156,13 @@ function Alarms() {
       let allalarmresponse = await $Get(
         `otdr/alarm/events/?page=${pagevalue}&limit=${limitvalue}`,
       );
-      let allalarmresponsedata: allalarmsdatatype =
-        await allalarmresponse.json();
-      let newallalarmre = allalarmresponsedata.map(data => ({
+      let allalarmresponsedata: {
+        alarm_events: allalarmsdatatype;
+        page_number: number;
+      } = await allalarmresponse.json();
+      console.log('allalarmresponsedata', allalarmresponsedata);
+      setAllpagecount(allalarmresponsedata.page_number);
+      let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
         ...data,
         time_created: getPrettyDateTime(data.time_created),
         time_modified: getPrettyDateTime(data.time_modified),
@@ -220,6 +222,21 @@ function Alarms() {
     }
     setAllalarmdata(allalarmsdataCopy);
   };
+
+  const deletealarms = async () => {
+    try {
+      setLoading(true);
+      const response = await $Delete('otdr/alarm/events', selectedid);
+      if (response.status == 200) {
+        getallalarms();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return (
     <div className="flex w-full flex-col p-[10px] pt-[80px]">
       <div className="flex w-full flex-row justify-between border-b-[1px] border-[#D9D9D9]">
