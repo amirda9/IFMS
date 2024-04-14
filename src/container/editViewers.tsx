@@ -13,6 +13,7 @@ import {$Get} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
 import {useSelector} from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { log } from 'console';
 
 type UserTableType = {
   id: string;
@@ -26,6 +27,7 @@ type StateType = {
   selectRight: string[];
   group: boolean;
   Adminid: string;
+  editablebycurrentuserList:string[]
 };
 const columns = {
   select: {label: '', size: 'w-[6%]'},
@@ -46,6 +48,7 @@ export type EditorRefType = {
   group: boolean;
   setGroup: (isGroup: boolean) => void;
   setAdminid: (values: string) => void;
+  setAditablebycurrentuserList:(values: string[]) => void;
 };
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   const params=useParams()
@@ -87,12 +90,23 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     selectRight: [],
     group: false,
     Adminid: '',
+    editablebycurrentuserList:[]
   });
+
+  
+  
   const getuserlist = async () => {
     try {
-      const listuser = await $Get(`auth/users/`);
+      const [listuser,listacsessuser] = await Promise.all([
+        await $Get(`auth/users/`),
+        $Get(`otdr/network/${Object.entries(params)[0][1]}/access`),
+      ]);
+      // const listuser = await $Get(`auth/users/`);
+    //  const listacsessuser=await $Get(`otdr/network/${Object.entries(params)[0][1]}/access`)
       const listuserdata: any = await listuser.json();
-
+      const listacsessuserdata=await listacsessuser.json()
+      console.log("listacsessuserdata",listacsessuserdata);
+      
       if (listuser.status == 200) {
         setUserlist(
           listuserdata?.map((user: any) => ({
@@ -138,26 +152,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     }[]
   >([]);
 
-  let type = window.location.href.split('/')[3];
-  let isnetworkadmin = useMemo(() => {
-    if (type == 'networks') {
-    return networkidadmin.includes(Object.entries(params)[0][1])
-    } else if (type == "regions"){
-    return  true
-    } else{
-      return  true
-    }
-  }, []);
-
-  let canadd=()=>{
-    if (type == 'networks') {
-      if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER){
-        return true
-      }
-    }else{
-      return true
-    }
-  }
+ 
 
 
 
@@ -166,9 +161,12 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     () => ({
       values: state.values,
       group: state.group,
-
+      editablebycurrentuserList:state.editablebycurrentuserList,
       setValues: (values: string[]) => {
         setState({...state, values});
+      },
+      setAditablebycurrentuserList: (editablebycurrentuserList: string[]) => {
+        setState({...state, editablebycurrentuserList});
       },
       setAdminid: (values: string) => {
         setState({...state, Adminid: values});
@@ -189,6 +187,9 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     }),
     [state.values, state.group, state.Adminid],
   );
+
+console.log("😋",state.values);
+
 
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
    
@@ -219,30 +220,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     });
   };
 
-  const renderDynamicColumn = (side: 'left' | 'right') => {
-    return ({value, key, index}: RenderDynamicColumnType) => {
-      if (key === 'index') return index + 1;
-      else
-        return (
-          <div className="flex w-full flex-row justify-center">
-            <Checkbox
-              checkstatus={state.selectLeft.includes(value.id)}
-              onclick={changeSelect(side, value.id)}
-              iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
-              classname={' border-[1px] text-[#18C047] border-[#000000]'}
-            />
-          </div>
-          // <input
-          //   type="checkbox"
-          //   checked={(side === 'left'
-          //     ? state.selectLeft
-          //     : state.selectRight
-          //   ).includes(value.id)}
-          //   onChange={changeSelect(side, value.id)}
-          // />
-        );
-    };
-  };
+
 
 
 
@@ -290,6 +268,9 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   const veiwers: any =
     userList.filter(user => state.values.includes(user.id)) || [];
 
+
+  //  console.log("veiwers",veiwers);
+   
   for (let i = 0; i < veiwers.length; i++) {
     // const findusers=state.Viewers?.findIndex(data =>data.user.id == veiwers[i].id);
     if (veiwers[i].id == state.Adminid) {
@@ -336,6 +317,72 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     setmount(true);
   }, [veiwertablesorte, veiwertabselected, change]);
 
+console.log("Object.entries(params)",Object.entries(params));
+
+
+  let type = window.location.href.split('/')[3];
+  let isnetworkadmin = useMemo(() => {
+    if (type == 'networks') {
+    return networkidadmin.includes(Object.entries(params)[0][1])
+    } else if (type == "regions"){
+    return  true
+    } else{
+      return  true
+    }
+  }, []);
+
+
+
+  let canadd=()=>{
+    if (type == 'networks') {
+      if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER){
+        return true
+      }
+    }else{
+      return true
+    }
+  }
+
+  let canremove=(id:string)=>{
+    if (type == 'networks') {
+      if(loggedInUser.role == UserRole.SUPER_USER || state.editablebycurrentuserList.includes(id)){
+        return true
+      }
+    }else{
+      return true
+    }
+  }
+
+
+  const renderDynamicColumn = (side: 'left' | 'right') => {
+    return ({value, key, index}: RenderDynamicColumnType) => {
+      if (key === 'index') return index + 1;
+      else
+        return (
+          <div className="flex w-full flex-row justify-center">
+            <Checkbox
+              checkstatus={state.selectLeft.includes(value.id)}
+              onclick={((state.selectLeft.includes(value.id) && canremove(value.id)) || (!state.selectLeft.includes(value.id) && canadd())) ?changeSelect(side, value.id):()=>{}}
+              iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+              classname={' border-[1px] text-[#18C047] border-[#000000]'}
+            />
+          </div>
+          // <input
+          //   type="checkbox"
+          //   checked={(side === 'left'
+          //     ? state.selectLeft
+          //     : state.selectRight
+          //   ).includes(value.id)}
+          //   onChange={changeSelect(side, value.id)}
+          // />
+        );
+    };
+  };
+
+  console.log("editablebycurrentuserList",state.editablebycurrentuserList);
+  console.log("selectLeft",state.selectLeft);
+  
+  // ****************************
   return (
     <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">
       {state.group ? (

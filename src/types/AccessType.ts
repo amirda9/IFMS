@@ -5,6 +5,7 @@ export enum AccessEnum {
 }
 export type AccessListType = {
  user: UserListType;
+ editable_by_current_user:boolean;
  access: AccessEnum
 };
 

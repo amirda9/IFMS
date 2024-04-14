@@ -33,6 +33,9 @@ const NetworkAccessPage = () => {
         viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
           '',
       );
+      editor.current?.setAditablebycurrentuserList(
+        viewers?.data!.users.filter(data => data.editable_by_current_user === true).map(viewer => viewer.user.id) || [],
+      );
     },
     onUpdate: lastState => {
       if (
@@ -42,6 +45,9 @@ const NetworkAccessPage = () => {
         editor.current?.setValues(
           viewers?.data!.users.map(viewer => viewer.user.id),
         );
+        // editor.current?.setAditablebycurrentuserList(
+        //   viewers?.data!.users.filter(data => data.editable_by_current_user == true).map(viewer => viewer.user.id),
+        // );
       }
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
@@ -53,6 +59,10 @@ const NetworkAccessPage = () => {
     },
   });
 
+  console.log("viewers",viewers);
+  console.log("😎",viewers?.data?.users?.filter(data => data.editable_by_current_user == false));
+  
+  
   const buttons = (
     <div className="mt-[25px] w-auto ">
       <SimpleBtn
