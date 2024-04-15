@@ -90,6 +90,7 @@ function NetworktreeLayout({children}: Iprops) {
     loading,
   } = useSelector((state: RootState) => state.networktree);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+  const {networkidadmin} = useSelector((state: any) => state.networktree);
   const {
     request,
     state: {list, regions},
@@ -491,6 +492,7 @@ function NetworktreeLayout({children}: Iprops) {
                   to={loggedInUser.role === UserRole.SUPER_USER ? `/networks/${networkdata.id}`:"#"}
                   createurl={`/regions/create/${networkdata.id}`}
                   selected={false}
+                  canAdd={(loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id))}
                   canDelete={loggedInUser.role === UserRole.SUPER_USER}
                   onDelete={() => Deletenetwork(networkdata.id)}
                   onclick={() => {
@@ -523,6 +525,7 @@ function NetworktreeLayout({children}: Iprops) {
                               to={`/regions/${regionsdata.id}_${networkdata.id}`}
                               selected={false}
                               canAdd={false}
+                              canDelete={(loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id))}
                               onDelete={() =>
                                 Deleteregion(regionsdata.id, networkdata.id)
                               }
