@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, Table} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {useDispatch} from 'react-redux';
 import {FormLayout} from '~/layout';
@@ -11,6 +11,7 @@ import {
   setregionviewersstatus,
   setregionviewers,
 } from './../../store/slices/networkslice';
+import {UserRole} from '~/constant/users';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -33,21 +34,9 @@ const RegionAccessPage = () => {
   const {network} = useSelector((state: any) => state);
   const [tabname, setTabname] = useState('User');
   const login = localStorage.getItem('login');
+  const {networkidadmin} = useSelector((state: any) => state.networktree);
   const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [userrole, setuserrole] = useState<any>('');
-  const getrole = async () => {
-    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res.json());
-    setuserrole(role.role);
-  };
-  useEffect(() => {
-    getrole();
-  }, []);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const params = useParams<{regionId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
@@ -60,7 +49,9 @@ const RegionAccessPage = () => {
       update: state.http.regionAdminUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.regionId!.split("_")[0]}});
+      request('regionAccessList', {
+        params: {region_id: params.regionId!.split('_')[0]},
+      });
       request('userList', undefined);
     },
     onUpdate: lastState => {
@@ -68,13 +59,18 @@ const RegionAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
       ) {
-        request('regionAccessList', {params: {region_id: params.regionId!.split("_")[0]}});
+        request('regionAccessList', {
+          params: {region_id: params.regionId!.split('_')[0]},
+        });
         navigate('../access', {replace: true, relative: 'path'});
       }
     },
   });
 
-  
+
+
+
+
   const saveAdmin = () => {
     const viewerWithoutAdmin =
       viewers?.data?.users
@@ -91,15 +87,14 @@ const RegionAccessPage = () => {
       access_types: AccessEnum.admin,
     });
     request('regionAdminUpdate', {
-      params: {region_id: params.regionId!.split("_")[0]},
+      params: {region_id: params.regionId!.split('_')[0]},
       data: {user_id: userAdmin || admin!.user.id!},
     });
     request('regionAccessUpdate', {
-      params: {region_id: params.regionId!.split("_")[0]},
+      params: {region_id: params.regionId!.split('_')[0]},
       data: {users: network?.regionviewers},
     });
-    dispatch(setregionviewersstatus(false)),
-    dispatch(setregionviewers([]))
+    dispatch(setregionviewersstatus(false)), dispatch(setregionviewers([]));
   };
   var dataa: any = [];
 
@@ -117,14 +112,17 @@ const RegionAccessPage = () => {
         });
       }
     }
-    const items =network.regionviewersstatus?dataa: (viewers?.data?.users || [])
-      .filter(value => value.access !== AccessEnum.admin)
-      .map((value, index) => ({
-        index: (index + 1).toString(),
-        user: value.user.username,
-        station: value.user.station?.name || '-',
-        region: value.user.region?.name || '-',
-      })).sort((a, b) => a.user.localeCompare(b.user, 'en-US'))
+    const items = network.regionviewersstatus
+      ? dataa
+      : (viewers?.data?.users || [])
+          .filter(value => value.access !== AccessEnum.admin)
+          .map((value, index) => ({
+            index: (index + 1).toString(),
+            user: value.user.username,
+            station: value.user.station?.name || '-',
+            region: value.user.region?.name || '-',
+          }))
+          .sort((a, b) => a.user.localeCompare(b.user, 'en-US'));
 
     const sortddata = (tabname: string, sortalfabet: boolean) => {
       if (sortalfabet) {
@@ -154,21 +152,15 @@ const RegionAccessPage = () => {
     if (!ifUserExist && admin) {
       userList.push({...admin.user});
     }
-    
+
     return (
       <>
         <div className="mb-10 flex flex-col">
-              <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
-              Region Admin
-              </span>
-              <Select
-            disabled={
-              userrole == 'superuser' ||
-              networkDetail?.data?.access?.access == 'ADMIN' ||
-              regionDetail?.data?.access.role == 'superuser'
-                ? false
-                : true
-            }
+          <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+            Region Admin
+          </span>
+          <Select
+            disabled={loggedInUser.role !== UserRole.SUPER_USER && !networkidadmin.includes(params.regionId!.split('_')[1])}
             className="w-[70%]"
             value={userAdmin || admin?.user.id}
             onChange={event => {
@@ -182,33 +174,27 @@ const RegionAccessPage = () => {
               </option>
             ))}
           </Select>
-              </div>
-    
-              <div className="mb-6 flex flex-col">
-              <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
-              Region Viewer(s)
-              </span>
-              <Table
-               dynamicColumns={['index']}
-               renderDynamicColumn={data => data.index + 1}
-               tabicon={tabname}
-         
-               onclicktitle={(tabname: string, sortalfabet: boolean) => {
-                setTabname(tabname);
-                sortddata(tabname, sortalfabet);
-              }}
-            items={
-              itemssorted.length > 0
-                ? itemssorted
-                : items
-            }
+        </div>
+
+        <div className="mb-6 flex flex-col">
+          <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
+            Region Viewer(s)
+          </span>
+          <Table
+            dynamicColumns={['index']}
+            renderDynamicColumn={data => data.index + 1}
+            tabicon={tabname}
+            onclicktitle={(tabname: string, sortalfabet: boolean) => {
+              setTabname(tabname);
+              sortddata(tabname, sortalfabet);
+            }}
+            items={itemssorted.length > 0 ? itemssorted : items}
             loading={viewers?.httpRequestStatus === 'loading'}
             cols={columns}
             containerClassName="w-full mt-[-6px]"
           />
+        </div>
 
-              </div>
-    
         {/* <Description label="Region Viewer(s)" items="start" className="h-full">
           <Table
                dynamicColumns={['index']}
@@ -231,28 +217,30 @@ const RegionAccessPage = () => {
         </Description> */}
       </>
     );
-  }, [viewers?.httpRequestStatus, users?.httpRequestStatus, userAdmin,itemssorted,network?.regionviewers]);
+  }, [
+    viewers?.httpRequestStatus,
+    users?.httpRequestStatus,
+    userAdmin,
+    itemssorted,
+    network?.regionviewers,
+  ]);
   const buttons = (
     <>
-      {userrole == 'superuser' ||
-      networkDetail?.data?.access?.access == 'ADMIN' ||
-      regionDetail?.data?.access.access == 'ADMIN' ? (
-        <SimpleBtn link to="../edit-access">
-          Edit Region Viewer(s)
-        </SimpleBtn>
-      ) : null}
-      {userrole == 'superuser' ||
-      networkDetail?.data?.access?.access == 'ADMIN' ||
-      regionDetail?.data?.access.access == 'ADMIN' ? (
-        <SimpleBtn
-          onClick={saveAdmin}
-          disabled={update?.httpRequestStatus === 'loading'}>
-          Save
-        </SimpleBtn>
-      ) : null}
+      <SimpleBtn link to="../edit-access">
+        Edit Region Viewer(s)
+      </SimpleBtn>
 
-      <SimpleBtn onClick={()=>{dispatch(setregionviewersstatus(false)),dispatch(setregionviewers([]));
-}}>
+      <SimpleBtn
+        onClick={saveAdmin}
+        disabled={update?.httpRequestStatus === 'loading'}>
+        Save
+      </SimpleBtn>
+
+      <SimpleBtn
+        onClick={() => {
+          dispatch(setregionviewersstatus(false)),
+            dispatch(setregionviewers([]));
+        }}>
         Cancel
       </SimpleBtn>
     </>

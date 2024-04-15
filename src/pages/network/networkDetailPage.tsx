@@ -6,16 +6,19 @@ import {InputFormik, TextareaFormik} from '~/container';
 import {useDispatch, useSelector} from 'react-redux';
 import * as Yup from 'yup';
 import {Request} from '~/hooks/useHttpRequest';
-import {changeNetworkname, setNetworkidadmin} from './../../store/slices/networktreeslice'
+import {
+  changeNetworkname,
+  setNetworkidadmin,
+} from './../../store/slices/networktreeslice';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect} from 'react';
-import { $Put } from '~/util/requestapi';
-import { UserRole } from '~/constant/users';
+import {$Put} from '~/util/requestapi';
+import {UserRole} from '~/constant/users';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
 const NetworkDetailPage = () => {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const login = localStorage.getItem('login');
   const {networkDetail} = useSelector((state: any) => state.http);
   const params = useParams<{networkId: string}>();
@@ -24,9 +27,8 @@ const NetworkDetailPage = () => {
     request('networkDetail', {params: {networkId: params.networkId!}});
   };
 
-
   const {
-    state: {detail,viewers},
+    state: {detail, viewers},
     request,
   } = useHttpRequest({
     selector: state => ({
@@ -38,11 +40,11 @@ const NetworkDetailPage = () => {
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
-  useEffect(()=>{
-    if(detail?.data?.access.role == "superuser" || detail?.data?.access.access == "ADMIN" || loggedInUser.role === UserRole.SUPER_USER){
-      dispatch(setNetworkidadmin(detail?.data?.id!))
+  useEffect(() => {
+    if (detail?.data?.access?.access == 'ADMIN') {
+      dispatch(setNetworkidadmin(detail?.data?.id!));
     }
-      },[])
+  }, []);
   if (detail?.httpRequestStatus !== 'success' && !detail?.data)
     return <>loading</>;
   return (
@@ -56,16 +58,19 @@ const NetworkDetailPage = () => {
               version => version.id === detail!.data!.current_version.id,
             )?.description || '',
         }}
-        onSubmit={async(values) => {
+        onSubmit={async values => {
           try {
-            const response=await $Put(`otdr/network/${params.networkId!}`,values)
+            const response = await $Put(
+              `otdr/network/${params.networkId!}`,
+              values,
+            );
             //we should update the networktree
-            if(response.status == 200){
-              dispatch(changeNetworkname({id:params.networkId!,name:values.name}))
+            if (response.status == 200) {
+              dispatch(
+                changeNetworkname({id: params.networkId!, name: values.name}),
+              );
             }
-          } catch (error) {
-            
-          }
+          } catch (error) {}
         }}
         validationSchema={networkSchema}>
         <Form className="flex h-full flex-col justify-between">
@@ -95,12 +100,7 @@ const NetworkDetailPage = () => {
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
             {loggedInUser.role === UserRole.SUPER_USER ||
             networkDetail?.data?.access?.access == 'ADMIN' ? (
-              <SimpleBtn
-                type="submit"
-               
-                >
-                Save
-              </SimpleBtn>
+              <SimpleBtn type="submit">Save</SimpleBtn>
             ) : null}
 
             <SimpleBtn link to="../">

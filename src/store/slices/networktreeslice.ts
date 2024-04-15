@@ -330,12 +330,14 @@ const networktreeslice = createSlice({
       state.networkregions = action.payload;
     },
     setNetworkidadmin: (state, action: {type: string; payload: string}) => {
+      let networkidadminCopy=deepcopy(state.networkidadmin)
       const findinlist = state.networkidadmin.findIndex(
         data => data == action.payload,
       );
       if (findinlist < 0) {
-        state.networkidadmin.push(action.payload);
+        networkidadminCopy.push(action.payload);
       }
+      state.networkidadmin=networkidadminCopy
     },
     setRegionidadmin: (state, action: {type: string; payload: string}) => {
       const findinlist = state.regionidadmin.findIndex(
