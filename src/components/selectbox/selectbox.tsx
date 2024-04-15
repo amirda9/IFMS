@@ -16,6 +16,7 @@ type IProps = {
   bgcolor?: string;
   textColor?: string;
   borderColor?: string;
+  disabled?:boolean
 };
 
 type OnclickItem = {
@@ -31,6 +32,7 @@ function Selectbox({
   defaultvalue,
   onFocusinput,
   search = true,
+  disabled=false,
   bgcolor = '#ffffff',
   borderColor,
   textColor = '#000000',
@@ -103,6 +105,7 @@ function Selectbox({
      <div className='w-full h-full flex flex-row px-2 items-center box-border justify-between'>
       {search ? (
         <input
+        disabled={disabled}
           onChange={search ? searchitems : () => {}}
           value={selectedlable}
           placeholder={placeholder ? placeholder : ''}
@@ -114,6 +117,7 @@ function Selectbox({
       ) : (
         <>
           <input
+           disabled={disabled}
             className="h-[0px] w-[0px] opacity-0"
             ref={wrapperRef}
             onFocus={onfocusinputt}
