@@ -13,7 +13,7 @@ import {$Get} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
 import {useSelector} from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { log } from 'console';
+
 
 type UserTableType = {
   id: string;
@@ -52,8 +52,7 @@ export type EditorRefType = {
 };
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   const params=useParams()
-  console.log(Object.entries(params)[0][1],'params');
-  
+
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
@@ -105,8 +104,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     //  const listacsessuser=await $Get(`otdr/network/${Object.entries(params)[0][1]}/access`)
       const listuserdata: any = await listuser.json();
       const listacsessuserdata=await listacsessuser.json()
-      console.log("listacsessuserdata",listacsessuserdata);
-      
+
       if (listuser.status == 200) {
         setUserlist(
           listuserdata?.map((user: any) => ({
@@ -188,8 +186,6 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     [state.values, state.group, state.Adminid],
   );
 
-console.log("😋",state.values);
-
 
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
    
@@ -268,9 +264,6 @@ console.log("😋",state.values);
   const veiwers: any =
     userList.filter(user => state.values.includes(user.id)) || [];
 
-
-  //  console.log("veiwers",veiwers);
-   
   for (let i = 0; i < veiwers.length; i++) {
     // const findusers=state.Viewers?.findIndex(data =>data.user.id == veiwers[i].id);
     if (veiwers[i].id == state.Adminid) {
@@ -316,9 +309,6 @@ console.log("😋",state.values);
     }
     setmount(true);
   }, [veiwertablesorte, veiwertabselected, change]);
-
-console.log("Object.entries(params)",Object.entries(params));
-
 
   let type = window.location.href.split('/')[3];
   let isnetworkadmin = useMemo(() => {
@@ -379,8 +369,7 @@ console.log("Object.entries(params)",Object.entries(params));
     };
   };
 
-  console.log("editablebycurrentuserList",state.editablebycurrentuserList);
-  console.log("selectLeft",state.selectLeft);
+
   
   // ****************************
   return (
@@ -393,7 +382,7 @@ console.log("Object.entries(params)",Object.entries(params));
           items={groupList}
           dynamicColumns={['groups']}
           renderDynamicColumn={({value}) => {
-            console.log('🌻', value);
+
             return (
               <div className="px-4">
                 <GroupItem

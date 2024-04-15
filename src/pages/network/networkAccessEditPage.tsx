@@ -11,9 +11,8 @@ import {
   setnetworkviewers,
   setnetworkviewersstatus,
 } from './../../store/slices/networkslice';
-import {LoginPage} from '../auth';
+
 const NetworkAccessPage = () => {
-  const {networkDetail} = useSelector((state: any) => state.http);
   const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
 
@@ -59,10 +58,7 @@ const NetworkAccessPage = () => {
     },
   });
 
-  console.log("viewers",viewers);
-  console.log("😎",viewers?.data?.users?.filter(data => data.editable_by_current_user == false));
-  
-  
+
   const buttons = (
     <div className="mt-[25px] w-auto ">
       <SimpleBtn
