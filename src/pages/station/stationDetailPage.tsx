@@ -1,16 +1,15 @@
-import {Outlet, useNavigate, useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {Field, Form, Formik} from 'formik';
-import {InputFormik, SelectFormik, TextareaFormik} from '~/container';
+import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import Selectbox from '~/components/selectbox/selectbox';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {Request} from '~/hooks/useHttpRequest';
 import {useEffect, useState} from 'react';
 import {updateStationName} from './../../store/slices/networktreeslice';
 import {useDispatch, useSelector} from 'react-redux';
-import {BASE_URL} from './../../constant';
 import {$Get, $Put} from '~/util/requestapi';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -44,10 +43,8 @@ const StationDetailPage = () => {
   const [selectenetwork,setSelectednetwork]=useState(params.stationId!.split("_")[2])
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const login = localStorage.getItem('login');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [userrole, setuserrole] = useState<any>('');
   const {stationDetail} = useSelector((state: any) => state.http);
-  
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 const navigate=useNavigate()
   const initialRequests = (request: Request) => {
     request('stationDetail', {params: {station_id: params.stationId!.split("_")[0]}});
@@ -58,19 +55,8 @@ const navigate=useNavigate()
     }),
     initialRequests,
   });
-  useEffect(() => {
-    const getrole = async () => {
-      const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-        headers: {
-          Authorization: `Bearer ${accesstoken}`,
-          Accept: 'application.json',
-          'Content-Type': 'application/json',
-        },
-      }).then(res => res.json());
-      setuserrole(role.role);
-    };
-    getrole();
 
+  useEffect(() => {
     // const getstationdetail=async()=>{
     //   const getstationdetailresponse=await $Get(`otdr/station/${params.stationId!}`)
     //   if(getstationdetailresponse.status == 200){
@@ -263,15 +249,13 @@ const navigate=useNavigate()
             </Description>
           </div>
           <div className="flex flex-row pb-4 gap-x-4 self-end">
-            {userrole == 'superuser' ||
-            stationDetail?.data?.access.access == 'ADMIN' ||
-            networkDetail?.data?.access?.access == 'ADMIN' ? (
+        
               <SimpleBtn
                 type="submit"
                 disabled={state?.detail?.httpRequestStatus === 'loading'}>
                 Save
               </SimpleBtn>
-            ) : null}
+     
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>

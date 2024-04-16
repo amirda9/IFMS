@@ -100,8 +100,13 @@ const RegionLinksPage = () => {
         `otdr/region/${params.regionId!.split('_')[0]}/links`,
       );
       const responsedata = await response.json();
+      console.log("responsedata",responsedata);
+      const newresponsedata=responsedata.map((data:any)=> ({name:data.name,source:data.source.name,destination:data.destination.name}) )
+      // name: string;
+      // source: string;
+      // destination: string;
       setItemssorted(
-        responsedata.sort((a: any, b: any) =>
+        newresponsedata.sort((a: any, b: any) =>
           a.name.localeCompare(b.name, 'en-US'),
         ),
       );
@@ -257,6 +262,8 @@ const RegionLinksPage = () => {
     getregionlinklist();
   };
 
+  console.log("itemssorted",itemssorted);
+  
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
