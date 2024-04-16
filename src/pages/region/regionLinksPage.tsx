@@ -140,7 +140,7 @@ const RegionLinksPage = () => {
     }
     setItemssorted(newitem);
   };
-  console.log('regionLinksCopy', regionLinks);
+  console.log('itemssorted', itemssorted);
   const save = async () => {
     const appenddata: {
       id: string;

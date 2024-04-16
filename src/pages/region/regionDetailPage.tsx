@@ -7,7 +7,7 @@ import {FormLayout} from '~/layout';
 import {getPrettyDateTime} from '~/util/time';
 import {useDispatch, useSelector} from 'react-redux';
 import {useEffect, useState} from 'react';
-import {updateregionname} from './../../store/slices/networktreeslice';
+import {setRegionidadmin, updateregionname} from './../../store/slices/networktreeslice';
 import {$Get, $Put} from '~/util/requestapi';
 import Selectbox from '~/components/selectbox/selectbox';
 import {useAppSelector} from '~/hooks';
@@ -42,6 +42,8 @@ const RegionDetailPage = () => {
   };
 
   useEffect(() => {
+
+      
     const getnetworks = async () => {
 
       try {
@@ -51,6 +53,10 @@ const RegionDetailPage = () => {
         );
         if (getstationdetail.status == 200) {
           const getstationdetaildata = await getstationdetail.json();
+          if (getstationdetaildata?.access?.access == 'ADMIN') {
+          dispatch(setRegionidadmin(getstationdetaildata?.id!));
+      }
+   
           setregiondata(getstationdetaildata);
           const response = await $Get(`otdr/network`);
           if (response.status == 200) {

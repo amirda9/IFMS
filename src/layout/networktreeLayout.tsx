@@ -28,6 +28,7 @@ import {
   deletedefaultgrouplinks,
   deletenetwork,
   deletedefaultRegion,
+  setRegionidadmin,
 } from './../store/slices/networktreeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
@@ -530,6 +531,7 @@ function NetworktreeLayout({children}: Iprops) {
                                 Deleteregion(regionsdata.id, networkdata.id)
                               }
                               onclick={() => {
+                         
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(regionsdata.id);
                                 onclickstations(networkdata.id, regionsdata.id);
@@ -553,6 +555,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
                                   createurl={`/stations/create/${regionsdata.id}_${networkdata.id}`}
                                   canDelete={false}
+                                  canAdd={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
                                   selected={false}
                                   onDelete={() => {}}
                                   onclick={() => {
@@ -585,6 +588,7 @@ function NetworktreeLayout({children}: Iprops) {
                                           key={index+Number(stationsdata.id)}
                                           to={`/stations/${stationsdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           selected={false}
+                                          canDelete={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
                                           onDelete={() =>
                                             deletegroupsationds(regionsdata.id)
                                           }

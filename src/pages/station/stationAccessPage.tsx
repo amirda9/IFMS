@@ -1,9 +1,9 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
-import {Description, Select, SimpleBtn, Table} from '~/components';
-import {BASE_URL} from '~/constant';
-import {useHttpRequest} from '~/hooks';
+import {Select, SimpleBtn, Table} from '~/components';
+import {UserRole} from '~/constant/users';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {
   setstationviewers,
   setstationviewersstatus,
@@ -19,8 +19,11 @@ const columns = {
 
 const StationAccessPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+  const {regionidadmin, networkidadmin} = useSelector(
+    (state: any) => state.networktree,
+  );
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const login = localStorage.getItem('login');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
   const [itemssorted, setItemssorted] = useState<
@@ -31,24 +34,10 @@ const StationAccessPage = () => {
       region: string;
     }[]
   >([]);
-  const [userrole, setuserrole] = useState<any>('');
-  const getrole = async () => {
-    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res.json());
-    setuserrole(role.role);
-  };
-  useEffect(() => {
-    getrole();
-  }, []);
+
   const params = useParams<{stationId: string}>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {http, network} = useSelector((state: any) => state);
-  // const {network} = useSelector((state: any) => state);
 
   const {
     request,
@@ -60,7 +49,9 @@ const StationAccessPage = () => {
       update: state.http.stationAccessUpdate,
     }),
     initialRequests: request => {
-      request('stationAccessList', {params: {station_id: params.stationId!}});
+      request('stationAccessList', {
+        params: {station_id: params.stationId!.split('_')[0]},
+      });
       request('userList', undefined);
     },
     onUpdate: (lastState, state) => {
@@ -68,7 +59,9 @@ const StationAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('stationAccessList', {params: {station_id: params.stationId!}});
+        request('stationAccessList', {
+          params: {station_id: params.stationId!.split('_')[0]},
+        });
       }
     },
   });
@@ -89,11 +82,11 @@ const StationAccessPage = () => {
       access_types: AccessEnum.admin,
     });
     request('stationAddadmin', {
-      params: {station_id: params.stationId!},
+      params: {station_id: params.stationId!.split('_')[0]},
       data: {user_id: userAdmin || admin!.user.id!},
     });
     request('stationAccessUpdate', {
-      params: {station_id: params.stationId!},
+      params: {station_id: params.stationId!.split('_')[0]},
       data: {users: network?.stationviewers},
     });
     dispatch(setstationviewers([]));
@@ -176,11 +169,9 @@ const StationAccessPage = () => {
               <Select
                 value={userAdmin || admin?.user.id}
                 disabled={
-                  userrole == 'superuser' ||
-                  http.stationDetail?.data?.access.role == 'superuser' ||
-                  networkDetail?.data?.access?.access == 'ADMIN'
-                    ? false
-                    : true
+                  loggedInUser.role !== UserRole.SUPER_USER &&
+                  !networkidadmin.includes(params.stationId!.split('_')[2]) &&
+                  !regionidadmin.includes(params.stationId!.split('_')[1])
                 }
                 onChange={e => setUserAdmin(e.target.value)}
                 className="w-[70%]">
@@ -211,21 +202,15 @@ const StationAccessPage = () => {
             </div>
           </div>
           <div className="absolue bottom-[20px] right-0 mr-4 flex flex-row gap-x-4 self-end">
-            {userrole == 'superuser' ||
-            http.stationDetail?.data?.access.access == 'ADMIN' ||
-            networkDetail?.data?.access?.access == 'ADMIN' ? (
-              <SimpleBtn link to="../edit-access">
-                Edit Station Viewer(s)
-              </SimpleBtn>
-            ) : null}
-            {userrole == 'superuser' ||
-            http.stationDetail?.data?.access.access == 'ADMIN' ||
-            networkDetail?.data?.access?.access == 'ADMIN' ? (
-              <SimpleBtn
-                onClick={network.stationviewersstatus ? saveAdmin : () => {}}>
-                Save
-              </SimpleBtn>
-            ) : null}
+            <SimpleBtn link to="../edit-access">
+              Edit Station Viewer(s)
+            </SimpleBtn>
+
+            <SimpleBtn
+              onClick={network.stationviewersstatus ? saveAdmin : () => {}}>
+              Save
+            </SimpleBtn>
+
             <SimpleBtn
               onClick={() => {
                 dispatch(setstationviewers([])),
