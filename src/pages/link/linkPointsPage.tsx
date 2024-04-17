@@ -2,8 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {SimpleBtn, TextInput} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
 import {BsPlusLg} from 'react-icons/bs';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
+import { deepcopy } from '~/util';
+import { useSelector } from 'react-redux';
+import { UserRole } from '~/constant/users';
 type Iprops = {
   classname: string;
   onclick: Function;
@@ -31,7 +34,10 @@ const Addbox = ({classname, onclick}: Iprops) => {
 const LinkPointsPage = () => {
   const params = useParams<{linkId: string}>();
   const networkId = params.linkId!.split("_")[2];
-
+  const {networkidadmin, regionidadmin} = useSelector(
+    (state: any) => state.networktree,
+  );
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [linkpoints, setlinkpoints] = useState<linkpointstype[]>([
     {latitude: 0, longitude: 0, id: 0},
@@ -97,7 +103,7 @@ const LinkPointsPage = () => {
   };
 
   const Addlinkpoints = (index: number) => {
-    let beforadddata = JSON.parse(JSON.stringify(linkpoints));
+    let beforadddata =deepcopy(linkpoints);
     let newArray = beforadddata.map(function (item: any) {
       if (item.id > index) {
         item.id = item.id + 1;
@@ -222,9 +228,12 @@ const LinkPointsPage = () => {
         </div>
       ))}
       <div className="absolute bottom-[-35px] right-0 flex flex-row">
+      {loggedInUser.role === UserRole.SUPER_USER ||
+        networkidadmin.includes(params.linkId!.split('_')[2]) ||
+        regionidadmin.includes(params.linkId!.split('_')[1]) || state?.detail?.data?.access?.access == "ADMIN"?
         <SimpleBtn onClick={() => savepoints()} type="submit">
           Save
-        </SimpleBtn>
+        </SimpleBtn>:null}
         <SimpleBtn className="ml-[20px]">Cancel</SimpleBtn>
       </div>
     </div>
