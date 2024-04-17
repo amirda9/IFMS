@@ -632,6 +632,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   to={`/regions/defaultregionemptypage/${networkdata.id}_Linkss`}
                                   selected={false}
                                   canDelete={false}
+                                  canAdd={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
                                   onDelete={() => {}}
                                   onclick={() => {
                                     dispatch(setSelectedid(regionsdata.id)),
@@ -673,6 +674,7 @@ function NetworktreeLayout({children}: Iprops) {
                                           to={`/links/${linksdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
+                                          canDelete={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
                                           onDelete={() =>
                                             ondeletelinksgroup(regionsdata.id)
                                           }
