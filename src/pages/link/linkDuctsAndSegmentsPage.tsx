@@ -1,12 +1,13 @@
 import React, {Fragment, useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
-import {BASE_URL} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
 import {useParams} from 'react-router-dom';
-import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
+import useHttpRequest from '~/hooks/useHttpRequest';
 import { useSelector } from 'react-redux';
 import { deepcopy } from '~/util';
+import { useAppSelector } from '~/hooks';
+import { UserRole } from '~/constant/users';
 type Iprops = {
   classname: string;
   onclick: Function;
@@ -28,20 +29,11 @@ const Addbox = ({classname, onclick}: Iprops) => {
 
 const LinkCablesAndSegmentsPage = () => {
   const login = localStorage.getItem('login');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [userrole, setuserrole] = useState<any>('');
-
-  const getrole = async () => {
-    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res.json());
-    setuserrole(role.role);
-  };
-
+  const {networkidadmin, regionidadmin} = useSelector(
+    (state: any) => state.networktree,
+  );
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+ 
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.linkDetail,
@@ -66,9 +58,7 @@ const LinkCablesAndSegmentsPage = () => {
     },
   });
 
-  useEffect(() => {
-    getrole();
-  }, []);
+
   const params = useParams<{linkId: string}>();
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const networkId =params.linkId!.split("_")[2];
@@ -1007,7 +997,9 @@ const LinkCablesAndSegmentsPage = () => {
         })}
       </div>
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
-       {userrole == 'superuser' || state?.detail?.data?.access?.access == 'ADMIN' || networkDetail?.data?.access?.access == 'ADMIN' ?
+       {loggedInUser.role === UserRole.SUPER_USER ||
+        networkidadmin.includes(params.linkId!.split('_')[2]) ||
+        regionidadmin.includes(params.linkId!.split('_')[1]) ?
         <SimpleBtn className='z-50' onClick={() => savecables()}>Save</SimpleBtn>
       
       :
