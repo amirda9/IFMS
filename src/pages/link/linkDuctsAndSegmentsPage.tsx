@@ -485,6 +485,10 @@ const LinkCablesAndSegmentsPage = () => {
     setParentcable({cables: allcables, ducts: allducts});
   }, [state?.detail]);
 
+  if(state.update?.httpRequestStatus === 'loading'){
+    return <h1 className='text-left'>Loading</h1>
+  }
+
   return (
 
     <div className="relative  min-h-[calc(100vh-220px)]  w-full pb-14">
@@ -999,7 +1003,7 @@ const LinkCablesAndSegmentsPage = () => {
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
        {loggedInUser.role === UserRole.SUPER_USER ||
         networkidadmin.includes(params.linkId!.split('_')[2]) ||
-        regionidadmin.includes(params.linkId!.split('_')[1]) ?
+        regionidadmin.includes(params.linkId!.split('_')[1]) || state?.detail?.data?.access?.access == "ADMIN" ?
         <SimpleBtn className='z-50' onClick={() => savecables()}>Save</SimpleBtn>
       
       :
