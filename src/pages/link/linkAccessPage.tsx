@@ -1,15 +1,15 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Select, SimpleBtn, Table} from '~/components';
-import {BASE_URL} from '~/constant';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {useDispatch} from 'react-redux';
 import {
   setlinkviewersstatus,
   setlinkviewers,
 } from './../../store/slices/networkslice';
+import { UserRole } from '~/constant/users';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -22,6 +22,8 @@ const LinkAccessPage = () => {
   const {network} = useSelector((state: any) => state);
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
+  const {networkidadmin,regionidadmin} = useSelector((state: any) => state.networktree);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const [itemssorted, setItemssorted] = useState<
     {
       index: string;
@@ -31,21 +33,6 @@ const LinkAccessPage = () => {
     }[]
   >([]);
   const login = localStorage.getItem('login');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [userrole, setuserrole] = useState<any>('');
-  const getrole = async () => {
-    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res.json());
-    setuserrole(role.role);
-  };
-  useEffect(() => {
-    getrole();
-  }, []);
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const params = useParams<{linkId: string}>();
   const {
@@ -167,11 +154,8 @@ const LinkAccessPage = () => {
           <Select
             value={userAdmin || admin?.user.id}
             disabled={
-              userrole == 'superuser' ||
-              linkDetail?.data?.access.role == 'superuser' ||
-              networkDetail?.data?.access?.access == 'ADMIN'
-                ? false
-                : true
+              loggedInUser.role !== UserRole.SUPER_USER &&
+              !networkidadmin.includes(params.linkId!.split("_")[2]) && !regionidadmin.includes(params.linkId!.split("_")[1])
             }
             onChange={e => setUserAdmin(e.target.value)}
             className="w-[70%] text-sm">
@@ -204,18 +188,13 @@ const LinkAccessPage = () => {
        
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        {userrole == 'superuser' ||
-        linkDetail?.data?.access.access == 'ADMIN' ||
-        networkDetail?.data?.access?.access == 'ADMIN' ? (
+  
           <SimpleBtn link to="../edit-access">
             Edit Link Viewer(s)
           </SimpleBtn>
-        ) : null}
-        {userrole == 'superuser' ||
-        linkDetail?.data?.access.access == 'ADMIN' ||
-        networkDetail?.data?.access?.access == 'ADMIN' ? (
+   
           <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
-        ) : null}
+  
 
         <SimpleBtn
           onClick={() => {
