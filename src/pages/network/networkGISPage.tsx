@@ -39,7 +39,7 @@ const NetworkGisPage = () => {
 
   const canchange=useMemo(()=>  {
     let isnetworkadmin=networkidadmin.findIndex((data:string) => data ==params.networkId!)>-1?true:false;
-    if(isnetworkadmin && loggedInUser.role == UserRole.SUPER_USER){
+    if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER){
       return true
     }else{
       return false
