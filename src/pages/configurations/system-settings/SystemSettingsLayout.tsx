@@ -1,7 +1,13 @@
 import {SidebarItem} from '~/components';
+import { UserRole } from '~/constant/users';
+import { useAppSelector } from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
 const SystemSettingsPage = () => {
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+  if(loggedInUser.role !== UserRole.SUPER_USER){
+    return <></>
+  }
   return (
     <SidebarLayout createTitle="System Settings">
       <SidebarItem name="Optical Route" to="optical-route" className="mr-6" />

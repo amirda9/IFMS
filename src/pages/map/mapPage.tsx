@@ -108,6 +108,7 @@ const MapPage = () => {
       request('mapDetail', {params: {network_id: networkId!}});
     },
   });
+console.log("detail",state.detail);
 
   const Stations = state?.detail?.data?.stations;
   const Regions = state?.detail?.data?.regions || [];
@@ -196,7 +197,7 @@ const MapPage = () => {
   }
   // ******************** return ****************** return ************************** return *******************************
   return (
-    <div className="relative flex  h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
+    <div className="relative flex  h-[calc(100vh-105px)] mt-[60px] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
       {showlinktoolkit ? <Linktooltip data={selectedLink} /> : null}
 
       <div
