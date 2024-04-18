@@ -53,7 +53,7 @@ export type EditorRefType = {
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   const params=useParams()
 
-  const {networkidadmin} = useSelector((state: any) => state.networktree);
+  const {networkidadmin,regionidadmin} = useSelector((state: any) => state.networktree);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     state: {users, groups},
@@ -310,11 +310,14 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     setmount(true);
   }, [veiwertablesorte, veiwertabselected, change]);
 
+  console.log("🚟",Object.entries(params)[0][1]!.split("_")[1]);
+  
   let type = window.location.href.split('/')[3];
   let isnetworkadmin = useMemo(() => {
     if (type == 'networks') {
     return networkidadmin.includes(Object.entries(params)[0][1])
     } else if (type == "regions"){
+      return networkidadmin.includes(Object.entries(params)[0][1]!.split("_")[1])
     return  true
     } else{
       return  true
@@ -322,12 +325,23 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   }, []);
 
 
+  let isregionadmin=useMemo(()=>{
+    if (type == "regions"){
+      return regionidadmin.includes(Object.entries(params)[0][1]!.split("_")[1])
+    } else {
+      return true
+    }
+  },[])
 
   let canadd=()=>{
     if (type == 'networks') {
       if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER){
         return true
       }
+    }else if (type == 'regions'){
+      if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER || isregionadmin){
+        return true
+      } 
     }else{
       return true
     }
@@ -338,6 +352,10 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       if(loggedInUser.role == UserRole.SUPER_USER || state.editablebycurrentuserList.includes(id)){
         return true
       }
+    }else if (type == 'regions'){
+      if(loggedInUser.role == UserRole.SUPER_USER || state.editablebycurrentuserList.includes(id)){
+        return true
+      } 
     }else{
       return true
     }

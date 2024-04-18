@@ -68,9 +68,6 @@ const RegionAccessPage = () => {
   });
 
 
-
-
-
   const saveAdmin = () => {
     const viewerWithoutAdmin =
       viewers?.data?.users
