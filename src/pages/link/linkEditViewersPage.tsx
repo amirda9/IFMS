@@ -27,6 +27,9 @@ const RegionAccessPage = () => {
         viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
           '',
       );
+      editor.current?.setAditablebycurrentuserList(
+        viewers?.data!.users.filter(data => data.editable_by_current_user === true).map(viewer => viewer.user.id) || [],
+      ); 
     },
     onUpdate: lastState => {
       if (

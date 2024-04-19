@@ -12,8 +12,7 @@ import Checkbox from '~/components/checkbox/checkbox';
 import {$Get} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
 import {useSelector} from 'react-redux';
-import { useParams } from 'react-router-dom';
-
+import {useParams} from 'react-router-dom';
 
 type UserTableType = {
   id: string;
@@ -27,7 +26,7 @@ type StateType = {
   selectRight: string[];
   group: boolean;
   Adminid: string;
-  editablebycurrentuserList:string[]
+  editablebycurrentuserList: string[];
 };
 const columns = {
   select: {label: '', size: 'w-[6%]'},
@@ -48,12 +47,14 @@ export type EditorRefType = {
   group: boolean;
   setGroup: (isGroup: boolean) => void;
   setAdminid: (values: string) => void;
-  setAditablebycurrentuserList:(values: string[]) => void;
+  setAditablebycurrentuserList: (values: string[]) => void;
 };
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
-  const params=useParams()
+  const params = useParams();
 
-  const {networkidadmin,regionidadmin} = useSelector((state: any) => state.networktree);
+  const {networkidadmin, regionidadmin} = useSelector(
+    (state: any) => state.networktree,
+  );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     state: {users, groups},
@@ -89,21 +90,19 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     selectRight: [],
     group: false,
     Adminid: '',
-    editablebycurrentuserList:[]
+    editablebycurrentuserList: [],
   });
 
-  
-  
   const getuserlist = async () => {
     try {
-      const [listuser,listacsessuser] = await Promise.all([
+      const [listuser, listacsessuser] = await Promise.all([
         await $Get(`auth/users/`),
         $Get(`otdr/network/${Object.entries(params)[0][1]}/access`),
       ]);
       // const listuser = await $Get(`auth/users/`);
-    //  const listacsessuser=await $Get(`otdr/network/${Object.entries(params)[0][1]}/access`)
+      //  const listacsessuser=await $Get(`otdr/network/${Object.entries(params)[0][1]}/access`)
       const listuserdata: any = await listuser.json();
-      const listacsessuserdata=await listacsessuser.json()
+      const listacsessuserdata = await listacsessuser.json();
 
       if (listuser.status == 200) {
         setUserlist(
@@ -150,16 +149,12 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     }[]
   >([]);
 
- 
-
-
-
   useImperativeHandle(
     ref,
     () => ({
       values: state.values,
       group: state.group,
-      editablebycurrentuserList:state.editablebycurrentuserList,
+      editablebycurrentuserList: state.editablebycurrentuserList,
       setValues: (values: string[]) => {
         setState({...state, values});
       },
@@ -186,9 +181,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     [state.values, state.group, state.Adminid],
   );
 
-
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
-   
     const allvalues = [...state.values];
     const index = allvalues.indexOf(id!);
     if (allvalues.indexOf(id!) > -1) {
@@ -196,7 +189,6 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     } else {
       allvalues.push(id!);
     }
-  
 
     setState(state => {
       const list = [
@@ -215,10 +207,6 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       };
     });
   };
-
-
-
-
 
   const group1 = groups?.data;
 
@@ -313,55 +301,109 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   let type = window.location.href.split('/')[3];
   let isnetworkadmin = useMemo(() => {
     if (type == 'networks') {
-    return networkidadmin.includes(Object.entries(params)[0][1])
-    } else if (type == "regions"){
-      return networkidadmin.includes(Object.entries(params)[0][1]!.split("_")[1])
+      return networkidadmin.includes(Object.entries(params)[0][1]);
+    } else if (type == 'regions') {
+      return networkidadmin.includes(
+        Object.entries(params)[0][1]?.split('_')[1],
+      );
+    } else if (type == 'stations') {
+      return networkidadmin.includes(
+        Object.entries(params)[0][1]?.split('_')[2],
+      );
     } else{
-      return networkidadmin.includes(Object.entries(params)[0][1]!.split("_")[2])
+      return networkidadmin.includes(
+        Object.entries(params)[0][1]?.split('_')[2],
+      );
     }
   }, []);
 
-
-  let isregionadmin=useMemo(()=>{
-    if (type == "regions"){
-      return regionidadmin.includes(Object.entries(params)[0][1]!.split("_")[0])
+  let isregionadmin = useMemo(() => {
+    if (type == 'regions') {
+      return regionidadmin.includes(
+        Object.entries(params)[0][1]?.split('_')[0],
+      );
+    } else if(type == 'stations') {
+      return regionidadmin.includes(
+        Object.entries(params)[0][1]?.split('_')[1],
+      );
     } else {
-      return regionidadmin.includes(Object.entries(params)[0][1]!.split("_")[1])
+      return regionidadmin.includes(
+        Object.entries(params)[0][1]?.split('_')[1],
+      );
     }
-  },[])
+  }, []);
 
-  let canadd=(id:string)=>{
+  let canadd = (id: string) => {
     if (type == 'networks') {
-      if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER){
-        return true
+      if (isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER) {
+        return true;
+      } else {
+        return false
       }
-    }else if (type == 'regions'){
-      if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER || isregionadmin){
-        return true
-      } 
-    }else{
-      if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER || isregionadmin){
-        return true
-      } else { return false}
+    } else if (type == 'regions') {
+      if (
+        isnetworkadmin ||
+        loggedInUser.role == UserRole.SUPER_USER ||
+        isregionadmin
+      ) {
+        return true;
+      } else{
+        return false
+      }
+    } else if (type == 'stations'){
+      if (
+        isnetworkadmin ||
+        loggedInUser.role == UserRole.SUPER_USER ||
+        isregionadmin
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    } else{
+      if (
+        isnetworkadmin ||
+        loggedInUser.role == UserRole.SUPER_USER ||
+        isregionadmin
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
-  }
+  };
 
-  let canremove=(id:string)=>{
+  let canremove = (id: string) => {
     if (type == 'networks') {
-      if(loggedInUser.role == UserRole.SUPER_USER || state.editablebycurrentuserList.includes(id)){
-        return true
-      }
-    }else if (type == 'regions'){
-      if(loggedInUser.role == UserRole.SUPER_USER || state.editablebycurrentuserList.includes(id)){
-        return true
-      } 
-    }else{
-      if(loggedInUser.role == UserRole.SUPER_USER || state.editablebycurrentuserList.includes(id)){
-        return true
-      } 
+      if (
+        loggedInUser.role == UserRole.SUPER_USER ||
+        state.editablebycurrentuserList.includes(id)
+      ) {
+        return true;
+      }else { return false}
+    } else if (type == 'regions') {
+      if (
+        loggedInUser.role == UserRole.SUPER_USER ||
+        state.editablebycurrentuserList.includes(id)
+      ) {
+        return true;
+      }else { return false}
+    } else if(type == 'stations'){
+      if (
+        loggedInUser.role == UserRole.SUPER_USER ||
+        state.editablebycurrentuserList.includes(id)
+      ) {
+        return true;
+      }else { return false}
+    } else {
+      if (
+        loggedInUser.role == UserRole.SUPER_USER ||
+        state.editablebycurrentuserList.includes(id)
+      ) {
+        return true;
+      }else { return false}
     }
-  }
-
+  };
 
   const renderDynamicColumn = (side: 'left' | 'right') => {
     return ({value, key, index}: RenderDynamicColumnType) => {
@@ -371,7 +413,12 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           <div className="flex w-full flex-row justify-center">
             <Checkbox
               checkstatus={state.selectLeft.includes(value.id)}
-              onclick={((state.selectLeft.includes(value.id) && canremove(value.id)) || (!state.selectLeft.includes(value.id) && canadd(value.id))) ?changeSelect(side, value.id):()=>{}}
+              onclick={
+                (state.selectLeft.includes(value.id) && canremove(value.id)) ||
+                (!state.selectLeft.includes(value.id) && canadd(value.id))
+                  ? changeSelect(side, value.id)
+                  : () => {}
+              }
               iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
               classname={' border-[1px] text-[#18C047] border-[#000000]'}
             />
@@ -388,8 +435,6 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     };
   };
 
-
-  
   // ****************************
   return (
     <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">
@@ -401,7 +446,6 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           items={groupList}
           dynamicColumns={['groups']}
           renderDynamicColumn={({value}) => {
-
             return (
               <div className="px-4">
                 <GroupItem
