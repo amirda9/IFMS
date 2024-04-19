@@ -28,10 +28,13 @@ const RegionAccessPage = () => {
       update: state.http.stationAccessUpdate,
     }),
     initialRequests: request => {
-      request('stationAccessList', {params: {station_id: params.stationId!}});
+      request('stationAccessList', {params: {station_id: params.stationId!.split("_")[0]}});
       editor.current?.setAdminid(
-        viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
+        viewers?.data?.users.find(data => data.access == 'ADMIN')?.user.id ||
           '',
+      );
+      editor.current?.setAditablebycurrentuserList(
+        viewers?.data!.users.filter(data => data.editable_by_current_user === true).map(viewer => viewer.user.id) || [],
       );
     },
     onUpdate: lastState => {

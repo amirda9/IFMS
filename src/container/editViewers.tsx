@@ -310,30 +310,27 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     setmount(true);
   }, [veiwertablesorte, veiwertabselected, change]);
 
-  console.log("🚟",Object.entries(params)[0][1]!.split("_")[1]);
-  
   let type = window.location.href.split('/')[3];
   let isnetworkadmin = useMemo(() => {
     if (type == 'networks') {
     return networkidadmin.includes(Object.entries(params)[0][1])
     } else if (type == "regions"){
       return networkidadmin.includes(Object.entries(params)[0][1]!.split("_")[1])
-    return  true
     } else{
-      return  true
+      return networkidadmin.includes(Object.entries(params)[0][1]!.split("_")[2])
     }
   }, []);
 
 
   let isregionadmin=useMemo(()=>{
     if (type == "regions"){
-      return regionidadmin.includes(Object.entries(params)[0][1]!.split("_")[1])
+      return regionidadmin.includes(Object.entries(params)[0][1]!.split("_")[0])
     } else {
-      return true
+      return regionidadmin.includes(Object.entries(params)[0][1]!.split("_")[1])
     }
   },[])
 
-  let canadd=()=>{
+  let canadd=(id:string)=>{
     if (type == 'networks') {
       if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER){
         return true
@@ -343,7 +340,9 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
         return true
       } 
     }else{
-      return true
+      if(isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER || isregionadmin){
+        return true
+      } else { return false}
     }
   }
 
@@ -357,7 +356,9 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
         return true
       } 
     }else{
-      return true
+      if(loggedInUser.role == UserRole.SUPER_USER || state.editablebycurrentuserList.includes(id)){
+        return true
+      } 
     }
   }
 
@@ -370,7 +371,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
           <div className="flex w-full flex-row justify-center">
             <Checkbox
               checkstatus={state.selectLeft.includes(value.id)}
-              onclick={((state.selectLeft.includes(value.id) && canremove(value.id)) || (!state.selectLeft.includes(value.id) && canadd())) ?changeSelect(side, value.id):()=>{}}
+              onclick={((state.selectLeft.includes(value.id) && canremove(value.id)) || (!state.selectLeft.includes(value.id) && canadd(value.id))) ?changeSelect(side, value.id):()=>{}}
               iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
               classname={' border-[1px] text-[#18C047] border-[#000000]'}
             />
