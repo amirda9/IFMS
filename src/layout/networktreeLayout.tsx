@@ -862,7 +862,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   ?.links.map((linksdata, index) => (
                                     <Items
                                       key={Number(linksdata.id)}
-                                      to={`/links/${linksdata.id}/defaultregionlinkdetailpage`}
+                                      to={`/links/${linksdata.id}_${networkdata.id}/defaultregionlinkdetailpage`}
                                       createurl={`/links/create`}
                                       canAdd={false}
                                       selected={false}

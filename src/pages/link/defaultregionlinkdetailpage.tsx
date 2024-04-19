@@ -2,7 +2,7 @@ import {useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import Selectbox from './../../components/selectbox/selectbox';
 import {getPrettyDateTime} from '~/util/time';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {useEffect, useState} from 'react';
@@ -13,6 +13,7 @@ import {updatedefaltlinkname, updatelinkname} from './../../store/slices/network
 import {$Get, $Post, $Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import {LinksType} from '~/types';
+import { UserRole } from '~/constant/users';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
@@ -36,28 +37,12 @@ const LinkDetailPage = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
   const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const [defaultregionkname, setDefaultregionname] = useState('');
+  const {networkidadmin, regionidadmin} = useSelector(
+    (state: any) => state.networktree,
+  );
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {type} = useSelector((state: any) => state.network);
-
-  const login = localStorage.getItem('login');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [userrole, setuserrole] = useState<any>('');
-  const getrole = async () => {
-    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res.json());
-    setuserrole(role.role);
-  };
-
-  useEffect(() => {
-    getrole();
-  }, []);
-
   const dispatch = useDispatch();
-  const networkId = Cookies.get(networkExplored);
   const params = useParams<{linkId: string}>();
   const {state, request} = useHttpRequest({
     selector: state => ({
@@ -95,8 +80,8 @@ const LinkDetailPage = () => {
   const [source, setSource] = useState<string>('');
   const [destinationid, setDestinationid] = useState<string>('');
   const [linkDetaildata, setLinkdetailData] = useState<any>([]);
-
-  useEffect(() => {
+  const [loading,setLoading]=useState(false)
+   useEffect(() => {
     // const getrole = async () => {
     //   const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
     //     headers: {
@@ -142,7 +127,9 @@ const LinkDetailPage = () => {
   }, []);
   const getlinkdetail = async () => {
     // const linkdetailresponse=await $Get(`otdr/link/${params.linkId!}`)
-    let linkdetailurl = `otdr/link/${params.linkId!}`;
+    try {
+      setLoading(true)
+      let linkdetailurl = `otdr/link/${params.linkId!}`;
     let regionstationurl = `otdr/station`;
 
     const [linkdetailresponse, networkstation] = await Promise.all([
@@ -152,8 +139,6 @@ const LinkDetailPage = () => {
     if (linkdetailresponse.status == 200 && networkstation.status == 200) {
   
       const linkdata: LinksType = await linkdetailresponse.json();
-      console.log("😛",linkdata);
-      
       const networkstationdata = await networkstation.json();
       dispatch(setLinkdetail(linkdata));
      setLinkdetailData(linkdata)
@@ -203,7 +188,7 @@ const LinkDetailPage = () => {
         );
       }
 
-      console.log('defaultsource', defaultsource);
+
       let data: any = [];
       const all = networkstationdata || [];
       for (let i = 0; i < all.length; i++) {
@@ -238,6 +223,12 @@ const LinkDetailPage = () => {
         }
       }
     }
+    } catch (error) {
+      
+    } finally {
+      setLoading(false)
+    }
+    
   }
   useEffect(() => {
  
@@ -315,6 +306,9 @@ const LinkDetailPage = () => {
       setRegionlist(networkregionresponsedata);
     }
   };
+  if(loading){
+    return <h1>Loading...</h1>
+  }
   // ---------------------------------------------------------------
   return (
     <div className="relative flex  w-full flex-col">
@@ -471,9 +465,8 @@ const LinkDetailPage = () => {
       </Description>
 
       <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
-        {userrole == 'superuser' ||
-        state?.detail?.data?.access?.access == 'ADMIN' ||
-        networkDetail?.data?.access?.access == 'ADMIN' ? (
+      {loggedInUser.role === UserRole.SUPER_USER ||
+        networkidadmin.includes(params.linkId!.split('_')[1]) ? (
           <SimpleBtn onClick={updatelink} type="button">
             Save
           </SimpleBtn>

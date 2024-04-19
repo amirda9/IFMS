@@ -150,7 +150,7 @@ const navigate=useNavigate()
             description: values.description,
             model: 'cables',
           });
-          console.log("response.status",response.status);
+
           
           if (response.status == 200) {
             dispatch(
