@@ -9,7 +9,7 @@ import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
 import ErrorPage403 from './pages/errors/403';
 import {UserRole} from './constant/users';
-import NetworktreeLayout from './layout/networktreeLayout'
+import NetworktreeLayout from './layout/networktreeLayout';
 function App() {
   const auth = useAppSelector(
     state =>
@@ -28,15 +28,13 @@ function App() {
         />
 
         <Route path="/" Component={selectElement(auth, MainLayout)}>
-         
-
           <Route
             path="/networks"
             Component={selectElement(auth, pages.NetworksPage)}>
-               <Route
-            path=":networkId/edit-access"
-            Component={pages.NetworkAccessEditPage}
-          />
+            <Route
+              path=":networkId/edit-access"
+              Component={pages.NetworkAccessEditPage}
+            />
             <Route path="create" Component={pages.NetworkCreatePage} />
             <Route path=":networkId" Component={pages.NetworkEmptyPage}>
               <Route path="" Component={pages.NetworkDetailPage}>
@@ -46,27 +44,30 @@ function App() {
               <Route path="gis" Component={pages.NetworkGISPage} />
             </Route>
           </Route>
-          
-          
-        
-          
+
           <Route
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
             <Route
-            path=":regionId/edit-stationlist"
-            Component={pages.RegionstationlisteditPage}
-          />
+              path=":regionId/edit-stationlist"
+              Component={pages.RegionstationlisteditPage}
+            />
             <Route
-            path=":regionId/edit-linklist"
-            Component={pages.RegionlinklisteditPage}
-          />
-          <Route
-            path=":regionId/edit-access"
-            Component={pages.RegionAccessEditPage}
-          />
-            <Route path="create/:networkid" Component={pages.RegionCreatePage} />
-            <Route path="defaultregionemptypage/:id" Component={pages.defaultregionemptypage} />
+              path=":regionId/edit-linklist"
+              Component={pages.RegionlinklisteditPage}
+            />
+            <Route
+              path=":regionId/edit-access"
+              Component={pages.RegionAccessEditPage}
+            />
+            <Route
+              path="create/:networkid"
+              Component={pages.RegionCreatePage}
+            />
+            <Route
+              path="defaultregionemptypage/:id"
+              Component={pages.defaultregionemptypage}
+            />
 
             <Route path=":regionId" Component={pages.RegionEmptyPage}>
               <Route path="" Component={pages.RegionDetailPage} />
@@ -76,48 +77,79 @@ function App() {
             </Route>
           </Route>
 
-          
           <Route path="/stations" Component={pages.StationsPage}>
-          <Route
-            path=":stationId/edit-access"
-            Component={pages.StationEditViewerPage}
-          />
-            <Route path="create/:regionid" Component={pages.StationCreatePage} />
-            <Route path="createdefault/:networkid" Component={pages.defaultstationCreatePage} />
+            <Route
+              path=":stationId/edit-access"
+              Component={pages.StationEditViewerPage}
+            />
+            <Route
+              path="create/:regionid"
+              Component={pages.StationCreatePage}
+            />
+            <Route
+              path="createdefault/:networkid"
+              Component={pages.defaultstationCreatePage}
+            />
             <Route path=":stationId" Component={pages.StationEmptyPage}>
               <Route path="" Component={pages.StationDetailPage} />
-              <Route path="defaultstationDetailPage" Component={pages.defaultStationDetailPage} />
+              <Route
+                path="defaultstationDetailPage"
+                Component={pages.defaultStationDetailPage}
+              />
 
-
-              <Route path="access/defaultstationDetailPage" Component={pages.StationAccessPage} />
+              <Route
+                path="access/defaultstationDetailPage"
+                Component={pages.StationAccessPage}
+              />
+              <Route path="access" Component={pages.StationAccessPage} />
             </Route>
           </Route>
 
-         
           <Route path="/links" Component={pages.LinksPage}>
-          <Route
-            path=":linkId/edit-access"
-            Component={pages.LinkEditViewersPage}
-          />
+            <Route
+              path=":linkId/edit-access"
+              Component={pages.LinkEditViewersPage}
+            />
             <Route path="create/:regionid" Component={pages.LinkCreatePage} />
-            <Route path="createdefaultregionlink/:networkid" Component={pages.defaultregionlinkcreatepage} />
+            <Route
+              path="createdefaultregionlink/:networkid"
+              Component={pages.defaultregionlinkcreatepage}
+            />
             <Route path=":linkId" Component={pages.LinkEmptyPage}>
               <Route path="" Component={pages.LinkDetailPage} />
-              <Route path="defaultregionlinkdetailpage" Component={pages.defaultregionlinkdetailpage} />
+              <Route
+                path="defaultregionlinkdetailpage"
+                Component={pages.defaultregionlinkdetailpage}
+              />
 
+              <Route
+                path="access/defaultregionlinkdetailpage"
+                Component={pages.LinkAccessPage}
+              />
               <Route path="access" Component={pages.LinkAccessPage} />
+              <Route
+                path="cables-segments/defaultregionlinkdetailpage"
+                Component={pages.LinkCablesAndSegmentsPage}
+              />
               <Route
                 path="cables-segments"
                 Component={pages.LinkCablesAndSegmentsPage}
               />
               <Route
+                path="ducts-segments/defaultregionlinkdetailpage"
+                Component={pages.LinkDuctsAndSegmentsPage}
+              />
+              <Route
                 path="ducts-segments"
                 Component={pages.LinkDuctsAndSegmentsPage}
+              />
+              <Route
+                path="points/defaultregionlinkdetailpage"
+                Component={pages.LinkPointsPage}
               />
               <Route path="points" Component={pages.LinkPointsPage} />
             </Route>
           </Route>
-
 
           <Route path="/monitoring">
             <Route path="status" Component={pages.status} />
@@ -142,13 +174,19 @@ function App() {
               </Route>
             </Route>
             {/* <Route path="reports" Component={pages.reports}/> */}
-            <Route path="reportschedule" Component={pages.reportscheduleLayout} >
-            <Route
+            <Route path="reportschedule" Component={pages.reportscheduleLayout}>
+              <Route
                 path="reportscheduledetail"
                 Component={pages.SinglereportsscheduleRouteLayout}>
                 <Route index Component={pages.reportscheduleDetail} />
-                <Route path="reportsscheduleUsers" Component={pages.reportsscheduleUsers} />
-                <Route path="schedulereports" Component={pages.schedulereports} />
+                <Route
+                  path="reportsscheduleUsers"
+                  Component={pages.reportsscheduleUsers}
+                />
+                <Route
+                  path="schedulereports"
+                  Component={pages.schedulereports}
+                />
               </Route>
             </Route>
             <Route path="resultbrowser" Component={pages.resultbrowser} />
@@ -183,9 +221,8 @@ function App() {
             </Route>
 
             <Route path="alarm-types" Component={pages.AlarmTypesLayout}>
-            <Route path="create" Component={pages.AlarmTypeCreatePage} />
+              <Route path="create" Component={pages.AlarmTypeCreatePage} />
               <Route path=":alarmId" Component={pages.SingleAlarmTypeLayout}>
-             
                 <Route index Component={pages.AlarmTypeDetailsPage} />
                 <Route
                   path="definition"
@@ -200,7 +237,7 @@ function App() {
                   path="alert-networks"
                   Component={pages.Alarmtypenetworks}
                 />
-                   <Route
+                <Route
                   path="edit-alert-networks"
                   Component={pages.Editalarmtypenetwork}
                 />

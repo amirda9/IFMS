@@ -129,7 +129,7 @@ const LinkDetailPage = () => {
     // const linkdetailresponse=await $Get(`otdr/link/${params.linkId!}`)
     try {
       setLoading(true)
-      let linkdetailurl = `otdr/link/${params.linkId!}`;
+      let linkdetailurl = `otdr/link/${params?.linkId?.split("_")[0]!}`;
     let regionstationurl = `otdr/station`;
 
     const [linkdetailresponse, networkstation] = await Promise.all([
@@ -139,50 +139,27 @@ const LinkDetailPage = () => {
     if (linkdetailresponse.status == 200 && networkstation.status == 200) {
   
       const linkdata: LinksType = await linkdetailresponse.json();
+      const findInlinkdata=linkdata?.versions?.find(
+        version => version.id === linkdata?.current_version?.id,
+      )
       const networkstationdata = await networkstation.json();
       dispatch(setLinkdetail(linkdata));
      setLinkdetailData(linkdata)
       setName(linkdata.name);
-      setComment(
-        linkdata?.versions?.find(
-          version => version.id === linkdata?.current_version?.id,
-        )?.description || '',
-      );
-      setDestinationid(
-        linkdata?.versions?.find(
-          version => version.id === linkdata?.current_version?.id,
-        )?.destination.id || '',
-      );
-      setDefaultdestinationname(
-        linkdata?.versions?.find(
-          version => version.id === linkdata?.current_version?.id,
-        )?.destination.name || '',
-      );
-      setSource(
-        linkdata?.versions?.find(
-          version => version.id === linkdata?.current_version?.id,
-        )?.source.id || '',
-      );
-      setdefaultsource(
-        linkdata?.versions?.find(
-          version => version.id === linkdata?.current_version?.id,
-        )?.source.name || '',
-      );
+      setComment(findInlinkdata?.description || '');
+      setDestinationid(findInlinkdata?.destination.id || '');
+      setDefaultdestinationname(findInlinkdata?.destination.name || '');
+      setSource(findInlinkdata?.source.id || '');
+      setdefaultsource(findInlinkdata?.source.name || '');
       let findtaype = type.findIndex((data: any) => data.id == linkdata?.id);
 
       if (findtaype > -1) {
         setType(type[findtaype].type);
       } else {
-        setType(
-          linkdata?.versions?.find(
-            version => version.id === linkdata?.current_version?.id,
-          )?.type || '',
-        );
+        setType(findInlinkdata?.type || '');
         dispatch(
           settypestate({
-            type: linkdata?.versions?.find(
-              version => version.id === linkdata?.current_version?.id,
-            )?.type,
+            type: findInlinkdata?.type,
             id: linkdata?.id,
           }),
         );
@@ -272,7 +249,7 @@ const LinkDetailPage = () => {
       setSourcerror('');
       setDestinationerror('');
       try {
-        const response = await $Put(`otdr/link/${params.linkId}`, {
+        const response = await $Put(`otdr/link/${params?.linkId?.split("_")[0]}`, {
           description: comment,
           // network_id: "string",
           // region_id: null,
@@ -286,7 +263,7 @@ const LinkDetailPage = () => {
           dispatch(
             updatedefaltlinkname({
               networkid: state!.detail!.data!.network_id!,
-              linkid: params.linkId!,
+              linkid: params?.linkId?.split("_")[0]!,
               linkname: name,
               source_id:source,
               destination_id:destinationid,

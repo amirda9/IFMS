@@ -1,35 +1,39 @@
 
 import {TabItem} from '~/components';
-import {Outlet, useParams} from 'react-router-dom';
+import {Outlet, useLocation, useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
+import { useMemo } from 'react';
 
 const LinkEmptyPage = () => {
+  const path=useLocation()
   const {network, http} = useSelector((state: any) => state);
   let findtaype = network.type.find(
     (data: any) => data.id == network.linkdetail?.id,
   );
 
   const params = useParams<{linkId: string}>();
+  const isinclude=useMemo(()=>path.pathname.includes(`defaultregionlinkdetailpage`),[path.pathname])
+  
   return (
     <div className="flex h-full w-full flex-col">
       <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
-        <TabItem to="." name="Detail" />
-        <TabItem to="access" name="Access" />
+        <TabItem to={`${isinclude?"defaultregionlinkdetailpage":"."}`}  name="Detail" />
+        <TabItem to={`${isinclude?"access/defaultregionlinkdetailpage":"access"}`}  name="Access" />
         {findtaype?.type == 'cable' ? (
           <TabItem
-            to="cables-segments"
+          to={`${isinclude?"cables-segments/defaultregionlinkdetailpage":"cables-segments"}`} 
             name="Cables & Segments"
             className="w-40"
           />
         ) : (
           <TabItem
-            to="ducts-segments"
+          to={`${isinclude?"ducts-segments/defaultregionlinkdetailpage":"ducts-segments"}`} 
             name="Ducts & Segments"
             className="w-40"
           />
         )}
 
-        <TabItem to="points" name="Points" />
+        <TabItem  to={`${isinclude?"points/defaultregionlinkdetailpage":"points"}`}  name="Points" />
       </div>
       <Outlet key={params.linkId} />
     </div>
