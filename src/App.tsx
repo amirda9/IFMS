@@ -89,7 +89,7 @@ function App() {
               <Route path="defaultstationDetailPage" Component={pages.defaultStationDetailPage} />
 
 
-              <Route path="access" Component={pages.StationAccessPage} />
+              <Route path="access/defaultstationDetailPage" Component={pages.StationAccessPage} />
             </Route>
           </Route>
 
