@@ -384,14 +384,14 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     } else if (type == 'regions') {
       if (
         loggedInUser.role == UserRole.SUPER_USER ||
-        state.editablebycurrentuserList.includes(id)
+        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) || (isregionadmin && state.editablebycurrentuserList.includes(id))
       ) {
         return true;
       }else { return false}
     } else if(type == 'stations'){
       if (
         loggedInUser.role == UserRole.SUPER_USER ||
-        state.editablebycurrentuserList.includes(id)
+        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) || (isregionadmin && state.editablebycurrentuserList.includes(id))
       ) {
         return true;
       }else { return false}
