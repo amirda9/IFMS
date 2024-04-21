@@ -377,7 +377,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     if (type == 'networks') {
       if (
         loggedInUser.role == UserRole.SUPER_USER ||
-        state.editablebycurrentuserList.includes(id)
+        (isnetworkadmin && state.editablebycurrentuserList.includes(id))
       ) {
         return true;
       }else { return false}
