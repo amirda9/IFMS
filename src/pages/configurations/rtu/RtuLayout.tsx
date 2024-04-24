@@ -2,12 +2,17 @@ import {FC, useEffect, useState} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {useNavigate} from 'react-router-dom';
 import {SidebarItem, TextInput} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 import {$Delete, $Get} from '~/util/requestapi';
 import {useDispatch, useSelector} from 'react-redux';
-import {allstationsrtutype} from './../../../store/slices/rtu';
+import {
+  allstationsrtutype,
+  setRtuNetworkidadmin,
+  setRtuRegionidadmin,
+} from './../../../store/slices/rtu';
 import {deepcopy} from './../../../util/deepcopy';
+
 import {
   setNetworkregions,
   setRegionstations,
@@ -16,6 +21,7 @@ import {
 import {IoTrashOutline} from 'react-icons/io5';
 import {RootState} from '~/store';
 import Swal from 'sweetalert2';
+import { UserRole } from '~/constant/users';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -70,16 +76,12 @@ const swalsetting: any = {
 
 const RtuLayout: FC = () => {
   const dispatch = useDispatch();
-  const [mount, setMount] = useState(false);
-  const [networkId, setNetworkId] = useState('');
   const [selectedtabId, setSelectedtabid] = useState('');
   const navigate = useNavigate();
-  const {stationsrtu, regionstations, networkregions} = useSelector(
+  const {stationsrtu, regionstations, networkregions,rtunetworkidadmin,rturegionidadmin} = useSelector(
     (state: RootState) => state.rtu,
   );
-
-
-  
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     request,
     state: {list, regions},
@@ -148,11 +150,9 @@ const RtuLayout: FC = () => {
         try {
           const getnetworlrtues = await $Get(`otdr/rtu?network_id=${id}`);
 
-
           if (getnetworlrtues.status == 200) {
             const networlrtues: getallrtuestype = await getnetworlrtues.json();
             if (networlrtues.length > 0) {
-     
               //then delete network rtues
               const deleteNetworkRtues = await $Delete(
                 `otdr/rtu/batch_delete`,
@@ -166,7 +166,6 @@ const RtuLayout: FC = () => {
                   }
                 }
                 dispatch(setStationsrtu(oldstationrtu));
-
               }
             }
           }
@@ -429,15 +428,53 @@ const RtuLayout: FC = () => {
   };
 
   const onclicknetwork = async (id: string) => {
-    request('regionList', {params: {network_id: id}});
+    try {
+      const [allregions, networkdetail] = await Promise.all([
+        await $Get(`otdr/region/network/${id}`),
+        await $Get(`otdr/network/${id}`),
+      ]);
+      const regions = await allregions.json();
+      const networkdetaildata = await networkdetail.json();
+      const finddata = networkregions.filter(data => data.networkid == id);
+      const maindata = regions || [];
+
+      let allregionsid: any = [];
+      if (maindata.length > 0 && finddata.length == 0) {
+        for (let i = 0; i < maindata?.length; i++) {
+          allregionsid.push({id: maindata[i].id, name: maindata[i].name});
+        }
+        const old = deepcopy(networkregions);
+   
+        
+        old.push({
+          networkid: (regions && regions[0]?.network_id) || '',
+          regions: allregionsid,
+        });
+
+        dispatch(setNetworkregions(old));
+      }
+
+      if (networkdetaildata.access.access === 'ADMIN') {
+        dispatch(setRtuNetworkidadmin(id));
+      }
+    } catch (error) {}
+    // request('regionList', {params: {network_id: id}});
   };
 
-  const onclickregion = async (id: string) => {
+  const onclickregion = async (regionid: string) => {
     let old = deepcopy(regionstations);
-    const allstation = await $Get(`otdr/region/${id}/stations`);
-    if (allstation.status === 200) {
-      let allstationdata = await allstation.json();
-      const finddata = regionstations.findIndex(data => data.regionid == id);
+    const [allstationresponse,regiondetail] = await Promise.all([
+      await $Get(`otdr/region/${regionid}/stations`),
+      await $Get(`otdr/region/${regionid}`),
+    ]);
+    // const allstation=await allstationresponse.json()
+    const regiondetaildata=await regiondetail.json()
+    
+    dispatch(setRtuRegionidadmin(regionid))
+
+    if (allstationresponse.status === 200) {
+      let allstationdata = await allstationresponse.json();
+      const finddata = regionstations.findIndex(data => data.regionid == regionid);
       let allregionsid: any = [];
       if (allstationdata.length > 0 && finddata < 0) {
         for (let i = 0; i < allstationdata?.length; i++) {
@@ -446,35 +483,39 @@ const RtuLayout: FC = () => {
             name: allstationdata[i].name,
           });
         }
-        old.push({regionid: id, stations: allregionsid});
+        old.push({regionid: regionid, stations: allregionsid});
       }
       dispatch(setRegionstations(old));
     }
+
+    if (regiondetaildata.access.access === 'ADMIN') {
+      dispatch(setRtuNetworkidadmin(regionid));
+    }
   };
 
-  useEffect(() => {
-    if (mount) {
-      const finddata = networkregions.filter(
-        data => data.networkid == networkId,
-      );
-      const maindata = regions?.data || [];
+  // useEffect(() => {
+  //   if (mount) {
+  //     const finddata = networkregions.filter(
+  //       data => data.networkid == networkId,
+  //     );
+  //     const maindata = regions?.data || [];
 
-      let allregionsid: any = [];
-      if (maindata.length > 0 && finddata.length == 0) {
-        for (let i = 0; i < maindata?.length; i++) {
-          allregionsid.push({id: maindata[i].id, name: maindata[i].name});
-        }
-        const old = deepcopy(networkregions);
-        old.push({
-          networkid: (regions?.data && regions?.data[0]?.network_id) || '',
-          regions: allregionsid,
-        });
-        dispatch(setNetworkregions(old));
-      }
-    } else {
-      setMount(true);
-    }
-  }, [regions]);
+  //     let allregionsid: any = [];
+  //     if (maindata.length > 0 && finddata.length == 0) {
+  //       for (let i = 0; i < maindata?.length; i++) {
+  //         allregionsid.push({id: maindata[i].id, name: maindata[i].name});
+  //       }
+  //       const old = deepcopy(networkregions);
+  //       old.push({
+  //         networkid: (regions?.data && regions?.data[0]?.network_id) || '',
+  //         regions: allregionsid,
+  //       });
+  //       dispatch(setNetworkregions(old));
+  //     }
+  //   } else {
+  //     setMount(true);
+  //   }
+  // }, [regions]);
 
   const ondeletesinglertu = async (rtuid: string, stationid: string) => {
     Swal.fire(swalsetting).then(async result => {
@@ -537,9 +578,11 @@ const RtuLayout: FC = () => {
     dispatch(setStationsrtu(stationsrtuCopy));
   };
 
+  console.log('list?.data', list?.data);
+
   // ############################################################
   return (
-    <SidebarLayout >
+    <SidebarLayout>
       <div className="flex flex-row items-center">
         <label htmlFor="search" className="mr-2">
           Search
@@ -570,8 +613,8 @@ const RtuLayout: FC = () => {
               <div key={index} className="flex flex-col">
                 <Itembtn
                   onclick={() => {
-                    onclicknetwork(networkdata.id),
-                      () => setNetworkId(networkdata.id);
+                    onclicknetwork(networkdata.id)
+                
                   }}
                   id={networkdata.id}
                   name={networkdata.name}
@@ -667,7 +710,7 @@ const RtuLayout: FC = () => {
                                                     networkdata.id,
                                                   );
                                                 }}
-                                                canAdd={true}
+                                                canAdd={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(networkdata.id))}
                                                 id={satationdata.id}
                                                 regionid={regionsdata.id}
                                                 networkid={networkdata.id}
