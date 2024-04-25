@@ -94,7 +94,7 @@ function Dashboard() {
   },]);
 
   return (
-    <div className="flex w-full relative flex-row justify-between px-[20px] py-[25px]">
+    <div className="flex w-full relative flex-row justify-between px-[20px] py-[25px] pt-[100px]">
        <RiArrowRightDoubleLine className='absolute top-[5px] left-[5px]' />
       <div className="h-[500px] w-[32%] bg-white px-[10px]  pt-[25px]">
         <span className="mb-[-40px] flex justify-center text-[30px] font-bold leading-[36.31px]">
@@ -166,7 +166,7 @@ function Dashboard() {
         Alarms By RTU
         </span>
         <div className="h-[340px] w-full ">
-          <ResponsiveBar
+          {/* <ResponsiveBar
             groupMode="grouped"
             data={bardata}
             keys={['hot dog', 'burger']}
@@ -211,7 +211,7 @@ function Dashboard() {
             barAriaLabel={e =>
               e.id + ': ' + e.formattedValue + ' in country: ' + e.indexValue
             }
-          />
+          /> */}
         </div>
       </div>
     </div>

@@ -91,7 +91,7 @@ function Resultbrowser() {
     );
   }
   return (
-    <div className="border-box flex w-full flex-col p-[20px]">
+    <div className="border-box flex w-full flex-col p-[20px] pt-[100px]">
       <div className="flex w-full flex-row justify-between">
         <div className="flex w-[calc(50%-190px)] flex-col">
           <div className="mb-[20px] flex flex-row">
