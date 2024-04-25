@@ -207,6 +207,16 @@ type leftbarStationcheckboxlist = {
 }[];
 type createStationtype = {
   payload: {
+    networkid: string;
+    regionid: string;
+    stationid: string;
+    stationname: string;
+  };
+  type: string;
+};
+
+type updateStationnametype = {
+  payload: {
     newregionid: string;
     networkid: string;
     regionid: string;
@@ -879,7 +889,7 @@ const networktreeslice = createSlice({
       state.defaultregionLinks = defaultregionLinksCopy;
     },
     //  ----------------------------
-    updateStationName: (state, action: createStationtype) => {
+    updateStationName: (state, action: updateStationnametype) => {
       state.loading = true;
       let regionStationsCopy = deepcopy(state.regionstations);
       let regionlinksCopy: allregionlinkstype[] = deepcopy(state.regionLinks);

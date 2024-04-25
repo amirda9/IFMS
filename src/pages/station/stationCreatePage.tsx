@@ -64,6 +64,9 @@ const StationDetailPage = () => {
                 stationname: values.name,
               }),
             );
+            // newregionid: string;
+       
+      
             navigate(`/stations/${responsedata.station_id}`);
           }
         } catch (error) {}
