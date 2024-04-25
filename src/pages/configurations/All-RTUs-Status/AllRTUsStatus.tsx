@@ -34,7 +34,7 @@ const dataa = [
 ];
 function AllRTUsStatus() {
   return (
-    <div className="w-full p-[20px]">
+    <div className="w-full p-[20px] pt-[100px]">
       <Table
         onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
         tabicon={'Name'}
