@@ -38,7 +38,9 @@ type Itemstationbtntype = {
   canAdd?: boolean;
   regionid: string;
   networkid: string;
+  candelete:boolean
 };
+
 type Itemregionbtntype = {
   name: string;
   id: string;
@@ -369,6 +371,7 @@ const RtuLayout: FC = () => {
     regionid,
     onclick = () => {},
     canAdd = false,
+    candelete=false
   }: Itemstationbtntype) => {
     return (
       <div
@@ -386,9 +389,10 @@ const RtuLayout: FC = () => {
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
-          } w-[120px] text-left`}>
+          } w-[95px] text-left`}>
           {name}
         </button>
+
         {canAdd ? (
           <>
             {networkselectedlist.indexOf(id) > -1 ? (
@@ -404,7 +408,8 @@ const RtuLayout: FC = () => {
         ) : (
           false
         )}
-        {selectedtabId == id ? (
+        
+        {candelete && networkselectedlist.indexOf(id) > -1 ? (
           <IoTrashOutline
             onClick={() => ondeleteStaionrtu(id)}
             color="#FF0000"
@@ -709,8 +714,9 @@ const RtuLayout: FC = () => {
                                                     regionsdata.id,
                                                     networkdata.id,
                                                   );
-                                                }}
-                                                canAdd={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(networkdata.id))}
+                                                }}                                              
+                                                canAdd={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(regionsdata.id))}
+                                                candelete={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(regionsdata.id))}
                                                 id={satationdata.id}
                                                 regionid={regionsdata.id}
                                                 networkid={networkdata.id}
@@ -765,6 +771,7 @@ const RtuLayout: FC = () => {
                                                                 satationdata.id,
                                                               )
                                                             }
+                                                            canDelete={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(networkdata.id))}
                                                             onDelete={() =>
                                                               ondeletesinglertu(
                                                                 rtudata.id,
