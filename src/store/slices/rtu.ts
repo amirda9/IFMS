@@ -106,6 +106,7 @@ export type initialStatetype = {
   allLeftbar: allLeftbartype[];
   rtunetworkidadmin: string[];
   rturegionidadmin: string[];
+  rtustationidadmin: string[];
 };
 const initialState: initialStatetype = {
   leftbarStationcheckboxlist: [],
@@ -115,7 +116,8 @@ const initialState: initialStatetype = {
   allrtues: [],
   allLeftbar: [],
   rtunetworkidadmin:[],
-  rturegionidadmin:[]
+  rturegionidadmin:[],
+  rtustationidadmin:[]
 };
 
 const rtu = createSlice({
@@ -161,6 +163,14 @@ const rtu = createSlice({
         state.rturegionidadmin.push(action.payload);
       }
     },
+    setRtuStationidadmin: (state, action: {type: string; payload: string}) => {
+      const findinlist = state.rtustationidadmin.findIndex(
+        data => data == action.payload,
+      );
+      if (findinlist < 0) {
+        state.rtustationidadmin.push(action.payload);
+      }
+    },
   },
 });
 
@@ -171,7 +181,8 @@ export const {
   setleftbarStationcheckboxlist,
   setallLeftbar,
   setRtuNetworkidadmin,
-  setRtuRegionidadmin
+  setRtuRegionidadmin,
+  setRtuStationidadmin
 } = rtu.actions;
 
 export default rtu.reducer;

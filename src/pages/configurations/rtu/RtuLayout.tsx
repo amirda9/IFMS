@@ -10,6 +10,7 @@ import {
   allstationsrtutype,
   setRtuNetworkidadmin,
   setRtuRegionidadmin,
+  setRtuStationidadmin,
 } from './../../../store/slices/rtu';
 import {deepcopy} from './../../../util/deepcopy';
 
@@ -119,10 +120,18 @@ const RtuLayout: FC = () => {
     regionid: string,
     networkid: string,
   ) => {
-    const stationrtues = await $Get(`otdr/station/${id}/rtus`);
+    // const stationrtues = await $Get(`otdr/station/${id}/rtus`);
+
     try {
-      if (stationrtues.status == 200) {
-        const stationrtuesdata = await stationrtues.json();
+      const [stationrtuesresponse,stationdetailresponse] = await Promise.all([
+        $Get(`otdr/station/${id}/rtus`),
+         $Get(`otdr/station/${id}`),
+      ]);
+      let stationdetail=await stationdetailresponse.json()
+      console.log("stationrtues",stationrtuesresponse);
+      
+      if (stationrtuesresponse.status == 200) {
+        const stationrtuesdata = await stationrtuesresponse.json();
         const findstation = stationsrtu.findIndex(data => data.stationid == id);
         if (findstation < 0 && stationrtuesdata.length > 0) {
           let stationsrtuCopy = deepcopy(stationsrtu);
@@ -136,6 +145,10 @@ const RtuLayout: FC = () => {
           });
           dispatch(setStationsrtu(stationsrtuCopy));
         }
+      }
+      if(stationdetail.access.access === "ADMIN"){
+      dispatch(setRtuStationidadmin(id))
+
       }
     } catch (error) {
       console.log(error);
@@ -714,6 +727,7 @@ const RtuLayout: FC = () => {
                                                     regionsdata.id,
                                                     networkdata.id,
                                                   );
+                                                  // dispatch(setRtuStationidadmin(satationdata.id))
                                                 }}                                              
                                                 canAdd={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(regionsdata.id))}
                                                 candelete={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(regionsdata.id))}
@@ -781,7 +795,7 @@ const RtuLayout: FC = () => {
                                                             enabelcheck={true}
                                                             className="w-[200px]"
                                                             name={rtudata.name}
-                                                            to={`${rtudata.id}_${satationdata.id}_${networkdata.id}`}
+                                                            to={`${rtudata.id}_${satationdata.id}_${networkdata.id}_${regionsdata.id}`}
                                                           />
                                                         </div>
                                                       );

@@ -11,8 +11,11 @@ import {
 } from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
 import {InputFormik} from '~/container';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
+import {RootState} from '~/store';
+import {useSelector} from 'react-redux';
+import {UserRole} from '~/constant/users';
 
 const rtuSchema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
@@ -40,7 +43,15 @@ const Rowtext = ({name, value}: Rowtext) => {
 
 const RtuDetailsPage: FC = () => {
   const params = useParams();
-
+  const {
+    stationsrtu,
+    regionstations,
+    networkregions,
+    rtunetworkidadmin,
+    rturegionidadmin,
+    rtustationidadmin,
+  } = useSelector((state: RootState) => state.rtu);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     state: {rtuDetail, users},
     request,
@@ -108,7 +119,6 @@ const RtuDetailsPage: FC = () => {
     },
   });
 
-
   return (
     <div className="flex flex-grow">
       <FormikProvider value={formik}>
@@ -157,15 +167,16 @@ const RtuDetailsPage: FC = () => {
                 <option value={undefined} className="hidden">
                   {rtuDetail?.data?.contact_person?.username || ''}
                 </option>
-                {users && users.data?.map((data, index) => (
-                  <option
-                    key={index}
-                    value={data.id}
-                    label={data.username}
-                    className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                    {data.username}
-                  </option>
-                ))}
+                {users &&
+                  users.data?.map((data, index) => (
+                    <option
+                      key={index}
+                      value={data.id}
+                      label={data.username}
+                      className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                      {data.username}
+                    </option>
+                  ))}
               </Select>
             </Description>
             <div className="mb-[4px] flex w-full flex-row">
@@ -283,7 +294,12 @@ const RtuDetailsPage: FC = () => {
             {/* --------------------------------------------------- */}
           </div>
           <div className="flex gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
+            {loggedInUser.role === UserRole.SUPER_USER ||
+            rtunetworkidadmin.includes(params?.rtuId?.split('_')[2]!) ||
+            rturegionidadmin.includes(params?.rtuId?.split('_')[3]!) ||
+            rtustationidadmin.includes(params?.rtuId?.split('_')[0]!) ? (
+              <SimpleBtn type="submit">Save</SimpleBtn>
+            ) : null}
             <SimpleBtn>Cancel</SimpleBtn>
           </div>
         </Form>
