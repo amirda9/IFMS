@@ -8,6 +8,11 @@ import {deepcopy} from '~/util';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import Swal from 'sweetalert2';
+import { useSelector } from 'react-redux';
+import ErrorPage403 from './../../errors/403';
+import { RootState } from '~/store';
+import { useAppSelector } from '~/hooks';
+import { UserRole } from '~/constant/users';
 type allportstype = {
   optical_route_id: string;
   state: string;
@@ -71,7 +76,15 @@ const RtuPortsPage: FC = () => {
 
 console.log("👹",allrtuports);
 
-
+const {
+  stationsrtu,
+  regionstations,
+  networkregions,
+  rtunetworkidadmin,
+  rturegionidadmin,
+  rtustationidadmin,
+} = useSelector((state: RootState) => state.rtu);
+const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const getrtuports = async () => {
     try {
       //get rtu ports
@@ -393,142 +406,151 @@ console.log("👹",allrtuports);
     }
   };
 
-  return (
-    <div className="flex flex-col gap-y-8">
-      <div className="flex min-h-[60vh] flex-grow flex-col gap-y-4">
-        <div className="flex items-center px-4">
-          <span className="basis-16">Index</span>
-          <span className="basis-64">Optical Route</span>
-          <span className="basis-44">End Station</span>
-          <span className="basis-32">Length (km)</span>
-          <span className="basis-40">State</span>
-          <span className="basis-40"></span>
-        </div>
-        {Array.isArray(allrtuports) &&
-          allrtuports.length > 0 &&
-          allrtuports?.map((data, index: number) => (
-            <div
-              className={classNames(
-                'flex items-center rounded-lg p-4',
-                data.state == 'deactivate'
-                  ? 'bg-[#B8B8B8]'
-                  : data.state == 'activate'
-                  ? 'bg-[#ADE2BC]'
-                  : 'bg-[#E59D9D]',
-              )}>
-              <span className="basis-16">{index + 1}</span>
-
-              <div className="basis-64 pr-[20px]">
-                <Select
-                  value={data.optical_route.name}
-                  onChange={e =>
-
-                    changeupticalroute(
-                      index,
-                      e.target.value.split('_')[0],
-                      e.target.value.split('_')[1],
-                      e.target.value.split('_')[2],
-                      e.target.value.split('_')[3],
-                      Number(e.target.value.split('_')[4]),
-                      data.optical_route.id,
-                    )
-     
-                  }
-                  className="h-10 w-full">
-                  <option value="" className="hidden">
-                    {data.optical_route_id == ''
-                      ? 'select'
-                      : data.optical_route.name}
-                  </option>
-                  <option value={undefined} className="hidden">
-                    {data.optical_route_id == ''
-                      ? 'select'
-                      : data.optical_route.name}
-                  </option>
-                  {selectedboxoptions.map((data, index) => (
-                    <option
-                      value={`${data.id}_${data.name}_${data.end_station?.name || ""}_${data.end_station?.id || ""}_${data.length}`}
-                      key={index}
-                      className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                      {data.name}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-
-              {data.optical_route_id.length > 0 ? (
-                <>
-                  <span className="basis-44 ">
-                    {data.end_station?.name || null}
-                  </span>
-
-                  <span className="basis-32">{data.length}</span>
-
-                  <div className="basis-40">
-                    {/* {data.state != 'deactivate' && ( */}
+  if(loggedInUser.role !== UserRole.SUPER_USER 
+    // rtunetworkidadmin.includes(params?.rtuId?.split('_')[2]!) ||
+    // rturegionidadmin.includes(params?.rtuId?.split('_')[3]!) ||
+    // rtustationidadmin.includes(params?.rtuId?.split('_')[0]!)
+    ){
+      return (
+        <div className="flex flex-col gap-y-8">
+          <div className="flex min-h-[60vh] flex-grow flex-col gap-y-4">
+            <div className="flex items-center px-4">
+              <span className="basis-16">Index</span>
+              <span className="basis-64">Optical Route</span>
+              <span className="basis-44">End Station</span>
+              <span className="basis-32">Length (km)</span>
+              <span className="basis-40">State</span>
+              <span className="basis-40"></span>
+            </div>
+            {Array.isArray(allrtuports) &&
+              allrtuports.length > 0 &&
+              allrtuports?.map((data, index: number) => (
+                <div
+                  className={classNames(
+                    'flex items-center rounded-lg p-4',
+                    data.state == 'deactivate'
+                      ? 'bg-[#B8B8B8]'
+                      : data.state == 'activate'
+                      ? 'bg-[#ADE2BC]'
+                      : 'bg-[#E59D9D]',
+                  )}>
+                  <span className="basis-16">{index + 1}</span>
+    
+                  <div className="basis-64 pr-[20px]">
                     <Select
-                      // value={
-                      //   data.state == 'activate' ? 'Activate' : 'Deactivate'
-                      // }
+                      value={data.optical_route.name}
                       onChange={e =>
-                        changestate(
+    
+                        changeupticalroute(
                           index,
-                          e.target.value.toString().toLowerCase(),
-                          data.optical_route_id,
+                          e.target.value.split('_')[0],
+                          e.target.value.split('_')[1],
+                          e.target.value.split('_')[2],
+                          e.target.value.split('_')[3],
+                          Number(e.target.value.split('_')[4]),
+                          data.optical_route.id,
                         )
+         
                       }
                       className="h-10 w-full">
                       <option value="" className="hidden">
-                        {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                        {data.optical_route_id == ''
+                          ? 'select'
+                          : data.optical_route.name}
                       </option>
                       <option value={undefined} className="hidden">
-                        {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                        {data.optical_route_id == ''
+                          ? 'select'
+                          : data.optical_route.name}
                       </option>
-                      {[{label: 'Activate'}, {label: 'Deactivate'}].map(
-                        (data, index) => (
-                          <option
-                            value={`${data.label}`}
-                            key={index}
-                            className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                            {data.label}
-                          </option>
-                        ),
-                      )}
+                      {selectedboxoptions.map((data, index) => (
+                        <option
+                          value={`${data.id}_${data.name}_${data.end_station?.name || ""}_${data.end_station?.id || ""}_${data.length}`}
+                          key={index}
+                          className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                          {data.name}
+                        </option>
+                      ))}
                     </Select>
-                    {/* // )} */}
                   </div>
-                  <div className="flex basis-40 flex-row justify-around gap-x-4">
-                    {/* {data.state != 'deactivate' && ( */}
+    
+                  {data.optical_route_id.length > 0 ? (
                     <>
-                      <IoOpenOutline size={30} />
-                      <IoTrashOutline
-                        onClick={() =>
-                          deleteopticalroute(data.id, data.optical_route_id)
-                        }
-                        className="cursor-pointer text-red-500"
-                        size={30}
-                      />
+                      <span className="basis-44 ">
+                        {data.end_station?.name || null}
+                      </span>
+    
+                      <span className="basis-32">{data.length}</span>
+    
+                      <div className="basis-40">
+                        {/* {data.state != 'deactivate' && ( */}
+                        <Select
+                          // value={
+                          //   data.state == 'activate' ? 'Activate' : 'Deactivate'
+                          // }
+                          onChange={e =>
+                            changestate(
+                              index,
+                              e.target.value.toString().toLowerCase(),
+                              data.optical_route_id,
+                            )
+                          }
+                          className="h-10 w-full">
+                          <option value="" className="hidden">
+                            {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                          </option>
+                          <option value={undefined} className="hidden">
+                            {data.state == 'activate' ? 'Activate' : 'Deactivate'}
+                          </option>
+                          {[{label: 'Activate'}, {label: 'Deactivate'}].map(
+                            (data, index) => (
+                              <option
+                                value={`${data.label}`}
+                                key={index}
+                                className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                                {data.label}
+                              </option>
+                            ),
+                          )}
+                        </Select>
+                        {/* // )} */}
+                      </div>
+                      <div className="flex basis-40 flex-row justify-around gap-x-4">
+                        {/* {data.state != 'deactivate' && ( */}
+                        <>
+                          <IoOpenOutline size={30} />
+                          <IoTrashOutline
+                            onClick={() =>
+                              deleteopticalroute(data.id, data.optical_route_id)
+                            }
+                            className="cursor-pointer text-red-500"
+                            size={30}
+                          />
+                        </>
+                        {/* )} */}
+                      </div>
                     </>
-                    {/* )} */}
-                  </div>
-                </>
-              ) : null}
+                  ) : null}
+                </div>
+              ))}
+          </div>
+          <div className="flex flex-col ">
+            {/* {errortext.length > 0 ? (
+              <span className="my-[4px] text-[20px] text-[red]">{errortext}</span>
+            ) : null} */}
+            <div className="flex gap-x-4 self-end">
+              <SimpleBtn type="button" onClick={save}>
+                Save
+              </SimpleBtn>
+              <SimpleBtn>Cancel</SimpleBtn>
             </div>
-          ))}
-      </div>
-      <div className="flex flex-col ">
-        {/* {errortext.length > 0 ? (
-          <span className="my-[4px] text-[20px] text-[red]">{errortext}</span>
-        ) : null} */}
-        <div className="flex gap-x-4 self-end">
-          <SimpleBtn type="button" onClick={save}>
-            Save
-          </SimpleBtn>
-          <SimpleBtn>Cancel</SimpleBtn>
+          </div>
         </div>
-      </div>
-    </div>
-  );
+      );
+    } else return(
+      <ErrorPage403 />
+    )
+ 
 };
 
 export default RtuPortsPage;
