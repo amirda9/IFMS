@@ -90,7 +90,7 @@ const OpticalRouteLayout: FC = () => {
 
         <button
           onClick={() => {
-            opennetworkopticallist(id), setSelectedId(id);
+            opennetworkopticallist(id), setSelectedId(id)
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'

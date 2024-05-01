@@ -31,6 +31,7 @@ type initialStatetype={
   networkselectedlist:string[]
   networkoptical:{networkid: string; opticalrouts: {name: string; id: string}[]}[]
   alldeleteopticalroute:alldeleteopticalroutetype
+  opticalroutenetworkidadmin:string[]
 }
 const initialState:initialStatetype = {
   opticalroutUpdateTestsetupDetail:{    name: "",
@@ -105,6 +106,7 @@ const initialState:initialStatetype = {
     networkselectedlist:[],
     networkoptical:[],
     alldeleteopticalroute:[],
+    opticalroutenetworkidadmin:[],
 };
 
 const opticalroute = createSlice({
@@ -123,7 +125,14 @@ const opticalroute = createSlice({
     setAlldeleteopticalroute: (state, action: alldeleteopticalroutetypeAction) => {
       state.alldeleteopticalroute = action.payload;
     },
-
+    setOpticalrouteNetworkidadmin: (state, action: {type: string; payload: string}) => {
+      const findinlist = state.opticalroutenetworkidadmin.findIndex(
+        data => data == action.payload,
+      );
+      if (findinlist < 0) {
+        state.opticalroutenetworkidadmin.push(action.payload);
+      }
+    },
   },
 });
 
@@ -132,6 +141,7 @@ export const {
   setNetworkselectedlist,
   setNetworkoptical,
   setAlldeleteopticalroute,
+  setOpticalrouteNetworkidadmin
 } = opticalroute.actions;
 
 export default opticalroute.reducer;
