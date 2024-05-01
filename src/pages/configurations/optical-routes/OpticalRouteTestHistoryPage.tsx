@@ -69,12 +69,14 @@ const OpticalRouteTestHistoryPage: FC = () => {
   const navigate = useNavigate();
   const params = useParams();
   const [mount, setMount] = useState(false);
+  const [loading,setLoading]=useState(false)
   const [selectedtab, setSelectedtab] = useState('Date');
   const [veiwertablesorte, setVeiwertablesort] = useState(false);
   const [historydata, setHistorydata] = useState<historydatatype>([]);
 
   const gethistory = async () => {
     try {
+      setLoading(true)
       const getdata = await $Get(
         `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups/history`,
       );
@@ -94,7 +96,9 @@ const OpticalRouteTestHistoryPage: FC = () => {
       if (getdata.status == 200) {
         setHistorydata(data.map(prev => ({...prev, details: '', delete: ''})));
       }
-    } catch (error) {}
+    } catch (error) {} finally {
+      setLoading(false)
+    }
   };
 
   useEffect(() => {
@@ -176,6 +180,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
     <div className="flex flex-grow flex-col">
       <div className="flex flex-grow flex-col gap-y-4 pr-16">
         <Table
+         loading={loading}
           tdclassname="text-left pl-[6px]"
           onclicktitle={(tabname: string, sortalfabet: boolean) => {
             setSelectedtab(tabname), setVeiwertablesort(sortalfabet);

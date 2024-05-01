@@ -51,6 +51,7 @@ const items = [
 const OpticalRouteTestSetupPage: FC = () => {
   const params = useParams();
   const { pathname} = useLocation()
+  const [loading,setLoading]=useState(false)
   const [alldelets, setAlldelets] = useState<string[]>([]);
   const [allitems, setAllitems] = useState<
     {
@@ -80,6 +81,7 @@ const OpticalRouteTestSetupPage: FC = () => {
   const Getsetup=()=>{
     const getsetup = async () => {
       try {
+        setLoading(true)
         const getalldata = await $Get(
           `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups`,
         );
@@ -100,6 +102,8 @@ const OpticalRouteTestSetupPage: FC = () => {
         }
       } catch (error) {
         
+      } finally {
+        setLoading(false)
       }
 
     };
@@ -235,6 +239,7 @@ const OpticalRouteTestSetupPage: FC = () => {
         </Link>
 
         <Table
+        loading={loading}
           cols={columns}
           items={allitems}
           tdclassname="text-left pl-[6px]"
