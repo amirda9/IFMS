@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {FC} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {NavLink} from 'react-router-dom';
@@ -18,7 +18,12 @@ import {
 } from './../../../store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
-
+type networklisttype={ 
+  id:string
+  name:string
+  time_created:string
+  time_updated:string
+  }
 type Itembtntype = {
   name: string;
   id: string;
@@ -40,31 +45,40 @@ const swalsetting: any = {
 const OpticalRouteLayout: FC = () => {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState('');
+  const [list,setList]=useState<networklisttype[]>()
   const {networkselectedlist, networkoptical, alldeleteopticalroute} =
     useSelector((state: RootState) => state.opticalroute);
   const {
     request,
-    state: {list, deleteRequest},
+    state: { deleteRequest},
   } = useHttpRequest({
     selector: state => ({
       list: state.http.networkList,
       deleteRequest: state.http.networkDelete,
     }),
     initialRequests: request => {
-      if (list?.httpRequestStatus !== 'success') {
-        request('networkList', undefined);
-      }
+      // if (list?.httpRequestStatus !== 'success') {
+      //   request('networkList', undefined);
+      // }
     },
     onUpdate: (lastState, state) => {
-      if (
-        lastState.deleteRequest?.httpRequestStatus === 'loading' &&
-        state.deleteRequest!.httpRequestStatus === 'success'
-      ) {
-        request('networkList', undefined);
-      }
+      // if (
+      //   lastState.deleteRequest?.httpRequestStatus === 'loading' &&
+      //   state.deleteRequest!.httpRequestStatus === 'success'
+      // ) {
+      //   request('networkList', undefined);
+      // }
     },
   });
 
+  useEffect(() => {
+    const getnetworklist = async () => {
+      const response = await $Get(`otdr/network`);
+      const responsedata = await response.json();
+      setList(responsedata)
+    };
+    getnetworklist();
+  }, []);
   const findoptical = (networkId: string, opticalId: string) => {
     const findopt = alldeleteopticalroute
       ?.find(data => data.networkid == networkId)
@@ -75,6 +89,9 @@ const OpticalRouteLayout: FC = () => {
       return false;
     }
   };
+
+  console.log('list', list);
+
   const [openall, setOpenall] = useState(false);
 
   const Itembtn = ({name, id, classname}: Itembtntype) => {
@@ -90,7 +107,7 @@ const OpticalRouteLayout: FC = () => {
 
         <button
           onClick={() => {
-            opennetworkopticallist(id), setSelectedId(id)
+            opennetworkopticallist(id), setSelectedId(id);
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -258,10 +275,10 @@ const OpticalRouteLayout: FC = () => {
     });
   };
   const lastnetwork =
-    (list?.data && list?.data[list?.data?.length - 1]?.id) || '';
+    (list && list[list.length - 1]?.id) || '';
 
-    console.log('🧑‍🏫',list?.data);
-    
+  console.log('🧑‍🏫', list);
+
   return (
     <SidebarLayout createTitle="" canAdd>
       <div className="flex flex-row items-center ">
@@ -299,15 +316,15 @@ const OpticalRouteLayout: FC = () => {
 
         {openall ? (
           <>
-            {list?.data?.map((networkdata, index) => (
+            {list?.map((networkdata, index) => (
               <div
                 key={index}
                 className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
-                  list?.data && index == list?.data?.length - 1
+                  list && index == list?.length - 1
                     ? 'border-none'
                     : 'border-[#000000]'
                 }  `}>
-                {list?.data && index == list?.data?.length - 1 ? (
+                {list && index == list?.length - 1 ? (
                   <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
                 ) : null}
                 <div
@@ -339,7 +356,11 @@ const OpticalRouteLayout: FC = () => {
                               selected={selectedId == data.id ? true : false}
                               onclick={() => setSelectedId(data.id)}
                               onclickcheckbox={e =>
-                                onclickopticalchecbox(e, data.id, networkdata.id)
+                                onclickopticalchecbox(
+                                  e,
+                                  data.id,
+                                  networkdata.id,
+                                )
                               }
                               checkstatus={findoptical(networkdata.id, data.id)}
                               onDelete={() =>
