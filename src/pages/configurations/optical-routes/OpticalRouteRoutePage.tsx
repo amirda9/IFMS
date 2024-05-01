@@ -95,7 +95,7 @@ const Addbox = ({classname, onclick}: Iprops) => {
 const OpticalRouteRoutePage: FC = () => {
   const params = useParams();
   const networkId = params.opticalRouteId!.split("_")[1];
-
+  const [loading,setLoading]=useState(false)
   const [allroutes, setAllroutes] = useState<allroutestype[]>([]);
   const [alldeleteroutes, setAllDeleteroutes] = useState<string[]>([]);
 
@@ -650,32 +650,42 @@ console.log("getdata",getdata);
   };
 
   const getallroute = async () => {
-    const allroutes = await $GET(
-      `otdr/optical-route/${params.opticalRouteId!.split("_")[0] || ''}/routes`,
-    );
-    setAllroutes(
-      allroutes.map((data: any, index: any) => ({
-        index: Number(index),
-        ...data,
-      })),
-    );
-    setAllselectedsource([]);
-    for (let i = 0; i < allroutes.length; i++) {
-      setAllselectedsource(prev => [
-        ...prev,
-        {
-          index: Number(i),
-          sourceId: allroutes[i].source.id,
-          linkId: allroutes[i].link_id,
-          cableid: allroutes[i].cable,
-          data: [],
-          cableandducts: {
-            cables: null,
-            ducts: null,
+
+    try {
+      setLoading(true)
+      const allroutesrespone = await $Get(
+        `otdr/optical-route/${params.opticalRouteId!.split("_")[0] || ''}/routes`,
+      );
+      const allroutes=await allroutesrespone.json()
+      setAllroutes(
+        allroutes.map((data: any, index: any) => ({
+          index: Number(index),
+          ...data,
+        })),
+      );
+      setAllselectedsource([]);
+      for (let i = 0; i < allroutes.length; i++) {
+        setAllselectedsource(prev => [
+          ...prev,
+          {
+            index: Number(i),
+            sourceId: allroutes[i].source.id,
+            linkId: allroutes[i].link_id,
+            cableid: allroutes[i].cable,
+            data: [],
+            cableandducts: {
+              cables: null,
+              ducts: null,
+            },
           },
-        },
-      ]);
+        ]);
+      }
+    } catch (error) {
+      
+    } finally {
+      setLoading(false)
     }
+   
   };
 
   useEffect(() => {
@@ -683,41 +693,53 @@ console.log("getdata",getdata);
   }, []);
 
   const save = () => {
-    if (alldeleteroutes.length > 0) {
-      request('opticalrouteDeleteRoute', {
-        params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
-        data: alldeleteroutes,
-      });
+    try {
+      if (alldeleteroutes.length > 0) {
+        request('opticalrouteDeleteRoute', {
+          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
+          data: alldeleteroutes,
+        });
+      }
+      if (allcreatedroutes.length > 0) {
+        request('opticalrouteCreateRoute', {
+          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
+          data: allcreatedroutes.map((data,index) => ({
+            link_id: data.link_id,
+            cable: data.cable,
+            core: data.core,
+            route_number:index
+          })),
+        });
+      }
+  
+      if (allupdatedroutes.length > 0) {
+        request('opticalrouteUpdateRoute', {
+          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
+          data: allupdatedroutes.map((data,index) => ({
+            link_id: data.link_id,
+            cable: data.cable,
+            core: data.core,
+            id: data.id,
+          })),
+        });
+      }
+    } catch (error) {
+      
+    } finally {
+      getallroute();
+      setAllCreatedroutes([])
+      setAllUpdatedroutes([])
+      setAllDeleteroutes([])
     }
-    if (allcreatedroutes.length > 0) {
-      request('opticalrouteCreateRoute', {
-        params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
-        data: allcreatedroutes.map((data,index) => ({
-          link_id: data.link_id,
-          cable: data.cable,
-          core: data.core,
-          route_number:index
-        })),
-      });
-    }
-
-    if (allupdatedroutes.length > 0) {
-      request('opticalrouteUpdateRoute', {
-        params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
-        data: allupdatedroutes.map((data,index) => ({
-          link_id: data.link_id,
-          cable: data.cable,
-          core: data.core,
-          id: data.id,
-        })),
-      });
-    }
-    getallroute();
-    setAllCreatedroutes([])
-    setAllUpdatedroutes([])
-    setAllDeleteroutes([])
+    
+   
   };
   // ###################################################################################################
+ if(loading){
+  return <h1 className='font-bold mt-6'>Loading..</h1>
+ }
+ 
+ 
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex w-11/12 flex-grow flex-col gap-y-4">

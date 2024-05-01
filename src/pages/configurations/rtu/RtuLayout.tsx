@@ -76,10 +76,16 @@ const swalsetting: any = {
   cancelButtonColor: '#d33',
   confirmButtonText: 'Yes, delete it!',
 };
-
+type networklisttype={ 
+  id:string
+  name:string
+  time_created:string
+  time_updated:string
+  }
 const RtuLayout: FC = () => {
   const dispatch = useDispatch();
   const [selectedtabId, setSelectedtabid] = useState('');
+  const [list,setList]=useState<networklisttype[]>()
   const navigate = useNavigate();
   const {stationsrtu, regionstations, networkregions,rtunetworkidadmin,rturegionidadmin} = useSelector(
     (state: RootState) => state.rtu,
@@ -87,17 +93,13 @@ const RtuLayout: FC = () => {
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     request,
-    state: {list, regions},
+    state: { regions},
   } = useHttpRequest({
     selector: state => ({
-      list: state.http.networkList,
+      // list: state.http.networkList,
       regions: state.http.regionList,
     }),
-    initialRequests: request => {
-      if (list?.httpRequestStatus !== 'success') {
-        request('networkList', undefined);
-      }
-    },
+
   });
 
   const [openall, setOpenall] = useState(false);
@@ -114,7 +116,19 @@ const RtuLayout: FC = () => {
     }
   };
   // ***************************
+  useEffect(() => {
+    const getnetworklist = async () => {
+      try {
+        const response = await $Get(`otdr/network`);
+        const responsedata = await response.json();
+        setList(responsedata)
+      } catch (error) {
+        
+      }
 
+    };
+    getnetworklist();
+  }, []);
   const onclickstation = async (
     id: string,
     regionid: string,
@@ -596,7 +610,7 @@ const RtuLayout: FC = () => {
     dispatch(setStationsrtu(stationsrtuCopy));
   };
 
-  console.log('list?.data', list?.data);
+  console.log('list?.data', list);
 
   // ############################################################
   return (
@@ -627,7 +641,7 @@ const RtuLayout: FC = () => {
         {openall ? (
           <div
             className={` mt-[-10px] w-full  border-l-[1px] border-dotted border-[#000000]`}>
-            {list?.data?.map((networkdata, index) => (
+            {list?.map((networkdata, index) => (
               <div key={index} className="flex flex-col">
                 <Itembtn
                   onclick={() => {
@@ -643,7 +657,7 @@ const RtuLayout: FC = () => {
                     <div className="absolute left-[-1px] top-[-23px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                   ) : null}
 
-                  {list?.data && index == list.data.length - 1 ? (
+                  {list && index == list.length - 1 ? (
                     <div
                       className={`absolute left-[-1px] ${
                         networkselectedlist.indexOf(networkdata.id) > -1
