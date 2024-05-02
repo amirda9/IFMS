@@ -136,7 +136,27 @@ function Alarms() {
   const [selectedid, setSelectedid] = useState<string[]>([]);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
+  const [sortkey, setSortkey] = useState('time_created');
   const [allpagecount, setAllpagecount] = useState<number>(1);
+
+  const SetSourcKey = (name: string) => {
+    if (name == 'Primary Source') {
+      setSortkey('source_name');
+    } else if (name == 'Alarm Type') {
+      setSortkey('alarm_type');
+    } else if (name == 'Alarm Time') {
+      setSortkey('time_created');
+    } else if (name == 'Severity') {
+      setSortkey('severity');
+    } else if (name == 'Last Modified') {
+      setSortkey('time_modified');
+    } else if (name == "State"){
+      setSortkey('status');
+    } else {
+      setSortkey('acting_user');
+    }
+  };
+
   const onclickcheckbox = (id: string) => {
     const allalarmsdataCopy = deepcopy(selectedid);
     const findidindex = selectedid.findIndex(data => data == id);
@@ -154,7 +174,7 @@ function Alarms() {
     try {
       setLoading(true);
       let allalarmresponse = await $Get(
-        `otdr/alarm/events/?page=${pagevalue}&limit=${limitvalue}`,
+        `otdr/alarm/events/?page=${pagevalue}&limit=${limitvalue}&sort_key=${sortkey}&sort_order=desc`,
       );
       let allalarmresponsedata: {
         alarm_events: allalarmsdatatype;
@@ -189,7 +209,7 @@ function Alarms() {
   };
   useEffect(() => {
     getallalarms();
-  }, []);
+  }, [sortkey]);
 
   let timer: string | number | NodeJS.Timeout | undefined;
   const changelimit = (value: number) => {
@@ -236,7 +256,7 @@ function Alarms() {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="flex w-full flex-col p-[10px] pt-[80px]">
       <div className="flex w-full flex-row justify-between border-b-[1px] border-[#D9D9D9]">
@@ -331,6 +351,7 @@ function Alarms() {
             bordered={true}
             cols={topcolumns}
             tabicon={'Name'}
+            onclicktitle={(e: string) =>SetSourcKey(e)}
             items={allalarmsdata}
             onclickrow={(e: any) => onclicktabelrow(e.id)}
             thclassname="pl-[4px] bg-[red]"
