@@ -6,7 +6,7 @@ import {setopticalroutUpdateTestsetupDetail} from './../../../../store/slices/op
 import {Description, Select} from '~/components';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
-import {$GET} from '~/util/requestapi';
+import {$Get} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 
 const seperatedate = (time: string) => {
@@ -69,71 +69,84 @@ const TestDetailsParameters: FC = () => {
     if (params.testId == 'create') {
     } else {
       const getdata = async () => {
-        const gettestSetupParameters = await $GET(
-          `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
-        );
-        const testSetupParametCopy = deepcopy(gettestSetupParameters);
-
-        let checkstartend = Number(
-          seperatedate(
-            testSetupParametCopy?.test_program?.end_date?.end,
-          ).timePart.split(':')[0],
-        );
-        let checkstartstart = Number(
-          seperatedate(
-            testSetupParametCopy?.test_program?.starting_date?.start,
-          ).timePart.split(':')[0],
-        );
-        //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
-        const getrtu = async () => {
-          const allrtu = await $GET(
-            `otdr/station/${testSetupParametCopy?.station?.id}/rtus`,
+        try {
+          const gettestSetupParametersresponse = await $Get(
+            `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
           );
-          setRtulist(allrtu);
-        };
-
-        getrtu();
-
-        testSetupParametCopy.station_id = gettestSetupParameters?.station?.id;
-        (testSetupParametCopy.init_rtu_id = gettestSetupParameters?.rtu?.id),
-          //Because we do not have the name of the rtu, we have to find the desired rtu among the rtus and get its name because we need its name.
-          // (testSetupParametCopy.init_rtu_name = rtulist.find(data => data.id == testSetupParametCopy?.rtu?.id)
-          (testSetupParametCopy.init_rtu_name =
-            gettestSetupParameters?.rtu?.name);
-        testSetupParametCopy.station_name = stations?.data?.find(
-          data => (data.id = testSetupParametCopy?.station?.id),
-        )?.name;
-
-        (testSetupParametCopy.startdatePart = seperatedate(
-          testSetupParametCopy?.test_program?.starting_date?.start,
-        ).datePart),
-          //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
-          (testSetupParametCopy.starttimePart =
-            checkstartstart < 10
-              ? `0${checkstartstart}:${
-                  seperatedate(
-                    testSetupParametCopy?.test_program?.starting_date?.start,
-                  ).timePart.split(':')[1]
-                }`
-              : seperatedate(
-                  testSetupParametCopy?.test_program?.starting_date?.start,
-                ).timePart),
-          //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
-          (testSetupParametCopy.endtimePart =
-            checkstartend < 10
-              ? `0${checkstartend}:${
-                  seperatedate(
-                    testSetupParametCopy?.test_program?.end_date?.end,
-                  ).timePart.split(':')[1]
-                }`
-              : seperatedate(testSetupParametCopy?.test_program?.end_date?.end)
-                  .timePart),
-          (testSetupParametCopy.enddatePart = seperatedate(
-            testSetupParametCopy?.test_program?.end_date?.end,
+          const gettestSetupParameters=await gettestSetupParametersresponse.json()
+          const testSetupParametCopy = deepcopy(gettestSetupParameters);
+  
+          let checkstartend = Number(
+            seperatedate(
+              testSetupParametCopy?.test_program?.end_date?.end,
+            ).timePart.split(':')[0],
+          );
+          let checkstartstart = Number(
+            seperatedate(
+              testSetupParametCopy?.test_program?.starting_date?.start,
+            ).timePart.split(':')[0],
+          );
+          //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
+          const getrtu = async () => {
+            try {
+              const allrturesponse = await $Get(
+                `otdr/station/${testSetupParametCopy?.station?.id}/rtus`,
+              );
+              const allrtu=await allrturesponse.json()
+              setRtulist(allrtu);
+            } catch (error) {
+              console.log(`get stations rtue error=${error}`);
+              
+            }
+        
+          };
+  
+          getrtu();
+  
+          testSetupParametCopy.station_id = gettestSetupParameters?.station?.id;
+          (testSetupParametCopy.init_rtu_id = gettestSetupParameters?.rtu?.id),
+            //Because we do not have the name of the rtu, we have to find the desired rtu among the rtus and get its name because we need its name.
+            // (testSetupParametCopy.init_rtu_name = rtulist.find(data => data.id == testSetupParametCopy?.rtu?.id)
+            (testSetupParametCopy.init_rtu_name =
+              gettestSetupParameters?.rtu?.name);
+          testSetupParametCopy.station_name = stations?.data?.find(
+            data => (data.id = testSetupParametCopy?.station?.id),
+          )?.name;
+  
+          (testSetupParametCopy.startdatePart = seperatedate(
+            testSetupParametCopy?.test_program?.starting_date?.start,
           ).datePart),
-          delete testSetupParametCopy['station'];
-        delete testSetupParametCopy['rtu'];
-        dispatch(setopticalroutUpdateTestsetupDetail(testSetupParametCopy));
+            //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
+            (testSetupParametCopy.starttimePart =
+              checkstartstart < 10
+                ? `0${checkstartstart}:${
+                    seperatedate(
+                      testSetupParametCopy?.test_program?.starting_date?.start,
+                    ).timePart.split(':')[1]
+                  }`
+                : seperatedate(
+                    testSetupParametCopy?.test_program?.starting_date?.start,
+                  ).timePart),
+            //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
+            (testSetupParametCopy.endtimePart =
+              checkstartend < 10
+                ? `0${checkstartend}:${
+                    seperatedate(
+                      testSetupParametCopy?.test_program?.end_date?.end,
+                    ).timePart.split(':')[1]
+                  }`
+                : seperatedate(testSetupParametCopy?.test_program?.end_date?.end)
+                    .timePart),
+            (testSetupParametCopy.enddatePart = seperatedate(
+              testSetupParametCopy?.test_program?.end_date?.end,
+            ).datePart),
+            delete testSetupParametCopy['station'];
+          delete testSetupParametCopy['rtu'];
+          dispatch(setopticalroutUpdateTestsetupDetail(testSetupParametCopy));
+        } catch (error) {
+          
+        }
+
       };
       getdata();
     }
@@ -193,8 +206,7 @@ const TestDetailsParameters: FC = () => {
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
 
 
-  console.log("🐎",stations);
-  
+
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -293,7 +305,6 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Station">
             <Select
-              value={formik.values.station}
               onChange={async e => {
                 formik.setFieldValue(
                   'station',
@@ -315,19 +326,37 @@ const TestDetailsParameters: FC = () => {
                 dispatch(
                   setopticalroutUpdateTestsetupDetail(testsetupDetailCopy),
                 );
-                const allrtu = await $GET(
-                  `otdr/station/${e.target.value
-                    .split('&_&')[1]
-                    .toString()}/rtus`,
-                );
-                setRtulist(allrtu);
+                try {
+                  const allrturesponse = await $Get(
+                    `otdr/station/${e.target.value
+                      .split('&_&')[1]
+                      .toString()}/rtus`,
+                  );
+
+                  const allrtu=await allrturesponse.json()
+                  setRtulist(allrtu);
+                } catch (error) {
+                  console.log(`getstationrtues error is :${error}`);
+                  
+                }
+              
               }}
               className="basis-96">
               <option value="" className="hidden">
-                {formik.values.station}
+                {
+                  stations?.data?.find(
+                    (data:any) =>
+                      data.id == opticalroutUpdateTestsetupDetail?.station_id,
+                  )?.name
+                }
               </option>
               <option value={undefined} className="hidden">
-                {formik.values.station}
+                {
+                  stations?.data?.find(
+                    data =>
+                      data.id == opticalroutUpdateTestsetupDetail?.station_id,
+                  )?.name
+                }
               </option>
 
               {stations?.data?.map((data, index: number) => (
@@ -377,14 +406,16 @@ const TestDetailsParameters: FC = () => {
                 {opticalroutUpdateTestsetupDetail?.init_rtu_name}
               </option>
 
-              { rtulist && Array.isArray(rtulist) && rtulist.map((data, index) => (
-                <option
-                  value={`${data.name}_${data.id}`}
-                  key={index}
-                  className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  {data.name}
-                </option>
-              ))}
+              {rtulist &&
+                Array.isArray(rtulist) &&
+                rtulist.map((data, index) => (
+                  <option
+                    value={`${data.name}_${data.id}`}
+                    key={index}
+                    className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    {data.name}
+                  </option>
+                ))}
             </Select>
           </Description>
 

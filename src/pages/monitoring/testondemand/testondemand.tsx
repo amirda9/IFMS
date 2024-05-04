@@ -1,9 +1,9 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SidebarItem, SimpleBtn, Table} from '~/components';
 import dateicon from '~/assets/images/dateicon.png';
 import Checkbox from '~/components/checkbox/checkbox';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import {Link, NavLink} from 'react-router-dom';
+import {Link, NavLink, useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import Swal from 'sweetalert2';
 import {RootState} from '~/store';
@@ -14,10 +14,17 @@ import {
   setAlldeleteopticalroute,
   alldeleteopticalroutetype,
   networkopticaltype,
-} from './../../../store/slices/opticalroutslice';
+  setSelectedId,
+  setTestid,
+  setSetuplist,
+  setSelectedtest,
+  setSelectednetworkid,
+  setOpenall
+} from './../../../store/slices/testondemand';
 import {$Delete, $Get} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import {BsPlusLg} from 'react-icons/bs';
+import {NetworkType} from '~/types/NetworkType';
 type Itembtntype = {
   name: string;
   id: string;
@@ -26,34 +33,46 @@ type Itembtntype = {
 };
 
 function Testondemand() {
-  const dispatch=useDispatch()
-  const [openall, setOpenall] = useState(false);
-  const [selectedId, setSelectedId] = useState('');
-  const {networkselectedlist, networkoptical, alldeleteopticalroute} =
-    useSelector((state: RootState) => state.opticalroute);
-  const {
-    request,
-    state: {list, deleteRequest},
-  } = useHttpRequest({
-    selector: state => ({
-      list: state.http.networkList,
-      deleteRequest: state.http.networkDelete,
-    }),
-    initialRequests: request => {
-      if (list?.httpRequestStatus !== 'success') {
-        request('networkList', undefined);
-      }
-    },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.deleteRequest?.httpRequestStatus === 'loading' &&
-        state.deleteRequest!.httpRequestStatus === 'success'
-      ) {
-        request('networkList', undefined);
-      }
-    },
-  });
+  const dispatch = useDispatch();
+  const [setuploading, setSetuploading] = useState(false);
+  const [networklist, setNetworklist] = useState<NetworkType[]>([]);
+  const {networkselectedlist, networkoptical, alldeleteopticalroute,testid,selectedId,setuplist,selectedtest,selectednetworkid,openall} =
+    useSelector((state: RootState) => state.testondemandSlice);
+  // const {
+  //   request,
+  //   state: {list, deleteRequest},
+  // } = useHttpRequest({
+  //   selector: state => ({
+  //     list: state.http.networkList,
+  //     deleteRequest: state.http.networkDelete,
+  //   }),
+  //   initialRequests: request => {
+  //     if (list?.httpRequestStatus !== 'success') {
+  //       request('networkList', undefined);
+  //     }
+  //   },
+  //   onUpdate: (lastState, state) => {
+  //     if (
+  //       lastState.deleteRequest?.httpRequestStatus === 'loading' &&
+  //       state.deleteRequest!.httpRequestStatus === 'success'
+  //     ) {
+  //       request('networkList', undefined);
+  //     }
+  //   },
+  // });
 
+  useEffect(() => {
+    const getnetworklist = async () => {
+      try {
+        const networkListResponse = await $Get(`otdr/network/`);
+        const networkListResponseDate = await networkListResponse.json();
+        setNetworklist(networkListResponseDate);
+      } catch (error) {
+        console.log(`getNetworklistError is:${error}`);
+      }
+    };
+    getnetworklist();
+  }, []);
   const deletenetworkoptical = async (id: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
@@ -116,7 +135,7 @@ function Testondemand() {
 
         <button
           onClick={() => {
-            opennetworkopticallist(id), setSelectedId(id);
+            opennetworkopticallist(id), dispatch(setSelectedId(id)) 
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -242,8 +261,8 @@ function Testondemand() {
     const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
     if (opticals.status == 200) {
       const opticalslist = await opticals.json();
-      console.log(opticalslist,'opticalslist');
-      
+      console.log(opticalslist, 'opticalslist');
+
       //Here we add or remove the opticalroutes related to this network to the list.
       if (findopt > -1) {
         let old = [...networkoptical];
@@ -257,11 +276,10 @@ function Testondemand() {
       }
     }
   };
-
+  const navigate = useNavigate();
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
-  const Thirdref:any=useRef(null)
-  const [selectedtest, setSelectedtest] = useState('');
+  const Thirdref: any = useRef(null);
   const topcolumns = {
     index: {label: 'Index', size: 'w-[2%]'},
     date: {label: 'Date', size: 'w-[17%]'},
@@ -356,7 +374,7 @@ function Testondemand() {
       delete: '',
     },
     {
-      index: 3,
+      index: 8,
       date: '2022-10-29 22:59:59',
       opticalroute: 'Optical Route 1',
       testsetup: 'Test Setup 1',
@@ -376,8 +394,39 @@ function Testondemand() {
       delete: '',
     },
   ];
-  const lastnetwork =
-    (list?.data && list?.data[list?.data?.length - 1].id) || '';
+
+  const onclickoptical = async (id: string,networkid:string) => {
+    dispatch(setSelectedId(id))
+    dispatch(setSelectednetworkid(networkid))
+    dispatch(setTestid(''))
+    dispatch(setSelectedtest(''))
+    try {
+      setSetuploading(true);
+      const opticasetupresponse = await $Get(
+        `otdr/optical-route/${id}/test-setups`,
+      );
+      const opticasetupresponseData = await opticasetupresponse.json();
+      const newopticasetupresponseData = opticasetupresponseData.map(
+        (data: any) => ({id: data.id, name: data.name}),
+      );
+      dispatch(setSetuplist(newopticasetupresponseData))
+      
+    } catch (error) {
+      console.log(`getTestsetupError=${error}`);
+    } finally {
+      setSetuploading(false);
+    }
+  };
+  console.log('👗🆚', setuplist);
+  console.log('🚵', testid);
+  const onclickParameters = () => {
+    if (selectedId != '' && testid != '') {
+      navigate(
+        `/monitoring/${selectedId}_${selectednetworkid}/test-setup/${testid}`,
+      );
+    }
+  };
+  const lastnetwork = networklist[networklist.length - 1]?.id || '';
   return (
     <div className="flex w-full flex-col p-[20px] pt-[100px]">
       <div className="flex w-full flex-row justify-between">
@@ -386,7 +435,7 @@ function Testondemand() {
             Optical Route
           </span>
           <div className="h-[400px] w-full bg-white">
-            <div className={`relative mt-[30px] flex w-full flex-col`}>
+            <div className={`relative ml-4 mt-[30px] flex w-full flex-col`}>
               <div
                 className={`absolute h-[40px] w-[10px] ${
                   networkselectedlist.indexOf(lastnetwork) > -1
@@ -402,27 +451,27 @@ function Testondemand() {
                   </span>
                 )}
 
-                <button onClick={() => setOpenall(!openall)}>
-                  <span>Optical Routes</span>
+                <button onClick={() =>dispatch(setOpenall(!openall)) }>
+                  <span>Networks</span>
                 </button>
               </div>
 
               {openall ? (
                 <>
-                  {list?.data?.map((dataaa, index) => (
+                  {networklist.map((networkdata, index) => (
                     <div
                       key={index}
                       className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
-                        list?.data && index == list?.data?.length - 1
+                        index == networklist.length - 1
                           ? 'border-none'
                           : 'border-[#000000]'
                       }  `}>
-                      {list?.data && index == list?.data?.length - 1 ? (
+                      {index == networklist.length - 1 ? (
                         <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
                       ) : null}
                       <div
                         className={`absolute z-10 ${
-                          networkselectedlist.indexOf(dataaa.id) > -1
+                          networkselectedlist.indexOf(networkdata.id) > -1
                             ? 'bottom-[-2px]'
                             : 'bottom-[-7px]'
                         }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
@@ -430,15 +479,15 @@ function Testondemand() {
                       <div className="relative flex flex-col">
                         <Itembtn
                           classname="mb-[-10px]"
-                          name={dataaa.name}
-                          id={dataaa.id}
+                          name={networkdata.name}
+                          id={networkdata.id}
                         />
 
-                        {networkselectedlist.indexOf(dataaa.id) > -1 ? (
+                        {networkselectedlist.indexOf(networkdata.id) > -1 ? (
                           <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
                             <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
                             {networkoptical
-                              ?.find(dataa => dataa.networkid == dataaa.id)
+                              ?.find(dataa => dataa.networkid == networkdata.id)
                               ?.opticalrouts.map((data, index: number) => (
                                 <div
                                   key={index}
@@ -451,25 +500,26 @@ function Testondemand() {
                                     selected={
                                       selectedId == data.id ? true : false
                                     }
-                                    onclick={() => setSelectedId(data.id)}
+                                    isLink={false}
+                                    onclick={() => onclickoptical(data.id,networkdata.id)}
                                     onclickcheckbox={e =>
                                       onclickopticalchecbox(
                                         e,
                                         data.id,
-                                        dataaa.id,
+                                        networkdata.id,
                                       )
                                     }
                                     checkstatus={findoptical(
-                                      dataaa.id,
+                                      networkdata.id,
                                       data.id,
                                     )}
                                     onDelete={() =>
-                                      deleteoneopticalroute(data.id, dataaa.id)
+                                      deleteoneopticalroute(data.id, networkdata.id)
                                     }
                                     enabelcheck={true}
                                     className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
                                     name={data.name}
-                                    to={data.id}
+                                    to={'#'}
                                   />
                                 </div>
                               ))}
@@ -495,7 +545,7 @@ function Testondemand() {
             <img
               src={dateicon}
               onClick={() => firstdateref.current.showPicker()}
-              className="ml-[5px] cursor-pointer h-[35px] w-[35px]"
+              className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
             />
 
             <span className="ml-10 text-[20px] font-normal leading-6">to</span>
@@ -509,34 +559,34 @@ function Testondemand() {
             <img
               src={dateicon}
               onClick={() => secenddateref.current.showPicker()}
-              className="ml-[5px] h-[35px] cursor-pointer w-[35px]"
+              className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
             />
           </div>
         </div>
 
         <div className="flex w-[calc(50%-100px)] flex-col">
           <span className="mb-[10px] text-[20px] font-normal leading-[24.2px]">
-            Optical Route
+            Test Setup
           </span>
           <div className="h-[400px] w-full bg-white p-2">
-            <button
-              onClick={() => setSelectedtest('Test Setup 1')}
-              className={`w-full ${
-                selectedtest == 'Test Setup 1'
-                  ? 'bg-[#C0E7F2] font-bold'
-                  : 'bg-white font-normal'
-              } h-[40px] text-left`}>
-              Test Setup 1
-            </button>
-            <button
-              onClick={() => setSelectedtest('Test Setup 2')}
-              className={`w-full ${
-                selectedtest == 'Test Setup 2'
-                  ? 'bg-[#C0E7F2] font-bold'
-                  : 'bg-white font-normal'
-              } h-[40px] text-left`}>
-              Test Setup 2
-            </button>
+            {setuploading ? (
+              <h1 className="font-bold">Loading...</h1>
+            ) : (
+              setuplist.map(data => (
+                <button
+                  onClick={() => {
+                    dispatch(setSelectedtest(data.name))
+                    ,dispatch(setTestid(data.id)) 
+                  }}
+                  className={`w-full ${
+                    selectedtest == data.name
+                      ? 'bg-[#C0E7F2] font-bold'
+                      : 'bg-white font-normal'
+                  } h-[40px] text-left`}>
+                  {data.name}
+                </button>
+              ))
+            )}
           </div>
           <div className="mt-4 flex w-full flex-row items-center">
             <Checkbox
@@ -560,14 +610,16 @@ function Testondemand() {
             <img
               src={dateicon}
               onClick={() => Thirdref.current.showPicker()}
-              className="ml-[5px] h-[35px] cursor-pointer w-[35px]"
+              className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
             />
           </div>
         </div>
 
         <div className="flex  w-[134px] flex-col justify-between pt-[34px]">
           <div className="flex flex-col ">
-            <SimpleBtn className="mb-[30px]">Parameters</SimpleBtn>
+            <SimpleBtn onClick={onclickParameters} className="mb-[30px]">
+              Parameters
+            </SimpleBtn>
             <SimpleBtn className="px-[34px]">Start Test</SimpleBtn>
           </div>
 
@@ -616,4 +668,3 @@ function Testondemand() {
 }
 
 export default Testondemand;
-

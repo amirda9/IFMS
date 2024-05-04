@@ -20,7 +20,8 @@ type PropsType = {
   canAdd?: boolean;
   createurl?:string;
   canDelete?:boolean;
-  id?:string
+  id?:string;
+  isLink?:boolean
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -37,7 +38,8 @@ const SidebarItem: FC<PropsType> = ({
   canAdd = false,
   createurl="",
   canDelete=true,
-  id
+  id,
+  isLink=true
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -49,19 +51,36 @@ const SidebarItem: FC<PropsType> = ({
  const navigate=useNavigate()
   return (
     <div className={'relative my-1 flex flex-row ' + className}>
-      <NavLink
-      id={id}
-        onClick={() => {
-          onclick();
-        }}
-        to={to}
-        className={({isActive}) =>
-          ` flex h-10 flex-grow items-center rounded-lg ${
-            enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
-          } ${isActive ? 'bg-[#C0E7F2]' : ''}`
-        }>
-        {name}
-      </NavLink>
+      {isLink?
+            <NavLink
+            id={id}
+              onClick={() => {
+                onclick();
+              }}
+              to={to}
+              className={({isActive}) =>
+                ` flex h-10 flex-grow items-center rounded-lg ${
+                  enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
+                } ${isActive ? 'bg-[#C0E7F2]' : ''}`
+              }>
+              {name}
+            </NavLink>
+    
+    :
+    <button
+    id={id}
+      onClick={() => {
+        onclick();
+      }} 
+      className={
+        ` flex h-10 flex-grow items-center rounded-lg ${
+          enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
+        } ${selected ? 'bg-[#C0E7F2]' : ''}`
+      }>
+      {name}
+    </button>
+    }
+
       {enabelcheck ? (
         <Checkbox
           checkstatus={checkstatus}

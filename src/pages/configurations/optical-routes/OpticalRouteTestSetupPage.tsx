@@ -6,7 +6,8 @@ import {Link, Outlet, useNavigate, useParams,useLocation } from 'react-router-do
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import { setopticalroutUpdateTestsetupDetail } from '~/store/slices/opticalroutslice';
-import {$GET, $Get} from '~/util/requestapi';
+import { deepcopy } from '~/util';
+import {$Get} from '~/util/requestapi';
 
 const columns = {
   name: {label: 'Name', size: 'w-[20%]', sort: true},
@@ -87,7 +88,6 @@ const OpticalRouteTestSetupPage: FC = () => {
         );
         const getdata=await getalldata.json();
         if(getalldata.status == 200){
-          console.log(getdata, 'getdata');
           const all =
             getdata?.map((data: any) => ({
               name: data.name,
@@ -115,7 +115,7 @@ const OpticalRouteTestSetupPage: FC = () => {
   }, [pathname]);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
-    const items2 = JSON.parse(JSON.stringify(allitems));
+    const items2 = deepcopy(allitems);
     if (sortalfabet) {
       items2.sort(
         (a: any, b: any) =>

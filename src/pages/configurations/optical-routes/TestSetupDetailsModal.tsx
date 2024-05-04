@@ -5,7 +5,7 @@ import {SimpleBtn, TabItem} from '~/components';
 import AppDialog from '~/components/modals/AppDialog';
 import {useHttpRequest} from '~/hooks';
 import { deepcopy } from '~/util';
-
+import { useLocation } from 'react-router-dom';
 //this function get full date and time then produce full date
 const convertDate = (date: string, time: string) => {
   var datetime = new Date(date + 'T' + time + ':00Z');
@@ -13,8 +13,9 @@ const convertDate = (date: string, time: string) => {
 };
 const TestSetupDetailsModal: FC = () => {
   const params = useParams();
-  console.log("paramspp",params);
-  
+
+  const location=useLocation()
+  console.log("params88",params);
   const navigate = useNavigate();
   const [validateeror, setvalidateeror] = useState(false);
   const {opticalroutUpdateTestsetupDetail} = useSelector(
@@ -128,7 +129,9 @@ const TestSetupDetailsModal: FC = () => {
           data: newdata,
         });
       }
-      navigate(`/config/optical-routes/${params.opticalRouteId!.split("_")[0]}/test-setup`);
+      {location.pathname.indexOf("monitoring")>-1?navigate('/monitoring/test-on-demand'):navigate(`/config/optical-routes/${params.opticalRouteId!.split("_")[0]}/test-setup`);}
+      
+      
     }
   };
 
@@ -147,7 +150,7 @@ const TestSetupDetailsModal: FC = () => {
             <SimpleBtn onClick={() => createtestaetup()} type="button">
               Save
             </SimpleBtn>
-            <SimpleBtn className='cursor-pointer' link to="..">
+            <SimpleBtn className='cursor-pointer' link to={location.pathname.indexOf("monitoring")>-1?"/monitoring/test-on-demand":".."}>
               Cancel
             </SimpleBtn>
           </div>

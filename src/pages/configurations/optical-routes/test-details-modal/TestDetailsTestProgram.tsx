@@ -67,18 +67,12 @@ const TestDetailsTestProgram: FC = () => {
   const formik = useFormik({
     enableReinitialize:true,
     initialValues: {
-      startingdateStart: seperatedate(
-        opticalroutUpdateTestsetupDetail?.test_program?.starting_date?.start,
-      ).datePart,
-      startingdateStarttime: seperatedate(
-        opticalroutUpdateTestsetupDetail?.test_program?.starting_date?.start,
-      ).timePart,
+      startingdateStart:opticalroutUpdateTestsetupDetail?.startdatePart,
+      startingdateStarttime:opticalroutUpdateTestsetupDetail?.starttimePart,
       immediately:
         opticalroutUpdateTestsetupDetail?.test_program?.starting_date
           ?.immediately,
-      enddateEnd: seperatedate(
-        opticalroutUpdateTestsetupDetail?.test_program?.end_date?.end,
-      ).datePart,
+      enddateEnd: opticalroutUpdateTestsetupDetail?.enddatePart,
       enddateEndtime: seperatedate(
         opticalroutUpdateTestsetupDetail?.test_program?.end_date?.end,
       ).timePart,
@@ -93,9 +87,8 @@ const TestDetailsTestProgram: FC = () => {
 
   function RadioButton({name}: RadioButton) {
     const onclickbtn = () => {
-      let dataa: any = JSON.parse(
-        JSON.stringify(opticalroutUpdateTestsetupDetail),
-      );
+      let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail)
+
       if (selectedradio.indexOf(name) > -1) {
       } else {
         setSelectedradio(prev => [...prev, name]);
@@ -134,9 +127,7 @@ const TestDetailsTestProgram: FC = () => {
       <div className="flex flex-row items-center">
         <button
           onClick={() => {
-            let dataa: any = JSON.parse(
-              JSON.stringify(opticalroutUpdateTestsetupDetail),
-            );
+            let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail);
             setSelectedradio2(name),
               formik.setFieldValue(
                 'periodtimePeriodtime',
@@ -172,6 +163,7 @@ const TestDetailsTestProgram: FC = () => {
   }
 
 
+  console.log("♨️",opticalroutUpdateTestsetupDetail.startdatePart);
   
   return (
     <div className="flex flex-col gap-y-8">
@@ -185,7 +177,8 @@ const TestDetailsTestProgram: FC = () => {
               dataa.startdatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            value={opticalroutUpdateTestsetupDetail.startdatePart}
+          //  defaultValue={opticalroutUpdateTestsetupDetail.startdatePart}
+         value={opticalroutUpdateTestsetupDetail?.startdatePart}
             ref={firstdateref}
             type="date"
             className="ml-6 h-8 w-48 rounded-md border border-black px-2"
@@ -198,9 +191,7 @@ const TestDetailsTestProgram: FC = () => {
           <TextInput
             onChange={e => {
               formik.setFieldValue('startingdateStarttime', e.target.value);
-              let dataa = JSON.parse(
-                JSON.stringify(opticalroutUpdateTestsetupDetail),
-              );
+              let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
               dataa.starttimePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
@@ -221,7 +212,7 @@ const TestDetailsTestProgram: FC = () => {
               dataa.enddatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            value={opticalroutUpdateTestsetupDetail.enddatePart}
+            value={opticalroutUpdateTestsetupDetail?.enddatePart}
             ref={secenddateref}
             type="date"
             className="ml-6 h-8 w-48 rounded-md border border-black px-2"
