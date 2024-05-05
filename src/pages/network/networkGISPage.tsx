@@ -39,32 +39,14 @@ const NetworkGisPage = () => {
   const [title, setTitle] = useState('');
   const [shapefile, setShapefile] = useState<any>();
   const [loading,setLoading]=useState(false)
+  const [loadalldata,setLoadalldata]=useState(false)
   const [shapefiles, setShapefiles] = useState<
     {id: string; path: string; title: string}[]
   >([]);
   const [error, setError] = useState('');
-  const initialRequests = (request: Request) => {
-    request('networkDetail', {params: {networkId: params.networkId!}});
-  };
+
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-  const {
-    state: {detail, update},
-    request,
-  } = useHttpRequest({
-    selector: state => ({
-      detail: state.http.networkDetail,
-      update: state.http.networkUpdate,
-    }),
-    initialRequests,
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.update?.httpRequestStatus === 'loading' &&
-        state.update!.httpRequestStatus === 'success'
-      ) {
-        initialRequests(request);
-      }
-    },
-  });
+
 
 console.log("shapefiles",shapefiles);
 
@@ -95,15 +77,15 @@ console.log("shapefiles",shapefiles);
   const downloadShapefile = async (path:string) => {
     try {
     const response = await axios.get(path, {
-    responseType: 'blob', // نوع پاسخ به عنوان Blob تعریف میشود
+    responseType: 'blob', 
     headers: {
-    Authorization: `Bearer ${accesstoken}`, // احراز هویت با استفاده از توکن دسترسی
+    Authorization: `Bearer ${accesstoken}`, 
     },
     });
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'shapefile.zip'); // نام فایل دانلودی
+    link.setAttribute('download', 'shapefile.zip');
     document.body.appendChild(link);
     link.click();
     link?.parentNode?.removeChild(link);
@@ -115,7 +97,9 @@ console.log("shapefiles",shapefiles);
 
 
   const getshapefiles = async () => {
+    
     try {
+      setLoadalldata(true)
       const response = await $Get(
         `otdr/network/${params.networkId}/shapefiles`,
       );
@@ -125,6 +109,8 @@ console.log("shapefiles",shapefiles);
       }
     } catch (error) {
       console.log(`getshapefileError is:${error}`);
+    } finally {
+      setLoadalldata(false)
     }
   };
 
@@ -200,6 +186,10 @@ console.log("shapefiles",shapefiles);
     });
   };
 
+if(loadalldata){
+  return <h1 className='font-bold m-2'>Loading...</h1>
+}
+
   if (canchange) {
     return (
       <div className="relative flex min-h-[calc(100%-50px)] w-full flex-col">
@@ -274,7 +264,7 @@ console.log("shapefiles",shapefiles);
                       <IoTrashOutline
                         onClick={() => deleteshapefile(data.id)}
                         size={24}
-                        className="text-red-500 active:text-red-300"
+                        className="text-red-500 active:text-red-300 cursor-pointer"
                       />
                     ) : null}
                   </div>
