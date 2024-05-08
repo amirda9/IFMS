@@ -19,7 +19,7 @@ const seperatedate = (time: string) => {
   let minute = date?.getMinutes(); // minute = 31
   let Minute = Number(minute) < 10 ? `0${minute}` : minute;
   let second = date.getSeconds(); // second = 27
-  let datePart = year + '-' + month + '-' + day; // datePart = "2023-11-2"
+  let datePart = year + '-' + `${month.toString().length == 1?`0${month}`:month}` + '-' +`${day.toString().length == 1?`0${day}`:day}` ; // datePart = "2023-11-2"
   let timePart = hour + ':' + Minute; // timePart = "9:31:27"
   return {datePart: datePart, timePart: timePart};
 };

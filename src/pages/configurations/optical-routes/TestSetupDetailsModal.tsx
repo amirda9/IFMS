@@ -137,6 +137,7 @@ const TestSetupDetailsModal: FC = () => {
 
   return (
     <AppDialog
+      closefunc={location.pathname.indexOf("monitoring")>-1?()=>navigate("/monitoring/test-on-demand") :()=>navigate("..")}
       footerClassName="flex justify-end"
       footer={
         <div className="flex flex-col">

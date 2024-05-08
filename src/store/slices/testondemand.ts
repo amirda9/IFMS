@@ -27,6 +27,8 @@ type alldeleteopticalroutetypeAction={
 
 
 type initialStatetype={
+  starttestdate:string,
+  endtestdate:string,
   testid:string,
   selectedId:string,
   opticalroutUpdateTestsetupDetail:opticalrouteUpdateTestSetupDetailtype
@@ -37,11 +39,17 @@ type initialStatetype={
   setuplist:{id: string; name: string}[],
   selectedtest:string,
   selectednetworkid:string,
-  openall:boolean
+  openall:boolean,
+  showCompletedTestsFrom:boolean,
+  fromtimeupdated:string
 }
 const initialState:initialStatetype = {
+  endtestdate:"",
+  starttestdate:"",
   testid:'',
   selectedId:'',
+  showCompletedTestsFrom:false,
+  fromtimeupdated:"",
   opticalroutUpdateTestsetupDetail:{    name: "",
     station_id: "",
     station_name: "",
@@ -164,6 +172,18 @@ const testondemand = createSlice({
      setOpenall:(state, action: {type: string; payload: boolean}) => {
       state.openall = action.payload;
      },
+     setStarttestdate:(state, action: {type: string; payload: string}) => {
+      state.starttestdate = action.payload;
+     },
+     setEndtestdate:(state, action: {type: string; payload: string}) => {
+      state.endtestdate = action.payload;
+     },
+     setShowCompletedTestsFrom:(state, action: {type: string; payload: boolean}) => {
+      state.showCompletedTestsFrom = action.payload;
+     },
+     setFromtimeupdated:(state, action: {type: string; payload: string}) => {
+      state.fromtimeupdated = action.payload;
+     },
   },
 });
 
@@ -178,7 +198,11 @@ export const {
   setSetuplist,
   setSelectedtest,
   setSelectednetworkid,
-  setOpenall
+  setOpenall,
+  setEndtestdate,
+  setStarttestdate,
+  setShowCompletedTestsFrom,
+  setFromtimeupdated
 } = testondemand.actions;
 
 export default testondemand.reducer;

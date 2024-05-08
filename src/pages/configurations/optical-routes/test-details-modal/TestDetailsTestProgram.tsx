@@ -163,21 +163,22 @@ const TestDetailsTestProgram: FC = () => {
   }
 
 
-  console.log("♨️",opticalroutUpdateTestsetupDetail.startdatePart);
+  console.log("♨️",opticalroutUpdateTestsetupDetail?.startdatePart);
   
   return (
+    
     <div className="flex flex-col gap-y-8">
       <Description label="Starting Date">
         <div className="flex items-center">
           <input
             onChange={e => {
               let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
-              
+              console.log("🥰🥰",e.target.value);
               formik.setFieldValue('startingdateStart', e.target.value);
               dataa.startdatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-          //  defaultValue={opticalroutUpdateTestsetupDetail.startdatePart}
+          //  defaultValue={""}
          value={opticalroutUpdateTestsetupDetail?.startdatePart}
             ref={firstdateref}
             type="date"
