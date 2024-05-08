@@ -34,7 +34,7 @@ import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
 import Mainloading from '~/components/loading/mainloading';
 import {useAppSelector, useHttpRequest} from '~/hooks';
-import { UserRole } from '~/constant/users';
+import {UserRole} from '~/constant/users';
 
 type ItemspROPS = {
   to: string;
@@ -51,6 +51,7 @@ type ItemspROPS = {
   canAdd?: boolean;
   createurl?: string;
   canDelete?: boolean;
+  disabledcheckbox?: boolean;
 };
 type Iprops = {
   children: React.ReactNode;
@@ -111,8 +112,6 @@ function NetworktreeLayout({children}: Iprops) {
   };
 
   useEffect(() => {
-
-    
     const element = document.getElementById(selectedid);
     if (element) {
       // 👇 Will scroll smoothly to the top of the next section
@@ -169,6 +168,7 @@ function NetworktreeLayout({children}: Iprops) {
     pluse = true,
     createurl = '',
     canDelete = true,
+    disabledcheckbox = false,
     onclickcheckbox = () => {},
   }: ItemspROPS) => {
     return (
@@ -202,6 +202,7 @@ function NetworktreeLayout({children}: Iprops) {
           name={name}
           to={to}
           canAdd={canAdd}
+          disabledcheckbox={disabledcheckbox}
           id={id}
           createurl={createurl}
           key={key}
@@ -292,24 +293,37 @@ function NetworktreeLayout({children}: Iprops) {
   const deletegroupsationds = async (regionid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        const deletestationlist = selectedstations.find(
-          data => data.regionid == regionid,
-        );
-        const response = await $Delete(
-          `otdr/station/batch_delete`,
-          deletestationlist?.stationsID,
-        );
-        if (response.status == 200) {
-          dispatch(
-            deletegroupstation({
-              regionid: regionid,
-              stationsid: deletestationlist?.stationsID || [],
-            }),
+        try {
+          const deletestationlist = selectedstations.find(
+            data => data.regionid == regionid,
           );
+
+          const list = deletestationlist?.stationsID || [];
+          const promises = list.map((data: string) =>
+            $Delete(`otdr/station/${data}`),
+          );
+ 
+            const results = await Promise.all(promises);  
+
+            dispatch(
+              deletegroupstation({
+                regionid: regionid,
+                stationsid: deletestationlist?.stationsID || [],
+              }),
+            );
+      
+        } catch (error) {
+          `deleteStationError is:${error}`
         }
+
       }
     });
   };
+
+
+
+
+
 
   const deletedefaultgroupsationds = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
@@ -438,13 +452,9 @@ function NetworktreeLayout({children}: Iprops) {
     <>
       {/* <div className="flex h-[calc(100vh-120px)] opacity-0 w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
 
-    </div> */}{
-      loading?
+    </div> */}
+      {loading ? <Mainloading /> : null}
 
-      <Mainloading />
-      :null
-    }
-      
       <div className="no-scrollbar fixed bottom-[0px] left-0  top-20 flex h-[calc(100vh-120px)] w-[30%]  flex-col overflow-scroll  border-r-2 border-g bg-[#E7EFF7] p-4 ">
         <div className="flex w-full flex-row items-center">
           <>
@@ -489,11 +499,18 @@ function NetworktreeLayout({children}: Iprops) {
             {networkslist?.map((networkdata, index) => (
               <div key={index} className="w-full">
                 <Items
-                  key={Number(networkdata.id)+index}
-                  to={loggedInUser.role === UserRole.SUPER_USER ? `/networks/${networkdata.id}`:"#"}
+                  key={Number(networkdata.id) + index}
+                  to={
+                    loggedInUser.role === UserRole.SUPER_USER
+                      ? `/networks/${networkdata.id}`
+                      : '#'
+                  }
                   createurl={`/regions/create/${networkdata.id}`}
                   selected={false}
-                  canAdd={(loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id))}
+                  canAdd={
+                    loggedInUser.role === UserRole.SUPER_USER ||
+                    networkidadmin.includes(networkdata.id)
+                  }
                   canDelete={loggedInUser.role === UserRole.SUPER_USER}
                   onDelete={() => Deletenetwork(networkdata.id)}
                   onclick={() => {
@@ -526,12 +543,14 @@ function NetworktreeLayout({children}: Iprops) {
                               to={`/regions/${regionsdata.id}_${networkdata.id}`}
                               selected={false}
                               canAdd={false}
-                              canDelete={(loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id))}
+                              canDelete={
+                                loggedInUser.role === UserRole.SUPER_USER ||
+                                networkidadmin.includes(networkdata.id)
+                              }
                               onDelete={() =>
                                 Deleteregion(regionsdata.id, networkdata.id)
                               }
                               onclick={() => {
-                         
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(regionsdata.id);
                                 onclickstations(networkdata.id, regionsdata.id);
@@ -555,7 +574,10 @@ function NetworktreeLayout({children}: Iprops) {
                                   to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
                                   createurl={`/stations/create/${regionsdata.id}_${networkdata.id}`}
                                   canDelete={false}
-                                  canAdd={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
+                                  canAdd={
+                                    loggedInUser.role === UserRole.SUPER_USER ||
+                                    networkidadmin.includes(networkdata.id)
+                                  }
                                   selected={false}
                                   onDelete={() => {}}
                                   onclick={() => {
@@ -585,12 +607,19 @@ function NetworktreeLayout({children}: Iprops) {
                                       )
                                       ?.stations.map((stationsdata, index) => (
                                         <Items
-                                          key={index+Number(stationsdata.id)}
+                                          key={index + Number(stationsdata.id)}
                                           to={`/stations/${stationsdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           selected={false}
-                                          canDelete={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
+                                          canDelete={true}
                                           onDelete={() =>
                                             deletegroupsationds(regionsdata.id)
+                                          }
+                                          disabledcheckbox={
+                                            loggedInUser.role !==
+                                              UserRole.SUPER_USER &&
+                                            !networkidadmin.includes(
+                                              networkdata.id,
+                                            )
                                           }
                                           canAdd={false}
                                           enabelcheck={true}
@@ -632,7 +661,10 @@ function NetworktreeLayout({children}: Iprops) {
                                   to={`/regions/defaultregionemptypage/${networkdata.id}_Linkss`}
                                   selected={false}
                                   canDelete={false}
-                                  canAdd={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
+                                  canAdd={
+                                    loggedInUser.role === UserRole.SUPER_USER ||
+                                    networkidadmin.includes(networkdata.id)
+                                  }
                                   onDelete={() => {}}
                                   onclick={() => {
                                     dispatch(setSelectedid(regionsdata.id)),
@@ -674,7 +706,13 @@ function NetworktreeLayout({children}: Iprops) {
                                           to={`/links/${linksdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
-                                          canDelete={loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(networkdata.id)}
+                                          canDelete={
+                                            loggedInUser.role ===
+                                              UserRole.SUPER_USER ||
+                                            networkidadmin.includes(
+                                              networkdata.id,
+                                            )
+                                          }
                                           onDelete={() =>
                                             ondeletelinksgroup(regionsdata.id)
                                           }
@@ -789,6 +827,11 @@ function NetworktreeLayout({children}: Iprops) {
                                       key={Number(stationsdata.id)}
                                       to={`/stations/${stationsdata.id}_${networkdata.id}/defaultstationDetailPage`}
                                       canAdd={false}
+                                      disabledcheckbox={
+                                        loggedInUser.role !==
+                                          UserRole.SUPER_USER &&
+                                        !networkidadmin.includes(networkdata.id)
+                                      }
                                       selected={false}
                                       onDelete={() =>
                                         deletedefaultgroupsationds(

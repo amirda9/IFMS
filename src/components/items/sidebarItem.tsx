@@ -20,7 +20,8 @@ type PropsType = {
   canAdd?: boolean;
   createurl?:string;
   canDelete?:boolean;
-  id?:string
+  id?:string,
+  disabledcheckbox?:boolean
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -37,7 +38,8 @@ const SidebarItem: FC<PropsType> = ({
   canAdd = false,
   createurl="",
   canDelete=true,
-  id
+  id,
+  disabledcheckbox=false
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -64,6 +66,7 @@ const SidebarItem: FC<PropsType> = ({
       </NavLink>
       {enabelcheck ? (
         <Checkbox
+          disabledcheckbox={disabledcheckbox}
           checkstatus={checkstatus}
           onclick={e => onclickcheckbox(e)}
           iconclassnam="w-[15px] h-[15px] ml-[1px] mt-[1px]"
