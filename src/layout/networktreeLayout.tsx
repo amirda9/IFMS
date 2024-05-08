@@ -328,21 +328,27 @@ function NetworktreeLayout({children}: Iprops) {
   const deletedefaultgroupsationds = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        const deletestationlist = selecteddefaultstations.find(
-          data => data.networkid == networkid,
-        );
-        const response = await $Delete(
-          `otdr/station/batch_delete`,
-          deletestationlist?.stationsID,
-        );
-        if (response.status == 200) {
-          dispatch(
-            deletedefaultgroupstation({
-              networkid: networkid,
-              stationsid: deletestationlist?.stationsID || [],
-            }),
+        try {
+          const deletestationlist = selecteddefaultstations.find(
+            data => data.networkid == networkid,
           );
+          const list = deletestationlist?.stationsID || [];
+          const promises = list.map((data: string) =>
+            $Delete(`otdr/station/${data}`),
+          );
+          const results = await Promise.all(promises);  
+  
+            dispatch(
+              deletedefaultgroupstation({
+                networkid: networkid,
+                stationsid: deletestationlist?.stationsID || [],
+              }),
+            );
+        } catch (error) {
+          `deleteStationError is:${error}`
         }
+        
+
       }
     });
   };
