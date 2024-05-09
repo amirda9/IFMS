@@ -49,6 +49,7 @@ type testondemand = {
 };
 
 type tabelrow = {
+  id:string,
   index: number;
   date: string;
   opticalrouteid: string;
@@ -470,6 +471,7 @@ function Testondemand() {
         responsedata.map((data, index) => ({
           tabbodybg: [
             {
+              
               name: 'status',
               bg:
                 data.status == 'PENDING'
@@ -481,6 +483,7 @@ function Testondemand() {
                   : 'white',
             },
           ],
+          id:data.id,
           index: index + 1,
           date: getPrettyDateTime(data.time_created),
           opticalroute: data.optical_route.name,
@@ -775,10 +778,16 @@ function Testondemand() {
           console.log('value', value.opticalrouteid);
 
           if (key === 'detail')
+          // navigate(`../../../chart`, {
+       
+          // })
             return (
-              <Link to={value.detail}>
-                <IoOpenOutline size={22} className="mx-auto" />
-              </Link>
+              
+                <IoOpenOutline  onClick={()=>navigate('/config/chart',{state: {
+                  opticalrout_id: value.opticalrouteid,
+                  measurement_id:value.id,
+                }})} size={22} className="mx-auto cursor-pointer" />
+            
             );
           else if (key === 'delete')
             return (
