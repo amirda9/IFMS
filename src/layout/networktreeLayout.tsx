@@ -356,43 +356,54 @@ function NetworktreeLayout({children}: Iprops) {
   const ondeletelinksgroup = async (regionid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        const deletestationlist = selectedlinks.find(
-          data => data.regionid == regionid,
-        );
-        const response = await $Delete(
-          `otdr/link/batch_delete`,
-          deletestationlist?.linkID,
-        );
-        if (response.status == 200) {
-          dispatch(
-            deletegrouplinks({
-              regionid: regionid,
-              linksid: deletestationlist?.linkID || [],
-            }),
+        try {
+          const deletestationlist = selectedlinks.find(
+            data => data.regionid == regionid,
           );
+          const list = deletestationlist?.linkID || [];
+          const promises = list.map((data: string) =>
+            $Delete(`otdr/link/${data}`),
+          );
+          const results = await Promise.all(promises);  
+            dispatch(
+              deletegrouplinks({
+                regionid: regionid,
+                linksid: deletestationlist?.linkID || [],
+              }),
+            );
+       
+        } catch (error) {
+          console.log(`deletelinkError is:${error}`);  
         }
+      
       }
     });
   };
 
   const ondeletedefaultlinksgroup = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
+    
       if (result.isConfirmed) {
-        const deletestationlist = selectedefaultdlinks.find(
-          data => data.networkid == networkid,
-        );
-        // const response = await $Delete(
-        //   `otdr/link/batch_delete`,
-        //   deletestationlist?.linkID,
-        // );
-        // if (response.status == 200) {
-        dispatch(
-          deletedefaultgrouplinks({
-            networkid: networkid,
-            linksid: deletestationlist?.linkID || [],
-          }),
-        );
-        // }
+        try {
+          const deletestationlist = selectedefaultdlinks.find(
+            data => data.networkid == networkid,
+          );
+
+          const list = deletestationlist?.linkID || [];
+          const promises = list.map((data: string) =>
+            $Delete(`otdr/link/${data}`),
+          );
+
+          dispatch(
+            deletedefaultgrouplinks({
+              networkid: networkid,
+              linksid: deletestationlist?.linkID || [],
+            }),
+          );
+        } catch (error) {
+          console.log(`deletelinkError is:${error}`);  
+        }
+       
       }
     });
   };
@@ -712,12 +723,13 @@ function NetworktreeLayout({children}: Iprops) {
                                           to={`/links/${linksdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
-                                          canDelete={
-                                            loggedInUser.role ===
-                                              UserRole.SUPER_USER ||
-                                            networkidadmin.includes(
-                                              networkdata.id,
-                                            )
+                                  
+                                          disabledcheckbox={
+                                            loggedInUser.role !==
+                                            UserRole.SUPER_USER &&
+                                          !networkidadmin.includes(
+                                            networkdata.id,
+                                          )
                                           }
                                           onDelete={() =>
                                             ondeletelinksgroup(regionsdata.id)
@@ -920,6 +932,15 @@ function NetworktreeLayout({children}: Iprops) {
                                           networkdata.id,
                                         )
                                       }
+
+                                      disabledcheckbox={
+                                        loggedInUser.role !==
+                                        UserRole.SUPER_USER &&
+                                      !networkidadmin.includes(
+                                        networkdata.id,
+                                      )
+                                      }
+                                      
                                       enabelcheck={true}
                                       onclickcheckbox={() =>
                                         dispatch(
