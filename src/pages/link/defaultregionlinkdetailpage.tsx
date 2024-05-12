@@ -259,9 +259,7 @@ const LinkDetailPage = () => {
           destination_id: destinationid,
           type: types,
         });
-        if (response.status == 200) {
-          console.log("❄️","200");
-          
+        if (response.status == 200) {  
           dispatch(
             updatedefaltlinkname({
               regionid:selectedregion.length>0?selectedregion:"",

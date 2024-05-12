@@ -875,13 +875,7 @@ const networktreeslice = createSlice({
       const findwithregionindex = state.defaultregionLinks.findIndex(
         data => data.networkid == action.payload.networkid,
       );
-
-      // console.log("😵‍💫",defaultregionLinksCopy[
-      //   findwithregionindex
-      // ]);
-      if (action.payload.regionid == null){
-        console.log("🛳️","no");
-        
+      if (action.payload.regionid == null){  
         const findlinkid = defaultregionLinksCopy[
           findwithregionindex
         ].links.findIndex(
@@ -897,8 +891,6 @@ const networktreeslice = createSlice({
           findlinkid
         ].destination_id = action.payload.destination_id;
       }else{
-        console.log("🛳️","ok1");
-        
         const findlinkid = defaultregionLinksCopy[
           findwithregionindex
         ].links.findIndex(
@@ -921,7 +913,6 @@ const networktreeslice = createSlice({
         //     data.id == action.payload.linkid,
         // );
         if (findwithregionindexinReegionlink > -1) {
-          console.log("🛳️","ok2");
           regionLinksCopy[findwithregionindexinReegionlink].links.push({
             id: action.payload.linkid,
             name: action.payload.linkname,
@@ -929,7 +920,6 @@ const networktreeslice = createSlice({
             destination_id: action.payload.destination_id,
           });
         } else {
-          console.log("🛳️","ok3");
           regionLinksCopy.push({
             networkid: action.payload.networkid,
             regionid: action.payload.regionid,
@@ -1144,7 +1134,6 @@ const networktreeslice = createSlice({
       defaultregionstationsCopy[findstationwithnetworkid].stations[
         findstationwithid
       ].name = action.payload.stationname;
-      console.log('🥰', defaultregionstationsCopy);
       state.defaultregionstations = defaultregionstationsCopy;
     },
     //---------------------------------
