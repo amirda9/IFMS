@@ -251,8 +251,8 @@ const LinkDetailPage = () => {
       try {
         const response = await $Put(`otdr/link/${params?.linkId?.split("_")[0]}`, {
           description: comment,
-          // network_id: "string",
-          // region_id: null,
+          network_id:params?.linkId?.split("_")[1],
+          region_id: selectedregion.length>0?selectedregion:"",
           name: name,
           link_points: [],
           source_id: source,
@@ -260,9 +260,12 @@ const LinkDetailPage = () => {
           type: types,
         });
         if (response.status == 200) {
+          console.log("❄️","200");
+          
           dispatch(
             updatedefaltlinkname({
-              networkid: state!.detail!.data!.network_id!,
+              regionid:selectedregion.length>0?selectedregion:"",
+              networkid:params?.linkId?.split("_")[1]!,
               linkid: params?.linkId?.split("_")[0]!,
               linkname: name,
               source_id:source,
@@ -323,7 +326,7 @@ const LinkDetailPage = () => {
         ) : null}
       </div>
 
-      <Description className="mt-[21px]" label="Network" items="center">
+      {/* <Description className="mt-[21px]" label="Network" items="center">
         <Selectbox
           defaultvalue={defaultnetworkname}
           placeholder={defaultnetworkname}
@@ -337,7 +340,7 @@ const LinkDetailPage = () => {
           borderColor={'black'}
           classname="w-[28%] h-[32px] rounded-[5px]"
         />
-      </Description>
+      </Description> */}
 
       <Description className="mt-[21px]" label="Region" items="center">
         <Selectbox
