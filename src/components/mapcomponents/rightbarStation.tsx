@@ -2,7 +2,22 @@ import React, {useState} from 'react';
 import noRed from '~/assets/icons/noRed.png';
 import noOrange from '~/assets/icons/noOrange.png';
 import noYellow from '~/assets/icons/noYellow.png';
-function RightbarStation({data}:any) {
+
+type Stationtype = {
+  data:{
+    rtus: {id:string,name:string}[];
+    alarms: any[];
+    id: string;
+    latitude: number;
+    longitude: number;
+    name: string;
+    regionId?: string;
+    regionName?: string;
+  }
+ 
+};
+function RightbarStation({data}:Stationtype) {
+  console.log("datadatadata",data.rtus);
   
   return (
     <div
@@ -17,7 +32,7 @@ function RightbarStation({data}:any) {
           Region
         </span>
         <span className="ml-[50px] text-[18px] font-light leading-[25.2px] text-[black]">
-          Region1
+          {data.regionName}
         </span>
       </div>
 
@@ -41,12 +56,12 @@ function RightbarStation({data}:any) {
         RTU List
       </div>
       <div className="mx-auto ml-[5px] flex h-[145px] 2xl:h-[250px] w-[290px] flex-col overflow-y-auto bg-[#ffffff] px-4">
-        <span className="mb-[10px] mt-[15px] text-[18px] font-light leading-[25.2px] text-[black]">
-          Ario4P1310S11
-        </span>
-        <span className="mb-[10px] mt-[15px] text-[18px] font-light leading-[25.2px] text-[black]">
-          Ario4P1310S11
-        </span>
+        {data?.rtus?.map(rtuedata=>
+           <span className="mb-[10px] mt-[15px] text-[18px] font-light leading-[25.2px] text-[black]">
+           {rtuedata.name}
+         </span>
+          )}
+        
       </div>
       <div className="mb-[10px] mt-[15px] text-[18px] font-light leading-[25.2px] text-[black]">
         Alarms

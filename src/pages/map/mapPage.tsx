@@ -1,15 +1,11 @@
-import React, {createRef, useEffect, useRef, useState} from 'react';
-import Selectbox from './../../components/selectbox/selectbox';
+import React, {useEffect, useRef, useState} from 'react';
 import Checkbox from './../../components/checkbox/checkbox';
 import RightbarStation from './../../components/mapcomponents/rightbarStation';
 import RightbarLink from './../../components/mapcomponents/rightbarLink';
-import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
 import yellowicon from '~/assets/icons/noYellow.png';
 import redicon from '~/assets/icons/noRed.png';
 import orangeicon from '~/assets/icons/noOrange.png';
 import {useMapEvents} from 'react-leaflet';
-import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
 import {
   MapContainer,
   Marker,
@@ -39,18 +35,43 @@ import groupserverIcon from '~/assets/images/groupserverIcon.svg';
 import noRed from '~/assets/icons/noRed.png';
 import noYellow from '~/assets/icons/noYellow.png';
 import RightbarAlarm from '~/components/mapcomponents/rightbarAlarm';
-import {useDetectClickOutside} from 'react-detect-click-outside';
-const options = [
-  {value: 'chocolate', label: 'Chocolate'},
-  {value: 'strawberry', label: 'Strawberry'},
-  {value: 'vanilla', label: 'Vanilla'},
-];
+import Multiselect from 'multiselect-react-dropdown';
+import {$Get, $Post} from '~/util/requestapi';
+import {deepcopy} from '~/util';
 /* ------ types ----------- */
 
 type fullscreen = {
   fullscreen: Boolean;
 };
 
+type Stationtype = {
+  rtus: {id: string; name: string}[];
+  alarms: any[];
+  id: string;
+  latitude: number;
+  longitude: number;
+  name: string;
+  regionId?: string;
+  regionName?: string;
+};
+
+type linktype = {
+  alarms: any[];
+  destination: {id: string; name: string};
+  id: string;
+  length: string;
+  name: string;
+  regionId: string;
+  regionName: string;
+  source: {id: string; name: string};
+};
+
+type regiontype = {
+  id: string;
+  links: linktype[];
+  name: string;
+  stations: Stationtype[];
+};
 /* ------ component ----------- */
 
 function ZoomComponent({fullscreen}: fullscreen) {
@@ -60,7 +81,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
     map.setZoom(zoomstate);
   }, [zoomstate]);
   return (
-    <div className={`absolute right-[26px] top-[17px] z-[400] h-auto w-auto`}>
+    <div className={`absolute right-[26px] ${fullscreen?`top-[107px]`:`top-[17px]`} z-[400] h-auto w-auto`}>
       <img
         onClick={() => setZoomstate(zoomstate + 1)}
         src={pluse}
@@ -78,7 +99,7 @@ function ZoomComponent({fullscreen}: fullscreen) {
 // ------------- main --------------------------- main ----------------------- main -------------------- main ----------
 
 const MapPage = () => {
-  const networkId = Cookies.get(networkExplored);
+  const selectboxref: any = useRef();
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [fullscreen, setfullscreen] = useState(false);
   const [showlinktoolkit, setShowlinltoolkit] = useState(false);
@@ -89,9 +110,14 @@ const MapPage = () => {
   const [orangealarms, setorangeallarms] = useState(false);
   const [redalarms, setredallarms] = useState(false);
   const [regionname, setRegionname] = useState('');
-  const [selectedStation, setSelectedStation] = useState([]);
-  const [selectedLink, setSelectedLink] = useState([]);
+  const [selectedStation, setSelectedStation] = useState<Stationtype>();
+  const [selectedLink, setSelectedLink] = useState<any>([]);
+  const [Regions, setRegions] = useState<regiontype[]>([]);
+  const [Stations, setStaations] = useState<Stationtype[]>([]);
+  const [networkoptions, setNetworkoptions] = useState<any>([]);
   const [selectedregion, setSelectedregion] = useState<any>([]);
+  const [selectednetworks, setSelectednetworks] = useState<string[]>([]);
+  const [links, setLinks] = useState<linktype[]>([]);
   const [sumselectedregionlatitude, setSumSelectedregionlatitude] =
     useState<any>([]);
   const [sumselectedregionlongitude, setSumSelectedregionlongitude] =
@@ -100,32 +126,21 @@ const MapPage = () => {
     {value: string; label: string}[]
   >([]);
 
-  const {state, request} = useHttpRequest({
-    selector: state => ({
-      detail: state.http.mapDetail,
-    }),
-    initialRequests: request => {
-      request('mapDetail', {params: {network_id: networkId!}});
-    },
-  });
-console.log("detail",state.detail);
+  // const Stations = state?.detail?.data?.stations;
+  // const Regions = state?.detail?.data?.regions || [];
 
-  const Stations = state?.detail?.data?.stations;
-  const Regions = state?.detail?.data?.regions || [];
-
-  const regiondata = (id: string) => {
-    const find = Regions.find((data: any) => data.id == id);
-    let sumlatitude = 0;
-    let sumlongitude = 0;
-    for (let i = 0; i < find.stations.length; i++) {
-      sumlatitude += find.stations[i].latitude;
-      sumlongitude += find.stations[i].longitude;
-    }
-    setSumSelectedregionlatitude(sumlatitude);
-    setSumSelectedregionlongitude(sumlongitude);
-    setSelectedregion(find);
-  };
-
+  // const regiondata = (id: string) => {
+  //   const find = Regions.find((data: any) => data.id == id);
+  //   let sumlatitude = 0;
+  //   let sumlongitude = 0;
+  //   for (let i = 0; i < find.stations.length; i++) {
+  //     sumlatitude += find.stations[i].latitude;
+  //     sumlongitude += find.stations[i].longitude;
+  //   }
+  //   setSumSelectedregionlatitude(sumlatitude);
+  //   setSumSelectedregionlongitude(sumlongitude);
+  //   setSelectedregion(find);
+  // };
 
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
@@ -136,6 +151,86 @@ console.log("detail",state.detail);
       window.removeEventListener('mousemove', updateMousePosition);
     };
   }, []);
+
+  useEffect(() => {
+    const getallnetwork = async () => {
+      try {
+        const response = await $Get(`otdr/network`);
+        const responseData = await response.json();
+        const newdata = responseData.map((data: any) => ({
+          name: data.name,
+          id: data.id,
+        }));
+        setNetworkoptions(newdata);
+        // console.log('🧯', responseData);
+        // setSelectboxnetworks(newdata)
+      } catch (error) {}
+    };
+
+    getallnetwork();
+  }, []);
+
+  const getmapdetail = async () => {
+    setSelectedregion([]);
+    setRegionname('');
+    try {
+      const response = await $Post(`otdr/map`, selectednetworks);
+      const responsedata = await response.json();
+      let regiondata: any = [];
+      let stationdata: Stationtype[] = [];
+      let linksdata = [];
+      for (let i = 0; i < responsedata.length; i++) {
+        regiondata.push(...responsedata[i].regions);
+        for (let t = 0; t < responsedata[i].regions.length; t++) {
+          stationdata.push(
+            ...responsedata[i].regions[t].stations.map((data: any) => ({
+              ...data,
+              regionName: responsedata[i].regions[t].name || '',
+              regionId: responsedata[i].regions[t].id || '',
+            })),
+          );
+          linksdata.push(
+            ...responsedata[i].regions[t].links.map((data: any) => ({
+              ...data,
+              regionName: responsedata[i].regions[t].name || '',
+              regionId: responsedata[i].regions[t].id || '',
+            })),
+          );
+        }
+
+        for (let d = 0; d < responsedata[i].stations.length; d++) {
+          const findstationdata = stationdata.findIndex(
+            data => data.id == responsedata[i].stations[d].id,
+          );
+          if (findstationdata < 0) {
+            stationdata.push(responsedata[i].stations[d]);
+          }
+        }
+
+        for (let d = 0; d < responsedata[i].links.length; d++) {
+          const findstationdata = linksdata.findIndex(
+            data => data.id == responsedata[i].links[d].id,
+          );
+          if (findstationdata < 0) {
+            stationdata.push(responsedata[i].links[d]);
+          }
+        }
+      }
+
+      setRegions(regiondata);
+      setStaations(stationdata);
+      setLinks(linksdata);
+      setSelectboxregions(
+        regiondata.map((data: any) => ({id: data.id, name: data.name})),
+      );
+    } catch (error) {
+      console.log('getmapdetailerror', error);
+    }
+  };
+
+  useEffect(() => {
+    getmapdetail();
+  }, [selectednetworks]);
 
   const MapClickAlert = () => {
     useMapEvents({
@@ -179,9 +274,9 @@ console.log("detail",state.detail);
     );
   };
 
-  const onclicmenue=()=>{
-    setLeftbarstate(true)
-    if(selectboxregions.length == 0){
+  const onclicmenue = () => {
+    setLeftbarstate(true);
+    if (selectboxregions.length == 0) {
       const dataa = [...Regions];
       for (let i = 0; i < dataa?.length; i++) {
         setSelectboxregions(prev => [
@@ -193,11 +288,46 @@ console.log("detail",state.detail);
         ]);
       }
     }
+  };
 
-  }
+  const selectrange = (data: {name: string; id: number}[]) => {
+    const dataa: string[] = [];
+
+    for (let j = 0; j < data.length; j++) {
+      dataa.push(data[j].id.toString());
+    }
+
+    setSelectednetworks(dataa);
+  };
+
+  const changeselectedregion = (data: {name: string; id: number}[]) => {
+    const RegionsCopy = deepcopy(Regions);
+    if (data.length == 0) {
+      getmapdetail();
+    } else {
+      const dataa: any = [];
+      let stationdata: any = [];
+      let linkdata: any = [];
+      for (let j = 0; j < data.length; j++) {
+        const finddataindex = RegionsCopy.findIndex(
+          (Regionsdata: any) => Regionsdata.id == data[j].id,
+        );
+        dataa.push(RegionsCopy[finddataindex]);
+      }
+
+      for (let k = 0; k < dataa.length; k++) {
+        stationdata.push(...dataa[k].stations);
+        linkdata.push(...dataa[k].links);
+      }
+      // setRegions(dataa);
+      setStaations(stationdata);
+      setLinks(linkdata);
+    }
+  };
+
   // ******************** return ****************** return ************************** return *******************************
   return (
-    <div className="relative flex  h-[calc(100vh-105px)] mt-[60px] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
+    <div className="relative mt-[60px]  flex h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
       {showlinktoolkit ? <Linktooltip data={selectedLink} /> : null}
 
       <div
@@ -233,12 +363,59 @@ console.log("detail",state.detail);
             )}
 
             {leftbarstate ? (
+              <div className="relative z-30  my-4 mr-[20px] flex w-full flex-row items-center">
+                {/* <button
+                  onClick={() => selectboxref.current.onmouseleave}
+                  className="bg-blue-light absolute bottom-[14px] left-[9px] z-20 rounded-sm px-1 text-white">
+                  بستن
+                </button> */}
+                <div className="Content mb-2 mr-4 ">Network</div>
+                <div className="relative w-[220px]">
+                  <Multiselect
+                    className="rounded-lg  border-[1px] border-black bg-white"
+                    showCheckbox={true}
+                    ref={selectboxref}
+                    options={networkoptions} // Options to display in the dropdown
+                    // selectedValues={defaultranges}
+                    onSelect={data => selectrange(data)} // Function will trigger on select event
+                    onRemove={data => selectrange(data)} // Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {leftbarstate ? (
+              <div className="relative z-20  my-4 mr-[20px] flex w-full flex-row items-center">
+                {/* <button
+                  onClick={() => selectboxref.current.onmouseleave}
+                  className="bg-blue-light absolute bottom-[14px] left-[9px] z-20 rounded-sm px-1 text-white">
+                  بستن
+                </button> */}
+                <div className="Content mb-2 mr-[30px] ">Region </div>
+                <div className="relative w-[220px]">
+                  <Multiselect
+                    disable={!switchstatus}
+                    className="rounded-lg  border-[1px] border-black bg-white"
+                    showCheckbox={true}
+                    ref={selectboxref}
+                    options={selectboxregions} // Options to display in the dropdown
+                    // selectedValues={defaultranges}
+                    onSelect={data => changeselectedregion(data)} // Function will trigger on select event
+                    onRemove={data => changeselectedregion(data)} // Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {/* {leftbarstate ? (
               <div className="mb-[25px] flex w-full flex-row items-center justify-between">
                 <span className="text-[20px] font-light leading-[25.2px] text-[black]">
                   Region
                 </span>
                 <Selectbox
-                placeholder={regionname}
+                  placeholder={regionname}
                   onclickItem={(e: {value: string; label: string}) => {
                     setRegionname(e.label);
                     regiondata(e.value);
@@ -250,7 +427,7 @@ console.log("detail",state.detail);
                   }
                 />
               </div>
-            ) : null}
+            ) : null} */}
 
             <div className="mb-8 flex w-full flex-row items-center">
               <img src={serverIcon} className="ml-[3px] h-6 w-6" />
@@ -336,7 +513,7 @@ console.log("detail",state.detail);
 
         {/* ---------------reightbars------------------------reightbars-------------------------reightbars--------- */}
         {rightbarstate == 'station' ? (
-          <RightbarStation data={selectedStation} />
+          <RightbarStation data={selectedStation!} />
         ) : rightbarstate == 'link' ? (
           <RightbarLink data={selectedLink} />
         ) : rightbarstate == 'alarm' ? (
@@ -363,7 +540,7 @@ console.log("detail",state.detail);
             <MdZoomInMap
               onClick={() => setfullscreen(false)}
               size={46}
-              className={`absolute right-[23px] top-[104px] z-[400]`}
+              className={`absolute right-[23px] top-[194px] z-[400]`}
             />
           ) : (
             <BsArrowsFullscreen
@@ -371,14 +548,14 @@ console.log("detail",state.detail);
               className="absolute right-[25px] top-[108px] z-[400]  h-[38.1px] w-[40px]"
             />
           )}
-
+          {/* 
           {regionname.length > 0 ? (
             <>
               {switchstatus ? (
                 <>
-                  {selectedregion?.stations?.map((data: any, index: any) => (
+                  {Stations.map((data, index: number) => (
                     <Marker
-                      key={index}
+                      key={data.id}
                       eventHandlers={{
                         click: e => {
                           setRightbarState('station');
@@ -397,7 +574,7 @@ console.log("detail",state.detail);
                             {data.name}
                           </span>
                           <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                            Region: Region1
+                            Region:{data.regionName}
                           </span>
                           <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
                             Latitude:{data.latitude}
@@ -415,101 +592,117 @@ console.log("detail",state.detail);
                 </>
               ) : (
                 <>
-                  <Marker
-                    eventHandlers={{
-                      click: e => {
-                        setRightbarState('station');
-                        // setSelectedStation(data)
-                      },
-                    }}
-                    position={[
-                      sumselectedregionlatitude /
-                        selectedregion.stations.length,
-                      sumselectedregionlongitude /
-                        selectedregion.stations.length,
-                    ]}
-                    icon={MapgroupServerIcon}>
-                    <Tooltip
-                      opacity={1}
-                      className="h-[150px] w-[215px]"
-                      direction="top"
-                      offset={[0, -25]}>
-                      <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
-                        <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                          {selectedregion?.name}
-                        </span>
-                        <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                          High Severity: 0
-                        </span>
-                        <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                          Medium Severity: 1
-                        </span>
-                        <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                          Low Severity: 1
-                        </span>
-                      </div>
-                    </Tooltip>
-                  </Marker>
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              {switchstatus ? (
-                <>
-                  {Stations?.map((data, index) => (
-                    <Marker
-                      key={index}
-                      eventHandlers={{
-                        click: e => {
-                          setRightbarState('station');
-                          setSelectedStation(data);
-                        },
-                      }}
-                      position={[data.latitude, data.longitude]}
-                      icon={MapServerIcon}>
-                      <Tooltip
-                        opacity={1}
-                        className="h-[150px] w-[215px]"
-                        direction="top"
-                        offset={[0, -25]}>
-                        <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
-                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                            {data.name}
-                          </span>
-                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                            Region: Region1
-                          </span>
-                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                            Latitude:{data.latitude}
-                          </span>
-                          <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-                            Longitude:{data.longitude}
-                          </span>
-                          <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
-                            RTU(s):{data.RTUs.length}
-                          </span>
-                        </div>
-                      </Tooltip>
-                    </Marker>
-                  ))}
-                </>
-              ) : (
-                <>
-                  {state?.detail?.data?.regions.map((data, index) => {
+                  {Regions?.map((data: any) => {
                     let sumlatitude = 0;
                     let sumlongitude = 0;
                     for (let i = 0; i < data.stations.length; i++) {
                       sumlatitude += data.stations[i].latitude;
                       sumlongitude += data.stations[i].longitude;
                     }
+                    if (data.stations.length > 0) {
+                      return (
+                        <Marker
+                          eventHandlers={{
+                            click: e => {
+                              setRightbarState('station');
+                              // setSelectedStation(data)
+                            },
+                          }}
+                          position={[
+                            sumlatitude / data.stations.length,
+                            sumlongitude / data.stations.length,
+                          ]}
+                          icon={MapgroupServerIcon}>
+                          <Tooltip
+                            opacity={1}
+                            className="h-[150px] w-[215px]"
+                            direction="top"
+                            offset={[0, -25]}>
+                            <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                              <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                                {data?.name}
+                              </span>
+                              <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                                High Severity: 0
+                              </span>
+                              <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                                Medium Severity: 1
+                              </span>
+                              <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
+                                Low Severity: 1
+                              </span>
+                            </div>
+                          </Tooltip>
+                        </Marker>
+                      );
+                    } else {
+                      return <></>;
+                    }
+                  })}
+                </>
+              )}
+            </>
+          ) : ( */}
+          <>
+            {switchstatus ? (
+              <>
+                {Stations?.map((data, index) => (
+                  <Marker
+                    key={data.id}
+                    eventHandlers={{
+                      click: e => {
+                        setRightbarState('station');
+                        setSelectedStation(data);
+                      },
+                    }}
+                    position={[data?.latitude, data?.longitude]}
+                    icon={MapServerIcon}>
+                    <Tooltip
+                      opacity={1}
+                      className="h-[150px] w-[215px]"
+                      direction="top"
+                      offset={[0, -25]}>
+                      <div className="z-1000 absolute right-[-2.5px] top-[-5px] flex h-[160px] w-[220px] flex-col bg-[#E7EFF7] py-2">
+                        <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                          {data.name}
+                        </span>
+                        <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                          Region:{data.regionName}
+                        </span>
+                        <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                          Latitude:{data.latitude}
+                        </span>
+                        <span className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
+                          Longitude:{data.longitude}
+                        </span>
+                        <span className="ml-[8px]  text-[18px] font-light leading-[25.2px] text-[black]">
+                          RTU(s):{data.rtus?.length}
+                        </span>
+                      </div>
+                    </Tooltip>
+                  </Marker>
+                ))}
+              </>
+            ) : (
+              <>
+                {Regions?.map((data, index) => {
+                  let sumlatitude = 0;
+                  let sumlongitude = 0;
+                  for (let i = 0; i < data.stations.length; i++) {
+                    if (data.stations) {
+                      sumlatitude += data.stations[i].latitude;
+                      sumlongitude += data.stations[i].longitude;
+                    }
+                  }
+
+                  if (data.stations.length > 0) {
                     return (
                       <Marker
-                        key={index}
+                        key={data.id}
                         eventHandlers={{
                           click: e => {
                             setRightbarState('station');
-                            // setSelectedStation(data)
+                            //  setSelectedStation(data)
                           },
                         }}
                         position={[
@@ -539,11 +732,14 @@ console.log("detail",state.detail);
                         </Tooltip>
                       </Marker>
                     );
-                  })}
-                </>
-              )}
-            </>
-          )}
+                  } else {
+                    return <></>;
+                  }
+                })}
+              </>
+            )}
+          </>
+          {/* // )} */}
 
           {yellowalarms ? (
             <>
@@ -642,64 +838,71 @@ console.log("detail",state.detail);
             <>
               {switchstatus ? (
                 <>
-                  {selectedregion.links.map((data: any, index: any) => {
-                    let start = state?.detail?.data?.stations.find(
-                      dat => dat.id == data.source.id,
+                  {Regions?.links?.map((data: any, index: any) => {
+                    let start = Stations.find(
+                      dat => dat?.id == data?.source.id,
                     );
 
-                    let end = state?.detail?.data?.stations.find(
-                      dat => dat.id == data.destination.id,
+                    let end = Stations.find(
+                      dat => dat?.id == data?.destination?.id,
                     );
+                    if (start && end) {
+                      return (
+                        <>
+                          <Polyline
+                            key={data.id}
+                            eventHandlers={{
+                              click: e => {
+                                setRightbarState('link');
+                                setSelectedLink(data);
+                              },
+                              mouseover: e => {
+                                setShowlinltoolkit(true);
+                                setSelectedLink(data);
+                              },
+                              mouseout: e => {
+                                setShowlinltoolkit(false);
+                                // alert('dfdfd');
+                              },
+                            }}
+                            positions={[
+                              [start?.latitude, start?.longitude],
+                              [end?.latitude, end?.longitude],
+                            ]}
+                            color="red"></Polyline>
 
-                    return (
-                      <>
-                        <Polyline
-                          key={index}
-                          eventHandlers={{
-                            click: e => {
-                              setRightbarState('link');
-                              setSelectedLink(data);
-                            },
-                            mouseover: e => {
-                              setShowlinltoolkit(true);
-                              setSelectedLink(data);
-                            },
-                            mouseout: e => {
-                              setShowlinltoolkit(false);
-                              // alert('dfdfd');
-                            },
-                          }}
-                          positions={[
-                            [start.latitude, start.longitude],
-                            [end.latitude, end.longitude],
-                          ]}
-                          color="red"></Polyline>
-
-                        <Polyline
-                          key={index}
-                          weight={5}
-                          eventHandlers={{
-                            click: e => {
-                              setRightbarState('link');
-                              setSelectedLink(data);
-                            },
-                            mouseover: e => {
-                              setShowlinltoolkit(true);
-                              setSelectedLink(data);
-                            },
-                            mouseout: e => {
-                              setShowlinltoolkit(false);
-                            },
-                          }}
-                          positions={[
-                            [start.latitude, start.longitude],
-                            [end.latitude, end.longitude],
-                          ]}
-                          pathOptions={{color: 'black', weight: 20, opacity: 0}}
-                          // color="black"
-                        ></Polyline>
-                      </>
-                    );
+                          <Polyline
+                            key={data.id}
+                            weight={5}
+                            eventHandlers={{
+                              click: e => {
+                                setRightbarState('link');
+                                setSelectedLink(data);
+                              },
+                              mouseover: e => {
+                                setShowlinltoolkit(true);
+                                setSelectedLink(data);
+                              },
+                              mouseout: e => {
+                                setShowlinltoolkit(false);
+                              },
+                            }}
+                            positions={[
+                              [start.latitude, start.longitude],
+                              [end.latitude, end.longitude],
+                            ]}
+                            pathOptions={{
+                              color: 'black',
+                              weight: 20,
+                              opacity: 0,
+                            }}
+                            // color="black"
+                          ></Polyline>
+                        </>
+                      );
+                    } else {
+                      return <></>;
+                    }
                   })}
                 </>
               ) : null}
@@ -708,64 +911,71 @@ console.log("detail",state.detail);
             <>
               {switchstatus ? (
                 <>
-                  {state?.detail?.data?.links.map((data, index) => {
-                    let start = state?.detail?.data?.stations.find(
-                      dat => dat.id == data.source.id,
+                  {links?.map((data, index) => {
+                    let start = Stations?.find(
+                      dat => dat?.id == data?.source?.id,
                     );
 
-                    let end = state?.detail?.data?.stations.find(
-                      dat => dat.id == data.destination.id,
+                    let end = Stations?.find(
+                      dat => dat?.id == data?.destination?.id,
                     );
+                    if (start && end) {
+                      return (
+                        <>
+                          <Polyline
+                            key={index}
+                            eventHandlers={{
+                              click: e => {
+                                setRightbarState('link');
+                                setSelectedLink(data);
+                              },
+                              mouseover: e => {
+                                setShowlinltoolkit(true);
+                                setSelectedLink(data);
+                              },
+                              mouseout: e => {
+                                setShowlinltoolkit(false);
+                                // alert('dfdfd');
+                              },
+                            }}
+                            positions={[
+                              [start.latitude, start.longitude],
+                              [end.latitude, end.longitude],
+                            ]}
+                            color="red"></Polyline>
 
-                    return (
-                      <>
-                        <Polyline
-                          key={index}
-                          eventHandlers={{
-                            click: e => {
-                              setRightbarState('link');
-                              setSelectedLink(data);
-                            },
-                            mouseover: e => {
-                              setShowlinltoolkit(true);
-                              setSelectedLink(data);
-                            },
-                            mouseout: e => {
-                              setShowlinltoolkit(false);
-                              // alert('dfdfd');
-                            },
-                          }}
-                          positions={[
-                            [start.latitude, start.longitude],
-                            [end.latitude, end.longitude],
-                          ]}
-                          color="red"></Polyline>
-
-                        <Polyline
-                          key={index}
-                          weight={5}
-                          eventHandlers={{
-                            click: e => {
-                              setRightbarState('link');
-                              setSelectedLink(data);
-                            },
-                            mouseover: e => {
-                              setShowlinltoolkit(true);
-                              setSelectedLink(data);
-                            },
-                            mouseout: e => {
-                              setShowlinltoolkit(false);
-                            },
-                          }}
-                          positions={[
-                            [start.latitude, start.longitude],
-                            [end.latitude, end.longitude],
-                          ]}
-                          pathOptions={{color: 'black', weight: 20, opacity: 0}}
-                          // color="black"
-                        ></Polyline>
-                      </>
-                    );
+                          <Polyline
+                            key={data.id}
+                            weight={5}
+                            eventHandlers={{
+                              click: e => {
+                                setRightbarState('link');
+                                setSelectedLink(data);
+                              },
+                              mouseover: e => {
+                                setShowlinltoolkit(true);
+                                setSelectedLink(data);
+                              },
+                              mouseout: e => {
+                                setShowlinltoolkit(false);
+                              },
+                            }}
+                            positions={[
+                              [start.latitude, start.longitude],
+                              [end.latitude, end.longitude],
+                            ]}
+                            pathOptions={{
+                              color: 'black',
+                              weight: 20,
+                              opacity: 0,
+                            }}
+                            // color="black"
+                          ></Polyline>
+                        </>
+                      );
+                    } else {
+                      return <></>;
+                    }
                   })}
                 </>
               ) : null}

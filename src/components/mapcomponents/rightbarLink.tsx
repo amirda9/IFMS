@@ -2,7 +2,20 @@ import React, {useState} from 'react';
 import noRed from '~/assets/icons/noRed.png';
 import noOrange from '~/assets/icons/noOrange.png';
 import noYellow from '~/assets/icons/noYellow.png';
-function RightbarLink({data}:any) {
+
+type linktype={
+  data:{
+    alarms:any[]
+    destination:{id:string, name: string}
+    id:string
+    length:string
+    name:string
+    regionId:string
+    regionName:string
+    source:{id:string, name:string}
+  }
+  }
+function RightbarLink({data}:linktype) {
   return (
     <div
       className={` to-0 absolute right-0 z-[500] box-border flex h-[100vh]
@@ -16,7 +29,7 @@ function RightbarLink({data}:any) {
           Region
         </span>
         <span className="ml-[50px] text-[20px] font-light leading-[25.2px] text-[black]">
-          Region1
+          {data.regionName}
         </span>
       </div>
 
