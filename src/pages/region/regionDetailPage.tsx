@@ -41,6 +41,47 @@ const RegionDetailPage = () => {
     setSelectednetwork(id);
   };
 
+
+
+  const buttons = (
+    <>
+      <SimpleBtn
+        type="submit"
+        onClick={() => {
+          document.getElementById('formSubmit')?.click();
+        }}>
+        Save
+      </SimpleBtn>
+
+      <SimpleBtn>Cancel</SimpleBtn>
+    </>
+  );
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      description: '',
+    },
+    onSubmit: async values => {
+      try {
+        const response = await $Put(
+          `otdr/region/${params.regionId!.split('_')[0]}`,
+          values,
+        );
+        if (response.status == 200) {
+          dispatch(
+            updateregionname({
+              networkid: regiondata?.network_id,
+              regionid: params.regionId!.split('_')[0],
+              regionname: values.name!,
+            }),
+          );
+        }
+      } catch (error) {}
+    },
+    validationSchema: regionSchema,
+  });
+
   useEffect(() => {
 
       
@@ -83,47 +124,6 @@ const RegionDetailPage = () => {
     };
     getnetworks();
   }, []);
-
-  const buttons = (
-    <>
-      <SimpleBtn
-        type="submit"
-        onClick={() => {
-          document.getElementById('formSubmit')?.click();
-        }}>
-        Save
-      </SimpleBtn>
-
-      <SimpleBtn>Cancel</SimpleBtn>
-    </>
-  );
-
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      description: '',
-    },
-    onSubmit: async values => {
-      try {
-        const response = await $Put(
-          `otdr/region/${params.regionId!.split('_')[0]}`,
-          values,
-        );
-        if (response.status == 200) {
-          dispatch(
-            updateregionname({
-              networkid: regiondata?.network_id,
-              regionid: params.regionId!.split('_')[0],
-              regionname: values.name!,
-            }),
-          );
-        }
-      } catch (error) {}
-    },
-    validationSchema: {regionSchema},
-  });
-
-
   if (loading) return <>loading...</>;
   return (
     <FormLayout buttons={buttons}>
