@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {SimpleBtn, TextInput} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
 import {BsPlusLg} from 'react-icons/bs';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
-import { deepcopy } from '~/util';
-import { useSelector } from 'react-redux';
-import { UserRole } from '~/constant/users';
+import {deepcopy} from '~/util';
+import {useSelector} from 'react-redux';
+import {UserRole} from '~/constant/users';
+import { $Get, $Put } from '~/util/requestapi';
 type Iprops = {
   classname: string;
   onclick: Function;
@@ -33,7 +34,7 @@ const Addbox = ({classname, onclick}: Iprops) => {
 };
 const LinkPointsPage = () => {
   const params = useParams<{linkId: string}>();
-  const networkId = params.linkId!.split("_")[2];
+  const networkId = params.linkId!.split('_')[2];
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
   );
@@ -58,32 +59,51 @@ const LinkPointsPage = () => {
       detail: state.http.linkDetail,
       update: state.http.linkUpdate,
     }),
+    initialRequests: request => {
+      request('linkDetail', {params: {link_id: params.linkId!.split('_')[0]}});
+        request('allStations', undefined);
+    },
     onUpdate: (lastState, state) => {
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkDetail', {params: {link_id: params.linkId!.split("_")[0]}});
+        request('linkDetail', {
+          params: {link_id: params.linkId!.split('_')[0]},
+        });
       }
     },
   });
 
-  let linkDetail = state.detail;
-
+  let linkDetail = state?.detail;
+  // let all=useMemo(()=>
+   console.log("🎭",state);
+   
+  //  return state?.detail?.data?.versions?.find(
+  //     (version: any) => version.id === state?.detail?.data?.current_version?.id,
+  //   )?.link_points || [];
+  // ,[])
   useEffect(() => {
-    const all =
-      linkDetail?.data?.versions?.find(
+    // const getalllinkpoints=async()=>{
+    //   const response =await $Get(`otdr/link/{link_id}`)
+    // }
+    //  if(linkDetail?.httpRequestStatus == "success"){
+      const all =linkDetail?.data?.versions?.find(
         (version: any) => version.id === linkDetail?.data?.current_version?.id,
       )?.link_points || [];
-    const points = JSON.parse(JSON.stringify(all));
+   console.log("🦒⛴️",all);
+      
+    const points = deepcopy(all);
     for (let i = 0; i < points.length; i++) {
       points[i] = {...points[i], id: i, fix: true};
     }
     setlinkpoints(points);
+    //  }
+ 
   }, []);
 
   const changelatitude = (id: number, x: string, name: string) => {
-    let beforadddata = JSON.parse(JSON.stringify(linkpoints));
+    let beforadddata = deepcopy(linkpoints);
     const findpoint = beforadddata.findIndex((data: any) => data.id == id);
     beforadddata[findpoint][name] = Number(x);
     setlinkpoints(beforadddata);
@@ -103,7 +123,7 @@ const LinkPointsPage = () => {
   };
 
   const Addlinkpoints = (index: number) => {
-    let beforadddata =deepcopy(linkpoints);
+    let beforadddata = deepcopy(linkpoints);
     let newArray = beforadddata.map(function (item: any) {
       if (item.id > index) {
         item.id = item.id + 1;
@@ -124,7 +144,7 @@ const LinkPointsPage = () => {
     setlinkpoints(sortarray);
   };
 
-  const savepoints = () => {
+  const savepoints = async() => {
     const newpoints = linkpoints.map(data => ({
       latitude: data.latitude,
       longitude: data.longitude,
@@ -152,12 +172,22 @@ const LinkPointsPage = () => {
         )?.description || '',
       type: 'cable',
     };
-    request('linkUpdate', {
-      params: {link_id: params.linkId!.split("_")[0] || ''},
-      data: newlink,
-    });
+
+    const respnse=await $Put(`otdr/link/${params.linkId!.split('_')[0] || ''}/link_points`,newlink)
+    console.log("😁",respnse);
+    
+    if(respnse.status == 201){
+      request('linkDetail', {params: {link_id: params.linkId!.split('_')[0]}});
+    }
+    // request('linkUpdate', {
+    //   params: {link_id: params.linkId!.split('_')[0] || ''},
+    //   data: newlink,
+    // });
   };
 
+  if(state.detail?.httpRequestStatus != "success"){
+    return <h1>Loading ...</h1>
+  }
   return (
     <div className="relative min-h-[calc(100vh-240px)] w-full">
       {(linkpoints && linkpoints.length > 0) || mousePosition.y < 160 ? null : (
@@ -228,12 +258,14 @@ const LinkPointsPage = () => {
         </div>
       ))}
       <div className="absolute bottom-[-35px] right-0 flex flex-row">
-      {loggedInUser.role === UserRole.SUPER_USER ||
+        {loggedInUser.role === UserRole.SUPER_USER ||
         networkidadmin.includes(params.linkId!.split('_')[2]) ||
-        regionidadmin.includes(params.linkId!.split('_')[1]) || state?.detail?.data?.access?.access == "ADMIN"?
-        <SimpleBtn onClick={() => savepoints()} type="submit">
-          Save
-        </SimpleBtn>:null}
+        regionidadmin.includes(params.linkId!.split('_')[1]) ||
+        state?.detail?.data?.access?.access == 'ADMIN' ? (
+          <SimpleBtn onClick={() => savepoints()} type="submit">
+            Save
+          </SimpleBtn>
+        ) : null}
         <SimpleBtn className="ml-[20px]">Cancel</SimpleBtn>
       </div>
     </div>

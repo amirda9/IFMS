@@ -80,6 +80,10 @@ const LinkDetailPage = () => {
         ]);
 
         const linkdetaildata = await linkdetail.json();
+        const all=linkdetaildata?.versions?.find(
+          (version: any) => version.id === linkdetaildata?.current_version?.id,
+        )?.link_points || [];
+     console.log("🦒yy⛴️",all);
         dispatch(setLinkdetail(linkdetaildata));
 
         setLinkDetails(linkdetaildata);
