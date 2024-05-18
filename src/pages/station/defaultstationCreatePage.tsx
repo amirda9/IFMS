@@ -55,6 +55,7 @@ const defaultStationDetailPage = () => {
           });
           const responsedata = await response.json();
           if (response.status == 200) {
+        
             // we should update the network tree
             dispatch(
              createdefaultStation({
@@ -63,8 +64,12 @@ const defaultStationDetailPage = () => {
                 stationid: responsedata.station_id,
                 stationname: values.name,
               }),
+            )
+     
+            navigate(
+              `/stations/${responsedata.station_id}_${params.networkid!}/defaultstationDetailPage`
             );
-            navigate(`/stations/${responsedata.station_id}`);
+
           }
         } catch (error) {}
       }}

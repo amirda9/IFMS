@@ -43,7 +43,7 @@ const RegionAccessPage = () => {
         viewers?.httpRequestStatus === 'success'
       ) {
         editor.current?.setValues(
-          viewers.data!.users.map(viewer => viewer.user.id),
+          viewers?.data!.users.map(viewer => viewer.user.id),
         );
       }
       if (
@@ -55,6 +55,9 @@ const RegionAccessPage = () => {
       }
     },
   });
+
+console.log("viewers",viewers);
+
 
   const buttons = (
     <>

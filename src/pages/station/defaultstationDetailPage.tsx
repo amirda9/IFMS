@@ -18,12 +18,6 @@ const stationSchema = Yup.object().shape({
   longitude: Yup.string().required('Please enter longitude'),
 });
 
-type networklisttype = {
-  id: string;
-  name: string;
-  time_created: string;
-  time_updated: string;
-};
 
 type regionlisttype = {
   id: string;
@@ -35,15 +29,10 @@ type regionlisttype = {
 const StationDetailPage = () => {
   const params = useParams<{stationId: string}>();
   const dispatch = useDispatch();
-  const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [selectedregion, setSelectedregion] = useState('');
-  const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const [defaultregionkname, setDefaultregionname] = useState('');
-  const [rtuPlacement, setRtuPlacement] = useState('yes');
-  const [selectenetwork, setSelectednetwork] = useState(
-    params.stationId!.split('_')[1],
-  );
+  const [rtuPlacement, setRtuPlacement] = useState(false);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
@@ -61,41 +50,24 @@ const StationDetailPage = () => {
     initialRequests,
   });
   useEffect(() => {
-    // const getstationdetail=async()=>{
-    //   const getstationdetailresponse=await $Get(`otdr/station/${params.stationId!}`)
-    //   if(getstationdetailresponse.status == 200){
-
-    //   }
-    // }
     const getnetworks = async () => {
       const getstationdetail = await $Get(
         `otdr/station/${params.stationId!.split('_')[0]}`,
       );
       if (getstationdetail.status == 200) {
         const getstationdetaildata = await getstationdetail.json();
-        const response = await $Get(`otdr/network`);
-        if (response.status == 200) {
-          const responsedata = await response.json();
-          const Defaultnetworkname = responsedata.find(
-            (data: any) => data.id == getstationdetaildata.network_id,
-          )?.name;
-          setDefaultnetworkname(Defaultnetworkname || 'select');
-          setNetworklist(responsedata);
-          const networkregionresponse = await $Get(
-            `otdr/region/network/${responsedata.find(
-              (data: any) => data.id == getstationdetaildata.network_id,
-            )?.id}`,
-          );
-          if (networkregionresponse.status == 200) {
-            const networkregionresponsedata =
-              await networkregionresponse.json();
-            const Defaultegionname =
-              networkregionresponsedata.find(
-                (data: any) => data.id == getstationdetaildata.region_id,
-              )?.name || 'select';
-            setDefaultregionname(Defaultegionname);
-            setRegionlist(networkregionresponsedata);
-          }
+        setRtuPlacement(getstationdetaildata.rtu_placement);
+        const networkregionresponse = await $Get(
+          `otdr/region/network/${params.stationId!.split('_')[1]}`,
+        );
+        if (networkregionresponse.status == 200) {
+          const networkregionresponsedata = await networkregionresponse.json();
+          const Defaultegionname =
+            networkregionresponsedata.find(
+              (data: any) => data.id == getstationdetaildata.region_id,
+            )?.name || 'select';
+          setDefaultregionname(Defaultegionname);
+          setRegionlist(networkregionresponsedata);
         }
       }
     };
@@ -110,14 +82,10 @@ const StationDetailPage = () => {
     [state?.detail],
   );
 
-  if (state?.detail?.httpRequestStatus == 'loading') {
-    return <h1> loading...</h1>;
-  }
   return (
     <Formik
       enableReinitialize
       initialValues={{
-        setselectednetworkid: '',
         name: `${state?.detail?.data?.name}`,
         description: detaildata?.description || '',
         latitude: detaildata?.latitude || '',
@@ -133,13 +101,12 @@ const StationDetailPage = () => {
           const response = await $Put(
             `otdr/station/${params.stationId!.split('_')[0]}`,
             {
-              network_id: selectenetwork,
-              region_id: null,
+              region_id: selectedregion.length > 0 ? selectedregion : null,
               name: values.name,
               longitude: Number(values.longitude),
               latitude: Number(values.latitude),
               description: values.description,
-              model: 'cables',
+              rtu_placement: rtuPlacement,
             },
           );
 
@@ -147,7 +114,7 @@ const StationDetailPage = () => {
             dispatch(
               updatedefaultStationName({
                 networkid: params.stationId!.split('_')[1],
-                regionid: params.stationId!.split('_')[1],
+                regionid: selectedregion,
                 stationid: params.stationId!.split('_')[0],
                 stationname: values.name,
               }),
@@ -156,7 +123,11 @@ const StationDetailPage = () => {
             navigate(
               `/stations/${params.stationId!.split('_')[0]}_${
                 params.stationId!.split('_')[1]
-              }`,
+              }/defaultstationDetailPage`,
+
+              // `/stations/${params.stationId!.split('_')[0]}_${
+              //   params.stationId!.split('_')[1]
+              // }`,
             );
           }
         } catch (error) {}
@@ -195,10 +166,11 @@ const StationDetailPage = () => {
 
             <Description label="RTU Placement" items="start">
               <Selectbox
-                defaultvalue={'yes'}
-                onclickItem={(e: {value: string; label: string}) =>
-                  setRtuPlacement(e.value)
-                }
+                defaultvalue={rtuPlacement ? 'yes' : 'no'}
+                onclickItem={(e: {value: string; label: string}) => {
+                  let Value = e.value == 'yes' ? true : false;
+                  setRtuPlacement(Value);
+                }}
                 options={[
                   {value: 'yes', label: 'yes'},
                   {value: 'no', label: 'no'},
