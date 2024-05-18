@@ -33,7 +33,9 @@ const NetworkAccessPage = () => {
           '',
       );
       editor.current?.setAditablebycurrentuserList(
-        viewers?.data!.users.filter(data => data.editable_by_current_user === true).map(viewer => viewer.user.id) || [],
+        viewers
+          ?.data!.users.filter(data => data.editable_by_current_user === true)
+          .map(viewer => viewer.user.id) || [],
       );
     },
     onUpdate: lastState => {
@@ -57,7 +59,6 @@ const NetworkAccessPage = () => {
       }
     },
   });
-
 
   const buttons = (
     <div className="mt-[25px] w-auto ">
@@ -98,8 +99,8 @@ const NetworkAccessPage = () => {
   );
 
   return (
-    <FormLayout buttons={buttons} wrapperClassName="p-8 h-[calc(100vh-120px)]">
-      <div className="mb-4 flex flex-row items-center">
+    <FormLayout buttons={buttons} wrapperClassName="p-8 pb-0 pt-2 h-[calc(100vh-150px)]">
+      <div className=" flex flex-row items-center">
         <span>Users</span>
         <Switch
           wrapperClassName="mx-5"

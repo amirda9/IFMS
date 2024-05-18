@@ -76,22 +76,40 @@ const NetworkAccessPage = () => {
 
     dispatch(setnetworkviewersstatus(false));
   };
-  useEffect(() => {}, []);
-  var dataa: any = [];
-  for (let i = 0; i < network?.networkviewers.length; i++) {
-    const findd = users!.data!.findIndex(
-      data => data.id == network?.networkviewers[i],
-    );
-    if (findd > -1) {
-      dataa.push({
-        index: (i + 1).toString(),
-        user: users?.data && users?.data[findd]?.username,
-        station: (users?.data && users?.data[findd]?.station?.name) || '-',
-        region: (users?.data && users?.data[findd]?.region?.name) || '-',
-      });
-    }
-  }
+
+  // var dataa: any = [];
+  // useEffect(() => {
+  //   for (let i = 0; i < network?.networkviewers.length; i++) {
+  //     const findd = users!.data!.findIndex(
+  //       data => data.id == network?.networkviewers[i],
+  //     );
+  //     if (findd > -1) {
+  //       dataa.push({
+  //         index: (i + 1).toString(),
+  //         user: users?.data && users?.data[findd]?.username,
+  //         station: (users?.data && users?.data[findd]?.station?.name) || '-',
+  //         region: (users?.data && users?.data[findd]?.region?.name) || '-',
+  //       });
+  //     }
+  //   }
+  // }, []);
+
+
   const body = useMemo(() => {
+    var dataa: any = [];
+    for (let i = 0; i < network?.networkviewers.length; i++) {
+      const findd = users!.data!.findIndex(
+        data => data.id == network?.networkviewers[i],
+      );
+      if (findd > -1) {
+        dataa.push({
+          index: (i + 1).toString(),
+          user: users?.data && users?.data[findd]?.username,
+          station: (users?.data && users?.data[findd]?.station?.name) || '-',
+          region: (users?.data && users?.data[findd]?.region?.name) || '-',
+        });
+      }
+    }
     const items = network.networkviewersstatus
       ? dataa.sort((a: any, b: any) => a.user.localeCompare(b.user, 'en-US'))
       : (viewers?.data?.users || [])
