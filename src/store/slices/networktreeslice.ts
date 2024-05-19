@@ -169,6 +169,12 @@ type createregiontype = {
   type: string;
 };
 
+type changeRegion = {
+  payload: {networkid: string; regionid: string; regionname: string;newnetworkid:string};
+  type: string;
+};
+
+
 export type allregionstationstype = {
   networkid: string;
   regionid: string;
@@ -389,14 +395,19 @@ const networktreeslice = createSlice({
     },
 
     setdefaultRegionstations: (state, action: defaultregionstationstype) => {
+      console.log("🧟",action.payload);
+      
       const defaultregionStationsCopy = deepcopy(state.defaultregionstations);
       const finddataindex = state.defaultregionstations.findIndex(
         data => data.networkid == action.payload.networkid,
       );
       if (finddataindex > -1) {
+        console.log("ok");
+        
         defaultregionStationsCopy[finddataindex].stations =
           action.payload.stations;
       } else {
+        console.log("no");
         defaultregionStationsCopy.push(action.payload);
       }
       state.defaultregionstations = defaultregionStationsCopy;
@@ -1168,7 +1179,10 @@ const networktreeslice = createSlice({
       state.regionstations = regionstationsCopy
     },
     //---------------------------------
-    updateregionname: (state, action: createregiontype) => {
+    updateregionname: (state, action: changeRegion) => {
+      console.log("👗",action.payload.newnetworkid);
+      console.log("👄",action.payload.networkid);
+      
       const networkregionsCopy = deepcopy(state.networkregions);
       const fintbynetworkid = state.networkregions.findIndex(
         data => data.networkid == action.payload.networkid,
@@ -1176,8 +1190,31 @@ const networktreeslice = createSlice({
       const findregionindex = state.networkregions[
         fintbynetworkid
       ].regions.findIndex(data => data.id == action.payload.regionid);
-      networkregionsCopy[fintbynetworkid].regions[findregionindex].name =
+
+      if(action.payload.networkid != action.payload.newnetworkid){
+       
+        
+        networkregionsCopy[fintbynetworkid].regions.splice(findregionindex,1)
+        const findnewbynetworkid = state.networkregions.findIndex(
+          data => data.networkid == action.payload.newnetworkid,
+        );
+        console.log("🧞‍♀️",findnewbynetworkid);
+        if(findnewbynetworkid>-1){
+          networkregionsCopy[findnewbynetworkid].regions.push({id:action.payload.regionid,name:action.payload.regionname})
+        }else{
+          networkregionsCopy.push({networkid:action.payload.newnetworkid,
+            regions:[{
+              name:action.payload.regionname,
+              id:action.payload.regionid
+          }]})
+        }
+      } else{
+        networkregionsCopy[fintbynetworkid].regions[findregionindex].name =
         action.payload.regionname;
+      }
+      
+   
+
       state.networkregions = networkregionsCopy;
     },
     //---------------------------------------------

@@ -1,4 +1,4 @@
-import  {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {SimpleBtn, Table} from '~/components';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
@@ -16,7 +16,7 @@ import {
   setdefaultRegionstations,
 } from '~/store/slices/networktreeslice';
 import {RootState} from '~/store';
-import { UserRole } from '~/constant/users';
+import {UserRole} from '~/constant/users';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   name: {label: 'Name', size: 'w-[45%]', sort: true},
@@ -25,14 +25,18 @@ const columns = {
 };
 
 const RegionStationsPage = () => {
-
-  const [loading,setLoading]=useState(false)
-  const {newregionstationlist, newregionstationliststatus} =
-    useSelector((state: RootState) => state.network);
-  const {network} = useSelector((state: any) => state);
-  const {regionstations, regionLinks,defaultregionLinks,defaultregionstations,networkidadmin} = useSelector(
-    (state: RootState) => state.networktree,
+  const [loading, setLoading] = useState(false);
+  const {newregionstationlist, newregionstationliststatus} = useSelector(
+    (state: RootState) => state.network,
   );
+  const {network} = useSelector((state: any) => state);
+  const {
+    regionstations,
+    regionLinks,
+    defaultregionLinks,
+    defaultregionstations,
+    networkidadmin,
+  } = useSelector((state: RootState) => state.networktree);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const dispatch = useDispatch();
   const login = localStorage.getItem('login');
@@ -54,7 +58,7 @@ const RegionStationsPage = () => {
       remove: state.http.removeregionStationList,
       add: state.http.addregionStationList,
       stations: state.http.allStations,
-      networklinks:state.http.networklinks
+      networklinks: state.http.networklinks,
     }),
     initialRequests: request => {
       request('regionStationList', {
@@ -96,7 +100,6 @@ const RegionStationsPage = () => {
     }
   }, [state]);
 
-  
 
   const sortddata = (tabnamee: string, sortalfabet: boolean) => {
     const newdataa: any = newregionstationliststatus
@@ -137,7 +140,12 @@ const RegionStationsPage = () => {
   };
 
   const save = async () => {
-    setLoading(true)
+    setLoading(true);
+    const defaultregionStationsCopy = deepcopy(defaultregionstations);
+    const findefaultregionindex = defaultregionstations.findIndex(
+      data => data.networkid == params.regionId!.split('_')[1],
+    );
+
     try {
       const appenddata: {
         id: string;
@@ -158,9 +166,7 @@ const RegionStationsPage = () => {
         latitude: number;
         longitude: number;
       }[] = deepcopy(newregionstationlist);
-   let regionLinksCopy=deepcopy(regionLinks)
-  
-  const finddefaultregionLinks=defaultregionLinks.find(data => data.networkid == params.regionId!.split('_')[1])
+
       for (let i = 0; i < alllist.length; i++) {
         const find = newregionstationlist2.findIndex(
           data => data.id == alllist[i].id,
@@ -169,7 +175,7 @@ const RegionStationsPage = () => {
           removedata.push(alllist[i]);
         }
       }
-  
+
       for (let j = 0; j < newregionstationlist2.length; j++) {
         const find = alllist.findIndex(
           data => data.id == newregionstationlist2[j].id,
@@ -178,35 +184,49 @@ const RegionStationsPage = () => {
           appenddata.push(newregionstationlist2[j]);
         }
       }
-  
+
       let regionstationsCopy: allregionstationstype[] =
         deepcopy(regionstations);
       const findregionindex = regionstations.findIndex(
         data => data.regionid == params.regionId!.split('_')[0],
       );
-  
-  
+
+
       let first = state?.list?.data || [];
       if (first.length == 0 && newregionstationlist2?.length == 0) {
       } else {
-        const append = await $Post(
-          `otdr/region/${
-            params.regionId!.split('_')[0]
-          }/update_stations?action_type=append`,
-          {stations_id: appenddata.map(data => data.id)},
-        );
+
+        const [append,remove] = await Promise.all([
+          $Post(
+            `otdr/region/${
+              params.regionId!.split('_')[0]
+            }/update_stations?action_type=append`,
+            {stations_id: appenddata.map(data => data.id)},
+          ),
+          $Post(
+            `otdr/region/${
+              params.regionId!.split('_')[0]
+            }/update_stations?action_type=remove`,
+            {stations_id: removedata.map(data => data.id)},
+          ),
+        ]);
+
+
         // // we should update regionstations in networktree
-        if (append.status == 201) {
+        if (append.status == 201 && remove.status == 201) {
           // add stations to some regionstations in networktree
           regionstationsCopy[findregionindex].stations = [
             ...regionstations[findregionindex].stations,
             ...appenddata.map(data => ({id: data.id, name: data.name})),
           ];
-        //   //We remove the stations from some regionstations because we have connected some of the stations to another region.
-  
+
+
+          //   //We remove the stations from some regionstations because we have connected some of the stations to another region.
+
           for (let k = 0; k < regionstationsCopy.length; k++) {
             if (
-               regionstationsCopy[k].networkid == params.regionId!.split('_')[1] &&
+              regionstationsCopy[k].networkid ==
+                params.regionId!.split('_')[1] &&
               regionstationsCopy[k].regionid != params.regionId!.split('_')[0]
             ) {
               for (let x = 0; x < appenddata.length; x++) {
@@ -217,21 +237,24 @@ const RegionStationsPage = () => {
               }
             }
           }
+
+          // remove some stations from defaultregion
+          for (let w = 0; w < appenddata.length; w++) {
+            const findindefault = defaultregionStationsCopy[
+              findefaultregionindex
+            ]?.stations?.findIndex(
+              (stationdata: any) => stationdata.id == appenddata[w].id,
+            );
+            if (findindefault > -1) {
+              defaultregionStationsCopy[
+                findefaultregionindex
+              ]?.stations?.splice(findindefault, 1);
+            }
+          }
         }
-  
-        const remove = await $Post(
-          `otdr/region/${
-            params.regionId!.split('_')[0]
-          }/update_stations?action_type=remove`,
-          {stations_id: removedata.map(data => data.id)},
-        );
-  
+
         // //remove stations from some regionstations in networktree
-        if (remove.status == 201) {
-          const defaultregionStationsCopy = deepcopy(defaultregionstations);
-          const findefaultregionindex = defaultregionstations.findIndex(
-            data => data.networkid == params.regionId!.split('_')[1],
-          );
+        if (remove.status == 201 && append.status == 201) {
           for (let s = 0; s < removedata.length; s++) {
             const findindexdata = regionstationsCopy[
               findregionindex
@@ -242,43 +265,49 @@ const RegionStationsPage = () => {
                 1,
               );
             }
-  
+
             if (findefaultregionindex > -1) {
               defaultregionStationsCopy[findefaultregionindex].stations.push({
                 id: removedata[s].id,
                 name: removedata[s].name,
               });
-            }else{
-              defaultregionStationsCopy.push({networkid:params.regionId!.split('_')[1],stations:[{
-                id: removedata[s].id,
-                name: removedata[s].name,
-              }]})
+            } else {
+              defaultregionStationsCopy.push({
+                networkid: params.regionId!.split('_')[1],
+                stations: [
+                  {
+                    id: removedata[s].id,
+                    name: removedata[s].name,
+                  },
+                ],
+              });
             }
           }
-          dispatch(
-            setdefaultRegionstations({
-              networkid: params.regionId!.split('_')[1],
-              stations: defaultregionStationsCopy[findefaultregionindex]?.stations,
-            }),
-          );
         }
       }
       dispatch(setRegionstations(regionstationsCopy));
-    dispatch(setnewregionstationliststatus(false)),
-      dispatch(setnewregionstationlist([]));
+      dispatch(setnewregionstationliststatus(false)),
+        dispatch(setnewregionstationlist([]));
+      dispatch(
+        setdefaultRegionstations({
+          networkid: params.regionId!.split('_')[1],
+          stations: defaultregionStationsCopy[findefaultregionindex]?.stations,
+        }),
+      );
     } catch (error) {
-      console.log(error)
-      
+      console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
+
+
 
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
         <Table
-        loading={state.stations?.httpRequestStatus === 'loading'  || loading}
+          loading={state.stations?.httpRequestStatus === 'loading' || loading}
           cols={columns}
           items={itemssorted}
           tabicon={tabname}
@@ -292,14 +321,16 @@ const RegionStationsPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        {loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(params.regionId!.split('_')[1])?
+        {loggedInUser.role === UserRole.SUPER_USER ||
+        networkidadmin.includes(params.regionId!.split('_')[1]) ? (
           <SimpleBtn link to="../edit-stationlist">
             Edit Stations List
           </SimpleBtn>
-         : null}
-        {loggedInUser.role === UserRole.SUPER_USER || networkidadmin.includes(params.regionId!.split('_')[1])?
+        ) : null}
+        {loggedInUser.role === UserRole.SUPER_USER ||
+        networkidadmin.includes(params.regionId!.split('_')[1]) ? (
           <SimpleBtn onClick={save}>Save</SimpleBtn>
-        : null}
+        ) : null}
         <SimpleBtn
           onClick={() => {
             dispatch(setnewregionstationliststatus(false)),

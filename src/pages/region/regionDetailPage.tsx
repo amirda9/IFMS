@@ -1,5 +1,5 @@
 import {Description, SimpleBtn} from '~/components';
-import {useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
@@ -26,6 +26,7 @@ type networklisttype = {
 const RegionDetailPage = () => {
   const [loading,setLoading]=useState(false)
   const dispatch = useDispatch();
+  const navigate=useNavigate()
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const params = useParams<{regionId: string}>();
@@ -66,32 +67,35 @@ const RegionDetailPage = () => {
       try {
         const response = await $Put(
           `otdr/region/${params.regionId!.split('_')[0]}`,
-          values,
+        {...values,network_id:selectenetwork},
         );
         if (response.status == 200) {
           dispatch(
             updateregionname({
+              newnetworkid:selectenetwork,
               networkid: regiondata?.network_id,
               regionid: params.regionId!.split('_')[0],
               regionname: values.name!,
             }),
           );
+          navigate(`/regions/${params.regionId!.split('_')[0]}_${selectenetwork}`)
         }
+        
       } catch (error) {}
     },
     validationSchema: regionSchema,
   });
 
-  useEffect(() => {
-
-      
+  useEffect(() => {  
     const getnetworks = async () => {
-
       try {
         setLoading(true)
-        const getstationdetail = await $Get(
-          `otdr/region/${params.regionId!.split('_')[0]}`,
-        );
+        const [getstationdetail,response] = await Promise.all([
+          $Get(
+            `otdr/region/${params.regionId!.split('_')[0]}`),
+            $Get(`otdr/network`),
+        ]);
+
         if (getstationdetail.status == 200) {
           const getstationdetaildata = await getstationdetail.json();
           if (getstationdetaildata?.access?.access == 'ADMIN') {
@@ -99,20 +103,23 @@ const RegionDetailPage = () => {
       }
    
           setregiondata(getstationdetaildata);
-          const response = await $Get(`otdr/network`);
-          if (response.status == 200) {
-            const responsedata = await response.json();
-            const Defaultnetworkname = responsedata.find(
-              (data: any) => data.id == getstationdetaildata.network_id,
-            )?.name;
-            setDefaultnetworkname(Defaultnetworkname || 'select');
-            setNetworklist(responsedata);
-          }
+          // const response = await $Get(`otdr/network`);
+      
           formik.setValues({
             ...formik.values,
             name: getstationdetaildata?.name,
             description: getstationdetaildata?.current_version?.description,
           });
+        }
+
+        if (response.status == 200) {
+          const responsedata = await response.json();
+          const Defaultnetworkname = responsedata.find(
+            (data: any) => data.id == params.regionId!.split('_')[1],
+          );
+          setSelectednetwork(Defaultnetworkname?.id)
+          setDefaultnetworkname(Defaultnetworkname?.name || 'select');
+          setNetworklist(responsedata);
         }
       } catch (error) {
         console.log(error);

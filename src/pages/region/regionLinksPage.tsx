@@ -100,11 +100,12 @@ const RegionLinksPage = () => {
         `otdr/region/${params.regionId!.split('_')[0]}/links`,
       );
       const responsedata = await response.json();
-      console.log("responsedata",responsedata);
-      const newresponsedata=responsedata.map((data:any)=> ({name:data.name,source:data.source.name,destination:data.destination.name}) )
-      // name: string;
-      // source: string;
-      // destination: string;
+      const newresponsedata = responsedata.map((data: any) => ({
+        name: data.name,
+        source: data.source.name,
+        destination: data.destination.name,
+      }));
+
       setItemssorted(
         newresponsedata.sort((a: any, b: any) =>
           a.name.localeCompare(b.name, 'en-US'),
@@ -114,10 +115,23 @@ const RegionLinksPage = () => {
       console.log(error);
     }
   };
-
+  console.log('newregionlinklist', newregionlinklist);
   useEffect(() => {
     if (newregionlinkliststatus) {
-      setItemssorted(newregionlinklist);
+      setItemssorted(
+        newregionlinklist.map(
+          (data: {
+            id: string;
+            name: string;
+            source: {id: string; name: string};
+            destination: {id: string; name: string};
+          }) => ({
+            name: data.name,
+            destination: data.destination.name || data.destination,
+            source: data.source.name || data.source,
+          }),
+        ),
+      );
     } else {
       getregionlinklist();
     }
@@ -145,15 +159,15 @@ const RegionLinksPage = () => {
     }
     setItemssorted(newitem);
   };
-  console.log('itemssorted', itemssorted);
+
   const save = async () => {
     const appenddata: {
       id: string;
       name: string;
       source: string;
       destination: string;
-      destination_id:string;
-      source_id:string
+      destination_id: string;
+      source_id: string;
     }[] = [];
     const removedata: {
       id: string;
@@ -164,8 +178,12 @@ const RegionLinksPage = () => {
     const regionLinksCopy: {
       networkid: string;
       regionid: string;
-      links: {name: string; id: string,source_id: string;
-        destination_id: string;}[];
+      links: {
+        name: string;
+        id: string;
+        source_id: string;
+        destination_id: string;
+      }[];
     }[] = deepcopy(regionLinks);
     const alllist = list?.data || [];
     const newregionlinklist2 = deepcopy(newregionlinklist);
@@ -187,53 +205,106 @@ const RegionLinksPage = () => {
       }
     }
 
+
+    const findregionlinkindex = regionLinks.findIndex(
+      data => data.regionid == params.regionId!.split('_')[0],
+    );
+
+    const defaultregionLinksCopy = deepcopy(defaultregionLinks);
+    const findefaultregionindex = defaultregionLinks.findIndex(
+      data => data.networkid == params.regionId!.split('_')[1],
+    );
+    
     let first = list?.data || [];
     if (first.length == 0 && newregionlinklist?.length == 0) {
     } else {
-      const addregionLinkList = await $Post(
-        `otdr/region/${
-          params.regionId!.split('_')[0]
-        }/update_links?action_type=append`,
-        {links_id: appenddata.map(data => data.id) || []},
-      );
 
-      const findregionlinkindex = regionLinks.findIndex(
-        data => data.regionid == params.regionId!.split('_')[0],
-      );
-      if (addregionLinkList.status == 201) {
-        regionLinksCopy[findregionlinkindex].links = [
-          ...regionLinks[findregionlinkindex].links,
-          ...appenddata.map(data => ({id: data.id, name: data.name,source_id:data.source_id ,
-            destination_id:data.destination_id})),
-        ];
-        console.log('regionLinksCopy', regionLinksCopy);
+      const [addregionLinkList,removeregionLinkList] = await Promise.all([
+        $Post(
+          `otdr/region/${
+            params.regionId!.split('_')[0]
+          }/update_links?action_type=append`,
+          {links_id: appenddata.map(data => data.id) || []},
+        ),
+        $Post(
+          `otdr/region/${
+            params.regionId!.split('_')[0]
+          }/update_links?action_type=remove`,
+          {links_id: removedata.map(data => data.id) || []},
+        ),
+      ]);
+
+    
+  // // we should update regionlinks in networktree
+      if (
+        addregionLinkList.status == 201 &&
+        removeregionLinkList.status == 201
+      ) {
+     // add links to some regionlinks in networktree
+        if (findregionlinkindex > -1) {
+          regionLinksCopy[findregionlinkindex].links = [
+            ...regionLinks[findregionlinkindex]?.links,
+            ...appenddata.map(data => ({
+              id: data.id,
+              name: data.name,
+              source_id: data.source_id,
+              destination_id: data.destination_id,
+            })),
+          ];
+        } else {
+          regionLinksCopy.push({
+            networkid: params.regionId!.split('_')[1],
+            regionid: params.regionId!.split('_')[0],
+            links: [
+              ...appenddata.map(data => ({
+                id: data.id,
+                name: data.name,
+                source_id: data.source_id,
+                destination_id: data.destination_id,
+              })),
+            ],
+          });
+        }
+
+
+      //   //We remove the links from some regionlinks because we have connected some of the links to another region.
+
         for (let k = 0; k < regionLinksCopy.length; k++) {
           if (
-            // regionLinksCopy[k].networkid == params.regionId!.split('_')[1] &&
+            regionLinksCopy[k].networkid == params.regionId!.split('_')[1] &&
             regionLinksCopy[k].regionid != params.regionId!.split('_')[0]
           ) {
             for (let x = 0; x < appenddata.length; x++) {
-              let newlist = regionLinksCopy[k].links.filter(
+              let newlist = regionLinksCopy[k]?.links?.filter(
                 data => data.id != appenddata[x].id,
               );
               regionLinksCopy[k].links = newlist;
             }
           }
         }
+
+  // remove some links from defaultregion
+        for (let w = 0; w < appenddata.length; w++) {
+          const findindefault = defaultregionLinksCopy[
+            findefaultregionindex
+          ]?.links?.findIndex(
+            (linkdata: any) => linkdata.id == appenddata[w].id,
+          );
+          if (findindefault > -1) {
+            defaultregionLinksCopy[findefaultregionindex]?.links?.splice(
+              findindefault,
+              1,
+            );
+          }
+        }
       }
 
-      const removeregionLinkList = await $Post(
-        `otdr/region/${
-          params.regionId!.split('_')[0]
-        }/update_links?action_type=remove`,
-        {links_id: removedata.map(data => data.id) || []},
-      );
 
-      if (removeregionLinkList.status == 201) {
-        const defaultregionLinksCopy = deepcopy(defaultregionLinks);
-        const findefaultregionindex = defaultregionLinks.findIndex(
-          data => data.networkid == params.regionId!.split('_')[1],
-        );
+       // //remove links from some regionlinks in networktree
+      if (
+        removeregionLinkList.status == 201 &&
+        addregionLinkList.status == 201
+      ) {
         for (let s = 0; s < removedata.length; s++) {
           const findindexdata = regionLinksCopy[
             findregionlinkindex
@@ -242,16 +313,33 @@ const RegionLinksPage = () => {
             regionLinksCopy[findregionlinkindex].links.splice(findindexdata, 1);
           }
           if (findefaultregionindex > -1) {
+            defaultregionLinksCopy[findefaultregionindex]?.links?.push({
+              id: removedata[s].id,
+              name: removedata[s].name,
+            });
+          }
+
+          if (findefaultregionindex > -1) {
             defaultregionLinksCopy[findefaultregionindex].links.push({
               id: removedata[s].id,
               name: removedata[s].name,
+            });
+          } else {
+            defaultregionLinksCopy.push({
+              networkid: params.regionId!.split('_')[1],
+              links: [
+                {
+                  id: removedata[s].id,
+                  name: removedata[s].name,
+                },
+              ],
             });
           }
         }
         dispatch(
           setdefaultRegionLinks({
             networkid: params.regionId!.split('_')[1],
-            links: defaultregionLinksCopy[findefaultregionindex].links,
+            links: defaultregionLinksCopy[findefaultregionindex]?.links,
           }),
         );
       }
@@ -262,8 +350,6 @@ const RegionLinksPage = () => {
     getregionlinklist();
   };
 
-  console.log("itemssorted",itemssorted);
-  
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="relative h-5/6">
