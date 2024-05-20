@@ -112,8 +112,6 @@ const StationDetailPage = () => {
     getnetworks();
   }, []);
 
-
-
   if (loading) {
     return <h1> loading...</h1>;
   }
@@ -157,9 +155,9 @@ const StationDetailPage = () => {
             );
 
             navigate(
-              `/stations/${params.stationId!.split('_')[0]}_${
-                params.stationId!.split('_')[1]
-              }_${params.stationId!.split('_')[2]}`,
+              `/stations/${params.stationId!.split('_')[0]}_${selectedregion}_${
+                params.stationId!.split('_')[2]
+              }`,
             );
           }
         } catch (error) {}

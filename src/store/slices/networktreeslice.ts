@@ -975,10 +975,12 @@ const networktreeslice = createSlice({
         action.payload.stationname;
       // Then we check if the station's regionid has changed, and if it has, we transfer that station to the new region
       if (action.payload.regionid != action.payload.newregionid) {
+        console.log('1111111111');
+        
         const findindefaultlinks = regiondefaultlinksCopy.findIndex(
           data => data.networkid == action.payload.networkid,
         );
-
+        console.log('2222222222',findindefaultlinks);
         if (findindefaultlinks > -1) {
           // Initially, we check whether we have previously changed the station for this link or not! If we have changed it, the link has gone to the defaultregion section
           const defaultlinkwithstationid = regiondefaultlinksCopy[
@@ -988,6 +990,7 @@ const networktreeslice = createSlice({
               data.destination_id == action.payload.stationid ||
               data.source_id == action.payload.stationid,
           );
+          console.log('33333',defaultlinkwithstationid);
           let linkstations = [
             defaultlinkwithstationid?.source_id,
             defaultlinkwithstationid?.destination_id,
