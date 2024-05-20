@@ -67,7 +67,7 @@ const StationDetailPage = () => {
             // newregionid: string;
        
       
-            navigate(`/stations/${responsedata.station_id}`);
+            navigate(`/stations/${responsedata.station_id}_${params.regionid?.split("_")[0]!}_${params.regionid?.split("_")[1]!}`);
           }
         } catch (error) {}
       }}

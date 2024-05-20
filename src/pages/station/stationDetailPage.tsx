@@ -37,12 +37,14 @@ const StationDetailPage = () => {
   const dispatch = useDispatch();
   const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [detaildata, setDetaildata] = useState<any>([]);
+  const [stationdetail, setStationdetail] = useState<any>([]);
   const [selectedregion, setSelectedregion] = useState(
     params.stationId!.split('_')[1],
   );
   const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const [defaultregionkname, setDefaultregionname] = useState('');
-  const [rtuPlacement, setRtuPlacement] = useState('yes');
   const [selectenetwork, setSelectednetwork] = useState(
     params.stationId!.split('_')[2],
   );
@@ -65,56 +67,54 @@ const StationDetailPage = () => {
   });
 
   useEffect(() => {
-    // const getstationdetail=async()=>{
-    //   const getstationdetailresponse=await $Get(`otdr/station/${params.stationId!}`)
-    //   if(getstationdetailresponse.status == 200){
-
-    //   }
-    // }
     const getnetworks = async () => {
-      const getstationdetail = await $Get(
-        `otdr/station/${params.stationId!.split('_')[0]}`,
-      );
-      if (getstationdetail.status == 200) {
-        const getstationdetaildata = await getstationdetail.json();
-        const response = await $Get(`otdr/network`);
-        if (response.status == 200) {
-          const responsedata = await response.json();
-          const Defaultnetworkname = responsedata.find(
-            (data: any) => data.id == getstationdetaildata.network_id,
-          )?.name;
-          setDefaultnetworkname(Defaultnetworkname || 'select');
-          setNetworklist(responsedata);
-          const networkregionresponse = await $Get(
-            `otdr/region/network/${responsedata.find(
-              (data: any) => data.id == getstationdetaildata.network_id,
-            )?.id}`,
-          );
+      try {
+        setLoading(true);
+        try {
+          const [getstationdetail, networkregionresponse] = await Promise.all([
+            $Get(`otdr/station/${params.stationId!.split('_')[0]}`),
+            $Get(`otdr/region/network/${params.stationId!.split('_')[2]}`),
+          ]);
+
+          if (getstationdetail.status == 200) {
+            const getstationdetaildata = await getstationdetail.json();
+            setStationdetail(getstationdetaildata);
+            setDetaildata(
+              getstationdetaildata?.versions?.find(
+                (version: any) =>
+                  version.id === getstationdetaildata.current_version?.id,
+              ),
+            );
+          }
           if (networkregionresponse.status == 200) {
             const networkregionresponsedata =
               await networkregionresponse.json();
             const Defaultegionname =
               networkregionresponsedata.find(
-                (data: any) => data.id == getstationdetaildata.region_id,
+                (data: {
+                  id: string;
+                  name: string;
+                  network_id: string;
+                  time_created: string;
+                  time_updated: string;
+                }) => data.id == params.stationId!.split('_')[1],
               )?.name || 'select';
             setDefaultregionname(Defaultegionname);
             setRegionlist(networkregionresponsedata);
           }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false);
         }
-      }
+      } catch (error) {}
     };
     getnetworks();
   }, []);
 
-  const findstation: any = useMemo(
-    () =>
-      state?.detail?.data?.versions?.find(
-        version => version.id === state?.detail?.data?.current_version?.id,
-      ),
-    [state?.detail],
-  );
 
-  if (state?.detail?.httpRequestStatus == 'loading') {
+
+  if (loading) {
     return <h1> loading...</h1>;
   }
   return (
@@ -122,13 +122,13 @@ const StationDetailPage = () => {
       enableReinitialize
       initialValues={{
         setselectednetworkid: '',
-        name: `${state?.detail?.data?.name}`,
-        description: findstation?.description || '',
-        latitude: findstation?.latitude || '',
-        longitude: findstation?.longitude || '',
-        region: state?.detail?.data?.region?.name,
-        owner: state?.detail?.data?.current_version.owner?.username || '',
-        created: findstation?.time_created || '',
+        name: `${stationdetail?.name}`,
+        description: detaildata?.description || '',
+        latitude: detaildata?.latitude || '',
+        longitude: detaildata?.longitude || '',
+        region: stationdetail?.region?.name,
+        owner: stationdetail?.current_version?.owner?.username || '',
+        created: detaildata?.time_created || '',
       }}
       onSubmit={async values => {
         try {
@@ -144,7 +144,6 @@ const StationDetailPage = () => {
               model: 'cables',
             },
           );
-        
 
           if (response.status == 200) {
             dispatch(
@@ -158,9 +157,9 @@ const StationDetailPage = () => {
             );
 
             navigate(
-              `/regions/${params.stationId!.split('_')[1]}_${
-                params.stationId!.split('_')[2]
-              }`,
+              `/stations/${params.stationId!.split('_')[0]}_${
+                params.stationId!.split('_')[1]
+              }_${params.stationId!.split('_')[2]}`,
             );
           }
         } catch (error) {}
@@ -197,7 +196,7 @@ const StationDetailPage = () => {
               />
             </Description>
 
-            <Description label="RTU Placement" items="start">
+            {/* <Description label="RTU Placement" items="start">
               <Selectbox
                 defaultvalue={'yes'}
                 onclickItem={(e: {value: string; label: string}) =>
@@ -210,7 +209,7 @@ const StationDetailPage = () => {
                 borderColor={'black'}
                 classname="w-[21%] h-[32px] rounded-[5px]"
               />
-            </Description>
+            </Description> */}
 
             <Description label="Latitude" items="start">
               <InputFormik
