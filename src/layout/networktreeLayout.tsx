@@ -311,7 +311,7 @@ function NetworktreeLayout({children}: Iprops) {
                 stationsid: deletestationlist?.stationsID || [],
               }),
             );
-      
+      navigate(`/regions/defaultregionemptypage/${regionid}_Stations`)
         } catch (error) {
           `deleteStationError is:${error}`
         }
@@ -344,6 +344,7 @@ function NetworktreeLayout({children}: Iprops) {
                 stationsid: deletestationlist?.stationsID || [],
               }),
             );
+            navigate(`/regions/defaultregionemptypage/${networkid}_Stations`)
         } catch (error) {
           `deleteStationError is:${error}`
         }
