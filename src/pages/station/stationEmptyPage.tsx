@@ -9,7 +9,7 @@ console.log("path",path);
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
+      <div className="mb-6 flex h-fit  [&_*]:mx-[0.5px]">
         <TabItem to={`${path.pathname.includes(`defaultstationDetailPage`)?"defaultstationDetailPage":"."}`} name="Detail" />
         <TabItem to={`${path.pathname.includes(`defaultstationDetailPage`)?"access/defaultstationDetailPage":"access"}`} name="Access" />
       </div>

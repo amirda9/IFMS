@@ -17,7 +17,6 @@ const stationSchema = Yup.object().shape({
   longitude: Yup.string().required('Please enter longitude'),
 });
 
-
 type regionlisttype = {
   id: string;
   name: string;
@@ -30,9 +29,9 @@ const StationDetailPage = () => {
   const dispatch = useDispatch();
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [selectedregion, setSelectedregion] = useState('');
-  const [loading,setLoading]=useState(false)
-  const [detaildata,setDetaildata]=useState<any>([])
-  const [stationdetail,setStationdetail]=useState<any>([])
+  const [loading, setLoading] = useState(false);
+  const [detaildata, setDetaildata] = useState<any>([]);
+  const [stationdetail, setStationdetail] = useState<any>([]);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
@@ -40,53 +39,45 @@ const StationDetailPage = () => {
   const navigate = useNavigate();
 
   const {state, request} = useHttpRequest({
-    selector: state => ({
-
-    }),
-
+    selector: state => ({}),
   });
 
-
   const getnetworks = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const [getstationdetail,networkregionresponse] = await Promise.all([
+      const [getstationdetail, networkregionresponse] = await Promise.all([
         $Get(`otdr/station/${params.stationId!.split('_')[0]}`),
-        $Get(
-          `otdr/region/network/${params.stationId!.split('_')[1]}`,
-        )
+        $Get(`otdr/region/network/${params.stationId!.split('_')[1]}`),
       ]);
 
       if (getstationdetail.status == 200) {
         const getstationdetaildata = await getstationdetail.json();
-        setStationdetail(getstationdetaildata)
-        setDetaildata(getstationdetaildata?.versions?.find(
-          (version:any) => version.id === getstationdetaildata.current_version?.id,
-        ))
+        setStationdetail(getstationdetaildata);
+        setDetaildata(
+          getstationdetaildata?.versions?.find(
+            (version: any) =>
+              version.id === getstationdetaildata.current_version?.id,
+          ),
+        );
       }
       if (networkregionresponse.status == 200) {
         const networkregionresponsedata = await networkregionresponse.json();
         setRegionlist(networkregionresponsedata);
       }
-
     } catch (error) {
       console.log(error);
-      
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-   
   };
 
   useEffect(() => {
     getnetworks();
   }, []);
 
-
-  
-if(loading){
-  return <h1>Loading...</h1>
-}
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <Formik
       enableReinitialize
@@ -147,7 +138,7 @@ if(loading){
 
             <Description label="Region" items="start">
               <Selectbox
-                placeholder={"select"}
+                placeholder={'select'}
                 onclickItem={(e: {value: string; label: string}) =>
                   setSelectedregion(e.value)
                 }
@@ -159,7 +150,6 @@ if(loading){
                 classname="w-[21%] h-[32px] rounded-[5px]"
               />
             </Description>
-
 
             <Description label="Latitude" items="start">
               <InputFormik
@@ -179,16 +169,10 @@ if(loading){
               />
             </Description>
 
-        
-
             <Description label="Owner" items="start">
               <Field name="owner">
-                {({field}: any) =>{ 
-            
-                  return (
-                    <div className="w-1/4 text-sm">{field.value}</div>
-                  )
-             
+                {({field}: any) => {
+                  return <div className="w-1/4 text-sm">{field.value}</div>;
                 }}
               </Field>
             </Description>
@@ -208,14 +192,10 @@ if(loading){
               {getPrettyDateTime()}
             </Description>
           </div>
-          <div className="flex flex-row gap-x-4 self-end pb-4">
+          <div className="mt-6 flex flex-row gap-x-4 self-end">
             {loggedInUser.role === UserRole.SUPER_USER ||
             networkidadmin.includes(params.stationId!.split('_')[1]) ? (
-              <SimpleBtn
-                type="submit"
-              >
-                Save
-              </SimpleBtn>
+              <SimpleBtn type="submit">Save</SimpleBtn>
             ) : null}
             <SimpleBtn link to="../">
               Cancel

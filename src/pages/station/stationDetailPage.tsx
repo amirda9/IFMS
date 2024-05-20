@@ -54,17 +54,6 @@ const StationDetailPage = () => {
   );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const navigate = useNavigate();
-  const initialRequests = (request: Request) => {
-    request('stationDetail', {
-      params: {station_id: params.stationId!.split('_')[0]},
-    });
-  };
-  const {state, request} = useHttpRequest({
-    selector: state => ({
-      detail: state.http.stationDetail,
-    }),
-    initialRequests,
-  });
 
   useEffect(() => {
     const getnetworks = async () => {
@@ -164,7 +153,7 @@ const StationDetailPage = () => {
       }}
       validationSchema={stationSchema}>
       <Form>
-        <div className="relative flex flex-col justify-between">
+        <div className="relative  flex flex-col justify-between">
           <div className="flex flex-col gap-y-4">
             <Description label="Name" items="start">
               <InputFormik
@@ -258,7 +247,7 @@ const StationDetailPage = () => {
               {getPrettyDateTime()}
             </Description>
           </div>
-          <div className="flex flex-row gap-x-4 self-end pb-4">
+          <div className="flex flex-row gap-x-4 self-end">
             {loggedInUser.role === UserRole.SUPER_USER ||
             networkidadmin.includes(params.stationId!.split('_')[2]) ||
             regionidadmin.includes(params.stationId!.split('_')[1]) ? (
