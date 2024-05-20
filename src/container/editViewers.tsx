@@ -437,7 +437,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
 
   // ****************************
   return (
-    <div className="mb-2 flex  h-full w-full flex-row items-center justify-between">
+    <div className="mb-4 flex  h-full w-full flex-row items-center justify-between">
       {state.group ? (
         <Table
           keyExtractor={value => value.label}

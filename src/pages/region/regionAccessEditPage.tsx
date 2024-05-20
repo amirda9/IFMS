@@ -88,7 +88,7 @@ const RegionAccessPage = () => {
   );
 
   return (
-    <FormLayout buttons={buttons} wrapperClassName="p-8">
+    <FormLayout buttons={buttons} wrapperClassName="p-2">
       <div className="mb-4 flex flex-row items-center">
         <span>Users</span>
         <Switch

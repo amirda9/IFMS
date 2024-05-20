@@ -235,7 +235,7 @@ const RegionlinklisteditPage = () => {
   }, [lefttableselecttab, lefttablesorte, change]);
   // ------------------------------------------------------------------------
   return (
-    <div className="mb-2 flex h-[calc(100vh-150px)]  w-full flex-row items-center justify-between p-6 pb-2">
+    <div className="mb-2 flex h-[calc(100vh-160px)]  w-full flex-row items-center justify-between p-6 pb-2">
       <Table
         onclicktitle={(tabname: string, sortalfabet: boolean) => {
           setLefttableselecttab(tabname), setLefttablesort(sortalfabet);

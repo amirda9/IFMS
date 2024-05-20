@@ -128,7 +128,7 @@ const RegionstationlisteditPage = () => {
   };
   // ------------------------------------------------------------------------
   return (
-    <div className="mb-2 flex h-[calc(100vh-150px)]  w-full flex-row items-center justify-between p-6 pb-2">
+    <div className="mb-2 flex h-[calc(100vh-180px)]  w-full flex-row items-center justify-between p-6 pb-2">
       <Table
         loading={leftloading}
         tabicon={'Name'}
