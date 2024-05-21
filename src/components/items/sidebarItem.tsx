@@ -118,7 +118,7 @@ const SidebarItem: FC<PropsType> = ({
             size={32}
             className={classNames(
               disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500',
-              'active:text-red-300',"ml-[-4px] rounded-r-lg px-[4px] absolute right-0 top-[4px]",
+              'active:text-red-300',"ml-[-4px] rounded-r-lg px-[4px] absolute right-0 top-[4px] cursor-pointer",
             )}
           />
         // </button>

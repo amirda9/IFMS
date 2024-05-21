@@ -372,7 +372,7 @@ function NetworktreeLayout({children}: Iprops) {
                 linksid: deletestationlist?.linkID || [],
               }),
             );
-       
+            navigate(`/regions/defaultregionemptypage/${regionid}_Linkss`)
         } catch (error) {
           console.log(`deletelinkError is:${error}`);  
         }
@@ -401,6 +401,7 @@ function NetworktreeLayout({children}: Iprops) {
               linksid: deletestationlist?.linkID || [],
             }),
           );
+          navigate(`/regions/defaultregionemptypage/${networkid}_Linkss`)
         } catch (error) {
           console.log(`deletelinkError is:${error}`);  
         }
