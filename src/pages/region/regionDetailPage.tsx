@@ -7,7 +7,10 @@ import {FormLayout} from '~/layout';
 import {getPrettyDateTime} from '~/util/time';
 import {useDispatch, useSelector} from 'react-redux';
 import {useEffect, useState} from 'react';
-import {setRegionidadmin, updateregionname} from './../../store/slices/networktreeslice';
+import {
+  setRegionidadmin,
+  updateregionname,
+} from './../../store/slices/networktreeslice';
 import {$Get, $Put} from '~/util/requestapi';
 import Selectbox from '~/components/selectbox/selectbox';
 import {useAppSelector} from '~/hooks';
@@ -24,9 +27,9 @@ type networklisttype = {
 };
 
 const RegionDetailPage = () => {
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const params = useParams<{regionId: string}>();
   const [regiondata, setregiondata] = useState<any>();
@@ -39,8 +42,6 @@ const RegionDetailPage = () => {
   const onclicknetwork = async (id: string) => {
     setSelectednetwork(id);
   };
-
-
 
   const buttons = (
     <>
@@ -65,46 +66,46 @@ const RegionDetailPage = () => {
       try {
         const response = await $Put(
           `otdr/region/${params.regionId!.split('_')[0]}`,
-        {...values,network_id:selectenetwork},
+          {...values, network_id: selectenetwork},
         );
-        console.log("response",response);
-        
+        console.log('response', response);
+
         if (response.status == 200) {
           dispatch(
             updateregionname({
-              newnetworkid:selectenetwork,
+              newnetworkid: selectenetwork,
               networkid: regiondata?.network_id,
               regionid: params.regionId!.split('_')[0],
               regionname: values.name!,
             }),
           );
-          navigate(`/regions/${params.regionId!.split('_')[0]}_${selectenetwork}`)
+          navigate(
+            `/regions/${params.regionId!.split('_')[0]}_${selectenetwork}`,
+          );
         }
-        
       } catch (error) {}
     },
     validationSchema: regionSchema,
   });
 
-  useEffect(() => {  
+  useEffect(() => {
     const getnetworks = async () => {
       try {
-        setLoading(true)
-        const [getstationdetail,response] = await Promise.all([
-          $Get(
-            `otdr/region/${params.regionId!.split('_')[0]}`),
-            $Get(`otdr/network`),
+        setLoading(true);
+        const [getstationdetail] = await Promise.all([
+          $Get(`otdr/region/${params.regionId!.split('_')[0]}`),
+          // $Get(`otdr/network`),
         ]);
 
         if (getstationdetail.status == 200) {
           const getstationdetaildata = await getstationdetail.json();
           if (getstationdetaildata?.access?.access == 'ADMIN') {
-          dispatch(setRegionidadmin(getstationdetaildata?.id!));
-      }
-   
+            dispatch(setRegionidadmin(getstationdetaildata?.id!));
+          }
+
           setregiondata(getstationdetaildata);
           // const response = await $Get(`otdr/network`);
-      
+
           formik.setValues({
             ...formik.values,
             name: getstationdetaildata?.name,
@@ -112,22 +113,20 @@ const RegionDetailPage = () => {
           });
         }
 
-        if (response.status == 200) {
-          const responsedata = await response.json();
-          const Defaultnetworkname = responsedata.find(
-            (data: any) => data.id == params.regionId!.split('_')[1],
-          );
-          setSelectednetwork(Defaultnetworkname?.id)
-          setDefaultnetworkname(Defaultnetworkname?.name || 'select');
-          setNetworklist(responsedata);
-        }
+        // if (response.status == 200) {
+        //   const responsedata = await response.json();
+        //   const Defaultnetworkname = responsedata.find(
+        //     (data: any) => data.id == params.regionId!.split('_')[1],
+        //   );
+        //   setSelectednetwork(Defaultnetworkname?.id);
+        //   setDefaultnetworkname(Defaultnetworkname?.name || 'select');
+        //   setNetworklist(responsedata);
+        // }
       } catch (error) {
         console.log(error);
-        
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-   
     };
     getnetworks();
   }, []);
@@ -159,7 +158,7 @@ const RegionDetailPage = () => {
                 className="w-2/3 text-sm"
               />
             </Description>
-            <Description label="Network" items="start">
+            {/* <Description label="Network" items="start">
               <Selectbox
                 defaultvalue={defaultnetworkname}
                 placeholder={defaultnetworkname}
@@ -174,7 +173,7 @@ const RegionDetailPage = () => {
                 borderColor={'black'}
                 classname="w-[21%] h-[32px] rounded-[5px]"
               />
-            </Description>
+            </Description> */}
             <Description label="Owner" items="start">
               {regiondata?.current_version?.owner?.username}
             </Description>
