@@ -1181,25 +1181,19 @@ const networktreeslice = createSlice({
     },
     //---------------------------------
     updateregionname: (state, action: changeRegion) => {
-      console.log("👗",action.payload.newnetworkid);
-      console.log("👄",action.payload.networkid);
-      
       const networkregionsCopy = deepcopy(state.networkregions);
       const fintbynetworkid = state.networkregions.findIndex(
         data => data.networkid == action.payload.networkid,
-      );
+      );   
       const findregionindex = state.networkregions[
         fintbynetworkid
       ].regions.findIndex(data => data.id == action.payload.regionid);
-
-      if(action.payload.networkid != action.payload.newnetworkid){
-       
-        
+      if(action.payload.networkid != action.payload.newnetworkid){ 
         networkregionsCopy[fintbynetworkid].regions.splice(findregionindex,1)
         const findnewbynetworkid = state.networkregions.findIndex(
           data => data.networkid == action.payload.newnetworkid,
         );
-        console.log("🧞‍♀️",findnewbynetworkid);
+
         if(findnewbynetworkid>-1){
           networkregionsCopy[findnewbynetworkid].regions.push({id:action.payload.regionid,name:action.payload.regionname})
         }else{
@@ -1213,9 +1207,6 @@ const networktreeslice = createSlice({
         networkregionsCopy[fintbynetworkid].regions[findregionindex].name =
         action.payload.regionname;
       }
-      
-   
-
       state.networkregions = networkregionsCopy;
     },
     //---------------------------------------------

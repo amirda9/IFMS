@@ -27,13 +27,11 @@ const RegionDetailPage = () => {
   const [loading,setLoading]=useState(false)
   const dispatch = useDispatch();
   const navigate=useNavigate()
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const params = useParams<{regionId: string}>();
   const [regiondata, setregiondata] = useState<any>();
   const login = localStorage.getItem('login');
   const [selectenetwork, setSelectednetwork] = useState('');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
   const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
@@ -69,6 +67,8 @@ const RegionDetailPage = () => {
           `otdr/region/${params.regionId!.split('_')[0]}`,
         {...values,network_id:selectenetwork},
         );
+        console.log("response",response);
+        
         if (response.status == 200) {
           dispatch(
             updateregionname({

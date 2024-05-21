@@ -45,8 +45,13 @@ const NetworkDetailPage = () => {
       dispatch(setNetworkidadmin(detail?.data?.id!));
     }
   }, []);
-  if (detail?.httpRequestStatus !== 'success' && !detail?.data)
+
+  console.log("detail",detail);
+  
+  if (detail?.httpRequestStatus !== 'success'){
     return <>loading</>;
+  }
+ 
   return (
     <div className="flex  flex-grow flex-col gap-4">
       <Formik
