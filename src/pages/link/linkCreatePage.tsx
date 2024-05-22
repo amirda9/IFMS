@@ -121,8 +121,7 @@ const LinkCreatePage = () => {
             }),
           );
         }
-
-        navigate(`/links/${responsedata.link_id}`);
+        navigate(`/links/${responsedata.link_id}_${params.regionid!.split('_')[0]!}_${params.regionid!.split('_')[1]!}`);
       } catch (error) {}
     }
   };

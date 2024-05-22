@@ -39,7 +39,7 @@ import {UserRole} from '~/constant/users';
 type ItemspROPS = {
   to: string;
   selected: boolean;
-  key: number;
+  key?: number;
   onDelete: () => void;
   onclick: () => void;
   id: string;

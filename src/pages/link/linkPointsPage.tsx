@@ -7,7 +7,7 @@ import {useParams} from 'react-router-dom';
 import {deepcopy} from '~/util';
 import {useSelector} from 'react-redux';
 import {UserRole} from '~/constant/users';
-import { $Get, $Put } from '~/util/requestapi';
+import {$Get, $Put} from '~/util/requestapi';
 type Iprops = {
   classname: string;
   onclick: Function;
@@ -35,6 +35,8 @@ const Addbox = ({classname, onclick}: Iprops) => {
 const LinkPointsPage = () => {
   const params = useParams<{linkId: string}>();
   const networkId = params.linkId!.split('_')[2];
+  const [linkdata,setLinkdata]=useState<any>([])
+  const [loading,setLoading]=useState(false)
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
   );
@@ -54,52 +56,37 @@ const LinkPointsPage = () => {
     };
   }, []);
 
-  const {state, request} = useHttpRequest({
+  const {state,} = useHttpRequest({
     selector: state => ({
-      detail: state.http.linkDetail,
-      update: state.http.linkUpdate,
     }),
-    initialRequests: request => {
-      request('linkDetail', {params: {link_id: params.linkId!.split('_')[0]}});
-        request('allStations', undefined);
-    },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.update?.httpRequestStatus === 'loading' &&
-        state.update!.httpRequestStatus === 'success'
-      ) {
-        request('linkDetail', {
-          params: {link_id: params.linkId!.split('_')[0]},
-        });
-      }
-    },
   });
 
-  let linkDetail = state?.detail;
-  // let all=useMemo(()=>
-   console.log("🎭",state);
+
+
+  const getlinkDetail = async () => {
+    setLoading(true)
+    try {
+      const response = await $Get(`otdr/link/${params.linkId!.split('_')[0]}`);
+      const responsedata = await response.json();
+      setLinkdata(responsedata)
+      const all =
+        responsedata?.versions?.find(
+          (version: any) => version.id === responsedata?.current_version?.id,
+        )?.link_points || [];
+      const points = deepcopy(all);
+      let neadata = [];
+      for (let i = 0; i < all.length; i++) {
+        neadata.push({...points[i], id: i, fix: true});
+      }
+      setlinkpoints(neadata);
+    } catch (error) {
    
-  //  return state?.detail?.data?.versions?.find(
-  //     (version: any) => version.id === state?.detail?.data?.current_version?.id,
-  //   )?.link_points || [];
-  // ,[])
-  useEffect(() => {
-    // const getalllinkpoints=async()=>{
-    //   const response =await $Get(`otdr/link/{link_id}`)
-    // }
-    //  if(linkDetail?.httpRequestStatus == "success"){
-      const all =linkDetail?.data?.versions?.find(
-        (version: any) => version.id === linkDetail?.data?.current_version?.id,
-      )?.link_points || [];
-   console.log("🦒⛴️",all);
-      
-    const points = deepcopy(all);
-    for (let i = 0; i < points.length; i++) {
-      points[i] = {...points[i], id: i, fix: true};
+    } finally {
+      setLoading(false)
     }
-    setlinkpoints(points);
-    //  }
- 
+  };
+  useEffect(() => {
+    getlinkDetail();
   }, []);
 
   const changelatitude = (id: number, x: string, name: string) => {
@@ -144,49 +131,26 @@ const LinkPointsPage = () => {
     setlinkpoints(sortarray);
   };
 
-  const savepoints = async() => {
+  const savepoints = async () => {
     const newpoints = linkpoints.map(data => ({
       latitude: data.latitude,
       longitude: data.longitude,
     }));
+    newpoints.splice(0,1)
+    newpoints.splice(newpoints.length-1,1)
 
-    const newlink = {
-      name: linkDetail?.data?.name || '',
-      network_id: networkId || '',
-      source_id:
-        linkDetail?.data?.versions?.find(
-          (version: any) =>
-            version.id === linkDetail?.data?.current_version?.id,
-        )?.source.id || '',
-      destination_id:
-        linkDetail?.data?.versions?.find(
-          (version: any) =>
-            version.id === linkDetail?.data?.current_version?.id,
-        )?.destination.id || '',
-      link_points: newpoints || '',
-      region_id: linkDetail?.data?.region_id || '',
-      description:
-        linkDetail?.data?.versions?.find(
-          (version: any) =>
-            version.id === linkDetail?.data?.current_version?.id,
-        )?.description || '',
-      type: 'cable',
-    };
+    const respnse = await $Put(
+      `otdr/link/${params.linkId!.split('_')[0] || ''}/link_points`,
+      newpoints,
+    );
 
-    const respnse=await $Put(`otdr/link/${params.linkId!.split('_')[0] || ''}/link_points`,newlink)
-    console.log("😁",respnse);
-    
-    if(respnse.status == 201){
-      request('linkDetail', {params: {link_id: params.linkId!.split('_')[0]}});
+    if (respnse.status == 201) {
+      getlinkDetail()
     }
-    // request('linkUpdate', {
-    //   params: {link_id: params.linkId!.split('_')[0] || ''},
-    //   data: newlink,
-    // });
   };
 
-  if(state.detail?.httpRequestStatus != "success"){
-    return <h1>Loading ...</h1>
+  if (loading) {
+    return <h1>Loading ...</h1>;
   }
   return (
     <div className="relative min-h-[calc(100vh-240px)] w-full">
@@ -261,7 +225,7 @@ const LinkPointsPage = () => {
         {loggedInUser.role === UserRole.SUPER_USER ||
         networkidadmin.includes(params.linkId!.split('_')[2]) ||
         regionidadmin.includes(params.linkId!.split('_')[1]) ||
-        state?.detail?.data?.access?.access == 'ADMIN' ? (
+        linkdata?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={() => savepoints()} type="submit">
             Save
           </SimpleBtn>
