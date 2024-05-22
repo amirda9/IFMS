@@ -170,10 +170,14 @@ type createregiontype = {
 };
 
 type changeRegion = {
-  payload: {networkid: string; regionid: string; regionname: string;newnetworkid:string};
+  payload: {
+    networkid: string;
+    regionid: string;
+    regionname: string;
+    newnetworkid: string;
+  };
   type: string;
 };
-
 
 export type allregionstationstype = {
   networkid: string;
@@ -395,19 +399,19 @@ const networktreeslice = createSlice({
     },
 
     setdefaultRegionstations: (state, action: defaultregionstationstype) => {
-      console.log("🧟",action.payload);
-      
+      console.log('🧟', action.payload);
+
       const defaultregionStationsCopy = deepcopy(state.defaultregionstations);
       const finddataindex = state.defaultregionstations.findIndex(
         data => data.networkid == action.payload.networkid,
       );
       if (finddataindex > -1) {
-        console.log("ok");
-        
+        console.log('ok');
+
         defaultregionStationsCopy[finddataindex].stations =
           action.payload.stations;
       } else {
-        console.log("no");
+        console.log('no');
         defaultregionStationsCopy.push(action.payload);
       }
       state.defaultregionstations = defaultregionStationsCopy;
@@ -951,7 +955,7 @@ const networktreeslice = createSlice({
     },
     //  ----------------------------
     updateStationName: (state, action: updateStationnametype) => {
-      state.loading = true;
+      // state.loading = true;
       let regionStationsCopy = deepcopy(state.regionstations);
       let regionlinksCopy: allregionlinkstype[] = deepcopy(state.regionLinks);
       let regiondefaultlinksCopy: alldefaultregionlinkstype[] = deepcopy(
@@ -988,7 +992,7 @@ const networktreeslice = createSlice({
               data.destination_id == action.payload.stationid ||
               data.source_id == action.payload.stationid,
           );
-          console.log('33333',defaultlinkwithstationid);
+          console.log('33333', defaultlinkwithstationid);
           let linkstations = [
             defaultlinkwithstationid?.source_id,
             defaultlinkwithstationid?.destination_id,
@@ -1130,7 +1134,7 @@ const networktreeslice = createSlice({
         state.regionLinks = [];
         state.defaultregionLinks = [];
       }
-      state.loading = false;
+      // state.loading = false;
       state.regionstations = regionStationsCopy;
     },
     // -------------------------------------------------------------
@@ -1150,7 +1154,7 @@ const networktreeslice = createSlice({
           findstationwithid,
           1,
         );
-   
+
         const findregionstations = state.regionstations.findIndex(
           data =>
             data.networkid == action.payload.networkid &&
@@ -1177,35 +1181,42 @@ const networktreeslice = createSlice({
       }
 
       state.defaultregionstations = defaultregionstationsCopy;
-      state.regionstations = regionstationsCopy
+      state.regionstations = regionstationsCopy;
     },
     //---------------------------------
     updateregionname: (state, action: changeRegion) => {
       const networkregionsCopy = deepcopy(state.networkregions);
       const fintbynetworkid = state.networkregions.findIndex(
         data => data.networkid == action.payload.networkid,
-      );   
+      );
       const findregionindex = state.networkregions[
         fintbynetworkid
       ].regions.findIndex(data => data.id == action.payload.regionid);
-      if(action.payload.networkid != action.payload.newnetworkid){ 
-        networkregionsCopy[fintbynetworkid].regions.splice(findregionindex,1)
+      if (action.payload.networkid != action.payload.newnetworkid) {
+        networkregionsCopy[fintbynetworkid].regions.splice(findregionindex, 1);
         const findnewbynetworkid = state.networkregions.findIndex(
           data => data.networkid == action.payload.newnetworkid,
         );
 
-        if(findnewbynetworkid>-1){
-          networkregionsCopy[findnewbynetworkid].regions.push({id:action.payload.regionid,name:action.payload.regionname})
-        }else{
-          networkregionsCopy.push({networkid:action.payload.newnetworkid,
-            regions:[{
-              name:action.payload.regionname,
-              id:action.payload.regionid
-          }]})
+        if (findnewbynetworkid > -1) {
+          networkregionsCopy[findnewbynetworkid].regions.push({
+            id: action.payload.regionid,
+            name: action.payload.regionname,
+          });
+        } else {
+          networkregionsCopy.push({
+            networkid: action.payload.newnetworkid,
+            regions: [
+              {
+                name: action.payload.regionname,
+                id: action.payload.regionid,
+              },
+            ],
+          });
         }
-      } else{
+      } else {
         networkregionsCopy[fintbynetworkid].regions[findregionindex].name =
-        action.payload.regionname;
+          action.payload.regionname;
       }
       state.networkregions = networkregionsCopy;
     },
@@ -1221,6 +1232,8 @@ const networktreeslice = createSlice({
     //---------------------------------------------
     deletegroupstation: (state, action: deletegroupstationtype) => {
       const regionstationsCopy = deepcopy(state.regionstations);
+      const regionlinksCopy = deepcopy(state.regionLinks);
+      const allselectedIdCopy = deepcopy(state.allselectedId);
       const findstations = state.regionstations.findIndex(
         data => data.regionid == action.payload.regionid,
       );
@@ -1242,6 +1255,15 @@ const networktreeslice = createSlice({
       regionstationsCopy[findstations].stations = newtlist;
       const newselectedstations = state.selectedstations.filter(
         data => data.regionid != action.payload.regionid,
+      );
+      const finldregionlinks = regionlinksCopy.findIndex(
+        (data: any) => data.regionid == action.payload.regionid,
+      );
+
+      regionlinksCopy[finldregionlinks].links = [];
+      state.regionLinks = regionlinksCopy;
+      state.allselectedId = allselectedIdCopy.filter(
+        (data: string) => data != `${action.payload.regionid}&${action.payload.regionid}_Linkss`,
       );
       state.regionstations = regionstationsCopy;
       state.selectedstations = newselectedstations;
@@ -1392,6 +1414,10 @@ const networktreeslice = createSlice({
       state.defaultregionLinks = newdefaultlinks;
       state.defaultregionstations = newdefaultstation;
     },
+    // ------------------------------------------------
+    chageLoading: (state, action: {payload: boolean; type: string}) => {
+      state.loading = action.payload;
+    },
   },
 });
 
@@ -1433,6 +1459,7 @@ export const {
   updatedefaultStationName,
   setNetworkidadmin,
   setRegionidadmin,
+  chageLoading,
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

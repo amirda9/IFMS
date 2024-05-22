@@ -29,6 +29,7 @@ import {
   deletenetwork,
   deletedefaultRegion,
   setRegionidadmin,
+  chageLoading,
 } from './../store/slices/networktreeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
@@ -108,7 +109,7 @@ function NetworktreeLayout({children}: Iprops) {
     },
   });
   const onclicknetwork = async (id: string) => {
-    request('regionList', {params: {network_id: id}});
+      request('regionList', {params: {network_id: id}});
   };
 
   useEffect(() => {
@@ -294,6 +295,7 @@ function NetworktreeLayout({children}: Iprops) {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
+          dispatch(chageLoading(true))
           const deletestationlist = selectedstations.find(
             data => data.regionid == regionid,
           );
@@ -302,33 +304,31 @@ function NetworktreeLayout({children}: Iprops) {
           const promises = list.map((data: string) =>
             $Delete(`otdr/station/${data}`),
           );
- 
-            const results = await Promise.all(promises);  
 
-            dispatch(
-              deletegroupstation({
-                regionid: regionid,
-                stationsid: deletestationlist?.stationsID || [],
-              }),
-            );
-      navigate(`/regions/defaultregionemptypage/${regionid}_Stations`)
+          const results = await Promise.all(promises);
+
+          dispatch(
+            deletegroupstation({
+              regionid: regionid,
+              stationsid: deletestationlist?.stationsID || [],
+            }),
+          );
+      
         } catch (error) {
-          `deleteStationError is:${error}`
+          `deleteStationError is:${error}`;
+        } finally {
+          dispatch(chageLoading(false))
+          navigate(`/regions/defaultregionemptypage/${regionid}_Stations`);
         }
-
       }
     });
   };
-
-
-
-
-
 
   const deletedefaultgroupsationds = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
+          dispatch(chageLoading(true))
           const deletestationlist = selecteddefaultstations.find(
             data => data.networkid == networkid,
           );
@@ -336,20 +336,21 @@ function NetworktreeLayout({children}: Iprops) {
           const promises = list.map((data: string) =>
             $Delete(`otdr/station/${data}`),
           );
-          const results = await Promise.all(promises);  
-  
-            dispatch(
-              deletedefaultgroupstation({
-                networkid: networkid,
-                stationsid: deletestationlist?.stationsID || [],
-              }),
-            );
-            navigate(`/regions/defaultregionemptypage/${networkid}_Stations`)
-        } catch (error) {
-          `deleteStationError is:${error}`
-        }
-        
+          const results = await Promise.all(promises);
 
+          dispatch(
+            deletedefaultgroupstation({
+              networkid: networkid,
+              stationsid: deletestationlist?.stationsID || [],
+            }),
+          );
+
+        } catch (error) {
+          `deleteStationError is:${error}`;
+        } finally {
+          dispatch(chageLoading(false))
+          navigate(`/regions/defaultregionemptypage/${networkid}_Stations`);
+        }
       }
     });
   };
@@ -358,6 +359,7 @@ function NetworktreeLayout({children}: Iprops) {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
+          dispatch(chageLoading(true))
           const deletestationlist = selectedlinks.find(
             data => data.regionid == regionid,
           );
@@ -365,27 +367,29 @@ function NetworktreeLayout({children}: Iprops) {
           const promises = list.map((data: string) =>
             $Delete(`otdr/link/${data}`),
           );
-          const results = await Promise.all(promises);  
-            dispatch(
-              deletegrouplinks({
-                regionid: regionid,
-                linksid: deletestationlist?.linkID || [],
-              }),
-            );
-            navigate(`/regions/defaultregionemptypage/${regionid}_Linkss`)
+          const results = await Promise.all(promises);
+          dispatch(
+            deletegrouplinks({
+              regionid: regionid,
+              linksid: deletestationlist?.linkID || [],
+            }),
+          );
+         
         } catch (error) {
-          console.log(`deletelinkError is:${error}`);  
+          console.log(`deletelinkError is:${error}`);
+        } finally {
+          dispatch(chageLoading(false))
+          navigate(`/regions/defaultregionemptypage/${regionid}_Linkss`);
         }
-      
       }
     });
   };
 
   const ondeletedefaultlinksgroup = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
-    
       if (result.isConfirmed) {
         try {
+          dispatch(chageLoading(true))
           const deletestationlist = selectedefaultdlinks.find(
             data => data.networkid == networkid,
           );
@@ -401,11 +405,13 @@ function NetworktreeLayout({children}: Iprops) {
               linksid: deletestationlist?.linkID || [],
             }),
           );
-          navigate(`/regions/defaultregionemptypage/${networkid}_Linkss`)
+        
         } catch (error) {
-          console.log(`deletelinkError is:${error}`);  
+          console.log(`deletelinkError is:${error}`);
+        } finally{
+          dispatch(chageLoading(true))
+          navigate(`/regions/defaultregionemptypage/${networkid}_Linkss`);
         }
-       
       }
     });
   };
@@ -413,10 +419,15 @@ function NetworktreeLayout({children}: Iprops) {
   const Deleteregion = async (regionid: string, networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        const response = await $Delete(`otdr/region/${regionid}`);
-        if (response.status == 200) {
-          dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
-        }
+
+          dispatch(chageLoading(true))
+          const response = await $Delete(`otdr/region/${regionid}`);
+          if (response.status == 200) {
+            dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
+            dispatch(chageLoading(false))
+          }
+     
+       
       }
     });
   };
@@ -472,8 +483,12 @@ function NetworktreeLayout({children}: Iprops) {
       {/* <div className="flex h-[calc(100vh-120px)] opacity-0 w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
 
     </div> */}
-      {loading ? <Mainloading /> : null}
-
+      {loading ? (
+        <Mainloading
+          spinerclassname={`fixed left-[calc(15%-50px)] top-[35%] z-[300000] h-[100px] w-[100px]`}
+          classname={`fixed left-0 top-0 z-[200000] flex h-screen w-[30%] items-center justify-center bg-neutral-400 opacity-60`}
+        />
+      ) : null}
       <div className="no-scrollbar fixed bottom-[0px] left-0  top-20 flex h-[calc(100vh-120px)] w-[30%]  flex-col overflow-scroll  border-r-2 border-g bg-[#E7EFF7] p-4 ">
         <div className="flex w-full flex-row items-center">
           <>
@@ -572,7 +587,7 @@ function NetworktreeLayout({children}: Iprops) {
                               onclick={() => {
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(regionsdata.id);
-                                onclickstations(networkdata.id, regionsdata.id);
+                                // onclickstations(networkdata.id, regionsdata.id);
                                 onclicklinks(networkdata.id, regionsdata.id);
                               }}
                               id={regionsdata.id}
@@ -725,13 +740,12 @@ function NetworktreeLayout({children}: Iprops) {
                                           to={`/links/${linksdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
-                                  
                                           disabledcheckbox={
                                             loggedInUser.role !==
-                                            UserRole.SUPER_USER &&
-                                          !networkidadmin.includes(
-                                            networkdata.id,
-                                          )
+                                              UserRole.SUPER_USER &&
+                                            !networkidadmin.includes(
+                                              networkdata.id,
+                                            )
                                           }
                                           onDelete={() =>
                                             ondeletelinksgroup(regionsdata.id)
@@ -934,15 +948,11 @@ function NetworktreeLayout({children}: Iprops) {
                                           networkdata.id,
                                         )
                                       }
-
                                       disabledcheckbox={
                                         loggedInUser.role !==
-                                        UserRole.SUPER_USER &&
-                                      !networkidadmin.includes(
-                                        networkdata.id,
-                                      )
+                                          UserRole.SUPER_USER &&
+                                        !networkidadmin.includes(networkdata.id)
                                       }
-                                      
                                       enabelcheck={true}
                                       onclickcheckbox={() =>
                                         dispatch(
