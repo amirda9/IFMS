@@ -1193,8 +1193,8 @@ export type RequestListTypes = {
     pulse_width: number,
     sampling_mode:string,
     sampling_duration: number,
-    IOR: number,
-    RBS: number,
+    ior: number,
+    rbs: number,
     event_loss_threshold: number,
     event_reflection_threshold:number,
     fiber_end_threshold: number

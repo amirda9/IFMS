@@ -29,11 +29,12 @@ type NumberInputType = {
   precision?: number;
   name: string;
   display: string;
+  step?: number;
 };
 
 type maintenance_test_settingtype = {
-  IOR: number;
-  RBS: number;
+  ior: number;
+  rbs: number;
   distance_mode: string;
   event_loss_threshold: number;
   event_reflection_threshold: number;
@@ -50,7 +51,7 @@ type maintenance_test_settingtype = {
 
 const Rowinput = ({name, children, display}: Rowinputtype) => {
   return (
-    <div className={`${display} w-[800px] flex-row justify-between`}>
+    <div className={`${display} w-[800px] mt-2 flex-row justify-between`}>
       <span className="w-[320px] text-[20px] font-light leading-[24.2px] text-[#000000]">
         {name}
       </span>
@@ -190,15 +191,16 @@ function ProactiveMaintenanceTestPage() {
         display: 'flex',
         type: 'number',
         label: 'IOR',
-        defaultValue: 1.476,
-        name: 'IOR',
+        defaultValue: 1.54321,
+        name: 'ior',
+        step: 0.000001,
       },
       {
         display: 'flex',
         type: 'number',
         label: 'RBS (dB)',
         defaultValue: -79,
-        name: 'RBS',
+        name: 'rbs',
       },
       {
         display: 'flex',
@@ -245,8 +247,8 @@ function ProactiveMaintenanceTestPage() {
 
   const onResetButtonClick = () => {
     setmaintenance_test_setting({
-      IOR: 1.476,
-      RBS: -79,
+      ior: 1.54321,
+      rbs: -79,
       distance_mode: 'manual',
       event_loss_threshold: 0.05,
       event_reflection_threshold: -40,
@@ -287,6 +289,7 @@ function ProactiveMaintenanceTestPage() {
           <Rowinput key={i} name={input.label} display={input.display}>
             <TextInput
               type="number"
+              step={input.step || 1}
               value={maintenance_test_setting &&  maintenance_test_setting[input.name]}
               onChange={e => {
                 let old = {...maintenance_test_setting!};

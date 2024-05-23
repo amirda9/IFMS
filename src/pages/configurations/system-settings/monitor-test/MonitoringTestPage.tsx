@@ -10,8 +10,8 @@ type Rowinputtype = {
 };
 
 type monitoring_test_settingtype = {
-  IOR: number;
-  RBS: number;
+  ior: number;
+  rbs: number;
   distance_mode: string;
   event_loss_threshold: number;
   event_reflection_threshold: number;
@@ -104,6 +104,8 @@ const MonitoringTestPage: FC = () => {
     //   test_mode: '',
     // }
 
+    console.log("🐜",monitoring_test_setting);
+    
   const getdate = async () => {
     const getappsettings = await $Get(`otdr/settings/app-settings`);
   if(getappsettings.status == 200){
@@ -199,7 +201,7 @@ const MonitoringTestPage: FC = () => {
         label: 'IOR',
         defaultValue: 1.476,
         precision: 6,
-        name: 'IOR' as const,
+        name: 'ior' as const,
       },
       {
         display: 'flex',
@@ -210,7 +212,7 @@ const MonitoringTestPage: FC = () => {
         label: 'RBS (dB)',
         defaultValue: -79,
         precision: 6,
-        name: 'RBS' as const,
+        name: 'rbs' as const,
       },
       {
         display: 'flex',
@@ -259,8 +261,8 @@ const MonitoringTestPage: FC = () => {
 
   const onResetButtonClick = () => {
     setMonitoring_test_setting({
-      IOR: 1.476,
-      RBS: -79,
+      ior: 1.476,
+      rbs: -79,
       distance_mode: 'manual',
       event_loss_threshold: 0.05,
       event_reflection_threshold: -40,
