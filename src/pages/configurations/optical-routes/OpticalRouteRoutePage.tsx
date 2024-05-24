@@ -6,7 +6,7 @@ import {IoTrashOutline} from 'react-icons/io5';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
-import {$GET, $Get} from '~/util/requestapi';
+import {$Get} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 // ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
@@ -346,25 +346,31 @@ const OpticalRouteRoutePage: FC = () => {
     const old = deepcopy(allselectedsource);
     const findroute = fndseletedsourceIndex(index);
     if (findroute > -1) {
-      //We get the link specifications because we need the cable and duct specifications of it.
-      const getdata = await $GET(`otdr/link/${old[findroute].linkId}`);
-
-      let cables =
-        getdata?.data?.cables == null
-          ? null
-          : getdata.data.cables.map((data: any) => ({
-              id: data.id,
-              number_of_cores: data.number_of_cores,
-            }));
-      let ducts =
-        getdata.data.ducts == null
-          ? null
-          : getdata.data.ducts.map((data: any) => ({
-              id: data.id,
-              mini_ducts: data.mini_ducts,
-            }));
-      old[findroute].cableandducts = {cables: cables, ducts: ducts};
-      setAllselectedsource(old);
+      try {
+        //We get the link specifications because we need the cable and duct specifications of it.
+        const getdataresponse = await $Get(
+          `otdr/link/${old[findroute].linkId}`,
+        );
+        const getdata = await getdataresponse.json();
+        let cables =
+          getdata?.data?.cables == null
+            ? null
+            : getdata.data.cables.map((data: any) => ({
+                id: data.id,
+                number_of_cores: data.number_of_cores,
+              }));
+        let ducts =
+          getdata.data.ducts == null
+            ? null
+            : getdata.data.ducts.map((data: any) => ({
+                id: data.id,
+                mini_ducts: data.mini_ducts,
+              }));
+        old[findroute].cableandducts = {cables: cables, ducts: ducts};
+        setAllselectedsource(old);
+      } catch (error) {
+        console.log(`error is:${error}`);
+      }
     }
   };
 
@@ -477,7 +483,6 @@ const OpticalRouteRoutePage: FC = () => {
       };
     }
 
-
     setAllselectedsource(olddata);
     // --------3-----------------------3------------------3---------------3----
     //firse find the route among allroutese
@@ -542,24 +547,32 @@ const OpticalRouteRoutePage: FC = () => {
     const old = deepcopy(allselectedsource);
     const findroute = fndseletedsourceIndex(index);
     if (findroute > -1) {
-      //We get the link specifications because we need the cable and duct specifications of it.
-      const getdata = await $GET(`otdr/link/${old[findroute].linkId}`);
-      let cables =
-        getdata.data.cables == null
-          ? null
-          : getdata.data.cables.map((data: any) => ({
-              id: data.id,
-              number_of_cores: data.number_of_cores,
-            }));
-      let ducts =
-        getdata.data.ducts == null
-          ? null
-          : getdata.data.ducts.map((data: any) => ({
-              id: data.id,
-              mini_ducts: data.mini_ducts,
-            }));
-      old[findroute].cableandducts = {cables: cables, ducts: ducts};
-      setAllselectedsource(old);
+      try {
+        //We get the link specifications because we need the cable and duct specifications of it.
+        const getdataresponse = await $Get(
+          `otdr/link/${old[findroute].linkId}`,
+        );
+        const getdata = await getdataresponse.json();
+
+        let cables =
+          getdata.data.cables == null
+            ? null
+            : getdata.data.cables.map((data: any) => ({
+                id: data.id,
+                number_of_cores: data.number_of_cores,
+              }));
+        let ducts =
+          getdata.data.ducts == null
+            ? null
+            : getdata.data.ducts.map((data: any) => ({
+                id: data.id,
+                mini_ducts: data.mini_ducts,
+              }));
+        old[findroute].cableandducts = {cables: cables, ducts: ducts};
+        setAllselectedsource(old);
+      } catch (error) {
+        console.log(`error is :${error}`);
+      }
     }
   };
 
@@ -602,16 +615,14 @@ const OpticalRouteRoutePage: FC = () => {
         ]);
       }
     } else {
-
       //If this route was not new, we would add it to the list of routes that need to be updated.
       const findinupdatedrouteid = findupdatedindex(index);
 
       if (findinupdatedrouteid > -1) {
-        alert("uuu")
+        alert('uuu');
         //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
         let oldallupdatedroutes = [...allupdatedroutes];
 
-        
         oldallupdatedroutes[findinupdatedrouteid] = {
           id: allupdatedroutes[findinupdatedrouteid].id,
           index: index,
@@ -625,13 +636,12 @@ const OpticalRouteRoutePage: FC = () => {
 
         setAllUpdatedroutes(oldallupdatedroutes);
       } else {
-
         setAllUpdatedroutes(prev => [
           ...prev,
           {
-            id:old[findrouteindex].id ,
+            id: old[findrouteindex].id,
             index: index,
-            link_id:old[findrouteindex].link_id,
+            link_id: old[findrouteindex].link_id,
             cable: old[findrouteindex].cable,
             core:
               value.indexOf('-') > -1
