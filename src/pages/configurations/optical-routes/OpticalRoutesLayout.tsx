@@ -1,12 +1,11 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {FC} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
-import {NavLink} from 'react-router-dom';
+import {NavLink, useNavigate} from 'react-router-dom';
 import {SidebarItem, TextInput} from '~/components';
-import {useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 import Swal from 'sweetalert2';
-import {$DELETE, $Delete, $GET, $Get} from '~/util/requestapi';
+import {$Delete, $Get} from '~/util/requestapi';
 import {IoTrashOutline} from 'react-icons/io5';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -18,12 +17,12 @@ import {
 } from './../../../store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
-type networklisttype={ 
-  id:string
-  name:string
-  time_created:string
-  time_updated:string
-  }
+type networklisttype = {
+  id: string;
+  name: string;
+  time_created: string;
+  time_updated: string;
+};
 type Itembtntype = {
   name: string;
   id: string;
@@ -44,38 +43,17 @@ const swalsetting: any = {
 
 const OpticalRouteLayout: FC = () => {
   const dispatch = useDispatch();
+  const navigte=useNavigate()
   const [selectedId, setSelectedId] = useState('');
-  const [list,setList]=useState<networklisttype[]>()
+  const [list, setList] = useState<networklisttype[]>();
   const {networkselectedlist, networkoptical, alldeleteopticalroute} =
     useSelector((state: RootState) => state.opticalroute);
-  const {
-    request,
-    state: { deleteRequest},
-  } = useHttpRequest({
-    selector: state => ({
-      list: state.http.networkList,
-      deleteRequest: state.http.networkDelete,
-    }),
-    initialRequests: request => {
-      // if (list?.httpRequestStatus !== 'success') {
-      //   request('networkList', undefined);
-      // }
-    },
-    onUpdate: (lastState, state) => {
-      // if (
-      //   lastState.deleteRequest?.httpRequestStatus === 'loading' &&
-      //   state.deleteRequest!.httpRequestStatus === 'success'
-      // ) {
-      //   request('networkList', undefined);
-      // }
-    },
-  });
 
   useEffect(() => {
     const getnetworklist = async () => {
       const response = await $Get(`otdr/network`);
       const responsedata = await response.json();
-      setList(responsedata)
+      setList(responsedata);
     };
     getnetworklist();
   }, []);
@@ -90,7 +68,6 @@ const OpticalRouteLayout: FC = () => {
     }
   };
 
-  console.log('list', list);
 
   const [openall, setOpenall] = useState(false);
 
@@ -202,46 +179,33 @@ const OpticalRouteLayout: FC = () => {
           data => data.networkid == networkid,
         );
         const alldeleteopticalrouteCopy = deepcopy(alldeleteopticalroute);
+
         try {
-          const deleteOticalroute = await $Delete(
-            `otdr/optical-route/batch_delete`,
-            alldeleteopticalroute[findopticalroute]!.opticalrouts,
+          const promises = alldeleteopticalroute[
+            findopticalroute
+          ]!.opticalrouts!.map((data: string) =>
+            $Delete(`otdr/optical-route/${data}`),
           );
-          if (deleteOticalroute.status == 201) {
-            let networkopticalCopy = deepcopy(networkoptical);
-            const finddataindex = networkoptical.findIndex(
-              data => data.networkid == networkid,
-            );
-            //we update the networks uptical route
-            let newnetworkopticalroute = [];
-            for (
-              let i = 0;
-              i < networkoptical[finddataindex].opticalrouts.length;
-              i++
-            ) {
-              if (
-                alldeleteopticalroute[
-                  findopticalroute
-                ]!.opticalrouts!.findIndex(
-                  data =>
-                    data == networkoptical[finddataindex].opticalrouts[i].id,
-                ) < 0
-              ) {
-                newnetworkopticalroute.push({
-                  id: networkoptical[finddataindex].opticalrouts[i].id,
-                  name: networkoptical[finddataindex].opticalrouts[i].name,
-                });
-              }
-            }
-            networkopticalCopy[finddataindex].opticalrouts =
-              newnetworkopticalroute;
-            dispatch(setNetworkoptical(networkopticalCopy));
-            //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
-            alldeleteopticalrouteCopy[findopticalroute].opticalrouts = [];
-            dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
-          }
+          const results = await Promise.all(promises);
+          let networkopticalCopy = deepcopy(networkoptical);
+          const finddataindex = networkoptical.findIndex(
+            data => data.networkid == networkid,
+          );
+          networkopticalCopy[finddataindex].opticalrouts = [];
+          const networkselectedlistCopy = deepcopy(networkselectedlist);
+          const newnetworkselectedlistCopy = networkselectedlistCopy.filter(
+            (data: string) => data != networkid,
+          );
+          dispatch(setNetworkselectedlist(newnetworkselectedlistCopy));
+
+          dispatch(setNetworkoptical(networkopticalCopy));
+          //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
+          alldeleteopticalrouteCopy[findopticalroute].opticalrouts = [];
+          dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
         } catch (error) {
           console.log(error);
+        } finally {
+         navigte(`/config/optical-routes`)
         }
       }
     });
@@ -250,34 +214,50 @@ const OpticalRouteLayout: FC = () => {
   const deletenetworkoptical = async (id: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        let networkopticalCopy: networkopticaltype = deepcopy(networkoptical);
-        const finddata = networkoptical.findIndex(data => data.networkid == id);
-        //delete all rtues related to this netwok
-        const deleteOticalroute = await $Delete(
-          `otdr/optical-route/batch_delete`,
-          networkopticalCopy[finddata].opticalrouts.map(data => data.id),
-        );
-        if (deleteOticalroute.status == 201) {
-          networkopticalCopy[finddata].opticalrouts = [];
+        try {
+          let networkopticalCopy: networkopticaltype = deepcopy(networkoptical);
+          const finddata = networkoptical.findIndex((data:any) => data.networkid == id);
+          //delete all rtues related to this netwok
+     
+          const promises = networkopticalCopy[finddata].opticalrouts!.map((data) =>
+            $Delete(`otdr/optical-route/${data.id}`),
+          );
+          const results = await Promise.all(promises);
+          // if (deleteOticalroute.status == 201) {
+            networkopticalCopy[finddata].opticalrouts = [];
+          // }
+          dispatch(setNetworkoptical(networkopticalCopy));
+          // -------------------------------
+          //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
+          const alldeleteopticalrouteCopy: alldeleteopticalroutetype = deepcopy(
+            alldeleteopticalroute,
+          );
+          const finddeleteopticalrout = alldeleteopticalrouteCopy.findIndex(
+            data => data.networkid == id,
+          );
+          const networkselectedlistCopy = deepcopy(networkselectedlist);
+          const newnetworkselectedlistCopy = networkselectedlistCopy.filter(
+            (data: string) => data != id,
+          );
+          dispatch(setNetworkselectedlist(newnetworkselectedlistCopy));
+          alldeleteopticalrouteCopy[finddeleteopticalrout].opticalrouts = [];
+          dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
+        } catch (error) {
+          console.log(`deletenetworkError is:${error}`);
+          
+        } finally{
+          navigte(`/config/optical-routes`)
         }
-        dispatch(setNetworkoptical(networkopticalCopy));
-        // -------------------------------
-        //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
-        const alldeleteopticalrouteCopy: alldeleteopticalroutetype = deepcopy(
-          alldeleteopticalroute,
-        );
-        const finddeleteopticalrout = alldeleteopticalrouteCopy.findIndex(
-          data => data.networkid == id,
-        );
-        alldeleteopticalrouteCopy[finddeleteopticalrout].opticalrouts = [];
-        dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
+
       }
     });
   };
-  const lastnetwork =
-    (list && list[list.length - 1]?.id) || '';
+  
+  const lastnetwork =useMemo(()=>{
+  return (list && list[list.length - 1]?.id) || '';
+  },[list]) 
 
-  console.log('🧑‍🏫', list);
+
 
   return (
     <SidebarLayout createTitle="" canAdd>

@@ -60,7 +60,8 @@ const OpticalRouteCreatePage: FC = () => {
             networkopticalCopy.push({networkid: params.id, opticalrouts:opticaldata})
            dispatch(setNetworkoptical(networkopticalCopy)) ;
           }
-           navigate(`../${createopticaldata.id}`)
+          navigate(`/config/optical-routes/${createopticaldata.id}_${params.id}`)
+          //  navigate(`../${createopticaldata.id}`)
          }
         }
   
@@ -75,9 +76,9 @@ const OpticalRouteCreatePage: FC = () => {
     <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
         <Form
-
           className="flex h-full flex-col justify-between">
           <div className="flex w-2/3 flex-col gap-y-4">
+          <span className='text-md text-black font-bold mb-6'>Create opticalroute</span>
             <Description label="Name" items="start">
               <InputFormik  name="name" wrapperClassName="w-full" />
             </Description>

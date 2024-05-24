@@ -1,5 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType'
+import { deepcopy } from '~/util';
 
 type veiwerlists = {
   payload: opticalrouteUpdateTestSetupDetailtype;
@@ -25,11 +26,13 @@ type alldeleteopticalroutetypeAction={
   type: string;
 }
 
+type networkopticalroutetype={networkid: string; opticalrouts: {name: string; id: string}[]}
+
 
 type initialStatetype={
   opticalroutUpdateTestsetupDetail:opticalrouteUpdateTestSetupDetailtype
   networkselectedlist:string[]
-  networkoptical:{networkid: string; opticalrouts: {name: string; id: string}[]}[]
+  networkoptical:networkopticalroutetype[]
   alldeleteopticalroute:alldeleteopticalroutetype
   opticalroutenetworkidadmin:string[]
 }
@@ -133,6 +136,20 @@ const opticalroute = createSlice({
         state.opticalroutenetworkidadmin.push(action.payload);
       }
     },
+    changeOpticalroutename: (state, action: {type: string; payload:{networkid:string,opticalId:string,opticalName:string}}) => {
+      console.log("🚞",action.payload);
+      
+      const networkopticalCopy:networkopticalroutetype[]=deepcopy(state.networkoptical)
+      const findinlist = networkopticalCopy.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+      console.log("🧑‍✈️",findinlist);
+      
+      const findoptical=networkopticalCopy[findinlist].opticalrouts.findIndex(data => data.id == action.payload.opticalId)
+      console.log("7🧑‍✈️7",findinlist);
+      networkopticalCopy[findinlist].opticalrouts[findoptical].name=action.payload.opticalName
+ state.networkoptical=networkopticalCopy
+    },
   },
 });
 
@@ -141,7 +158,8 @@ export const {
   setNetworkselectedlist,
   setNetworkoptical,
   setAlldeleteopticalroute,
-  setOpticalrouteNetworkidadmin
+  setOpticalrouteNetworkidadmin,
+  changeOpticalroutename
 } = opticalroute.actions;
 
 export default opticalroute.reducer;

@@ -157,10 +157,9 @@ console.log("⏰",allcreatedroutes);
 
   const {
     request,
-    state: {opticalrouteRoute, stations},
+    state: {stations},
   } = useHttpRequest({
     selector: state => ({
-      opticalrouteRoute: state.http.opticalrouteRoute,
       stations: state.http.allStations,
     }),
     initialRequests: request => {
