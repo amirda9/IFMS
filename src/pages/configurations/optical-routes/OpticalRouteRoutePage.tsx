@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
 import {$GET, $Get} from '~/util/requestapi';
-import { deepcopy } from '~/util';
+import {deepcopy} from '~/util';
 // ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
   classname: string;
@@ -34,32 +34,36 @@ type allselectedsourcetype = {
   sourceId: string;
   linkId: string;
   cableid: string;
-  data: {
-    id: string;
-    name: string;
-    network_id: string;
-    version_id: string;
-    time_created: string;
-    time_updated: string;
-    region_id: string;
-    source: {
-      id: string;
-      name: string;
-    };
-    destination: {
-      id: string;
-      name: string;
-    };
-  }[] | [];
-  cableandducts: {
-    cables: null | {id: string; number_of_cores: number}[];
-    ducts:
-      | null
-      | {
+  data:
+    | {
+        id: string;
+        name: string;
+        network_id: string;
+        version_id: string;
+        time_created: string;
+        time_updated: string;
+        region_id: string;
+        source: {
           id: string;
-          mini_ducts: {id: string; number_of_fibers: number}[];
-        }[];
-  } | {cables:null,ducts:null};
+          name: string;
+        };
+        destination: {
+          id: string;
+          name: string;
+        };
+      }[]
+    | [];
+  cableandducts:
+    | {
+        cables: null | {id: string; number_of_cores: number}[];
+        ducts:
+          | null
+          | {
+              id: string;
+              mini_ducts: {id: string; number_of_fibers: number}[];
+            }[];
+      }
+    | {cables: null; ducts: null};
 };
 type allcreatedroutestype = {
   index: number;
@@ -94,8 +98,8 @@ const Addbox = ({classname, onclick}: Iprops) => {
 // ------------main ---------------main -------------------main ------------main -----------
 const OpticalRouteRoutePage: FC = () => {
   const params = useParams();
-  const networkId = params.opticalRouteId!.split("_")[1];
-  const [loading,setLoading]=useState(false)
+  const networkId = params.opticalRouteId!.split('_')[1];
+  const [loading, setLoading] = useState(false);
   const [allroutes, setAllroutes] = useState<allroutestype[]>([]);
   const [alldeleteroutes, setAllDeleteroutes] = useState<string[]>([]);
 
@@ -109,9 +113,6 @@ const OpticalRouteRoutePage: FC = () => {
   const [allupdatedroutes, setAllUpdatedroutes] = useState<
     allupdatedroutestype[]
   >([]);
-
-  console.log(allselectedsource, 'allselectedsourceallselectedsource');
-  console.log(allroutes, 'allroutes');
 
   // -------------------- func ------------------------ func -------------------------- func ------------
   const fndseletedsource = (index: number) => {
@@ -151,9 +152,6 @@ const OpticalRouteRoutePage: FC = () => {
     return data;
   };
   // ------------------------------------------------------------
-
-console.log("⏰",allcreatedroutes);
-
 
   const {
     request,
@@ -202,7 +200,7 @@ console.log("⏰",allcreatedroutes);
         ...prev,
         {
           index: index,
-          cableid:"",
+          cableid: '',
           sourceId:
             index == 0
               ? ''
@@ -210,9 +208,8 @@ console.log("⏰",allcreatedroutes);
                   ?.id || '',
           linkId: '',
           data: [],
-          cableandducts: {cables:null,ducts:null},
-          
-        }
+          cableandducts: {cables: null, ducts: null},
+        },
       ]);
     }
   };
@@ -338,8 +335,7 @@ console.log("⏰",allcreatedroutes);
       const getdataa = await $Get(
         `otdr/link/network/${networkId}?source_id=${old[findroute].sourceId}`,
       );
-      let getdata=await getdataa.json()
-console.log("getdata",getdata);
+      let getdata = await getdataa.json();
 
       old[findroute].data = getdata;
       setAllselectedsource(old);
@@ -349,12 +345,10 @@ console.log("getdata",getdata);
   const onclickcabel = async (index: number) => {
     const old = deepcopy(allselectedsource);
     const findroute = fndseletedsourceIndex(index);
-    console.log("findroute",findroute);
-    
     if (findroute > -1) {
       //We get the link specifications because we need the cable and duct specifications of it.
       const getdata = await $GET(`otdr/link/${old[findroute].linkId}`);
-  
+
       let cables =
         getdata?.data?.cables == null
           ? null
@@ -362,14 +356,14 @@ console.log("getdata",getdata);
               id: data.id,
               number_of_cores: data.number_of_cores,
             }));
-      let ducts =getdata.data.ducts == null
+      let ducts =
+        getdata.data.ducts == null
           ? null
           : getdata.data.ducts.map((data: any) => ({
               id: data.id,
               mini_ducts: data.mini_ducts,
             }));
       old[findroute].cableandducts = {cables: cables, ducts: ducts};
-      console.log("old",old);
       setAllselectedsource(old);
     }
   };
@@ -385,8 +379,6 @@ console.log("getdata",getdata);
     const old = deepcopy(allselectedsource);
     const findselectedroute = fndseletedsourceIndex(index);
     old[findselectedroute].cableid = value;
-    console.log(old, 'oldold');
-
     setAllselectedsource(old);
     // ------------ 3------------------------- 3-----------
     //firse find the route among allroutese
@@ -451,12 +443,10 @@ console.log("getdata",getdata);
     // --------------------------1-------------------1 -----------------
     // We first find the desired route among all the routes and change the name of its destination station
     const finddataaallroutesindex = finrouteIndex(index);
-    console.log(finddataaallroutesindex, 'find');
-
     let oldallroutesindex = deepcopy(allroutes);
     oldallroutesindex[finddataaallroutesindex].destination.name =
       id.split('_')[1];
-      oldallroutesindex[finddataaallroutesindex].destination.id =
+    oldallroutesindex[finddataaallroutesindex].destination.id =
       id.split('_')[2];
     if (allroutes.length > index + 1) {
       oldallroutesindex[finddataaallroutesindex + 1].source.id =
@@ -487,7 +477,6 @@ console.log("getdata",getdata);
       };
     }
 
-    // console.log(id.split('_')[1], 'uuuuoooooo');
 
     setAllselectedsource(olddata);
     // --------3-----------------------3------------------3---------------3----
@@ -613,12 +602,16 @@ console.log("getdata",getdata);
         ]);
       }
     } else {
+
       //If this route was not new, we would add it to the list of routes that need to be updated.
       const findinupdatedrouteid = findupdatedindex(index);
 
       if (findinupdatedrouteid > -1) {
+        alert("uuu")
         //If this route was already in the list of routes that need to be created, we would edit it. If not, we would add it to the list of routes that need to be created.
         let oldallupdatedroutes = [...allupdatedroutes];
+
+        
         oldallupdatedroutes[findinupdatedrouteid] = {
           id: allupdatedroutes[findinupdatedrouteid].id,
           index: index,
@@ -629,15 +622,17 @@ console.log("getdata",getdata);
               ? Number(value.split('-')[1])
               : Number(value),
         };
+
         setAllUpdatedroutes(oldallupdatedroutes);
       } else {
+
         setAllUpdatedroutes(prev => [
           ...prev,
           {
-            id: '',
+            id:old[findrouteindex].id ,
             index: index,
-            link_id: '',
-            cable: '',
+            link_id:old[findrouteindex].link_id,
+            cable: old[findrouteindex].cable,
             core:
               value.indexOf('-') > -1
                 ? Number(value.split('-')[1])
@@ -649,13 +644,14 @@ console.log("getdata",getdata);
   };
 
   const getallroute = async () => {
-
     try {
-      setLoading(true)
+      setLoading(true);
       const allroutesrespone = await $Get(
-        `otdr/optical-route/${params.opticalRouteId!.split("_")[0] || ''}/routes`,
+        `otdr/optical-route/${
+          params.opticalRouteId!.split('_')[0] || ''
+        }/routes`,
       );
-      const allroutes=await allroutesrespone.json()
+      const allroutes = await allroutesrespone.json();
       setAllroutes(
         allroutes.map((data: any, index: any) => ({
           index: Number(index),
@@ -680,11 +676,9 @@ console.log("getdata",getdata);
         ]);
       }
     } catch (error) {
-      
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-   
   };
 
   useEffect(() => {
@@ -695,26 +689,32 @@ console.log("getdata",getdata);
     try {
       if (alldeleteroutes.length > 0) {
         request('opticalrouteDeleteRoute', {
-          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
+          params: {
+            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+          },
           data: alldeleteroutes,
         });
       }
       if (allcreatedroutes.length > 0) {
         request('opticalrouteCreateRoute', {
-          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
-          data: allcreatedroutes.map((data,index) => ({
+          params: {
+            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+          },
+          data: allcreatedroutes.map((data, index) => ({
             link_id: data.link_id,
             cable: data.cable,
             core: data.core,
-            route_number:index
+            route_number: index,
           })),
         });
       }
-  
+
       if (allupdatedroutes.length > 0) {
         request('opticalrouteUpdateRoute', {
-          params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
-          data: allupdatedroutes.map((data,index) => ({
+          params: {
+            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+          },
+          data: allupdatedroutes.map((data, index) => ({
             link_id: data.link_id,
             cable: data.cable,
             core: data.core,
@@ -723,22 +723,18 @@ console.log("getdata",getdata);
         });
       }
     } catch (error) {
-      
     } finally {
       getallroute();
-      setAllCreatedroutes([])
-      setAllUpdatedroutes([])
-      setAllDeleteroutes([])
+      setAllCreatedroutes([]);
+      setAllUpdatedroutes([]);
+      setAllDeleteroutes([]);
     }
-    
-   
   };
   // ###################################################################################################
- if(loading){
-  return <h1 className='font-bold mt-6'>Loading..</h1>
- }
- 
- 
+  if (loading) {
+    return <h1 className="mt-6 font-bold">Loading..</h1>;
+  }
+
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex w-11/12 flex-grow flex-col gap-y-4">
