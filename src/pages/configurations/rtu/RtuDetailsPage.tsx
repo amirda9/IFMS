@@ -14,8 +14,10 @@ import {InputFormik} from '~/container';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {RootState} from '~/store';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {UserRole} from '~/constant/users';
+import { deepcopy } from '~/util';
+import { setStationsrtu } from '~/store/slices/rtu';
 
 const rtuSchema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
@@ -42,6 +44,7 @@ const Rowtext = ({name, value}: Rowtext) => {
 };
 
 const RtuDetailsPage: FC = () => {
+  const dispatch=useDispatch()
   const params = useParams();
   const {
     stationsrtu,
@@ -101,6 +104,7 @@ const RtuDetailsPage: FC = () => {
       } || {id: '', username: ''},
     },
     onSubmit: () => {
+    
       request('rtuUpdate', {
         params: {rtu_id: params?.rtuId?.split('_')[0] || ''},
         data: {
@@ -116,9 +120,17 @@ const RtuDetailsPage: FC = () => {
           default_gateway: formik.values.DefaultGateway,
         },
       });
-    },
+      const stationsrtuCopy=deepcopy(stationsrtu)
+      const findstationrtuindex=stationsrtu.findIndex(data => data.stationid == rtuDetail?.data?.station_id || "")
+       const findrtuid=stationsrtu[findstationrtuindex].rtues.findIndex(data => data.id == params?.rtuId?.split('_')[0]!)
+       stationsrtuCopy[findstationrtuindex].rtues[findrtuid].name=formik.values.name
+       dispatch(setStationsrtu(stationsrtuCopy))
+      },
   });
 
+  if(rtuDetail?.httpRequestStatus == "loading"){
+    return <h1>Loading...</h1>
+  }
   return (
     <div className="flex flex-grow">
       <FormikProvider value={formik}>

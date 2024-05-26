@@ -45,7 +45,7 @@ const OpticalRouteLayout: FC = () => {
   const dispatch = useDispatch();
   const navigte=useNavigate()
   const [selectedId, setSelectedId] = useState('');
-  const [list, setList] = useState<networklisttype[]>();
+  const [list, setList] = useState<networklisttype[]>([]);
   const {networkselectedlist, networkoptical, alldeleteopticalroute} =
     useSelector((state: RootState) => state.opticalroute);
 
@@ -296,7 +296,7 @@ const OpticalRouteLayout: FC = () => {
 
         {openall ? (
           <>
-            {list?.map((networkdata, index) => (
+            {Array.isArray(list) && list?.map((networkdata, index) => (
               <div
                 key={index}
                 className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${

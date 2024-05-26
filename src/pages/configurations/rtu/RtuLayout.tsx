@@ -22,7 +22,7 @@ import {
 import {IoTrashOutline} from 'react-icons/io5';
 import {RootState} from '~/store';
 import Swal from 'sweetalert2';
-import { UserRole } from '~/constant/users';
+import {UserRole} from '~/constant/users';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -39,7 +39,7 @@ type Itemstationbtntype = {
   canAdd?: boolean;
   regionid: string;
   networkid: string;
-  candelete:boolean
+  candelete: boolean;
 };
 
 type Itemregionbtntype = {
@@ -76,30 +76,33 @@ const swalsetting: any = {
   cancelButtonColor: '#d33',
   confirmButtonText: 'Yes, delete it!',
 };
-type networklisttype={ 
-  id:string
-  name:string
-  time_created:string
-  time_updated:string
-  }
+type networklisttype = {
+  id: string;
+  name: string;
+  time_created: string;
+  time_updated: string;
+};
 const RtuLayout: FC = () => {
   const dispatch = useDispatch();
   const [selectedtabId, setSelectedtabid] = useState('');
-  const [list,setList]=useState<networklisttype[]>()
+  const [list, setList] = useState<networklisttype[]>();
   const navigate = useNavigate();
-  const {stationsrtu, regionstations, networkregions,rtunetworkidadmin,rturegionidadmin} = useSelector(
-    (state: RootState) => state.rtu,
-  );
+  const {
+    stationsrtu,
+    regionstations,
+    networkregions,
+    rtunetworkidadmin,
+    rturegionidadmin,
+  } = useSelector((state: RootState) => state.rtu);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
     request,
-    state: { regions},
+    state: {regions},
   } = useHttpRequest({
     selector: state => ({
       // list: state.http.networkList,
       regions: state.http.regionList,
     }),
-
   });
 
   const [openall, setOpenall] = useState(false);
@@ -121,11 +124,8 @@ const RtuLayout: FC = () => {
       try {
         const response = await $Get(`otdr/network`);
         const responsedata = await response.json();
-        setList(responsedata)
-      } catch (error) {
-        
-      }
-
+        setList(responsedata);
+      } catch (error) {}
     };
     getnetworklist();
   }, []);
@@ -137,13 +137,13 @@ const RtuLayout: FC = () => {
     // const stationrtues = await $Get(`otdr/station/${id}/rtus`);
 
     try {
-      const [stationrtuesresponse,stationdetailresponse] = await Promise.all([
+      const [stationrtuesresponse, stationdetailresponse] = await Promise.all([
         $Get(`otdr/station/${id}/rtus`),
-         $Get(`otdr/station/${id}`),
+        $Get(`otdr/station/${id}`),
       ]);
-      let stationdetail=await stationdetailresponse.json()
-      console.log("stationrtues",stationrtuesresponse);
-      
+      let stationdetail = await stationdetailresponse.json();
+
+
       if (stationrtuesresponse.status == 200) {
         const stationrtuesdata = await stationrtuesresponse.json();
         const findstation = stationsrtu.findIndex(data => data.stationid == id);
@@ -160,9 +160,8 @@ const RtuLayout: FC = () => {
           dispatch(setStationsrtu(stationsrtuCopy));
         }
       }
-      if(stationdetail.access.access === "ADMIN"){
-      dispatch(setRtuStationidadmin(id))
-
+      if (stationdetail.access.access === 'ADMIN') {
+        dispatch(setRtuStationidadmin(id));
       }
     } catch (error) {
       console.log(error);
@@ -178,26 +177,29 @@ const RtuLayout: FC = () => {
         //first get the network rtues
         try {
           const getnetworlrtues = await $Get(`otdr/rtu?network_id=${id}`);
-
-          if (getnetworlrtues.status == 200) {
-            const networlrtues: getallrtuestype = await getnetworlrtues.json();
-            if (networlrtues.length > 0) {
-              //then delete network rtues
-              const deleteNetworkRtues = await $Delete(
-                `otdr/rtu/batch_delete`,
-                networlrtues?.map(data => data.id),
-              );
-              if (deleteNetworkRtues.status == 201) {
-                for (let i = 0; i < stationsrtu.length; i++) {
-                  if (stationsrtu[i].networkid == id) {
-                    oldstationrtu[i].rtues = [];
-                    oldstationrtu[i].deletertues = [];
-                  }
+          const networlrtues: getallrtuestype = await getnetworlrtues.json();
+          const promises = networlrtues?.map(
+            (data: {id: string; name: string}) =>
+              $Delete(`otdr/rtu/${data.id}`),
+          );
+          const results = await Promise.allSettled(promises);
+          if (networlrtues.length > 0) {
+            //then delete network rtues
+            const deleteNetworkRtues = await $Delete(
+              `otdr/rtu/batch_delete`,
+              networlrtues?.map(data => data.id),
+            );
+            if (deleteNetworkRtues.status == 201) {
+              for (let i = 0; i < stationsrtu.length; i++) {
+                if (stationsrtu[i].networkid == id) {
+                  oldstationrtu[i].rtues = [];
+                  oldstationrtu[i].deletertues = [];
                 }
-                dispatch(setStationsrtu(oldstationrtu));
               }
+              dispatch(setStationsrtu(oldstationrtu));
             }
           }
+          navigate(`/config/remote-test-units`);
         } catch (error) {
           console.log(error);
         }
@@ -216,21 +218,21 @@ const RtuLayout: FC = () => {
             const regionrtues: getallrtuestype = await getregionrtues.json();
             if (regionrtues.length > 0) {
               //delete region rtues
-              const deleteregionRtues = await $Delete(
-                `otdr/rtu/batch_delete`,
-                regionrtues?.map(data => data.id),
+              const promises = regionrtues?.map(
+                (data: {id: string; name: string}) =>
+                  $Delete(`otdr/rtu/${data.id}`),
               );
+              const results = await Promise.allSettled(promises);
 
-              if (deleteregionRtues.status == 201) {
-                //update station rtues
-                for (let i = 0; i < stationsrtu.length; i++) {
-                  if (stationsrtu[i].regionid == regionid) {
-                    oldstationrtu[i].rtues = [];
-                    oldstationrtu[i].deletertues = [];
-                  }
+              //update station rtues
+              for (let i = 0; i < stationsrtu.length; i++) {
+                if (stationsrtu[i].regionid == regionid) {
+                  oldstationrtu[i].rtues = [];
+                  oldstationrtu[i].deletertues = [];
                 }
-                dispatch(setStationsrtu(oldstationrtu));
               }
+              dispatch(setStationsrtu(oldstationrtu));
+              navigate(`/config/remote-test-units`);
             }
           }
         } catch (error) {
@@ -256,25 +258,24 @@ const RtuLayout: FC = () => {
 
             if (stationallrtues.length > 0) {
               //delete station rtues
-              const deletestationRtues = await $Delete(
-                `otdr/rtu/batch_delete`,
+              const promises = stationallrtues?.map(
+                (data: {id: string; name: string}) =>
+                  $Delete(`otdr/rtu/${data.id}`),
+              );
+              const results = await Promise.allSettled(promises);
+              let alldeletedrtu = deepcopy(
                 stationallrtues?.map(data => data.id),
               );
-
-              if (deletestationRtues.status == 201) {
-                let alldeletedrtu = deepcopy(
-                  stationallrtues?.map(data => data.id),
+              //update station rtu list
+              for (let i = 0; i < stationsrtu.length; i++) {
+                let result = stationsrtu[i].rtues.filter(
+                  (data: any) => !alldeletedrtu.includes(data.id),
                 );
-                //update station rtu list
-                for (let i = 0; i < stationsrtu.length; i++) {
-                  let result = stationsrtu[i].rtues.filter(
-                    data => !alldeletedrtu.includes(data.id),
-                  );
-                  oldstationrtu[i].rtues = result;
-                }
-                oldstationrtu[findstationrtu].deletertues = [];
-                dispatch(setStationsrtu(oldstationrtu));
+                oldstationrtu[i].rtues = result;
               }
+              oldstationrtu[findstationrtu].deletertues = [];
+              dispatch(setStationsrtu(oldstationrtu));
+              navigate(`/config/remote-test-units`);
             }
           }
         } catch (error) {
@@ -398,7 +399,7 @@ const RtuLayout: FC = () => {
     regionid,
     onclick = () => {},
     canAdd = false,
-    candelete=false
+    candelete = false,
   }: Itemstationbtntype) => {
     return (
       <div
@@ -435,7 +436,7 @@ const RtuLayout: FC = () => {
         ) : (
           false
         )}
-        
+
         {candelete && networkselectedlist.indexOf(id) > -1 ? (
           <IoTrashOutline
             onClick={() => ondeleteStaionrtu(id)}
@@ -476,8 +477,7 @@ const RtuLayout: FC = () => {
           allregionsid.push({id: maindata[i].id, name: maindata[i].name});
         }
         const old = deepcopy(networkregions);
-   
-        
+
         old.push({
           networkid: (regions && regions[0]?.network_id) || '',
           regions: allregionsid,
@@ -490,23 +490,24 @@ const RtuLayout: FC = () => {
         dispatch(setRtuNetworkidadmin(id));
       }
     } catch (error) {}
-    // request('regionList', {params: {network_id: id}});
   };
 
   const onclickregion = async (regionid: string) => {
     let old = deepcopy(regionstations);
-    const [allstationresponse,regiondetail] = await Promise.all([
+    const [allstationresponse, regiondetail] = await Promise.all([
       await $Get(`otdr/region/${regionid}/stations`),
       await $Get(`otdr/region/${regionid}`),
     ]);
-    // const allstation=await allstationresponse.json()
-    const regiondetaildata=await regiondetail.json()
-    
-    dispatch(setRtuRegionidadmin(regionid))
+
+    const regiondetaildata = await regiondetail.json();
+
+    dispatch(setRtuRegionidadmin(regionid));
 
     if (allstationresponse.status === 200) {
       let allstationdata = await allstationresponse.json();
-      const finddata = regionstations.findIndex(data => data.regionid == regionid);
+      const finddata = regionstations.findIndex(
+        data => data.regionid == regionid,
+      );
       let allregionsid: any = [];
       if (allstationdata.length > 0 && finddata < 0) {
         for (let i = 0; i < allstationdata?.length; i++) {
@@ -525,30 +526,6 @@ const RtuLayout: FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (mount) {
-  //     const finddata = networkregions.filter(
-  //       data => data.networkid == networkId,
-  //     );
-  //     const maindata = regions?.data || [];
-
-  //     let allregionsid: any = [];
-  //     if (maindata.length > 0 && finddata.length == 0) {
-  //       for (let i = 0; i < maindata?.length; i++) {
-  //         allregionsid.push({id: maindata[i].id, name: maindata[i].name});
-  //       }
-  //       const old = deepcopy(networkregions);
-  //       old.push({
-  //         networkid: (regions?.data && regions?.data[0]?.network_id) || '',
-  //         regions: allregionsid,
-  //       });
-  //       dispatch(setNetworkregions(old));
-  //     }
-  //   } else {
-  //     setMount(true);
-  //   }
-  // }, [regions]);
-
   const ondeletesinglertu = async (rtuid: string, stationid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
@@ -559,29 +536,30 @@ const RtuLayout: FC = () => {
 
         try {
           //We delete all the rtus related to the station that have their checkboxes checked.
-          const deletestationRtues = await $Delete(
-            `otdr/rtu/batch_delete`,
-            StationsrtuCopy[findstation]?.deletertues,
+
+          const promises = StationsrtuCopy[findstation]?.deletertues.map(
+            (data: string) => $Delete(`otdr/rtu/${data}`),
           );
-          if (deletestationRtues.status == 201) {
-            //then update the station rtu list
-            let newstationreues = [];
-            for (
-              let i = 0;
-              i < StationsrtuCopy[findstation]!.rtues!.length;
-              i++
-            ) {
-              let findrtu = StationsrtuCopy[findstation]!.deletertues.findIndex(
-                data => data == StationsrtuCopy[findstation]!.rtues[i].id,
-              );
-              if (findrtu < 0) {
-                newstationreues.push(StationsrtuCopy[findstation]!.rtues[i]);
-              }
+          const results = await Promise.allSettled(promises);
+
+          //then update the station rtu list
+          let newstationreues = [];
+          for (
+            let i = 0;
+            i < StationsrtuCopy[findstation]!.rtues!.length;
+            i++
+          ) {
+            let findrtu = StationsrtuCopy[findstation]!.deletertues.findIndex(
+              data => data == StationsrtuCopy[findstation]!.rtues[i].id,
+            );
+            if (findrtu < 0) {
+              newstationreues.push(StationsrtuCopy[findstation]!.rtues[i]);
             }
-            StationsrtuCopy[findstation].rtues = newstationreues;
-            StationsrtuCopy[findstation].deletertues = [];
-            dispatch(setStationsrtu(StationsrtuCopy));
           }
+          StationsrtuCopy[findstation].rtues = newstationreues;
+          StationsrtuCopy[findstation].deletertues = [];
+          dispatch(setStationsrtu(StationsrtuCopy));
+          navigate(`/config/remote-test-units`);
         } catch (error) {
           console.log(error);
         }
@@ -610,7 +588,7 @@ const RtuLayout: FC = () => {
     dispatch(setStationsrtu(stationsrtuCopy));
   };
 
-  console.log('list?.data', list);
+
 
   // ############################################################
   return (
@@ -645,8 +623,7 @@ const RtuLayout: FC = () => {
               <div key={index} className="flex flex-col">
                 <Itembtn
                   onclick={() => {
-                    onclicknetwork(networkdata.id)
-                
+                    onclicknetwork(networkdata.id);
                   }}
                   id={networkdata.id}
                   name={networkdata.name}
@@ -742,9 +719,27 @@ const RtuLayout: FC = () => {
                                                     networkdata.id,
                                                   );
                                                   // dispatch(setRtuStationidadmin(satationdata.id))
-                                                }}                                              
-                                                canAdd={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(regionsdata.id))}
-                                                candelete={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(regionsdata.id))}
+                                                }}
+                                                canAdd={
+                                                  loggedInUser.role ===
+                                                    UserRole.SUPER_USER ||
+                                                  rtunetworkidadmin.includes(
+                                                    networkdata.id,
+                                                  ) ||
+                                                  rturegionidadmin.includes(
+                                                    regionsdata.id,
+                                                  )
+                                                }
+                                                candelete={
+                                                  loggedInUser.role ===
+                                                    UserRole.SUPER_USER ||
+                                                  rtunetworkidadmin.includes(
+                                                    networkdata.id,
+                                                  ) ||
+                                                  rturegionidadmin.includes(
+                                                    regionsdata.id,
+                                                  )
+                                                }
                                                 id={satationdata.id}
                                                 regionid={regionsdata.id}
                                                 networkid={networkdata.id}
@@ -799,7 +794,16 @@ const RtuLayout: FC = () => {
                                                                 satationdata.id,
                                                               )
                                                             }
-                                                            canDelete={(loggedInUser.role === UserRole.SUPER_USER || rtunetworkidadmin.includes(networkdata.id) || rturegionidadmin.includes(networkdata.id))}
+                                                            canDelete={
+                                                              loggedInUser.role ===
+                                                                UserRole.SUPER_USER ||
+                                                              rtunetworkidadmin.includes(
+                                                                networkdata.id,
+                                                              ) ||
+                                                              rturegionidadmin.includes(
+                                                                networkdata.id,
+                                                              )
+                                                            }
                                                             onDelete={() =>
                                                               ondeletesinglertu(
                                                                 rtudata.id,

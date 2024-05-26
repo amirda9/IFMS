@@ -5,8 +5,6 @@ import {$Delete, $Get, $Post, $Put} from '~/util/requestapi';
 import classNames from '~/util/classNames';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {deepcopy} from '~/util';
-import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
 import Swal from 'sweetalert2';
 import {useSelector} from 'react-redux';
 import ErrorPage403 from './../../errors/403';
@@ -64,8 +62,8 @@ const swalsetting: any = {
 };
 const RtuPortsPage: FC = () => {
   const params = useParams();
-  const networkId = Cookies.get(networkExplored);
   const [allrtuports, setAllrtuports] = useState<allportstype>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedboxoptions, setSelectedboxoptions] =
     useState<opticalroutlistType>([]);
   const [allupdatesports, setAllupdatesports] = useState<allupdatesportstype[]>(
@@ -74,26 +72,23 @@ const RtuPortsPage: FC = () => {
   const [allcreateport, setAllcreateport] = useState<allcreateports>([]);
   const [alldeletedports, setAlldeletedports] = useState<string[]>([]);
 
-  console.log('👹', allrtuports);
-
-  const {
-    stationsrtu,
-    regionstations,
-    networkregions,
-    rtunetworkidadmin,
-    rturegionidadmin,
-    rtustationidadmin,
-  } = useSelector((state: RootState) => state.rtu);
+  const {rtunetworkidadmin, rturegionidadmin, rtustationidadmin} = useSelector(
+    (state: RootState) => state.rtu,
+  );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const getrtuports = async () => {
     try {
+      setLoading(true);
       //get rtu ports
-      const getdata = await $Get(
-        `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
-      );
-
+      const [getdata, getrtuopticalrote] = await Promise.all([
+        $Get(`otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`),
+        $Get(
+          `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
+            '_',
+          )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
+        ),
+      ]);
       const allrtuports: allportstype = await getdata.json();
-      console.log('allrtuports', allrtuports);
       let rtuports: allportstype = deepcopy(allrtuports);
       if (allrtuports.length < 8) {
         for (let i = 0; i < 8 - allrtuports.length; i++) {
@@ -116,48 +111,38 @@ const RtuPortsPage: FC = () => {
         }
       }
 
-      if (getdata.status == 200) {
-        setAllrtuports(
-          rtuports.map((data, index: number) => ({
-            ...data,
-            index,
-          })),
-        );
-        //get allrtu  optical routes
+      setAllrtuports(
+        rtuports.map((data, index: number) => ({
+          ...data,
+          index,
+        })),
+      );
+      //get allrtu  optical routes
 
-        const getrtuopticalrote = await $Get(
-          `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
-            '_',
-          )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
-        );
-
-        const getopticaldata: opticalroutlistType =
-          await getrtuopticalrote.json();
-        console.log('getopticaldata', getopticaldata);
-        if (getrtuopticalrote.status == 200) {
-          // remove the optical-routes of the ports from the list of optical-routes that should be shown in the select boxes. Because the selected optical routes should not be repeated.
-          let data: opticalroutlistType = [];
-          for (let i = 0; i < getopticaldata.length; i++) {
-            if (
-              rtuports.findIndex(
-                dataa => dataa.optical_route_id == getopticaldata[i].id,
-              ) < 0
-            ) {
-              data.push({
-                id: getopticaldata[i].id,
-                name: getopticaldata[i].name,
-                end_station: getopticaldata[i].end_station || null,
-                length: getopticaldata[i].length,
-              });
-            }
-          }
-
-          setSelectedboxoptions(data);
-        } else {
+      const getopticaldata: opticalroutlistType =
+        await getrtuopticalrote.json();
+      // remove the optical-routes of the ports from the list of optical-routes that should be shown in the select boxes. Because the selected optical routes should not be repeated.
+      let data: opticalroutlistType = [];
+      for (let i = 0; i < getopticaldata.length; i++) {
+        if (
+          rtuports.findIndex(
+            dataa => dataa.optical_route_id == getopticaldata[i].id,
+          ) < 0
+        ) {
+          data.push({
+            id: getopticaldata[i].id,
+            name: getopticaldata[i].name,
+            end_station: getopticaldata[i].end_station || null,
+            length: getopticaldata[i].length,
+          });
         }
       }
+
+      setSelectedboxoptions(data);
     } catch (error) {
-      console.log(error);
+      console.log(`error is:${error}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -181,7 +166,7 @@ const RtuPortsPage: FC = () => {
         await $Put(
           `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
           allupdatesports.map(data => ({
-            id: data.id,
+            id:params?.rtuId?.split('_')[0],
             state: data.state,
             optical_route_id: data.optical_route_id,
             optical_switch_port_index: data.optical_switch_port_index,
@@ -194,10 +179,11 @@ const RtuPortsPage: FC = () => {
 
     if (alldeletedports.length > 0) {
       try {
-        await $Delete(
-          `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
-          alldeletedports,
-        );
+        const promises = alldeletedports.map((data: string) =>
+        $Delete(`/api/otdr/rtu/${data}`),
+      );
+      const results = await Promise.all(promises);
+
       } catch (error) {
         console.log(error);
       }
@@ -409,6 +395,9 @@ const RtuPortsPage: FC = () => {
     }
   };
 
+  if (loading) {
+    return <h1>Loading ...</h1>;
+  }
   if (
     loggedInUser.role === UserRole.SUPER_USER ||
     rtunetworkidadmin.includes(params?.rtuId?.split('_')[2]!) ||
