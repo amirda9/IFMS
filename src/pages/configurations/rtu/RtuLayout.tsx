@@ -619,7 +619,7 @@ const RtuLayout: FC = () => {
         {openall ? (
           <div
             className={` mt-[-10px] w-full  border-l-[1px] border-dotted border-[#000000]`}>
-            {list?.map((networkdata, index) => (
+            {Array.isArray(list) && list?.map((networkdata, index) => (
               <div key={index} className="flex flex-col">
                 <Itembtn
                   onclick={() => {

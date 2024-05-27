@@ -89,6 +89,8 @@ const RtuPortsPage: FC = () => {
         ),
       ]);
       const allrtuports: allportstype = await getdata.json();
+      console.log('🖌️', allrtuports);
+
       let rtuports: allportstype = deepcopy(allrtuports);
       if (allrtuports.length < 8) {
         for (let i = 0; i < 8 - allrtuports.length; i++) {
@@ -166,7 +168,7 @@ const RtuPortsPage: FC = () => {
         await $Put(
           `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
           allupdatesports.map(data => ({
-            id:params?.rtuId?.split('_')[0],
+            id: data?.id,
             state: data.state,
             optical_route_id: data.optical_route_id,
             optical_switch_port_index: data.optical_switch_port_index,
@@ -180,10 +182,9 @@ const RtuPortsPage: FC = () => {
     if (alldeletedports.length > 0) {
       try {
         const promises = alldeletedports.map((data: string) =>
-        $Delete(`/api/otdr/rtu/${data}`),
-      );
-      const results = await Promise.all(promises);
-
+          $Delete(`/api/otdr/rtu/${data}`),
+        );
+        const results = await Promise.all(promises);
       } catch (error) {
         console.log(error);
       }
@@ -394,6 +395,7 @@ const RtuPortsPage: FC = () => {
       });
     }
   };
+  console.log('allupdatesports', allupdatesports);
 
   if (loading) {
     return <h1>Loading ...</h1>;
