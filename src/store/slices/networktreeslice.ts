@@ -1237,7 +1237,6 @@ const networktreeslice = createSlice({
       const findstations = state.regionstations.findIndex(
         data => data.regionid == action.payload.regionid,
       );
-
       let newtlist = [];
       for (
         let i = 0;
@@ -1249,9 +1248,11 @@ const networktreeslice = createSlice({
             data => data == regionstationsCopy[findstations].stations[i].id,
           ) < 0
         ) {
+
           newtlist.push(regionstationsCopy[findstations].stations[i]);
         }
       }
+ 
       regionstationsCopy[findstations].stations = newtlist;
       const newselectedstations = state.selectedstations.filter(
         data => data.regionid != action.payload.regionid,
@@ -1259,8 +1260,9 @@ const networktreeslice = createSlice({
       const finldregionlinks = regionlinksCopy.findIndex(
         (data: any) => data.regionid == action.payload.regionid,
       );
-
+     if(finldregionlinks>-1){
       regionlinksCopy[finldregionlinks].links = [];
+     }
       state.regionLinks = regionlinksCopy;
       state.allselectedId = allselectedIdCopy.filter(
         (data: string) => data != `${action.payload.regionid}&${action.payload.regionid}_Linkss`,

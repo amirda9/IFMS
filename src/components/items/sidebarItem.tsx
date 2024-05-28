@@ -48,8 +48,7 @@ const SidebarItem: FC<PropsType> = ({
   const match = matchPath(to, location.pathname);
 
   var result = location.pathname.search(to);
-  console.log("result",result);
-  
+
  const navigate=useNavigate()
   return (
     <div className={'relative my-1 flex flex-row ' + className}>

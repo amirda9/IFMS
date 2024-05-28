@@ -40,7 +40,7 @@ import {UserRole} from '~/constant/users';
 type ItemspROPS = {
   to: string;
   selected: boolean;
-  key?: number;
+  key?: number | string;
   onDelete: () => void;
   onclick: () => void;
   id: string;
@@ -306,17 +306,19 @@ function NetworktreeLayout({children}: Iprops) {
           );
 
           const results = await Promise.all(promises);
+console.log("results",results);
 
-          dispatch(
-            deletegroupstation({
-              regionid: regionid,
-              stationsid: deletestationlist?.stationsID || [],
-            }),
-          );
+dispatch(
+  deletegroupstation({
+    regionid: regionid,
+    stationsid: deletestationlist?.stationsID || [],
+  }),
+);
       
         } catch (error) {
           `deleteStationError is:${error}`;
         } finally {
+       
           dispatch(chageLoading(false))
           navigate(`/regions/defaultregionemptypage/${regionid}_Stations`);
         }
@@ -533,7 +535,7 @@ function NetworktreeLayout({children}: Iprops) {
             {networkslist?.map((networkdata, index) => (
               <div key={index} className="w-full">
                 <Items
-                  key={Number(networkdata.id) + index}
+                  key={networkdata.id + index}
                   to={
                     loggedInUser.role === UserRole.SUPER_USER
                       ? `/networks/${networkdata.id}`
@@ -573,7 +575,7 @@ function NetworktreeLayout({children}: Iprops) {
                         ?.regions.map((regionsdata, index) => (
                           <div key={index} className="full">
                             <Items
-                              key={Number(regionsdata.id)}
+                              key={regionsdata.id}
                               to={`/regions/${regionsdata.id}_${networkdata.id}`}
                               selected={false}
                               canAdd={false}
@@ -641,7 +643,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       )
                                       ?.stations.map((stationsdata, index) => (
                                         <Items
-                                          key={index + Number(stationsdata.id)}
+                                          key={index + stationsdata.id}
                                           to={`/stations/${stationsdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           selected={false}
                                           canDelete={true}
@@ -735,7 +737,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       )
                                       ?.links.map((linksdata, index) => (
                                         <Items
-                                          key={Number(linksdata.id)}
+                                          key={linksdata.id}
                                           canAdd={false}
                                           to={`/links/${linksdata.id}_${regionsdata.id}_${networkdata.id}`}
                                           createurl={`/links/create`}
@@ -858,7 +860,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   )
                                   ?.stations.map((stationsdata, index) => (
                                     <Items
-                                      key={Number(stationsdata.id)}
+                                      key={stationsdata.id+stationsdata.id}
                                       to={`/stations/${stationsdata.id}_${networkdata.id}/defaultstationDetailPage`}
                                       canAdd={false}
                                       disabledcheckbox={
@@ -938,7 +940,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   )
                                   ?.links.map((linksdata, index) => (
                                     <Items
-                                      key={Number(linksdata.id)}
+                                      key={linksdata.id+index}
                                       to={`/links/${linksdata.id}_${networkdata.id}/defaultregionlinkdetailpage`}
                                       createurl={`/links/create`}
                                       canAdd={false}
