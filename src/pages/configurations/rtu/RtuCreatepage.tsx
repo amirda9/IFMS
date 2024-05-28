@@ -126,7 +126,8 @@ const RtuCreatePage: FC = () => {
   });
 
   return (
-    <div className="flex flex-grow">
+    <div className="relative flex flex-col">
+      <span className="mb-6 mt-2 font-bold">Create rtu</span>
       <FormikProvider value={formik}>
         <Form className="flex flex-grow flex-col gap-y-8">
           <div className="flex flex-grow flex-col gap-y-4">

@@ -29,6 +29,7 @@ import {deepcopy} from '~/util';
 import {BsPlusLg} from 'react-icons/bs';
 import {NetworkType} from '~/types/NetworkType';
 import {getPrettyDateTime} from '~/util/time';
+import {toast} from 'react-toastify';
 type Itembtntype = {
   name: string;
   id: string;
@@ -49,7 +50,7 @@ type testondemand = {
 };
 
 type tabelrow = {
-  id:string,
+  id: string;
   index: number;
   date: string;
   opticalrouteid: string;
@@ -93,6 +94,7 @@ function Testondemand() {
         const networkListResponseDate = await networkListResponse?.json();
         setNetworklist(networkListResponseDate);
       } catch (error) {
+        toast('An error was encountered', {type: 'error', autoClose: 1000});
         console.log(`getNetworklistError is:${error}`);
       }
     };
@@ -263,7 +265,8 @@ function Testondemand() {
             dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
           }
         } catch (error) {
-          console.log(error);
+          toast('An error was encountered', {type: 'error', autoClose: 1000});
+          console.log(`error is:${error}`);
         }
       }
     });
@@ -436,6 +439,7 @@ function Testondemand() {
       );
       dispatch(setSetuplist(newopticasetupresponseData));
     } catch (error) {
+      toast('An error was encountered', {type: 'error', autoClose: 1000});
       console.log(`getTestsetupError=${error}`);
     } finally {
       setSetuploading(false);
@@ -466,13 +470,11 @@ function Testondemand() {
       );
 
       const responsedata: testondemand[] = await response?.json();
-console.log("💖",responsedata);
 
       setAlltestondemand(
         responsedata.map((data, index) => ({
           tabbodybg: [
             {
-              
               name: 'status',
               bg:
                 data.status == 'PENDING'
@@ -484,7 +486,7 @@ console.log("💖",responsedata);
                   : 'white',
             },
           ],
-          id:data.id,
+          id: data.id,
           index: index + 1,
           date: getPrettyDateTime(data.time_created),
           opticalroute: data.optical_route.name,
@@ -498,6 +500,7 @@ console.log("💖",responsedata);
         })),
       );
     } catch (error) {
+      toast('An error was encountered', {type: 'error', autoClose: 1000});
     } finally {
       setGetmeasurmentloading(false);
     }
@@ -547,7 +550,9 @@ console.log("💖",responsedata);
             getmeasurments();
           }
         }
-      } catch (error) {}
+      } catch (error) {
+        toast('An error was encountered', {type: 'error', autoClose: 1000});
+      }
     }
   };
 
@@ -562,7 +567,7 @@ console.log("💖",responsedata);
           <span className="mb-[10px] text-[20px] font-normal leading-[24.2px]">
             Optical Route
           </span>
-          <div className="h-[400px] w-full bg-white">
+          <div className="h-[400px] w-full overflow-y-auto overflow-x-hidden bg-white">
             <div className={`relative ml-4 mt-[30px] flex w-full flex-col`}>
               <div
                 className={`absolute h-[40px] w-[10px] ${
@@ -701,7 +706,7 @@ console.log("💖",responsedata);
           <span className="mb-[10px] text-[20px] font-normal leading-[24.2px]">
             Test Setup
           </span>
-          <div className="h-[400px] w-full bg-white p-2">
+          <div className="h-[400px] w-full overflow-y-auto overflow-x-hidden bg-white p-2">
             {setuploading ? (
               <h1 className="font-bold">Loading...</h1>
             ) : (
@@ -777,19 +782,23 @@ console.log("💖",responsedata);
         containerClassName="w-full text-left min-h-[72px]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
         dynamicColumns={['detail', 'delete']}
         renderDynamicColumn={({key, value}) => {
-          console.log('value', value.opticalrouteid);
-
           if (key === 'detail')
-          // navigate(`../../../chart`, {
-       
-          // })
+            // navigate(`../../../chart`, {
+
+            // })
             return (
-              
-                <IoOpenOutline  onClick={()=>navigate('/config/chart',{state: {
-                  opticalrout_id: value.opticalrouteid,
-                  measurement_id:value.id,
-                }})} size={22} className="mx-auto cursor-pointer" />
-            
+              <IoOpenOutline
+                onClick={() =>
+                  navigate('/config/chart', {
+                    state: {
+                      opticalrout_id: value.opticalrouteid,
+                      measurement_id: value.id,
+                    },
+                  })
+                }
+                size={22}
+                className="mx-auto cursor-pointer"
+              />
             );
           else if (key === 'delete')
             return (
@@ -806,6 +815,7 @@ console.log("💖",responsedata);
                           getmeasurments();
                         }
                       } catch (error) {
+                        toast('An error was encountered', {type: 'error', autoClose: 1000});
                         `delete testondemand error:${error}`;
                       }
                     }
