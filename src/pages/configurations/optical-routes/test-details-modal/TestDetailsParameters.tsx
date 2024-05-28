@@ -2,7 +2,10 @@ import {Form, FormikProvider, useFormik} from 'formik';
 import {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
-import {setopticalroutUpdateTestsetupDetail} from './../../../../store/slices/opticalroutslice';
+import {
+  setopticalroutUpdateTestsetupDetail,
+  setgettestsetupdetaildata,
+} from './../../../../store/slices/opticalroutslice';
 import {Description, Select} from '~/components';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
@@ -19,7 +22,12 @@ const seperatedate = (time: string) => {
   let minute = date?.getMinutes(); // minute = 31
   let Minute = Number(minute) < 10 ? `0${minute}` : minute;
   let second = date.getSeconds(); // second = 27
-  let datePart = year + '-' + `${month.toString().length == 1?`0${month}`:month}` + '-' +`${day.toString().length == 1?`0${day}`:day}` ; // datePart = "2023-11-2"
+  let datePart =
+    year +
+    '-' +
+    `${month.toString().length == 1 ? `0${month}` : month}` +
+    '-' +
+    `${day.toString().length == 1 ? `0${day}` : day}`; // datePart = "2023-11-2"
   let timePart = hour + ':' + Minute; // timePart = "9:31:27"
   return {datePart: datePart, timePart: timePart};
 };
@@ -28,11 +36,10 @@ const TestDetailsParameters: FC = () => {
   const [mount, setMount] = useState(false);
   const [rtulist, setRtulist] = useState<{name: string; id: string}[]>([]);
   const params = useParams();
-
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const {opticalroutUpdateTestsetupDetail} = useSelector(
-    (state: any) => state.opticalroute,
-  );
+  const {opticalroutUpdateTestsetupDetail, gettestsetupdetaildata} =
+    useSelector((state: any) => state.opticalroute);
 
   const {
     request,
@@ -44,12 +51,12 @@ const TestDetailsParameters: FC = () => {
       opticalrouteTestSetupDetail: state.http.opticalrouteTestSetupDetail,
     }),
     initialRequests: request => {
-      request('opticalrouteTestSetupDetail', {
-        params: {
-          optical_route_id: params.opticalRouteId || '',
-          test_setup_id: params.testId || '',
-        },
-      });
+      // request('opticalrouteTestSetupDetail', {
+      //   params: {
+      //     optical_route_id: params.opticalRouteId || '',
+      //     test_setup_id: params.testId || '',
+      //   },
+      // });
       request('allStations', undefined);
     },
     // onUpdate: (lastState, state) => {
@@ -67,88 +74,97 @@ const TestDetailsParameters: FC = () => {
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
     if (params.testId == 'create') {
+      dispatch(setgettestsetupdetaildata(true));
     } else {
-      const getdata = async () => {
-        try {
-          const gettestSetupParametersresponse = await $Get(
-            `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
-          );
-          const gettestSetupParameters=await gettestSetupParametersresponse.json()
-          const testSetupParametCopy = deepcopy(gettestSetupParameters);
-  
-          let checkstartend = Number(
-            seperatedate(
-              testSetupParametCopy?.test_program?.end_date?.end,
-            ).timePart.split(':')[0],
-          );
-          let checkstartstart = Number(
-            seperatedate(
-              testSetupParametCopy?.test_program?.starting_date?.start,
-            ).timePart.split(':')[0],
-          );
-          //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
-          const getrtu = async () => {
-            try {
-              const allrturesponse = await $Get(
-                `otdr/station/${testSetupParametCopy?.station?.id}/rtus`,
-              );
-              const allrtu=await allrturesponse.json()
-              setRtulist(allrtu);
-            } catch (error) {
-              console.log(`get stations rtue error=${error}`);
-              
-            }
-        
-          };
-  
-          getrtu();
-  
-          testSetupParametCopy.station_id = gettestSetupParameters?.station?.id;
-          (testSetupParametCopy.init_rtu_id = gettestSetupParameters?.rtu?.id),
-            //Because we do not have the name of the rtu, we have to find the desired rtu among the rtus and get its name because we need its name.
-            // (testSetupParametCopy.init_rtu_name = rtulist.find(data => data.id == testSetupParametCopy?.rtu?.id)
-            (testSetupParametCopy.init_rtu_name =
-              gettestSetupParameters?.rtu?.name);
-          testSetupParametCopy.station_name = stations?.data?.find(
-            data => (data.id = testSetupParametCopy?.station?.id),
-          )?.name;
-  
-          (testSetupParametCopy.startdatePart = seperatedate(
-            testSetupParametCopy?.test_program?.starting_date?.start,
-          ).datePart),
-            //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
-            (testSetupParametCopy.starttimePart =
-              checkstartstart < 10
-                ? `0${checkstartstart}:${
-                    seperatedate(
-                      testSetupParametCopy?.test_program?.starting_date?.start,
-                    ).timePart.split(':')[1]
-                  }`
-                : seperatedate(
-                    testSetupParametCopy?.test_program?.starting_date?.start,
-                  ).timePart),
-            //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
-            (testSetupParametCopy.endtimePart =
-              checkstartend < 10
-                ? `0${checkstartend}:${
-                    seperatedate(
-                      testSetupParametCopy?.test_program?.end_date?.end,
-                    ).timePart.split(':')[1]
-                  }`
-                : seperatedate(testSetupParametCopy?.test_program?.end_date?.end)
-                    .timePart),
-            (testSetupParametCopy.enddatePart = seperatedate(
-              testSetupParametCopy?.test_program?.end_date?.end,
-            ).datePart),
-            delete testSetupParametCopy['station'];
-          delete testSetupParametCopy['rtu'];
-          dispatch(setopticalroutUpdateTestsetupDetail(testSetupParametCopy));
-        } catch (error) {
-          
-        }
+      if (!gettestsetupdetaildata) {
+        const getdata = async () => {
+          try {
+            setLoading(true);
+            const gettestSetupParametersresponse = await $Get(
+              `otdr/optical-route/${params.opticalRouteId}/test-setups/${params.testId}`,
+            );
+            const gettestSetupParameters =
+              await gettestSetupParametersresponse.json();
+            const testSetupParametCopy = deepcopy(gettestSetupParameters);
 
-      };
-      getdata();
+            let checkstartend = Number(
+              seperatedate(
+                testSetupParametCopy?.test_program?.end_date?.end,
+              ).timePart.split(':')[0],
+            );
+            let checkstartstart = Number(
+              seperatedate(
+                testSetupParametCopy?.test_program?.starting_date?.start,
+              ).timePart.split(':')[0],
+            );
+            //According to the station id that is returned from the backend, we get the list of rtus that are needed for the selectbox rtu.
+            const getrtu = async () => {
+              try {
+                const allrturesponse = await $Get(
+                  `otdr/station/${testSetupParametCopy?.station?.id}/rtus`,
+                );
+                const allrtu = await allrturesponse.json();
+                setRtulist(allrtu);
+              } catch (error) {
+                console.log(`get stations rtue error=${error}`);
+              }
+            };
+
+            getrtu();
+
+            testSetupParametCopy.station_id =
+              gettestSetupParameters?.station?.id;
+            (testSetupParametCopy.init_rtu_id =
+              gettestSetupParameters?.rtu?.id),
+              //Because we do not have the name of the rtu, we have to find the desired rtu among the rtus and get its name because we need its name.
+              // (testSetupParametCopy.init_rtu_name = rtulist.find(data => data.id == testSetupParametCopy?.rtu?.id)
+              (testSetupParametCopy.init_rtu_name =
+                gettestSetupParameters?.rtu?.name);
+            testSetupParametCopy.station_name = stations?.data?.find(
+              data => (data.id = testSetupParametCopy?.station?.id),
+            )?.name;
+
+            (testSetupParametCopy.startdatePart = seperatedate(
+              testSetupParametCopy?.test_program?.starting_date?.start,
+            ).datePart),
+              //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
+              (testSetupParametCopy.starttimePart =
+                checkstartstart < 10
+                  ? `0${checkstartstart}:${
+                      seperatedate(
+                        testSetupParametCopy?.test_program?.starting_date
+                          ?.start,
+                      ).timePart.split(':')[1]
+                    }`
+                  : seperatedate(
+                      testSetupParametCopy?.test_program?.starting_date?.start,
+                    ).timePart),
+              //When it comes from the backend, the hour part may be less than 10, in which case we have to put a 0 before it
+              (testSetupParametCopy.endtimePart =
+                checkstartend < 10
+                  ? `0${checkstartend}:${
+                      seperatedate(
+                        testSetupParametCopy?.test_program?.end_date?.end,
+                      ).timePart.split(':')[1]
+                    }`
+                  : seperatedate(
+                      testSetupParametCopy?.test_program?.end_date?.end,
+                    ).timePart),
+              (testSetupParametCopy.enddatePart = seperatedate(
+                testSetupParametCopy?.test_program?.end_date?.end,
+              ).datePart),
+              delete testSetupParametCopy['station'];
+            delete testSetupParametCopy['rtu'];
+            dispatch(setopticalroutUpdateTestsetupDetail(testSetupParametCopy));
+            dispatch(setgettestsetupdetaildata(true));
+          } catch (error) {
+            console.log(`error is:${error}`);
+          } finally {
+            setLoading(false);
+          }
+        };
+        getdata();
+      }
     }
   }, []);
 
@@ -205,7 +221,9 @@ const TestDetailsParameters: FC = () => {
   const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
 
-
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
     <FormikProvider value={formik}>
@@ -333,19 +351,17 @@ const TestDetailsParameters: FC = () => {
                       .toString()}/rtus`,
                   );
 
-                  const allrtu=await allrturesponse.json()
+                  const allrtu = await allrturesponse.json();
                   setRtulist(allrtu);
                 } catch (error) {
                   console.log(`getstationrtues error is :${error}`);
-                  
                 }
-              
               }}
               className="basis-96">
               <option value="" className="hidden">
                 {
                   stations?.data?.find(
-                    (data:any) =>
+                    (data: any) =>
                       data.id == opticalroutUpdateTestsetupDetail?.station_id,
                   )?.name
                 }

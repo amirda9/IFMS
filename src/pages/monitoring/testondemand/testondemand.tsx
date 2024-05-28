@@ -90,7 +90,7 @@ function Testondemand() {
     const getnetworklist = async () => {
       try {
         const networkListResponse = await $Get(`otdr/network/`);
-        const networkListResponseDate = await networkListResponse.json();
+        const networkListResponseDate = await networkListResponse?.json();
         setNetworklist(networkListResponseDate);
       } catch (error) {
         console.log(`getNetworklistError is:${error}`);
@@ -284,8 +284,8 @@ function Testondemand() {
     // -------------------
     const findopt = networkoptical.findIndex(data => data.networkid == id);
     const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
-    if (opticals.status == 200) {
-      const opticalslist = await opticals.json();
+    if (opticals?.status == 200) {
+      const opticalslist = await opticals?.json();
       console.log(opticalslist, 'opticalslist');
 
       //Here we add or remove the opticalroutes related to this network to the list.
@@ -430,7 +430,7 @@ function Testondemand() {
       const opticasetupresponse = await $Get(
         `otdr/optical-route/${id}/test-setups`,
       );
-      const opticasetupresponseData = await opticasetupresponse.json();
+      const opticasetupresponseData = await opticasetupresponse?.json();
       const newopticasetupresponseData = opticasetupresponseData.map(
         (data: any) => ({id: data.id, name: data.name}),
       );
@@ -465,7 +465,8 @@ function Testondemand() {
         `otdr/optical-route/measurement/measurements?measurement_type=on_demand${allpathes}&status=SUCCESS`,
       );
 
-      const responsedata: testondemand[] = await response.json();
+      const responsedata: testondemand[] = await response?.json();
+console.log("💖",responsedata);
 
       setAlltestondemand(
         responsedata.map((data, index) => ({
@@ -505,11 +506,12 @@ function Testondemand() {
   const getallmeasurements = async () => {
     if (selectedId != '' && testid != '') {
       try {
+        setGetmeasurmentloading(true);
         const testsetupresponse = await $Get(
           `otdr/optical-route/${selectedId}/test-setups/${testid}`,
         );
-        if (testsetupresponse.status == 200) {
-          const testsetupresponseData = await testsetupresponse.json();
+        if (testsetupresponse?.status == 200) {
+          const testsetupresponseData = await testsetupresponse?.json();
           setTestsetupdetail(testsetupresponseData);
           const createondemandmeasurmentresponse = await $Post(
             `otdr/optical-route/${selectedId}/on-demand-measurements`,
