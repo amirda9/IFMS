@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {useParams, useNavigate} from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import {deepcopy} from '~/util';
 import {$Delete, $Get} from '~/util/requestapi';
@@ -69,19 +70,21 @@ const OpticalRouteTestHistoryPage: FC = () => {
   const navigate = useNavigate();
   const params = useParams();
   const [mount, setMount] = useState(false);
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const [selectedtab, setSelectedtab] = useState('Date');
   const [veiwertablesorte, setVeiwertablesort] = useState(false);
   const [historydata, setHistorydata] = useState<historydatatype>([]);
+  const [deletelist, setDeletelist] = useState<string[]>([]);
 
   const gethistory = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const getdata = await $Get(
-        `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups/history`,
+        `otdr/optical-route/${
+          params.opticalRouteId!.split('_')[0]
+        }/test-setups/history`,
       );
 
-      
       const data: {
         measurement_id: string;
         index: number;
@@ -91,13 +94,13 @@ const OpticalRouteTestHistoryPage: FC = () => {
         rtu: string;
         station: string;
       }[] = await getdata.json();
-      
-      console.log("🥵",data);
+
       if (getdata.status == 200) {
         setHistorydata(data.map(prev => ({...prev, details: '', delete: ''})));
       }
-    } catch (error) {} finally {
-      setLoading(false)
+    } catch (error) {
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -148,10 +151,11 @@ const OpticalRouteTestHistoryPage: FC = () => {
     setMount(true);
   }, [veiwertablesorte, selectedtab]);
 
-  const deletehistory = async (measurement_id: string) => {
+  const deletehistory = async () => {
     try {
+      setLoading(true)
       const deleteonehistory = await $Delete(
-        `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/measurements/${measurement_id}`,
+        `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/measurements`,deletelist,
       );
       const data = await deleteonehistory.json();
       if (deleteonehistory.status == 201) {
@@ -173,14 +177,29 @@ const OpticalRouteTestHistoryPage: FC = () => {
           );
         }
       }
-    } catch (error) {}
+      toast('It was done successfully', {type: 'success',autoClose:1000});
+    } catch (error) {
+      toast('Encountered an error', {type: 'error',autoClose:1000});
+    } finally{
+      setLoading(false)
+      setDeletelist([])
+    }
+
   };
 
+  const onclickdelete = async (id: string) => {
+    const findidindex = deletelist.findIndex(data => data == id);
+    if (findidindex < 0) {
+      setDeletelist(prev => [...prev, id]);
+    }
+  };
+
+  
   return (
     <div className="flex flex-grow flex-col">
       <div className="flex flex-grow flex-col gap-y-4 pr-16">
         <Table
-         loading={loading}
+          loading={loading}
           tdclassname="text-left pl-[6px]"
           onclicktitle={(tabname: string, sortalfabet: boolean) => {
             setSelectedtab(tabname), setVeiwertablesort(sortalfabet);
@@ -190,13 +209,15 @@ const OpticalRouteTestHistoryPage: FC = () => {
           items={historydata}
           dynamicColumns={['details', 'delete']}
           renderDynamicColumn={({value, key}) => {
+           
+            
             if (key === 'details')
               return (
                 <IoOpenOutline
                   onClick={() =>
                     navigate(`../../../chart`, {
                       state: {
-                        opticalrout_id: params.opticalRouteId!.split("_")[0],
+                        opticalrout_id: params.opticalRouteId!.split('_')[0],
                         measurement_id: value.measurement_id,
                       },
                     })
@@ -208,8 +229,8 @@ const OpticalRouteTestHistoryPage: FC = () => {
             else if (key === 'delete')
               return (
                 <IoTrashOutline
-                  onClick={() => deletehistory(value.measurement_id)}
-                  className="mx-auto text-red-500"
+                  onClick={() => onclickdelete(value.measurement_id)}
+                  className="mx-auto text-red-500 cursor-pointer"
                   size={22}
                 />
               );
@@ -218,8 +239,8 @@ const OpticalRouteTestHistoryPage: FC = () => {
           bordered
         />
       </div>
-      <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn>Save</SimpleBtn>
+      <div className="flex flex-row gap-x-4 self-end mt-4">
+        <SimpleBtn onClick={deletehistory}>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>
