@@ -715,6 +715,10 @@ function Testondemand() {
                   onClick={() => {
                     dispatch(setSelectedtest(data.name)),
                       dispatch(setTestid(data.id));
+                      dispatch(setFromtimeupdated(""))
+                      dispatch(setShowCompletedTestsFrom(false))
+                      dispatch(setStarttestdate(""))
+                      dispatch(setEndtestdate(""))
                   }}
                   className={`w-full ${
                     selectedtest == data.name

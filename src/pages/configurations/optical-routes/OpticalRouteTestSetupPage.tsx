@@ -79,8 +79,7 @@ const OpticalRouteTestSetupPage: FC = () => {
  
   });
 
-  const Getsetup=()=>{
-    const getsetup = async () => {
+  const Getsetup=async()=>{
       try {
         setLoading(true)
         const getalldata = await $Get(
@@ -101,13 +100,11 @@ const OpticalRouteTestSetupPage: FC = () => {
           setAllitems(all);
         }
       } catch (error) {
+        console.log(`gettestsetupError is:${error}`);
         
       } finally {
         setLoading(false)
       }
-
-    };
-    getsetup();
   }
 
   useEffect(() => {

@@ -28,7 +28,7 @@ const TestDetailsTestProgram: FC = () => {
   const dispatch = useDispatch();
 
   const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
-  const {opticalroutUpdateTestsetupDetail} = useSelector(
+  const {opticalroutUpdateTestsetupDetail,modalloading} = useSelector(
     (state: any) => state.opticalroute,
   );
   const [selectedradio, setSelectedradio] = useState<string[]>(["Indefinite"]);
@@ -163,8 +163,10 @@ const TestDetailsTestProgram: FC = () => {
   }
 
 
-  console.log("♨️",opticalroutUpdateTestsetupDetail?.startdatePart);
-  
+
+  if (modalloading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     
     <div className="flex flex-col gap-y-8">

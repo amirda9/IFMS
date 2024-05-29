@@ -18,7 +18,7 @@ const TestDetailsLearning: FC = () => {
   };
   const dispatch = useDispatch();
   const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
-  const {opticalroutUpdateTestsetupDetail} = useSelector(
+  const {opticalroutUpdateTestsetupDetail,modalloading} = useSelector(
     (state: any) => state.opticalroute,
   );
 
@@ -136,6 +136,9 @@ const TestDetailsLearning: FC = () => {
         </span>
       </div>
     );
+  }
+  if (modalloading) {
+    return <h1>Loading...</h1>;
   }
 
   return (

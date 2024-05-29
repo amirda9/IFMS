@@ -7,12 +7,12 @@ import {useHttpRequest} from '~/hooks';
 import {deepcopy} from '~/util';
 import {useLocation} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {setgettestsetupdetaildata} from '~/store/slices/opticalroutslice';
+import {
+  setgettestsetupdetaildata,
+  setmodalloading,
+} from '~/store/slices/opticalroutslice';
 //this function get full date and time then produce full date
-const convertDate = (date: string, time: string) => {
-  var datetime = new Date(date + 'T' + time + ':00Z');
-  return datetime.toISOString();
-};
+
 const TestSetupDetailsModal: FC = () => {
   const dispatch = useDispatch();
   const params = useParams();
@@ -27,13 +27,11 @@ const TestSetupDetailsModal: FC = () => {
     (state: any) => state.opticalroute,
   );
 
-  const {
-    request,
-    state: {opticalrouteTestSetupDetail, stations},
-  } = useHttpRequest({
+  const {request, state} = useHttpRequest({
     selector: state => ({
       stationrtulist: state.http.stationrtuList,
       stations: state.http.allStations,
+      opticalrouteUpdateTestSetup: state.http.opticalrouteUpdateTestSetup,
       opticalrouteTestSetupDetail: state.http.opticalrouteTestSetupDetail,
       opticalrouteCreateTestSetup: state.http.opticalrouteCreateTestSetup,
     }),
@@ -51,6 +49,11 @@ const TestSetupDetailsModal: FC = () => {
           'loading' &&
         state.opticalrouteCreateTestSetup!.httpRequestStatus === 'success'
       ) {
+        // request('opticalrouteTestSetup', {
+        //   params: {
+        //     optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+        //   },
+        // });
         request('opticalrouteTestSetup', {
           params: {
             optical_route_id: params.opticalRouteId!.split('_')[0] || '',
@@ -63,6 +66,7 @@ const TestSetupDetailsModal: FC = () => {
   const createtestaetup = () => {
     const newdata = deepcopy(opticalroutUpdateTestsetupDetail);
     try {
+      dispatch(setmodalloading(true));
       if (
         opticalroutUpdateTestsetupDetail?.parameters?.distance_mode != 'manual'
       ) {
@@ -141,12 +145,12 @@ const TestSetupDetailsModal: FC = () => {
           });
         }
       }
-    
     } catch (error) {
-      toast('An error was encountered', {type: 'error',autoClose:1000});
-    } finally{
-      dispatch(setgettestsetupdetaildata(false));
-      {
+      toast('An error was encountered', {type: 'error', autoClose: 1000});
+    } finally {
+      setTimeout(() => {
+        dispatch(setmodalloading(false));
+        dispatch(setgettestsetupdetaildata(false));
         location.pathname.indexOf('monitoring') > -1
           ? navigate('/monitoring/test-on-demand')
           : navigate(
@@ -154,9 +158,10 @@ const TestSetupDetailsModal: FC = () => {
                 params.opticalRouteId!.split('_')[0]
               }/test-setup`,
             );
-      }
+      }, 3000);
     }
   };
+
 
   return (
     <AppDialog
@@ -180,14 +185,24 @@ const TestSetupDetailsModal: FC = () => {
             </SimpleBtn>
             <SimpleBtn
               className="cursor-pointer"
-              onClick={location.pathname.indexOf('monitoring') > -1
-              ?()=>{dispatch(setgettestsetupdetaildata(false)),navigate('/monitoring/test-on-demand')}:()=> {dispatch(setgettestsetupdetaildata(false)),navigate('..')}} type="button"
+              onClick={
+                location.pathname.indexOf('monitoring') > -1
+                  ? () => {
+                      dispatch(setgettestsetupdetaildata(false)),
+                        navigate('/monitoring/test-on-demand');
+                    }
+                  : () => {
+                      dispatch(setgettestsetupdetaildata(false)),
+                        navigate('..');
+                    }
+              }
+              type="button"
               // to={
               //   location.pathname.indexOf('monitoring') > -1
               //     ? '/monitoring/test-on-demand'
               //     : '..'
               // }
-              >
+            >
               Cancel
             </SimpleBtn>
           </div>
