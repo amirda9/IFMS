@@ -69,6 +69,7 @@ function Testondemand() {
   const [networklist, setNetworklist] = useState<NetworkType[]>([]);
   const [testsetupdetail, setTestsetupdetail] = useState<any>([]);
   const [alltestondemand, setAlltestondemand] = useState<tabelrow[]>([]);
+  const [deletelist, setDeletelist] = useState<string[]>([]);
   const [measurement_type, setMeasurement_type] = useState('on_demand');
   const [getmeasurmentloading, setGetmeasurmentloading] = useState(false);
   const {
@@ -95,7 +96,6 @@ function Testondemand() {
         setNetworklist(networkListResponseDate);
       } catch (error) {
         toast('An error was encountered', {type: 'error', autoClose: 1000});
-        console.log(`getNetworklistError is:${error}`);
       }
     };
     getnetworklist();
@@ -289,7 +289,6 @@ function Testondemand() {
     const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
     if (opticals?.status == 200) {
       const opticalslist = await opticals?.json();
-      console.log(opticalslist, 'opticalslist');
 
       //Here we add or remove the opticalroutes related to this network to the list.
       if (findopt > -1) {
@@ -560,6 +559,24 @@ function Testondemand() {
     getmeasurments();
   }, []);
 
+  const deletehistory = async (id:string) => {
+    try {
+      const deleteonehistory = await $Delete(
+        `otdr/optical-route/${selectedId}/measurements`,
+        [id],
+      );
+
+      if (deleteonehistory.status == 201) {
+        getmeasurments();
+      }
+      toast('It was done successfully', {type: 'success', autoClose: 1000});
+    } catch (error) {
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+    } finally {
+      // setDeletelist([]);
+    }
+  };
+
   return (
     <div className="flex w-full flex-col p-[20px] pt-[100px]">
       <div className="flex w-full flex-row justify-between">
@@ -715,10 +732,10 @@ function Testondemand() {
                   onClick={() => {
                     dispatch(setSelectedtest(data.name)),
                       dispatch(setTestid(data.id));
-                      dispatch(setFromtimeupdated(""))
-                      dispatch(setShowCompletedTestsFrom(false))
-                      dispatch(setStarttestdate(""))
-                      dispatch(setEndtestdate(""))
+                    dispatch(setFromtimeupdated(''));
+                    dispatch(setShowCompletedTestsFrom(false));
+                    dispatch(setStarttestdate(''));
+                    dispatch(setEndtestdate(''));
                   }}
                   className={`w-full ${
                     selectedtest == data.name
@@ -807,23 +824,32 @@ function Testondemand() {
           else if (key === 'delete')
             return (
               <IoTrashOutline
-                onClick={async () =>
-                  Swal.fire(swalsetting).then(async result => {
-                    if (result.isConfirmed) {
-                      try {
-                        const deletetest = await $Delete(
-                          `otdr/optical-route/${value.opticalrouteid}/measurements`,
-                          [value.measurmenttestid],
-                        );
-                        if (deletetest.status == 201) {
-                          getmeasurments();
-                        }
-                      } catch (error) {
-                        toast('An error was encountered', {type: 'error', autoClose: 1000});
-                        `delete testondemand error:${error}`;
-                      }
-                    }
-                  })
+                onClick={
+                  async () => {
+                    deletehistory(value.measurmenttestid)
+                    // const findidindex = deletelist.findIndex(
+                    //   data => data == value.measurmenttestid,
+                    // );
+                    // if (findidindex < 0) {
+                    //   setDeletelist(prev => [...prev, value.measurmenttestid]);
+                    // }
+                  }
+                  // Swal.fire(swalsetting).then(async result => {
+                  //   if (result.isConfirmed) {
+                  //     try {
+                  //       const deletetest = await $Delete(
+                  //         `otdr/optical-route/${value.opticalrouteid}/measurements`,
+                  //         [value.measurmenttestid],
+                  //       );
+                  //       if (deletetest.status == 201) {
+                  //         getmeasurments();
+                  //       }
+                  //     } catch (error) {
+                  //       toast('An error was encountered', {type: 'error', autoClose: 1000});
+                  //       `delete testondemand error:${error}`;
+                  //     }
+                  //   }
+                  // })
                 }
                 className="mx-auto cursor-pointer text-red-500"
                 size={22}

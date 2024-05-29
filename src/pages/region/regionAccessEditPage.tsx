@@ -52,6 +52,7 @@ const RegionAccessPage = () => {
     },
   });
 
+
   const buttons = (
     <>
       {/* {regionDetail?.data?.access == 'ADMIN' ? ( */}
@@ -61,8 +62,8 @@ const RegionAccessPage = () => {
           const admin = viewers!.data!.users.find(
             value => value.access === AccessEnum.admin,
           );
+       
           const viewerList = editor.current!.values;
-
           if (admin) {
             const index = viewerList.indexOf(admin.user.id);
             if (index !== -1 && index !== null) {
@@ -74,11 +75,6 @@ const RegionAccessPage = () => {
           dispatch(setregionviewers(users));
           dispatch(setregionviewersstatus(true));
           navigate(-1);
-
-          // request('regionAccessUpdate', {
-          //   params: {region_id: params.regionId!},
-          //   data: {users},
-          // });
         }}>
         OK
       </SimpleBtn>

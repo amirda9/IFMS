@@ -181,6 +181,8 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     [state.values, state.group, state.Adminid],
   );
 
+
+
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
     const allvalues = [...state.values];
     const index = allvalues.indexOf(id!);
@@ -208,6 +210,8 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     });
   };
 
+
+  
   const group1 = groups?.data;
 
   const groupList =
@@ -416,7 +420,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
               onclick={
                 (state.selectLeft.includes(value.id) && canremove(value.id)) ||
                 (!state.selectLeft.includes(value.id) && canadd(value.id))
-                  ? changeSelect(side, value.id)
+                  ? changeSelect('left', value.id)
                   : () => {}
               }
               iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
@@ -451,7 +455,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
                 <GroupItem
                   items={value.items}
                   label={value.label}
-                  onSelect={changeSelect('left')}
+                  onSelect={(id:string | number,check:boolean)=>changeSelect('left',id.toString())(check)}
                   selected={state.selectLeft}
                 />
               </div>

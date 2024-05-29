@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import Checkbox from '../checkbox/checkbox';
 
 type StateType = {
@@ -9,12 +9,15 @@ type StateType = {
 type PropsType = {
   label: string;
   items: Array<{label: string; value: string | number}>;
-  onSelect?: (item: string | number) => void;
+  onSelect?: (item: string | number,check:boolean) => any;
   selected: Array<string | number>;
 };
 const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
   console.log(items, 'items');
-
+const [selectedlist,setSelectedlist]=useState<any[]>([])
+useEffect(()=>{
+  setSelectedlist(selected)
+},[])
   const [state, setState] = useState<StateType>({
     open: false,
     selected: {},
@@ -44,15 +47,9 @@ const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
   };
 
   const selectItem = (value: string | number) => () => {
-    // const allvalues = [...state.values];
-    // const index = allvalues.indexOf(id!);
-    // if(allvalues.indexOf(id!) > -1){
-    //   allvalues.splice(index, 1);
-    // }else{
-    //   allvalues.push(id!)
-    // }
-
-    onSelect?.(value);
+  console.log('🌕',value);
+  
+   onSelect?.(value,value in state.selected);
     if (value in state.selected) {
       const selected = {...state.selected};
       delete selected[value];
@@ -65,11 +62,13 @@ const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
     }
   };
 
+  console.log("🔒",selected);
+  
   return (
     <div>
       <div className="flex h-6 flex-row items-center">
         <Checkbox
-          checkstatus={items.every(value => selected.includes(value.value))}
+          checkstatus={items.every(item => selected.includes(item.value))}
           onclick={selectAll}
           iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
           classname={' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'}
@@ -97,7 +96,7 @@ const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
               <div className="flex w-full flex-row items-center">
                 <span className="mr-[5px] mt-[-10px]">....</span>
                 <Checkbox
-                  checkstatus={selected.includes(item.value)}
+                  checkstatus={selectedlist.includes(item.value)}
                   onclick={selectItem(item.value)}
                   iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
                   classname={

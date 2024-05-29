@@ -1,11 +1,10 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Description, Select, SimpleBtn, Table} from '~/components';
+import {useMemo, useState} from 'react';
+import {Select, SimpleBtn, Table} from '~/components';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {useDispatch} from 'react-redux';
 import {FormLayout} from '~/layout';
 import {useSelector} from 'react-redux';
-import {BASE_URL} from '~/constant';
 import {useNavigate, useParams} from 'react-router-dom';
 import {
   setregionviewersstatus,
@@ -66,6 +65,7 @@ const RegionAccessPage = () => {
       }
     },
   });
+
 
 
   const saveAdmin = () => {
