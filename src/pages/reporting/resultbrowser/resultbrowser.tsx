@@ -92,6 +92,9 @@ function Resultbrowser() {
   }
   return (
     <div className="border-box flex w-full flex-col p-[20px] pt-[100px]">
+       <h1 className="my-6 mt-2 font-bold text-[red] text-[20px]">
+        This page requires a Full-Access license to view the content
+      </h1>
       <div className="flex w-full flex-row justify-between">
         <div className="flex w-[calc(50%-190px)] flex-col">
           <div className="mb-[20px] flex flex-row">

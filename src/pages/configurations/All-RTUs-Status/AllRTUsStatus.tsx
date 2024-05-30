@@ -35,6 +35,7 @@ const dataa = [
 function AllRTUsStatus() {
   return (
     <div className="w-full p-[20px] pt-[100px]">
+      <h1 className='text-[red] font-bold my-6 text-[20px]'>This page requires a Full-Access license to view the content</h1>
       <Table
         onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
         tabicon={'Name'}

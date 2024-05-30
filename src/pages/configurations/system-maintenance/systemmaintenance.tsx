@@ -54,6 +54,8 @@ const Systemmaintenance = () => {
   }
   return (
     <div className="relative box-border w-full px-[15px] py-[25px]">
+            <h1 className='text-[red] font-bold my-6 mt-14 text-[20px]'>This page requires a Full-Access license to view the content</h1>
+
       <Rowtext name="Database Size" value="3678 MB" classname={'ml-[175px]'} />
       <Rowtext
         name="Number of Open Sessions"

@@ -265,6 +265,9 @@ const ReportsRouteLayout: FC = () => {
 
   return (
     <SidebarLayout createTitle="" canAdd>
+        <h1 className="my-6 mt-12 font-bold text-[red] text-[20px]">
+        This page requires a Full-Access license to view the content
+      </h1>
       <div className="flex flex-row items-center ">
         <label htmlFor="search" className="mr-2">
           Search
