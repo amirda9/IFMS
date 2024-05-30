@@ -4,9 +4,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 import {$Get, $Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
-import {setalarmsdetail} from '~/store/slices/alarmstypeslice';
+import {
+  alarmtypedetailtype,
+  setAlarmtypeloading,
+  setGetalarmtype,
+  setalarmsdetail,
+} from '~/store/slices/alarmstypeslice';
 import {toast} from 'react-toastify';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -16,8 +21,270 @@ const columns = {
 const Alarmtypenetworks = () => {
   const params = useParams();
   const dispatch = useDispatch();
-  const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypes);
+  const {alarmtypedetail, getalarmtype, alarmtypeloading} = useSelector(
+    (state: RootState) => state.alarmtypes,
+  );
   const [loading, setLoading] = useState(false);
+
+  const getalarmdetail = async () => {
+    try {
+      dispatch(setAlarmtypeloading(true));
+      const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
+
+      if (alarmdetailresponse.status == 200) {
+        const alarmdetailresponsedata = await alarmdetailresponse.json();
+        let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
+          alarmdetailresponsedata,
+        );
+        if (alarmdetailresponsedataCopy.alarm_definition == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alarm_definition: {
+              low_severity: {
+                conditions: [],
+                fault: 'No',
+              },
+              medium_severity: {
+                conditions: [],
+                fault: 'No',
+              },
+              high_severity: {
+                conditions: [],
+                fault: 'No',
+              },
+            },
+          };
+        } else {
+          // Here we need to add index to the objects so that when we click the Add button on the front side or delete a row, the rows are arranged in order.
+          alarmdetailresponsedataCopy.alarm_definition.low_severity!.conditions =
+            alarmdetailresponsedata.alarm_definition.low_severity!.conditions.map(
+              (
+                data: {
+                  parameter: string;
+                  operator: string;
+                  coef: number;
+                  value: string;
+                  logical_operator: string;
+                },
+                index: number,
+              ) => ({...data, index: index}),
+            );
+
+          alarmdetailresponsedataCopy.alarm_definition.medium_severity!.conditions =
+            alarmdetailresponsedata.alarm_definition.medium_severity!.conditions.map(
+              (
+                data: {
+                  parameter: string;
+                  operator: string;
+                  coef: number;
+                  value: string;
+                  logical_operator: string;
+                },
+                index: number,
+              ) => ({...data, index: index}),
+            );
+
+          alarmdetailresponsedataCopy.alarm_definition.high_severity!.conditions =
+            alarmdetailresponsedata.alarm_definition.high_severity!.conditions.map(
+              (
+                data: {
+                  parameter: string;
+                  operator: string;
+                  coef: number;
+                  value: string;
+                  logical_operator: string;
+                },
+                index: number,
+              ) => ({...data, index: index}),
+            );
+        }
+        if (alarmdetailresponsedataCopy.alarm_content == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alarm_content: {
+              primary_source: '',
+              secondary_source: '',
+              alarm_details: {
+                date_and_time: [],
+                network: [],
+                rtu: [],
+                optical_route: [],
+                test_setup: [],
+                test_result: [],
+              },
+            },
+          };
+        }
+        if (alarmdetailresponsedataCopy.alert_sending == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alert_sending: {
+              about: 'Pending',
+              user: [],
+            },
+          };
+        }
+
+        if (alarmdetailresponsedataCopy.automatic_events == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            automatic_events: {
+              escalate_alarm: {
+                severity_at_least: '',
+                escalate_pending_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                escalate_acknowledged_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+              },
+              timeout_alarm: {
+                timeout_pending_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                timeout_acknowledged_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+              },
+              delete_alarm: {
+                delete_resolved_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                delete_in_progress_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                delete_timeout_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+              },
+            },
+          };
+        } else {
+          if (
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm
+              .delete_in_progress_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_in_progress_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm
+              .delete_resolved_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_resolved_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm
+              .delete_timeout_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_timeout_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm
+              .escalate_acknowledged_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_acknowledged_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm
+              .escalate_pending_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_pending_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm
+              .severity_at_least == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.severity_at_least =
+              '';
+          }
+
+          if (
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm
+              .timeout_acknowledged_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_acknowledged_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+
+          if (
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm
+              .timeout_pending_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_pending_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+        }
+
+        if (alarmdetailresponsedataCopy.alarm_networks == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alarm_networks: {
+              network_id_list: [],
+            },
+          };
+        }
+        dispatch(setGetalarmtype(true));
+        dispatch(setalarmsdetail(alarmdetailresponsedataCopy));
+      }
+    } catch (error) {
+    } finally {
+      dispatch(setAlarmtypeloading(false));
+    }
+  };
+
+  useEffect(() => {
+    if (!getalarmtype) {
+      getalarmdetail();
+    }
+  }, []);
+
   const cancel = async () => {
     const alarmtypedetailCopy = deepcopy(alarmtypedetail);
     const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
@@ -34,25 +301,30 @@ const Alarmtypenetworks = () => {
   };
 
   const updatealarmtypenetworks = async () => {
-    setLoading(true);
-    const response = await $Put(`otdr/alarm/${params.alarmId}`, {
-      alarm_networks: {
-        network_id_list: alarmtypedetail.alarm_networks.network_id_list.map(
-          data => data.id,
-        ),
-      },
-    });
-    if (response.status == 201) {
-      const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
-      if (alarmdetailresponse.status == 200) {
-        const alarmdetailresponsedata = await alarmdetailresponse.json();
-        dispatch(setalarmsdetail(alarmdetailresponsedata));
-        toast('با موفقیت انجام شد', {type: 'success', autoClose: 1000});
-      } else {
-        toast('با خطا مواجه شد', {type: 'error', autoClose: 1000});
+    try {
+      dispatch(setAlarmtypeloading(true));
+      const response = await $Put(`otdr/alarm/${params.alarmId}`, {
+        alarm_networks: {
+          network_id_list: alarmtypedetail.alarm_networks.network_id_list.map(
+            data => data.id,
+          ),
+        },
+      });
+      if (response.status == 201) {
+        const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
+        if (alarmdetailresponse.status == 200) {
+          const alarmdetailresponsedata = await alarmdetailresponse.json();
+          dispatch(setalarmsdetail(alarmdetailresponsedata));
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
+        } else {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
       }
+    } catch (error) {
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+    } finally {
+      dispatch(setAlarmtypeloading(false));
     }
-    setLoading(false);
   };
 
   return (
@@ -65,7 +337,7 @@ const Alarmtypenetworks = () => {
           dynamicColumns={['index']}
           renderDynamicColumn={data => data.index + 1}
           containerClassName="w-1/2"
-          loading={loading}
+          loading={alarmtypeloading}
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">

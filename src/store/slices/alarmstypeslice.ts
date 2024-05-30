@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { FaStapler } from 'react-icons/fa6';
 import {deepcopy} from '~/util';
 
 export type alarmtypedetailtype = {
@@ -6,12 +7,13 @@ export type alarmtypedetailtype = {
   name: string;
   comment: string;
   owner_id: string;
-  owner_username:string;
+  owner_username: string;
   time_created: string;
   time_modified: string;
   alarm_definition?: {
     low_severity?: {
-      conditions: [
+      conditions:
+        | [
             {
               index: number;
               parameter: string;
@@ -74,49 +76,49 @@ export type alarmtypedetailtype = {
   automatic_events: {
     escalate_alarm: {
       severity_at_least: string;
-      escalate_pending_after:{
-            days: number;
-            hours: number;
-            minutes: number;
-          };
-      escalate_acknowledged_after:{
-            days: number;
-            hours: number;
-            minutes: number;
-          };
+      escalate_pending_after: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
+      escalate_acknowledged_after: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
     };
     timeout_alarm: {
-      timeout_pending_after:{
-            days: number;
-            hours: number;
-            minutes: number;
-          };
-      timeout_acknowledged_after:{
-            days: number;
-            hours: number;
-            minutes: number;
-          };
+      timeout_pending_after: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
+      timeout_acknowledged_after: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
     };
     delete_alarm: {
-      delete_resolved_after:{
-            days: number;
-            hours: number;
-            minutes: number;
-          };
-      delete_in_progress_after:{
-            days: number;
-            hours: number;
-            minutes: number;
-          };
-      delete_timeout_after:{
-            days: number;
-            hours: number;
-            minutes: number;
-          };
+      delete_resolved_after: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
+      delete_in_progress_after: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
+      delete_timeout_after: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
     };
   };
   alarm_networks: {
-    network_id_list: {id:string,name:string}[];
+    network_id_list: {id: string; name: string}[];
   };
 };
 
@@ -127,7 +129,9 @@ export type alarmtypelist = {
 export type initialStatetype = {
   alarmtypedetail: alarmtypedetailtype;
   alarmtypelist: alarmtypelist;
-  selectedautomaticevents:string[]
+  selectedautomaticevents: string[];
+  alarmtypeloading: boolean;
+  getalarmtype:boolean
 };
 
 const initialState: initialStatetype = {
@@ -138,7 +142,7 @@ const initialState: initialStatetype = {
     owner_id: '',
     time_created: '',
     time_modified: '',
-    owner_username:"",
+    owner_username: '',
     alarm_definition: {
       low_severity: {
         conditions: [],
@@ -212,14 +216,15 @@ const initialState: initialStatetype = {
           minutes: 0,
         },
       },
-   
     },
     alarm_networks: {
-      network_id_list: [ ]
-    }
+      network_id_list: [],
+    },
   },
   alarmtypelist: [],
-  selectedautomaticevents:[]
+  selectedautomaticevents: [],
+  alarmtypeloading: false,
+  getalarmtype:false
 };
 
 // ********** slices ********* slices ******************* slice *********
@@ -227,6 +232,9 @@ const alarmtypeslice = createSlice({
   name: 'type',
   initialState,
   reducers: {
+    setGetalarmtype:(state, action:{type:string,payload:boolean}) => {
+      state.getalarmtype = action.payload;
+    },
     setalarmsdetail: (state, action) => {
       state.alarmtypedetail = action.payload;
     },
@@ -255,50 +263,80 @@ const alarmtypeslice = createSlice({
       action: {
         type: string;
         payload: {
-          inputname: "days" | "hours" | "minutes",
+          inputname: 'days' | 'hours' | 'minutes';
           value: number;
-          parentName: "escalate_alarm" | "timeout_alarm" | "delete_alarm",
-          name: "delete_resolved_after" | "delete_in_progress_after" | "delete_timeout_after" | "timeout_pending_after" | "timeout_acknowledged_after" | "escalate_acknowledged_after" | "escalate_pending_after";
+          parentName: 'escalate_alarm' | 'timeout_alarm' | 'delete_alarm';
+          name:
+            | 'delete_resolved_after'
+            | 'delete_in_progress_after'
+            | 'delete_timeout_after'
+            | 'timeout_pending_after'
+            | 'timeout_acknowledged_after'
+            | 'escalate_acknowledged_after'
+            | 'escalate_pending_after';
         };
       },
     ) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-      state.alarmtypedetail.automatic_events[action.payload.parentName][action.payload.name][action.payload.inputname] = action.payload.value;
+      // @ts-ignore
+      state.alarmtypedetail.automatic_events[action.payload.parentName][
+        action.payload.name
+      ][action.payload.inputname] = action.payload.value;
     },
 
-
-    setSelectedautomaticEvent:(state,action)=>{
-      const findevents=state.selectedautomaticevents.findIndex(data => data == action.payload)
-      if(findevents > -1){
-        state.selectedautomaticevents=state.selectedautomaticevents.filter(data => data != action.payload)
-      }else{
-        state.selectedautomaticevents.push(action.payload)
+    setSelectedautomaticEvent: (state, action) => {
+      const findevents = state.selectedautomaticevents.findIndex(
+        data => data == action.payload,
+      );
+      if (findevents > -1) {
+        state.selectedautomaticevents = state.selectedautomaticevents.filter(
+          data => data != action.payload,
+        );
+      } else {
+        state.selectedautomaticevents.push(action.payload);
       }
     },
 
-    changeallSelectedautomaticEvent:(state,action)=>{
-
-        state.selectedautomaticevents=action.payload
-    
+    changeallSelectedautomaticEvent: (state, action) => {
+      state.selectedautomaticevents = action.payload;
     },
 
-    setAlarmNetworks:(state,
-      action:{type:string,payload:{id:string,name:string}})=>{
-      const findeventsindex=state.alarmtypedetail.alarm_networks.network_id_list.findIndex(data => data.id == action.payload.id)
-      if(findeventsindex > -1){
-        state.alarmtypedetail.alarm_networks.network_id_list.splice(findeventsindex,1)
-      }else{
-
-        state.alarmtypedetail.alarm_networks.network_id_list.push(action.payload)
+    setAlarmNetworks: (
+      state,
+      action: {type: string; payload: {id: string; name: string}},
+    ) => {
+      const findeventsindex =
+        state.alarmtypedetail.alarm_networks.network_id_list.findIndex(
+          data => data.id == action.payload.id,
+        );
+      if (findeventsindex > -1) {
+        state.alarmtypedetail.alarm_networks.network_id_list.splice(
+          findeventsindex,
+          1,
+        );
+      } else {
+        state.alarmtypedetail.alarm_networks.network_id_list.push(
+          action.payload,
+        );
       }
-    }
-
+    },
+    setAlarmtypeloading: (state, action: {type: string; payload: boolean}) => {
+      state.alarmtypeloading = action.payload;
+    },
   },
 });
 
- 
-export const {setalarmsdetail, setalarmlist, cretealarmtype, deletealarmtype,changeAutomaticEventDate,setSelectedautomaticEvent,setAlarmNetworks,changeallSelectedautomaticEvent} =
-  alarmtypeslice.actions;
+export const {
+  setalarmsdetail,
+  setalarmlist,
+  cretealarmtype,
+  deletealarmtype,
+  changeAutomaticEventDate,
+  setSelectedautomaticEvent,
+  setAlarmNetworks,
+  changeallSelectedautomaticEvent,
+  setAlarmtypeloading,
+  setGetalarmtype
+} = alarmtypeslice.actions;
 
 export default alarmtypeslice.reducer;

@@ -2,6 +2,7 @@ import {Form, FormikProvider, useFormik} from 'formik';
 import {FC} from 'react';
 import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {cretealarmtype} from '~/store/slices/alarmstypeslice';
@@ -23,15 +24,23 @@ const AlarmTypeCreatePage: FC = () => {
       // sourceDataSet: 'Fiber Result',
     },
     onSubmit: async values => {
-      const response = await $Post(`otdr/alarm/`, {
-        name: values.name,
-        comment: values.comment,
-      });
-      if (response.status == 200) {
-        const responsedata = await response.json();
-        dispatch(cretealarmtype({id: responsedata, name: values.name}));
-        navigate(`../${responsedata}`);
+      try {
+        const response = await $Post(`otdr/alarm/`, {
+          name: values.name,
+          comment: values.comment,
+        });
+        if (response.status == 200) {
+          const responsedata = await response.json();
+          dispatch(cretealarmtype({id: responsedata, name: values.name}));
+          navigate(`../${responsedata}`);
+        }else{
+          toast('Encountered an error', {type: 'error',autoClose:1000});
+        }
+      } catch (error) {
+        toast('Encountered an error', {type: 'error',autoClose:1000});
+        `createalarmError is:${error}`
       }
+   
     },
   });
 

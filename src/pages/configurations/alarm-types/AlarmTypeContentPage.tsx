@@ -1,13 +1,19 @@
-import {FC} from 'react';
+import {FC, useEffect} from 'react';
 import {SimpleBtn} from '~/components';
 import AlarmCheckboxList from './AlarmCheckboxList';
 import AlarmDetailCheckboxList from './AlarmDetailCheckboxList';
-import { $Put } from '~/util/requestapi';
-import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '~/store';
-import { toast } from 'react-toastify';
-import { deepcopy } from '~/util';
+import {$Get, $Put} from '~/util/requestapi';
+import {useParams} from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '~/store';
+import {toast} from 'react-toastify';
+import {deepcopy} from '~/util';
+import {
+  alarmtypedetailtype,
+  setAlarmtypeloading,
+  setGetalarmtype,
+  setalarmsdetail,
+} from '~/store/slices/alarmstypeslice';
 
 const items = [
   {
@@ -115,350 +121,319 @@ const primaryandsecondaryitems = [
   },
 ];
 
-const dateandtimeitems = [
-  {
-    label: 'Fault',
-    items: [
-      {
-        label: 'Date & Time',
-      },
-      {
-        label: 'Hour',
-      },
-      {
-        label: 'Day',
-      },
-      {
-        label: 'Month',
-      },
-      {
-        label: 'Year',
-      },
-    ],
-  },
-];
-
-const networkitems = [
-  {
-    label: 'Fault',
-    items: [
-      {
-        label: 'Network Name',
-      },
-      {
-        label: 'Network Admin',
-      },
-      {
-        label: 'Region Name',
-      },
-      {
-        label: 'Region Admin',
-      },
-      {
-        label: 'Station Name',
-      },
-      {
-        label: 'Station Admin',
-      },
-      {
-        label: 'Station Position',
-      },
-      {
-        label: 'Link Name',
-      }, 
-      {
-        label: 'Link Admin',
-      },
-      {
-        label: 'Link Nominal Length',
-      },
-      {
-        label: 'Link Nominal Loss',
-      },
-      {
-        label: 'Link Type',
-      },
-      {
-        label: 'Link Source',
-      },
-      {
-        label: 'Link Destination',
-      },
-      {
-        label: 'Link Cable / Duct',
-      },
-      {
-        label: 'Link Core / Mini Duct - Fiber',
-      },
-      {
-        label: 'Link Distance From Start',
-      },
-      {
-        label: 'Link Segment',
-      },
-      {
-        label: 'Link Distance From Segment Start',
-      },
-      {
-        label: 'Point Position',
-      },
-      {
-        label: 'Splice Nominal Losst',
-      },
-      {
-        label: 'Connector Nominal Loss',
-      },
-    ],
-  },
-];
-
-
-const rtuitems = [
-  {
-    label: 'Fault',
-    items: [
-      {
-        label: 'RTU Name',
-      },
-      {
-        label: 'RTU Station',
-      },
-      {
-        label: 'RTU Model',
-      },
-      {
-        label: 'OTDR Model',
-      },
-      {
-        label: 'OTDR Status',
-      },
-      {
-        label: 'Switch Model',
-      },  {
-        label: 'Switch Status',
-      },  {
-        label: 'OTDR IP & Port',
-      },  {
-        label: 'Switch IP & Port',
-      },  {
-        label: 'RTU Port Num.',
-      }, {
-        label: 'RTU Port Index',
-      }, {
-        label: 'RTU Port Status',
-      }
-    ],
-  },
-];
-
-
-const opticalrouteitems = [
-  {
-    label: 'Fault',
-    items: [
-      {
-        label: 'Optical Route Name',
-      },
-      {
-        label: 'Optical Route Source',
-      },
-      {
-        label: 'Optical Route Destination',
-      },
-      {
-        label: '"Optical Route Nominal Length',
-      },
-      {
-        label: 'Optical Route Nominal Loss',
-      },
-      {
-        label: 'Optical Route Type',
-      },  {
-        label: 'Link Num.',
-      },  {
-        label: 'Distance From Optical Route Start',
-      }
-    ],
-  },
-];
-
-
-const testsetupitems = [
-  {
-    label: 'Fault',
-    items: [
-      {
-        label: 'Test Setup Name',
-      },
-      {
-        label: 'Test Type',
-      },
-      {
-        label: 'Wavelength',
-      },
-      {
-        label: 'Test Setup Start',
-      },
-      {
-        label: 'Test Setup End',
-      },
-      {
-        label: 'Test Setup Periodicity',
-      },  {
-        label: 'Link Reference Length',
-      },  {
-        label: 'Optical Route Reference Length',
-      },
-       {
-        label: 'Link Reference Loss',
-      },
-      {
-        label: 'Optical Route Reference Loss',
-      },
-      {
-        label: 'Reference ORL',
-      },
-      {
-        label: 'Reference Noise Floor',
-      },
-      {
-        label: 'Splice Reference Loss',
-      },
-      {
-        label: 'Connector Reference Loss',
-      },
-      {
-        label: 'Splice Reference Reflectance',
-      },
-      {
-        label: 'Connector Reference Reflectance',
-      },
-      {
-        label: 'Break Strategy',
-      },
-      {
-        label: 'Data Save Policy',
-      },
-      {
-        label: 'Test Mode',
-      },
-      {
-        label: 'Run Mode',
-      },
-      {
-        label: 'Distance Mode',
-      },
-      {
-        label: 'Range (km)',
-      },
-      {
-        label: 'Pulse Width Mode',
-      },
-      {
-        label: 'Pulse Width (ns)',
-      },
-      {
-        label: 'Sampling Mode',
-      },
-      {
-        label: 'Sampling Duration',
-      },
-      {
-        label: 'IOR',
-      },
-      {
-        label: 'RBS (dB)',
-      },
-      {
-        label: 'Event Loss Threshold (dB)',
-      },
-      {
-        label: 'Event Reflection Threshold (dB)',
-      },
-      {
-        label: 'Fiber End Threshold (dB)',
-      },
-      {
-        label: 'Total Loss Threshold (dB)',
-      },
-      {
-        label: 'Section Loss Threshold (dB)',
-      },
-      {
-        label: 'Injection Level Threshold (dB)',
-      },
-
-    ],
-  },
-];
-
-
-const testresultitems = [
-  {
-    label: 'Fault',
-    items: [
-      {
-        label: 'Switching Status',
-      },
-      {
-        label: 'Applying Test Parameters',
-      },
-      {
-        label: 'Test Execution',
-      },
-      {
-        label: 'Receiving Results',
-      },
-      {
-        label: 'Event Type',
-      },
-      {
-        label: 'Event Loss',
-      },  {
-        label: 'Event Reflectance',
-      }
-    ],
-  },
-];
-
-
-
 const AlarmTypeContentPage: FC = () => {
-  const params=useParams()
-  const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypes);
-  const updatedefinition = async () => {
-    const alarmtypedetailCopy=deepcopy(alarmtypedetail)
-    if(alarmtypedetail.alarm_content.secondary_source == ""){
-      delete alarmtypedetailCopy.alarm_content.secondary_source
-    }
-   
-    const response = await $Put(`otdr/alarm/${params.alarmId}`, {
-      alarm_content:alarmtypedetailCopy.alarm_content
-    });
-    if (response.status == 201) {
-      toast('It was done successfully', {type: 'success',autoClose:1000});
-    } else {
-      toast('Encountered an error', {type: 'error',autoClose:1000});
+  const dispatch = useDispatch();
+  const params = useParams();
+  const {alarmtypedetail, alarmtypeloading, getalarmtype} = useSelector(
+    (state: RootState) => state.alarmtypes,
+  );
+
+  const getalarmdetail = async () => {
+    try {
+      dispatch(setAlarmtypeloading(true));
+      const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
+
+      if (alarmdetailresponse.status == 200) {
+        const alarmdetailresponsedata = await alarmdetailresponse.json();
+        let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
+          alarmdetailresponsedata,
+        );
+        if (alarmdetailresponsedataCopy.alarm_definition == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alarm_definition: {
+              low_severity: {
+                conditions: [],
+                fault: 'No',
+              },
+              medium_severity: {
+                conditions: [],
+                fault: 'No',
+              },
+              high_severity: {
+                conditions: [],
+                fault: 'No',
+              },
+            },
+          };
+        } else {
+          // Here we need to add index to the objects so that when we click the Add button on the front side or delete a row, the rows are arranged in order.
+          alarmdetailresponsedataCopy.alarm_definition.low_severity!.conditions =
+            alarmdetailresponsedata.alarm_definition.low_severity!.conditions.map(
+              (
+                data: {
+                  parameter: string;
+                  operator: string;
+                  coef: number;
+                  value: string;
+                  logical_operator: string;
+                },
+                index: number,
+              ) => ({...data, index: index}),
+            );
+
+          alarmdetailresponsedataCopy.alarm_definition.medium_severity!.conditions =
+            alarmdetailresponsedata.alarm_definition.medium_severity!.conditions.map(
+              (
+                data: {
+                  parameter: string;
+                  operator: string;
+                  coef: number;
+                  value: string;
+                  logical_operator: string;
+                },
+                index: number,
+              ) => ({...data, index: index}),
+            );
+
+          alarmdetailresponsedataCopy.alarm_definition.high_severity!.conditions =
+            alarmdetailresponsedata.alarm_definition.high_severity!.conditions.map(
+              (
+                data: {
+                  parameter: string;
+                  operator: string;
+                  coef: number;
+                  value: string;
+                  logical_operator: string;
+                },
+                index: number,
+              ) => ({...data, index: index}),
+            );
+        }
+        if (alarmdetailresponsedataCopy.alarm_content == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alarm_content: {
+              primary_source: '',
+              secondary_source: '',
+              alarm_details: {
+                date_and_time: [],
+                network: [],
+                rtu: [],
+                optical_route: [],
+                test_setup: [],
+                test_result: [],
+              },
+            },
+          };
+        }
+        if (alarmdetailresponsedataCopy.alert_sending == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alert_sending: {
+              about: 'Pending',
+              user: [],
+            },
+          };
+        }
+
+        if (alarmdetailresponsedataCopy.automatic_events == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            automatic_events: {
+              escalate_alarm: {
+                severity_at_least: '',
+                escalate_pending_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                escalate_acknowledged_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+              },
+              timeout_alarm: {
+                timeout_pending_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                timeout_acknowledged_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+              },
+              delete_alarm: {
+                delete_resolved_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                delete_in_progress_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+                delete_timeout_after: {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                },
+              },
+            },
+          };
+        } else {
+          if (
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm
+              .delete_in_progress_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_in_progress_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm
+              .delete_resolved_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_resolved_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm
+              .delete_timeout_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.delete_alarm.delete_timeout_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm
+              .escalate_acknowledged_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_acknowledged_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm
+              .escalate_pending_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.escalate_pending_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+          if (
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm
+              .severity_at_least == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.escalate_alarm.severity_at_least =
+              '';
+          }
+
+          if (
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm
+              .timeout_acknowledged_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_acknowledged_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+
+          if (
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm
+              .timeout_pending_after == null
+          ) {
+            alarmdetailresponsedataCopy.automatic_events.timeout_alarm.timeout_pending_after =
+              {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+              };
+          }
+        }
+
+        if (alarmdetailresponsedataCopy.alarm_networks == null) {
+          alarmdetailresponsedataCopy = {
+            ...alarmdetailresponsedataCopy,
+            alarm_networks: {
+              network_id_list: [],
+            },
+          };
+        }
+        dispatch(setGetalarmtype(true));
+        dispatch(setalarmsdetail(alarmdetailresponsedataCopy));
+      }
+    } catch (error) {
+    } finally {
+      dispatch(setAlarmtypeloading(false));
     }
   };
+
+  useEffect(() => {
+    if (!getalarmtype) {
+      getalarmdetail();
+    }
+  }, []);
+
+  const updatedefinition = async () => {
+    try {
+      dispatch(setAlarmtypeloading(true));
+      const alarmtypedetailCopy = deepcopy(alarmtypedetail);
+      if (alarmtypedetail.alarm_content.secondary_source == '') {
+        delete alarmtypedetailCopy.alarm_content.secondary_source;
+      }
+
+      const response = await $Put(`otdr/alarm/${params.alarmId}`, {
+        alarm_content: alarmtypedetailCopy.alarm_content,
+      });
+      if (response.status == 201) {
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
+      } else {
+        getalarmdetail();
+
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+    } finally {
+      dispatch(setAlarmtypeloading(false));
+    }
+  };
+  if (alarmtypeloading) {
+    return <h1>Loading..</h1>;
+  }
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow gap-x-8">
         <AlarmCheckboxList
           title="Primary Source"
           items={primaryandsecondaryitems}
-          type='Primary'
+          type="Primary"
         />
         <AlarmCheckboxList
           title="Group By Secondary Source"
           items={primaryandsecondaryitems}
           titleCheckbox
-          type='Secondary'
+          type="Secondary"
         />
         <AlarmDetailCheckboxList title="Alarm Details" items={items} />
       </div>
       <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={updatedefinition} type="button">Save</SimpleBtn>
+        <SimpleBtn onClick={updatedefinition} type="button">
+          Save
+        </SimpleBtn>
         <SimpleBtn link to="../">
           Cancel
         </SimpleBtn>

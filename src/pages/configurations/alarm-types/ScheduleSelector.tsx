@@ -56,7 +56,7 @@ const ScheduleSelector: FC<Props> = ({
         <Select
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          value={alarmtypedetail.automatic_events[parentName][name]['days']! || 0}
+          value={alarmtypedetail?.automatic_events?.[parentName]?.[name]?.['days'] || 0}
           disabled={
             selectedautomaticevents.findIndex(data => data == name) > -1
               ? false

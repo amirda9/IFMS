@@ -21,7 +21,6 @@ type RenderDynamicColumnType = {
   key: 'index' | 'select';
 };
 
-
 const columns = {
   select: {label: '', size: 'w-[6%]'},
   index: {label: 'Index', size: 'w-[10%]'},
@@ -31,14 +30,22 @@ const columns = {
 const Editalarmtypenetwork = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const params = useParams();
   const {alarmtypedetail, alarmtypelist} = useSelector(
     (state: RootState) => state.alarmtypes,
   );
+  const [oldalarmtypedetail, setOldAlarmtypedetail] = useState<any[]>([]);
+
+  useEffect(() => {
+    let alarmtypedetailCopy = deepcopy(alarmtypedetail);
+    setOldAlarmtypedetail(alarmtypedetailCopy);
+  }, []);
   const [allnetwork, setAllnetwork] = useState<{id: string; name: string}[]>(
     [],
   );
+
+  console.log('allnetwork', allnetwork);
 
   const renderDynamicColumn = (side: 'left' | 'right') => {
     return ({value, key, index}: RenderDynamicColumnType) => {
@@ -49,11 +56,21 @@ const Editalarmtypenetwork = () => {
             checkstatus={
               alarmtypedetail.alarm_networks.network_id_list.findIndex(
                 data => data.id == value.id,
-              ) > -1?true:false
+              ) > -1
+                ? true
+                : false
             }
-            onclick={() =>
-              dispatch(setAlarmNetworks({id: value.id, name: value.name}))
-            }
+            onclick={() => {
+              dispatch(setAlarmNetworks({id: value.id, name: value.name}));
+              if (allnetwork.findIndex(data => data == value.id) > -1) {
+                const newAllnetwork = allnetwork.filter(
+                  data => data != value.id,
+                );
+                setAllnetwork(newAllnetwork);
+              } else {
+                setAllnetwork(prev => [...prev, value.id]);
+              }
+            }}
             iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
             classname={
               ' border-[1px] ml-[10px] text-[#18C047] border-[#000000]'
@@ -65,7 +82,7 @@ const Editalarmtypenetwork = () => {
 
   useEffect(() => {
     const getallnetworks = async () => {
-      setLoading(true)
+      setLoading(true);
       const response = await $Get(`otdr/network/`);
       if (response.status == 200) {
         const responsedata = await response.json();
@@ -73,25 +90,14 @@ const Editalarmtypenetwork = () => {
           responsedata.map((data: any) => ({id: data.id, name: data.name})),
         );
       }
-      setLoading(false)
+      setLoading(false);
     };
     getallnetworks();
   }, []);
 
   const canceledit = async () => {
-    const alarmtypedetailCopy = deepcopy(alarmtypedetail);
-    const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
-    if (alarmdetailresponse.status == 200) {
-      const alarmdetailresponsedata = await alarmdetailresponse.json();
-      if (alarmdetailresponsedata.alarm_networks == null) {
-        alarmtypedetailCopy.alarm_networks = {network_id_list: []};
-      } else {
-        alarmtypedetailCopy.alarm_networks.network_id_list =
-          alarmdetailresponsedata.alarm_networks.network_id_list;
-      }
-      dispatch(setalarmsdetail(alarmtypedetailCopy));
-      navigate(-1);
-    }
+    dispatch(setalarmsdetail(oldalarmtypedetail));
+    navigate(-1);
   };
   // ------------------------------------------------------------------------
   return (
@@ -119,4 +125,3 @@ const Editalarmtypenetwork = () => {
 };
 
 export default Editalarmtypenetwork;
-
