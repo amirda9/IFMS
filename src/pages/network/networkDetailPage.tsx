@@ -46,12 +46,12 @@ const NetworkDetailPage = () => {
     }
   }, []);
 
-  console.log("detail",detail);
-  
-  if (detail?.httpRequestStatus !== 'success'){
+  console.log('detail', detail);
+
+  if (detail?.httpRequestStatus !== 'success') {
     return <>loading</>;
   }
- 
+
   return (
     <div className="flex  flex-grow flex-col gap-4">
       <Formik
@@ -70,7 +70,7 @@ const NetworkDetailPage = () => {
               values,
             );
             //we should update the networktree
-            if (response.status == 200) {
+            if (response?.status == 200) {
               dispatch(
                 changeNetworkname({id: params.networkId!, name: values.name}),
               );

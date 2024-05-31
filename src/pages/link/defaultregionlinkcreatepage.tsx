@@ -116,26 +116,34 @@ const LinkCreatePage = () => {
           description: comment,
           type: types,
         });
-        const responsedata = await response.json();
+        const responsedata = await response?.json();
         //we should update the networktree
-        if (response.status == 200) {
+        if (response?.status == 200) {
           dispatch(
             createdefaultRegionLinks({
               networkid: params.networkid!,
-              links: {id: responsedata.link_id, name: name,source_id: source,
-                destination_id: destinationid,},
+              links: {
+                id: responsedata.link_id,
+                name: name,
+                source_id: source,
+                destination_id: destinationid,
+              },
             }),
           );
         }
 
-        navigate(`../../links/${responsedata.link_id}/defaultregionlinkdetailpage`);
+        navigate(
+          `../../links/${responsedata.link_id}/defaultregionlinkdetailpage`,
+        );
       } catch (error) {}
     }
   };
 
   return (
     <div className="relative flex min-h-[calc(100%-80px)] w-full flex-col">
-       <span className='text-md text-black font-bold mb-6 mt-4'>Create link</span>
+      <span className="text-md mb-6 mt-4 font-bold text-black">
+        Create link
+      </span>
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input

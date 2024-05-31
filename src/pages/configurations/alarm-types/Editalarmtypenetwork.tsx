@@ -62,14 +62,14 @@ const Editalarmtypenetwork = () => {
             }
             onclick={() => {
               dispatch(setAlarmNetworks({id: value.id, name: value.name}));
-              if (allnetwork.findIndex(data => data == value.id) > -1) {
-                const newAllnetwork = allnetwork.filter(
-                  data => data != value.id,
-                );
-                setAllnetwork(newAllnetwork);
-              } else {
-                setAllnetwork(prev => [...prev, value.id]);
-              }
+              // if (allnetwork.findIndex(data => data.id == value.id) > -1) {
+              //   const newAllnetwork = allnetwork.filter(
+              //     data => data.id != value.id,
+              //   );
+              //   setAllnetwork(newAllnetwork);
+              // } else {
+              //   setAllnetwork(prev => [...prev, {id:value.id,name:value.name}]);
+              // }
             }}
             iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
             classname={
@@ -84,8 +84,8 @@ const Editalarmtypenetwork = () => {
     const getallnetworks = async () => {
       setLoading(true);
       const response = await $Get(`otdr/network/`);
-      if (response.status == 200) {
-        const responsedata = await response.json();
+      if (response?.status == 200) {
+        const responsedata = await response?.json();
         setAllnetwork(
           responsedata.map((data: any) => ({id: data.id, name: data.name})),
         );
@@ -99,6 +99,8 @@ const Editalarmtypenetwork = () => {
     dispatch(setalarmsdetail(oldalarmtypedetail));
     navigate(-1);
   };
+
+  
   // ------------------------------------------------------------------------
   return (
     <div className="mb-2 flex h-[calc(100vh-150px)]  w-full flex-row   px-6   pb-2  pt-0">

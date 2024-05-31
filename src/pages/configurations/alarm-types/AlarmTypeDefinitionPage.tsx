@@ -26,8 +26,8 @@ const AlarmTypeDefinitionPage: FC = () => {
       dispatch(setAlarmtypeloading(true));
       const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
 
-      if (alarmdetailresponse.status == 200) {
-        const alarmdetailresponsedata = await alarmdetailresponse.json();
+      if (alarmdetailresponse?.status == 200) {
+        const alarmdetailresponsedata = await alarmdetailresponse?.json();
         let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
           alarmdetailresponsedata,
         );
@@ -325,7 +325,7 @@ const AlarmTypeDefinitionPage: FC = () => {
           },
         },
       });
-      if (response.status == 201) {
+      if (response?.status == 201) {
         toast('It was done successfully', {type: 'success', autoClose: 1000});
       } else {
         getalarmdetail();

@@ -1,4 +1,3 @@
-
 import {useNavigate, useParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {Form, Formik} from 'formik';
@@ -29,7 +28,9 @@ const StationDetailPage = () => {
       regions: state.http.regionList,
     }),
     initialRequests: () => {
-      request('regionList', {params: {network_id:  params.regionid?.split("_")[1]!}});
+      request('regionList', {
+        params: {network_id: params.regionid?.split('_')[1]!},
+      });
     },
   });
 
@@ -49,25 +50,28 @@ const StationDetailPage = () => {
             description: values.description,
             longitude: values.longitude,
             latitude: values.latitude,
-            region_id: params.regionid?.split("_")[0],
+            region_id: params.regionid?.split('_')[0],
             model: 'cables',
-            network_id: params.regionid?.split("_")[1],
+            network_id: params.regionid?.split('_')[1],
           });
-          const responsedata = await response.json();
-          if (response.status == 200) {
+          const responsedata = await response?.json();
+          if (response?.status == 200) {
             // we should update the network tree
             dispatch(
               createStation({
-                networkid: params.regionid?.split("_")[1]!,
-                regionid:params.regionid?.split("_")[0]!,
+                networkid: params.regionid?.split('_')[1]!,
+                regionid: params.regionid?.split('_')[0]!,
                 stationid: responsedata.station_id,
                 stationname: values.name,
               }),
             );
             // newregionid: string;
-       
-      
-            navigate(`/stations/${responsedata.station_id}_${params.regionid?.split("_")[0]!}_${params.regionid?.split("_")[1]!}`);
+
+            navigate(
+              `/stations/${responsedata.station_id}_${params.regionid?.split(
+                '_',
+              )[0]!}_${params.regionid?.split('_')[1]!}`,
+            );
           }
         } catch (error) {}
       }}
@@ -75,7 +79,9 @@ const StationDetailPage = () => {
       <Form className="w-full">
         <div className="relative flex min-h-[calc(100vh-160px)] flex-grow flex-col justify-between ">
           <div className="flex flex-col gap-y-4">
-            <span  className='text-md font-bold text-black mb-4 mt-4'>Create station</span>
+            <span className="text-md mb-4 mt-4 font-bold text-black">
+              Create station
+            </span>
             <Description label="Name" labelClassName="mt-2" items="start">
               <InputFormik name="name" className="w-2/3 disabled:bg-white" />
             </Description>
@@ -107,11 +113,7 @@ const StationDetailPage = () => {
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
             {/* {stationDetail?.data?.access == 'ADMIN' ? */}
-            <SimpleBtn
-              type="submit"
-              >
-              Save
-            </SimpleBtn>
+            <SimpleBtn type="submit">Save</SimpleBtn>
             {/* :null} */}
             <SimpleBtn link to="../">
               Cancel

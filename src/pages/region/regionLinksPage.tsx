@@ -49,10 +49,10 @@ const RegionLinksPage = () => {
     const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
         Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
+        Accept: 'application?.json',
         'Content-Type': 'application/json',
       },
-    }).then(res => res.json());
+    }).then(res => res?.json());
     setuserrole(role.role);
   };
 
@@ -99,7 +99,7 @@ const RegionLinksPage = () => {
       const response = await $Get(
         `otdr/region/${params.regionId!.split('_')[0]}/links`,
       );
-      const responsedata = await response.json();
+      const responsedata = await response?.json();
       const newresponsedata = responsedata.map((data: any) => ({
         name: data.name,
         source: data.source.name,
@@ -205,7 +205,6 @@ const RegionLinksPage = () => {
       }
     }
 
-
     const findregionlinkindex = regionLinks.findIndex(
       data => data.regionid == params.regionId!.split('_')[0],
     );
@@ -214,12 +213,11 @@ const RegionLinksPage = () => {
     const findefaultregionindex = defaultregionLinks.findIndex(
       data => data.networkid == params.regionId!.split('_')[1],
     );
-    
+
     let first = list?.data || [];
     if (first.length == 0 && newregionlinklist?.length == 0) {
     } else {
-
-      const [addregionLinkList,removeregionLinkList] = await Promise.all([
+      const [addregionLinkList, removeregionLinkList] = await Promise.all([
         $Post(
           `otdr/region/${
             params.regionId!.split('_')[0]
@@ -234,13 +232,12 @@ const RegionLinksPage = () => {
         ),
       ]);
 
-    
-  // // we should update regionlinks in networktree
+      // // we should update regionlinks in networktree
       if (
-        addregionLinkList.status == 201 &&
-        removeregionLinkList.status == 201
+        addregionLinkList?.status == 201 &&
+        removeregionLinkList?.status == 201
       ) {
-     // add links to some regionlinks in networktree
+        // add links to some regionlinks in networktree
         if (findregionlinkindex > -1) {
           regionLinksCopy[findregionlinkindex].links = [
             ...regionLinks[findregionlinkindex]?.links,
@@ -266,8 +263,7 @@ const RegionLinksPage = () => {
           });
         }
 
-
-      //   //We remove the links from some regionlinks because we have connected some of the links to another region.
+        //   //We remove the links from some regionlinks because we have connected some of the links to another region.
 
         for (let k = 0; k < regionLinksCopy.length; k++) {
           if (
@@ -283,7 +279,7 @@ const RegionLinksPage = () => {
           }
         }
 
-  // remove some links from defaultregion
+        // remove some links from defaultregion
         for (let w = 0; w < appenddata.length; w++) {
           const findindefault = defaultregionLinksCopy[
             findefaultregionindex
@@ -299,11 +295,10 @@ const RegionLinksPage = () => {
         }
       }
 
-
-       // //remove links from some regionlinks in networktree
+      // //remove links from some regionlinks in networktree
       if (
-        removeregionLinkList.status == 201 &&
-        addregionLinkList.status == 201
+        removeregionLinkList?.status == 201 &&
+        addregionLinkList?.status == 201
       ) {
         for (let s = 0; s < removedata.length; s++) {
           const findindexdata = regionLinksCopy[

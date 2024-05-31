@@ -3,18 +3,21 @@ import {SimpleBtn, Table} from '~/components';
 import {useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {useNavigate, useParams} from 'react-router-dom';
-import {setnewregionlinklist,setnewregionlinkliststatus} from './../../store/slices/networkslice';
+import {
+  setnewregionlinklist,
+  setnewregionlinkliststatus,
+} from './../../store/slices/networkslice';
 import {useDispatch} from 'react-redux';
-import { deepcopy } from '~/util';
-import { $Get } from '~/util/requestapi';
+import {deepcopy} from '~/util';
+import {$Get} from '~/util/requestapi';
 import Checkbox from '~/components/checkbox/checkbox';
 type UserTableType = {
   id: string;
   name: string;
   source: string;
   destination: string;
-  destination_id:string;
-  source_id:string
+  destination_id: string;
+  source_id: string;
 };
 
 type RenderDynamicColumnType = {
@@ -46,22 +49,24 @@ const RegionlinklisteditPage = () => {
   const {state} = useHttpRequest({
     selector: state => ({
       regionLinkList: state.http.regionLinkList,
-      networklinks:state.http.networklinks
+      networklinks: state.http.networklinks,
     }),
     initialRequests: request => {
-      request('regionLinkList', {params: {region_id: params.regionId!.split("_")[0]}});
-      request('networklinks', {params: {network_id: params.regionId!.split("_")[1]}});
+      request('regionLinkList', {
+        params: {region_id: params.regionId!.split('_')[0]},
+      });
+      request('networklinks', {
+        params: {network_id: params.regionId!.split('_')[1]},
+      });
     },
   });
-
-
 
   const [change, setCange] = useState(false);
   const [lefttableselecttab, setLefttableselecttab] = useState('Name');
   const [reighttableselecttab, setReighttableselecttab] = useState('Name');
   const [lefttablesorte, setLefttablesort] = useState(false);
   const [reighttablesorte, setreighttablesort] = useState(false);
-  const [loading,setloading]=useState(false)
+  const [loading, setloading] = useState(false);
   const params = useParams<{regionId: string}>();
   const [mount, setmount] = useState(false);
   const [leftlinksorted, setLeftlinksorted] = useState<UserTableType[]>([]);
@@ -69,19 +74,23 @@ const RegionlinklisteditPage = () => {
 
   useEffect(() => {
     dispatch(setnewregionlinklist([]));
-  
-    const networklinklist=async()=>{
+
+    const networklinklist = async () => {
       try {
-        setloading(true)
-        const networklisturl=`otdr/link/network/${params.regionId!.split("_")[1]}`
-        const regionlisturl=`otdr/region/${params.regionId!.split("_")[0]}/links`
-        const [networklist,regionlist]=await Promise.all([
+        setloading(true);
+        const networklisturl = `otdr/link/network/${
+          params.regionId!.split('_')[1]
+        }`;
+        const regionlisturl = `otdr/region/${
+          params.regionId!.split('_')[0]
+        }/links`;
+        const [networklist, regionlist] = await Promise.all([
           $Get(networklisturl),
           $Get(regionlisturl),
-        ])
-        const networklistdata=await networklist.json();
-        const regionlistdata=await regionlist.json();
-        console.log("🐶",networklistdata);
+        ]);
+        const networklistdata = await networklist?.json();
+        const regionlistdata = await regionlist?.json();
+        console.log('🐶', networklistdata);
         setSelectleft(
           regionlistdata
             ?.map((data: any) => ({
@@ -89,35 +98,38 @@ const RegionlinklisteditPage = () => {
               name: data?.name,
               source: data?.source,
               destination: data?.destination,
-              source_id:data.source_id,
-              destination_id:data.destination_id,
+              source_id: data.source_id,
+              destination_id: data.destination_id,
             }))
-            ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
-            [],
+            ?.sort(
+              (a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US'),
+            ) || [],
         );
         setLeftlinksorted(
-          networklistdata.map((data:any) => ({
+          networklistdata
+            .map((data: any) => ({
               id: data?.id,
               name: data?.name,
               source: data?.source?.name,
               destination: data?.destination?.name,
-            }))?.map((data: any) => ({
+            }))
+            ?.map((data: any) => ({
               id: data?.id,
               name: data?.name,
               source: data?.source,
               destination: data?.destination,
             }))
-            ?.sort((a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US')) ||
-            [],
+            ?.sort(
+              (a: any, b: any) => a?.name?.localeCompare(b?.name, 'en-US'),
+            ) || [],
         );
       } catch (error) {
-        console.log(error)
+        console.log(error);
       } finally {
-        setloading(false)
+        setloading(false);
       }
-      
-    }
-    networklinklist()
+    };
+    networklinklist();
   }, []);
 
   const [selectreight, setSelectreight] = useState<UserTableType[]>([]);
@@ -141,32 +153,33 @@ const RegionlinklisteditPage = () => {
       else
         return (
           <Checkbox
-          checkstatus={
-            selectleft.findIndex(data => data.id == value.id) > -1
-              ? true
-              : false
-          }
-          onclick={changeSelect(side, value)}
-          iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
-          classname={
-            ' border-[1px] ml-[10px] text-[#18C047] border-[#000000]'
-          }
-        />
-        
+            checkstatus={
+              selectleft.findIndex(data => data.id == value.id) > -1
+                ? true
+                : false
+            }
+            onclick={changeSelect(side, value)}
+            iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+            classname={
+              ' border-[1px] ml-[10px] text-[#18C047] border-[#000000]'
+            }
+          />
         );
     };
   };
 
   const savestations = () => {
-    let dataa = reightlinksorted.map((data: any) => ({
-      name: data?.name,
-      id:data.id,
-      source: data?.source,
-      destination: data?.destination,
-    })).sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
+    let dataa = reightlinksorted
+      .map((data: any) => ({
+        name: data?.name,
+        id: data.id,
+        source: data?.source,
+        destination: data?.destination,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
 
     dispatch(setnewregionlinklist(selectleft));
-    dispatch(setnewregionlinkliststatus(true))
+    dispatch(setnewregionlinkliststatus(true));
     navigate(-1);
   };
 
@@ -255,14 +268,14 @@ const RegionlinklisteditPage = () => {
         </SimpleBtn>
         <SimpleBtn
           onClick={() => {
-            dispatch(setnewregionlinklist(selectleft))
+            dispatch(setnewregionlinklist(selectleft));
             dispatch(
-              setnewregionlinkliststatus(false)
+              setnewregionlinkliststatus(false),
               // setnewregionlinklist(
               //   state?.regionLinkList?.data?.map((data: any) => data?.id) || [],
               // ),
             );
-            navigate(-1)
+            navigate(-1);
           }}>
           Cancel
         </SimpleBtn>

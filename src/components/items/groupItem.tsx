@@ -26,9 +26,9 @@ useEffect(()=>{
 
   const selectAll = () => {
     if (keys.length >= items.length) {
-      items.forEach(value => {
-        if (selected.includes(value.value)) {
-          onSelect?.(value.value);
+      items.forEach(itemsdata => {
+        if (selected.includes(itemsdata.value)) {
+          onSelect?.(itemsdata.value,true);
         }
       });
       setState({...state, selected: {}});
@@ -37,9 +37,9 @@ useEffect(()=>{
       items.forEach(item => {
         stateSelected[item.value] = true;
       });
-      items.forEach(value => {
-        if (!selected.includes(value.value)) {
-          onSelect?.(value.value);
+      items.forEach(itemsdata => {
+        if (!selected.includes(itemsdata.value)) {
+          onSelect?.(itemsdata.value,true);
         }
       });
       setState({...state, selected: stateSelected});
@@ -47,9 +47,9 @@ useEffect(()=>{
   };
 
   const selectItem = (value: string | number) => () => {
-  console.log('🌕',value);
+
   
-   onSelect?.(value,value in state.selected);
+   onSelect?.(value,(value in state.selected));
     if (value in state.selected) {
       const selected = {...state.selected};
       delete selected[value];
@@ -62,7 +62,7 @@ useEffect(()=>{
     }
   };
 
-  console.log("🔒",selected);
+  console.log('🤰🌕',selected);
   
   return (
     <div>
@@ -96,7 +96,7 @@ useEffect(()=>{
               <div className="flex w-full flex-row items-center">
                 <span className="mr-[5px] mt-[-10px]">....</span>
                 <Checkbox
-                  checkstatus={selectedlist.includes(item.value)}
+                  checkstatus={selected.includes(item.value)}
                   onclick={selectItem(item.value)}
                   iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
                   classname={

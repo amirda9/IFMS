@@ -152,33 +152,33 @@ function App() {
           </Route>
 
           <Route path="/monitoring">
-            <Route path="status" Component={pages.status} />
+            <Route path="status" Component={pages?.status} />
             <Route path="test-on-demand" Component={pages.testondemand} />
             <Route path="alarms" Component={pages.alarms} />
             <Route
               path="status/:statusId"
               Component={pages.monitoringstatusDetail}
             />
-               <Route
-                path=":opticalRouteId"
-                Component={pages.SingleOpticalRouteLayout}>
-               <Route
-                  path="test-setup"
-                  Component={pages.OpticalRouteTestSetupPage}>
-                  <Route path=":testId" Component={pages.TestSetupDetailsModal}>
-                    <Route index Component={pages.TestDetailsParameters} />
-                    <Route
-                      path="learning"
-                      Component={pages.TestDetailsLearning}
-                    />
-                    <Route
-                      path="test-program"
-                      Component={pages.TestDetailsTestProgram}
-                    />
-                    <Route path="status" Component={pages.TestDetailsStatus} />
-                  </Route>
+            <Route
+              path=":opticalRouteId"
+              Component={pages.SingleOpticalRouteLayout}>
+              <Route
+                path="test-setup"
+                Component={pages.OpticalRouteTestSetupPage}>
+                <Route path=":testId" Component={pages.TestSetupDetailsModal}>
+                  <Route index Component={pages.TestDetailsParameters} />
+                  <Route
+                    path="learning"
+                    Component={pages.TestDetailsLearning}
+                  />
+                  <Route
+                    path="test-program"
+                    Component={pages.TestDetailsTestProgram}
+                  />
+                  <Route path="status" Component={pages.TestDetailsStatus} />
                 </Route>
-                </Route>
+              </Route>
+            </Route>
           </Route>
 
           <Route path="/reporting">

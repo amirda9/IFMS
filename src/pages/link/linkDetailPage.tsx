@@ -79,11 +79,13 @@ const LinkDetailPage = () => {
           $Get(regionstationurl),
         ]);
 
-        const linkdetaildata = await linkdetail.json();
-        const all=linkdetaildata?.versions?.find(
-          (version: any) => version.id === linkdetaildata?.current_version?.id,
-        )?.link_points || [];
-     console.log("🦒yy⛴️",all);
+        const linkdetaildata = await linkdetail?.json();
+        const all =
+          linkdetaildata?.versions?.find(
+            (version: any) =>
+              version.id === linkdetaildata?.current_version?.id,
+          )?.link_points || [];
+        console.log('🦒yy⛴️', all);
         dispatch(setLinkdetail(linkdetaildata));
 
         setLinkDetails(linkdetaildata);
@@ -114,8 +116,8 @@ const LinkDetailPage = () => {
           );
         }
         // ----------------------------------------------------------
-        if (regionstation.status == 200) {
-          const responsdata = await regionstation.json();
+        if (regionstation?.status == 200) {
+          const responsdata = await regionstation?.json();
           let data: any = [];
           if (responsdata) {
             let all = responsdata || [];
@@ -183,7 +185,7 @@ const LinkDetailPage = () => {
             type: types,
           },
         );
-        if (response.status == 200) {
+        if (response?.status == 200) {
           dispatch(
             updatelinkname({
               // state!.detail!.data!.region_id!
@@ -208,11 +210,11 @@ const LinkDetailPage = () => {
         const getstationdetail = await $Get(
           `otdr/link/${params.linkId!.split('_')[0]}`,
         );
-        if (getstationdetail.status == 200) {
-          const getstationdetaildata = await getstationdetail.json();
+        if (getstationdetail?.status == 200) {
+          const getstationdetaildata = await getstationdetail?.json();
           const response = await $Get(`otdr/network`);
-          if (response.status == 200) {
-            const responsedata = await response.json();
+          if (response?.status == 200) {
+            const responsedata = await response?.json();
             const Defaultnetworkname = responsedata.find(
               (data: any) => data.id == getstationdetaildata.network_id,
             )?.name;
@@ -223,9 +225,9 @@ const LinkDetailPage = () => {
                 (data: any) => data.id == getstationdetaildata.network_id,
               )?.id}`,
             );
-            if (networkregionresponse.status == 200) {
+            if (networkregionresponse?.status == 200) {
               const networkregionresponsedata =
-                await networkregionresponse.json();
+                await networkregionresponse?.json();
               const Defaultegionname =
                 networkregionresponsedata.find(
                   (data: any) => data.id == getstationdetaildata.region_id,

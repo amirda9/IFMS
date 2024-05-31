@@ -58,8 +58,8 @@ const RegionstationlisteditPage = () => {
           $Get(networlstationurl),
           $Get(regionstationresurl),
         ]);
-        const networkstationresponsedata = await networkstations.json();
-        const regionstationresponsedata = await regionstations.json();
+        const networkstationresponsedata = await networkstations?.json();
+        const regionstationresponsedata = await regionstations?.json();
 
         setSelectleft(
           regionstationresponsedata.map((data: any) => ({

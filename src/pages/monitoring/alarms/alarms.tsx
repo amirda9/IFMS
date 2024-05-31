@@ -150,7 +150,7 @@ function Alarms() {
       setSortkey('severity');
     } else if (name == 'Last Modified') {
       setSortkey('time_modified');
-    } else if (name == "State"){
+    } else if (name == 'State') {
       setSortkey('status');
     } else {
       setSortkey('acting_user');
@@ -179,7 +179,7 @@ function Alarms() {
       let allalarmresponsedata: {
         alarm_events: allalarmsdatatype;
         page_number: number;
-      } = await allalarmresponse.json();
+      } = await allalarmresponse?.json();
       console.log('allalarmresponsedata', allalarmresponsedata);
       setAllpagecount(allalarmresponsedata.page_number);
       let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
@@ -196,7 +196,7 @@ function Alarms() {
                 ? '#FF8A00'
                 : '#FF0000',
           },
-          ...(data.status === statusamounts.RESOLVED
+          ...(data?.status === statusamounts.RESOLVED
             ? [{name: 'status', bg: '#18C047'}]
             : []),
         ],
@@ -247,7 +247,7 @@ function Alarms() {
     try {
       setLoading(true);
       const response = await $Delete('otdr/alarm/events', selectedid);
-      if (response.status == 200) {
+      if (response?.status == 200) {
         getallalarms();
       }
     } catch (error) {
@@ -351,7 +351,7 @@ function Alarms() {
             bordered={true}
             cols={topcolumns}
             tabicon={'Name'}
-            onclicktitle={(e: string) =>SetSourcKey(e)}
+            onclicktitle={(e: string) => SetSourcKey(e)}
             items={allalarmsdata}
             onclickrow={(e: any) => onclicktabelrow(e.id)}
             thclassname="pl-[4px] bg-[red]"

@@ -88,7 +88,7 @@ const RtuPortsPage: FC = () => {
           )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
         ),
       ]);
-      const allrtuports: allportstype = await getdata.json();
+      const allrtuports: allportstype = await getdata?.json();
       console.log('🖌️', allrtuports);
 
       let rtuports: allportstype = deepcopy(allrtuports);
@@ -122,7 +122,7 @@ const RtuPortsPage: FC = () => {
       //get allrtu  optical routes
 
       const getopticaldata: opticalroutlistType =
-        await getrtuopticalrote.json();
+        await getrtuopticalrote?.json();
       // remove the optical-routes of the ports from the list of optical-routes that should be shown in the select boxes. Because the selected optical routes should not be repeated.
       let data: opticalroutlistType = [];
       for (let i = 0; i < getopticaldata.length; i++) {

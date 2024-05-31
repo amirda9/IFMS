@@ -2,11 +2,11 @@ import {useParams} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {useNavigate} from 'react-router-dom';
 import Selectbox from './../../components/selectbox/selectbox';
-import {useDispatch,} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {createLinks} from './../../store/slices/networktreeslice';
 import {useEffect, useState} from 'react';
 import {$Get, $Post} from '~/util/requestapi';
-import { deepcopy } from '~/util';
+import {deepcopy} from '~/util';
 // --------- type ---------------- type ------------------ type -------------------------- type ---------
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
@@ -40,8 +40,8 @@ const LinkCreatePage = () => {
           `otdr/region/${params.regionid!.split('_')[0]}/stations`,
         );
 
-        if (response.status == 200) {
-          const responsdata = await response.json();
+        if (response?.status == 200) {
+          const responsdata = await response?.json();
           let data: any = [];
           if (responsdata) {
             let all = responsdata || [];
@@ -55,8 +55,7 @@ const LinkCreatePage = () => {
         }
       } catch (error) {}
     };
-    getregionstations()
-
+    getregionstations();
   }, []);
 
   const changesource = (id: string) => {
@@ -107,28 +106,32 @@ const LinkCreatePage = () => {
           description: comment,
           type: types,
         });
-        const responsedata = await response.json();
+        const responsedata = await response?.json();
         //we should update the networktree
-        if (response.status == 200) {
+        if (response?.status == 200) {
           dispatch(
             createLinks({
-              networkid:params.regionid!.split('_')[1]!,
+              networkid: params.regionid!.split('_')[1]!,
               regionid: params.regionid!.split('_')[0]!,
               linkid: responsedata.link_id,
               linkname: name,
-              source_id:source,
-              destination_id: destinationid
+              source_id: source,
+              destination_id: destinationid,
             }),
           );
         }
-        navigate(`/links/${responsedata.link_id}_${params.regionid!.split('_')[0]!}_${params.regionid!.split('_')[1]!}`);
+        navigate(
+          `/links/${responsedata.link_id}_${params.regionid!.split(
+            '_',
+          )[0]!}_${params.regionid!.split('_')[1]!}`,
+        );
       } catch (error) {}
     }
   };
 
   return (
     <div className="relative flex min-h-[calc(100%-80px)] w-full flex-col">
-      <span className='text-md text-black font-bold mb-6'>Create link</span>
+      <span className="text-md mb-6 font-bold text-black">Create link</span>
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input

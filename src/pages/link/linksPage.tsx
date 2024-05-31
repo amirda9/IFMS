@@ -1,32 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { SidebarLayout } from "~/layout";
-import { SidebarItem } from "~/components";
+import React, {useEffect, useState} from 'react';
+import {SidebarLayout} from '~/layout';
+import {SidebarItem} from '~/components';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
-import { useHttpRequest } from '~/hooks';
-import {BASE_URL} from './../../constant'
-import { useSelector } from 'react-redux';
+import {useHttpRequest} from '~/hooks';
+import {BASE_URL} from './../../constant';
+import {useSelector} from 'react-redux';
 import NetworktreeLayout from '~/layout/networktreeLayout';
 const LinksPage = () => {
-  const {stationDetail,networkDetail} = useSelector((state: any) => state.http);
+  const {stationDetail, networkDetail} = useSelector(
+    (state: any) => state.http,
+  );
   const [linkID, setLinkId] = useState<string | null>(null);
   const networkId = Cookies.get(networkExplored);
   const login = localStorage.getItem('login');
-  const accesstoken=JSON.parse(login || "")?.data.access_token
-  const [userrole,setuserrole]=useState<any>("")
-  const getrole=async()=>{
-    const role=await fetch(`${BASE_URL}/auth/users/token/verify_token`,{
+  const accesstoken = JSON.parse(login || '')?.data.access_token;
+  const [userrole, setuserrole] = useState<any>('');
+  const getrole = async () => {
+    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
-        Authorization:`Bearer ${accesstoken}`,
-        Accept: 'application.json',
-        'Content-Type': 'application/json'},
-    }).then(res =>res.json())
-    setuserrole(role.role)
-  console.log(role,'getrole');
-  }
-useEffect(()=>{
-  getrole()
-},[])
+        Authorization: `Bearer ${accesstoken}`,
+        Accept: 'application?.json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res?.json());
+    setuserrole(role.role);
+    console.log(role, 'getrole');
+  };
+  useEffect(() => {
+    getrole();
+  }, []);
   const {
     state: {links},
     request,
@@ -45,29 +48,20 @@ useEffect(()=>{
         lastState.deleteLink?.httpRequestStatus === 'loading' &&
         state.deleteLink?.httpRequestStatus === 'success'
       ) {
-        request('allLinks',undefined);
+        request('allLinks', undefined);
         setLinkId(null);
       }
     },
   });
-  console.log(links,'linkslinks');
-  
+  console.log(links, 'linkslinks');
+
   return (
-    <NetworktreeLayout 
-    
+    <NetworktreeLayout
+
     // searchOnChange={() => {}} createTitle="Links" canAdd={userrole == 'superuser' || networkDetail?.data?.access?.access =="ADMIN"?true:false}
-    
     >
-      {/* {links?.data?.map((value, index) => (
-        <SidebarItem
-          name={`${value.name}`}
-          to={value.id.toString()}
-          key={index}
-          onDelete={userrole == 'superuser' || networkDetail?.data?.access?.access =="ADMIN"?() =>{request('linkDelete', {params: {link_id: value.id}})}: () =>{
- 
-          }}
-        />
-      ))} */}
+   <>
+</>
     </NetworktreeLayout>
   );
 };

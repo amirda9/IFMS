@@ -2,8 +2,8 @@ import {FC, Fragment, ReactNode, useEffect, useState} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {Description, Select, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import { $Get} from '~/util/requestapi';
-import { deepcopy } from '~/util';
+import {$Get} from '~/util/requestapi';
+import {deepcopy} from '~/util';
 
 type Rowinputtype = {
   name: string;
@@ -51,7 +51,7 @@ type maintenance_test_settingtype = {
 
 const Rowinput = ({name, children, display}: Rowinputtype) => {
   return (
-    <div className={`${display} w-[800px] mt-2 flex-row justify-between`}>
+    <div className={`${display} mt-2 w-[800px] flex-row justify-between`}>
       <span className="w-[320px] text-[20px] font-light leading-[24.2px] text-[#000000]">
         {name}
       </span>
@@ -84,35 +84,37 @@ function ProactiveMaintenanceTestPage() {
       }
     },
   });
- const [inputs,setInputs]=useState<(SelectInputType | NumberInputType)[]>([])
+  const [inputs, setInputs] = useState<(SelectInputType | NumberInputType)[]>(
+    [],
+  );
   const [maintenance_test_setting, setmaintenance_test_setting] =
     useState<maintenance_test_settingtype>();
 
-    // SettingsGet?.data?.maintenance_test_setting || {
-    //   IOR: 0,
-    //   RBS: 0,
-    //   distance_mode: '',
-    //   event_loss_threshold: 0,
-    //   event_reflection_threshold: 0,
-    //   fiber_end_threshold: 0,
-    //   pulse_width: 0,
-    //   pulse_width_mode: '',
-    //   range: 0,
-    //   run_mode: '',
-    //   sampling_duration: 4,
-    //   sampling_mode: '',
-    //   test_mode: '',
-    // },
+  // SettingsGet?.data?.maintenance_test_setting || {
+  //   IOR: 0,
+  //   RBS: 0,
+  //   distance_mode: '',
+  //   event_loss_threshold: 0,
+  //   event_reflection_threshold: 0,
+  //   fiber_end_threshold: 0,
+  //   pulse_width: 0,
+  //   pulse_width_mode: '',
+  //   range: 0,
+  //   run_mode: '',
+  //   sampling_duration: 4,
+  //   sampling_mode: '',
+  //   test_mode: '',
+  // },
 
   const getAppsettingsdata = async () => {
     const getappsettings = await $Get(`otdr/settings/app-settings`);
-    if (getappsettings.status == 200) {
-      let getappsettingsdata = await getappsettings.json();
+    if (getappsettings?.status == 200) {
+      let getappsettingsdata = await getappsettings?.json();
       setmaintenance_test_setting(getappsettingsdata?.maintenance_test_setting);
     }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     const inputsdata: (SelectInputType | NumberInputType)[] = [
       {
         display: 'flex',
@@ -140,7 +142,9 @@ function ProactiveMaintenanceTestPage() {
       },
       {
         display:
-          maintenance_test_setting?.distance_mode == 'manual' ? 'flex' : 'hidden',
+          maintenance_test_setting?.distance_mode == 'manual'
+            ? 'flex'
+            : 'hidden',
         type: 'select',
         label: 'Range (km)',
         options: [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200],
@@ -224,9 +228,8 @@ function ProactiveMaintenanceTestPage() {
         name: 'fiber_end_threshold',
       },
     ];
-    setInputs(inputsdata)
+    setInputs(inputsdata);
     getAppsettingsdata();
-    
   }, []);
 
   const onSaveButtonClick = () => {
@@ -262,7 +265,6 @@ function ProactiveMaintenanceTestPage() {
       test_mode: 'fast',
     });
   };
- 
 
   return (
     <SystemSettingsMain
@@ -273,7 +275,9 @@ function ProactiveMaintenanceTestPage() {
         input.type === 'select' ? (
           <Rowinput key={i} name={input.label} display={input.display}>
             <Select
-              value={maintenance_test_setting && maintenance_test_setting[input.name]}
+              value={
+                maintenance_test_setting && maintenance_test_setting[input.name]
+              }
               onChange={e => {
                 let old = {...maintenance_test_setting!};
                 old[input.name] = e.target.value;
@@ -290,7 +294,9 @@ function ProactiveMaintenanceTestPage() {
             <TextInput
               type="number"
               step={input.step || 1}
-              value={maintenance_test_setting &&  maintenance_test_setting[input.name]}
+              value={
+                maintenance_test_setting && maintenance_test_setting[input.name]
+              }
               onChange={e => {
                 let old = {...maintenance_test_setting!};
                 old[input.name] = Number(e.target.value);

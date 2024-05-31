@@ -1,107 +1,98 @@
-
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import {BASE_URL} from '~/constant';
 const login = localStorage.getItem('login');
-const accesstoken = login && (JSON.parse(login)?.data?.access_token || "");
-export const $GET =async(url:string)=>{
- return await fetch(`${BASE_URL}/${url}`, {
-  method: "GET",
-  headers: {
-    Authorization: `Bearer ${accesstoken}`,
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  },
- }).then(res => res.json());
-} 
+const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+export const $GET = async (url: string) => {
+  return await fetch(`${BASE_URL}/${url}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  }).then(res => res?.json());
+};
 
-export const $Get =async(url:string)=>{
+export const $Get = async (url: string) => {
   if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "GET",
-   headers: {
-     Authorization: `Bearer ${accesstoken}`,
-     Accept: 'application/json',
-     'Content-Type': 'application/json'
-   },
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
- } 
+};
 
-
-
-export const $POST =async(url:string,data:any)=>{
+export const $POST = async (url: string, data: any) => {
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "post",
-   body:data,
-   headers: {
-     Authorization: `Bearer ${accesstoken}`,
-     Accept: 'application/json',
-     'Content-Type': 'application/json'
-   },
-  }).then(res => res.json());
- } 
+    method: 'post',
+    body: data,
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  }).then(res => res?.json());
+};
 
-
- export const $Post =async(url:string,data:any)=>{
+export const $Post = async (url: string, data: any) => {
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "post",
-   body:JSON.stringify(data) ,
-   headers: {
-     Authorization: `Bearer ${accesstoken}`,
-     Accept: 'application/json',
-     'Content-Type': 'application/json'
-   },
+    method: 'post',
+    body: JSON.stringify(data),
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
- } 
+};
 
- export const $DELETE =async(url:string,data=null)=>{
+export const $DELETE = async (url: string, data = null) => {
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "delete",
-   body:data,
-   headers: {
-     Authorization: `Bearer ${accesstoken}`,
-     Accept: 'application/json',
-     'Content-Type': 'application/json'
-   },
-  }).then(res => res.json());
- } 
+    method: 'delete',
+    body: data,
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  }).then(res => res?.json());
+};
 
- export const $Delete =async(url:string,data:any=null)=>{
+export const $Delete = async (url: string, data: any = null) => {
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "delete",
-   body:JSON.stringify(data),
-   headers: {
-     Authorization: `Bearer ${accesstoken}`,
-     Accept: 'application/json',
-     'Content-Type': 'application/json'
-   },
+    method: 'delete',
+    body: JSON.stringify(data),
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
- } 
+};
 
-
-
-
-
- export const $PUT =async(url:string,data:any)=>{
+export const $PUT = async (url: string, data: any) => {
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "post",
-   body:data,
-   headers: {
-     Authorization: `Bearer ${accesstoken}`,
-     Accept: 'application/json',
-     'Content-Type': 'application/json'
-   },
-  }).then(res => res.json());
- } 
+    method: 'post',
+    body: data,
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  }).then(res => res?.json());
+};
 
-
- export const $Put =async(url:string,data:any)=>{
+export const $Put = async (url: string, data: any) => {
   return await fetch(`${BASE_URL}/${url}`, {
-   method: "put",
-   body:JSON.stringify(data),
-   headers: {
-     Authorization: `Bearer ${accesstoken}`,
-     Accept: 'application/json',
-     'Content-Type': 'application/json'
-   },
+    method: 'put',
+    body: JSON.stringify(data),
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
- } 
+};

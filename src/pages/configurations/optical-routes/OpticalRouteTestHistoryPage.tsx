@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {useParams, useNavigate} from 'react-router-dom';
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import {deepcopy} from '~/util';
 import {$Delete, $Get} from '~/util/requestapi';
@@ -93,9 +93,9 @@ const OpticalRouteTestHistoryPage: FC = () => {
         alarms: number;
         rtu: string;
         station: string;
-      }[] = await getdata.json();
+      }[] = await getdata?.json();
 
-      if (getdata.status == 200) {
+      if (getdata?.status == 200) {
         setHistorydata(data.map(prev => ({...prev, details: '', delete: ''})));
       }
     } catch (error) {
@@ -153,14 +153,19 @@ const OpticalRouteTestHistoryPage: FC = () => {
 
   const deletehistory = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const deleteonehistory = await $Delete(
-        `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/measurements`,deletelist,
+        `otdr/optical-route/${
+          params.opticalRouteId!.split('_')[0]
+        }/measurements`,
+        deletelist,
       );
-      const data = await deleteonehistory.json();
-      if (deleteonehistory.status == 201) {
+      const data = await deleteonehistory?.json();
+      if (deleteonehistory?.status == 201) {
         const getdata = await $Get(
-          `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups/history`,
+          `otdr/optical-route/${
+            params.opticalRouteId!.split('_')[0]
+          }/test-setups/history`,
         );
         const data: {
           measurement_id: string;
@@ -170,21 +175,20 @@ const OpticalRouteTestHistoryPage: FC = () => {
           alarms: number;
           rtu: string;
           station: string;
-        }[] = await getdata.json();
-        if (getdata.status == 200) {
+        }[] = await getdata?.json();
+        if (getdata?.status == 200) {
           setHistorydata(
             data.map(prev => ({...prev, details: '', delete: ''})),
           );
         }
       }
-      toast('It was done successfully', {type: 'success',autoClose:1000});
+      toast('It was done successfully', {type: 'success', autoClose: 1000});
     } catch (error) {
-      toast('Encountered an error', {type: 'error',autoClose:1000});
-    } finally{
-      setLoading(false)
-      setDeletelist([])
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+    } finally {
+      setLoading(false);
+      setDeletelist([]);
     }
-
   };
 
   const onclickdelete = async (id: string) => {
@@ -194,7 +198,6 @@ const OpticalRouteTestHistoryPage: FC = () => {
     }
   };
 
-  
   return (
     <div className="flex flex-grow flex-col">
       <div className="flex flex-grow flex-col gap-y-4 pr-16">
@@ -209,8 +212,6 @@ const OpticalRouteTestHistoryPage: FC = () => {
           items={historydata}
           dynamicColumns={['details', 'delete']}
           renderDynamicColumn={({value, key}) => {
-           
-            
             if (key === 'details')
               return (
                 <IoOpenOutline
@@ -230,7 +231,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
               return (
                 <IoTrashOutline
                   onClick={() => onclickdelete(value.measurement_id)}
-                  className="mx-auto text-red-500 cursor-pointer"
+                  className="mx-auto cursor-pointer text-red-500"
                   size={22}
                 />
               );
@@ -239,7 +240,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
           bordered
         />
       </div>
-      <div className="flex flex-row gap-x-4 self-end mt-4">
+      <div className="mt-4 flex flex-row gap-x-4 self-end">
         <SimpleBtn onClick={deletehistory}>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

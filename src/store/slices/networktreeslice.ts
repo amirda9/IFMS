@@ -825,9 +825,9 @@ const networktreeslice = createSlice({
               $Get(`otdr/station/${action.payload.destination_id}`),
             ]);
 
-          const sourceresponsedata = await sourcedetailresponse.json();
+          const sourceresponsedata = await sourcedetailresponse?.json();
           const destinationresponsedata =
-            await destinationdetailresponse.json();
+            await destinationdetailresponse?.json();
           let soursedetaildata = sourceresponsedata?.versions?.find(
             (version: any) =>
               version.id === sourceresponsedata?.current_version?.id,
@@ -1024,7 +1024,7 @@ const networktreeslice = createSlice({
                 const linkDetails = await $Get(
                   `otdr/link/${defaultlinkwithstationid!.id!}`,
                 );
-                const linkDetailsdata = await linkDetails.json();
+                const linkDetailsdata = await linkDetails?.json();
                 const findversion = linkDetailsdata?.versions?.find(
                   (version: any) =>
                     version.id === linkDetailsdata?.current_version?.id,
@@ -1071,7 +1071,7 @@ const networktreeslice = createSlice({
                   `otdr/link/${findlinkwithstatonid!.id!}`,
                 );
 
-                const linkDetailsdata = await linkDetails.json();
+                const linkDetailsdata = await linkDetails?.json();
                 const findversion = linkDetailsdata?.versions?.find(
                   (version: any) =>
                     version.id === linkDetailsdata?.current_version?.id,
@@ -1248,11 +1248,10 @@ const networktreeslice = createSlice({
             data => data == regionstationsCopy[findstations].stations[i].id,
           ) < 0
         ) {
-
           newtlist.push(regionstationsCopy[findstations].stations[i]);
         }
       }
- 
+
       regionstationsCopy[findstations].stations = newtlist;
       const newselectedstations = state.selectedstations.filter(
         data => data.regionid != action.payload.regionid,
@@ -1260,12 +1259,14 @@ const networktreeslice = createSlice({
       const finldregionlinks = regionlinksCopy.findIndex(
         (data: any) => data.regionid == action.payload.regionid,
       );
-     if(finldregionlinks>-1){
-      regionlinksCopy[finldregionlinks].links = [];
-     }
+      if (finldregionlinks > -1) {
+        regionlinksCopy[finldregionlinks].links = [];
+      }
       state.regionLinks = regionlinksCopy;
       state.allselectedId = allselectedIdCopy.filter(
-        (data: string) => data != `${action.payload.regionid}&${action.payload.regionid}_Linkss`,
+        (data: string) =>
+          data !=
+          `${action.payload.regionid}&${action.payload.regionid}_Linkss`,
       );
       state.regionstations = regionstationsCopy;
       state.selectedstations = newselectedstations;

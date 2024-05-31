@@ -50,8 +50,8 @@ const StationDetailPage = () => {
         $Get(`otdr/region/network/${params.stationId!.split('_')[1]}`),
       ]);
 
-      if (getstationdetail.status == 200) {
-        const getstationdetaildata = await getstationdetail.json();
+      if (getstationdetail?.status == 200) {
+        const getstationdetaildata = await getstationdetail?.json();
         setStationdetail(getstationdetaildata);
         setDetaildata(
           getstationdetaildata?.versions?.find(
@@ -60,8 +60,8 @@ const StationDetailPage = () => {
           ),
         );
       }
-      if (networkregionresponse.status == 200) {
-        const networkregionresponsedata = await networkregionresponse.json();
+      if (networkregionresponse?.status == 200) {
+        const networkregionresponsedata = await networkregionresponse?.json();
         setRegionlist(networkregionresponsedata);
       }
     } catch (error) {
@@ -102,7 +102,7 @@ const StationDetailPage = () => {
             },
           );
 
-          if (response.status == 200) {
+          if (response?.status == 200) {
             dispatch(
               updatedefaultStationName({
                 networkid: params.stationId!.split('_')[1],

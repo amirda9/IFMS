@@ -38,8 +38,8 @@ const AlarmTypeDetailsPage: FC = () => {
           const alarmdetailresponse = await $Get(
             `otdr/alarm/${params.alarmId}`,
           );
-          if (alarmdetailresponse.status == 200) {
-            const alarmdetailresponsedata = await alarmdetailresponse.json();
+          if (alarmdetailresponse?.status == 200) {
+            const alarmdetailresponsedata = await alarmdetailresponse?.json();
             let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
               alarmdetailresponsedata,
             );
@@ -307,7 +307,7 @@ const AlarmTypeDetailsPage: FC = () => {
           `otdr/alarm/${params!.alarmId!}`,
           {name: values.name, comment: values.comment},
         );
-        if (updatealarmtypedetail.status == 201) {
+        if (updatealarmtypedetail?.status == 201) {
           const alarmtypelistCopy = deepcopy(alarmtypelist);
           const findalarmindex = alarmtypelist.findIndex(
             data => data.id == params!.alarmId!,

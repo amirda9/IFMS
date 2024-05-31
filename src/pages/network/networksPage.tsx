@@ -28,8 +28,7 @@ const NetworksPage: FC = () => {
   });
 
   return (
-    <NetworktreeLayout
-      >
+    <NetworktreeLayout>
         <div className='w-full flex flex-col mb-[-18px]'>
       
         </div>

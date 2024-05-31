@@ -335,7 +335,7 @@ const OpticalRouteRoutePage: FC = () => {
       const getdataa = await $Get(
         `otdr/link/network/${networkId}?source_id=${old[findroute].sourceId}`,
       );
-      let getdata = await getdataa.json();
+      let getdata = await getdataa?.json();
 
       old[findroute].data = getdata;
       setAllselectedsource(old);
@@ -351,7 +351,7 @@ const OpticalRouteRoutePage: FC = () => {
         const getdataresponse = await $Get(
           `otdr/link/${old[findroute].linkId}`,
         );
-        const getdata = await getdataresponse.json();
+        const getdata = await getdataresponse?.json();
         let cables =
           getdata?.data?.cables == null
             ? null
@@ -552,7 +552,7 @@ const OpticalRouteRoutePage: FC = () => {
         const getdataresponse = await $Get(
           `otdr/link/${old[findroute].linkId}`,
         );
-        const getdata = await getdataresponse.json();
+        const getdata = await getdataresponse?.json();
 
         let cables =
           getdata.data.cables == null
@@ -661,7 +661,7 @@ const OpticalRouteRoutePage: FC = () => {
           params.opticalRouteId!.split('_')[0] || ''
         }/routes`,
       );
-      const allroutes = await allroutesrespone.json();
+      const allroutes = await allroutesrespone?.json();
       setAllroutes(
         allroutes.map((data: any, index: any) => ({
           index: Number(index),

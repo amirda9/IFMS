@@ -43,7 +43,7 @@ const swalsetting: any = {
 
 const OpticalRouteLayout: FC = () => {
   const dispatch = useDispatch();
-  const navigte=useNavigate()
+  const navigte = useNavigate();
   const [selectedId, setSelectedId] = useState('');
   const [list, setList] = useState<networklisttype[]>([]);
   const {networkselectedlist, networkoptical, alldeleteopticalroute} =
@@ -52,7 +52,7 @@ const OpticalRouteLayout: FC = () => {
   useEffect(() => {
     const getnetworklist = async () => {
       const response = await $Get(`otdr/network`);
-      const responsedata = await response.json();
+      const responsedata = await response?.json();
       setList(responsedata);
     };
     getnetworklist();
@@ -67,7 +67,6 @@ const OpticalRouteLayout: FC = () => {
       return false;
     }
   };
-
 
   const [openall, setOpenall] = useState(false);
 
@@ -123,8 +122,8 @@ const OpticalRouteLayout: FC = () => {
     // -------------------
     const findopt = networkoptical.findIndex(data => data.networkid == id);
     const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
-    if (opticals.status == 200) {
-      const opticalslist = await opticals.json();
+    if (opticals?.status == 200) {
+      const opticalslist = await opticals?.json();
       //Here we add or remove the opticalroutes related to this network to the list.
       if (findopt > -1) {
         let old = [...networkoptical];
@@ -205,7 +204,7 @@ const OpticalRouteLayout: FC = () => {
         } catch (error) {
           console.log(error);
         } finally {
-         navigte(`/config/optical-routes`)
+          navigte(`/config/optical-routes`);
         }
       }
     });
@@ -216,15 +215,17 @@ const OpticalRouteLayout: FC = () => {
       if (result.isConfirmed) {
         try {
           let networkopticalCopy: networkopticaltype = deepcopy(networkoptical);
-          const finddata = networkoptical.findIndex((data:any) => data.networkid == id);
+          const finddata = networkoptical.findIndex(
+            (data: any) => data.networkid == id,
+          );
           //delete all rtues related to this netwok
-     
-          const promises = networkopticalCopy[finddata].opticalrouts!.map((data) =>
-            $Delete(`otdr/optical-route/${data.id}`),
+
+          const promises = networkopticalCopy[finddata].opticalrouts!.map(
+            data => $Delete(`otdr/optical-route/${data.id}`),
           );
           const results = await Promise.all(promises);
-          // if (deleteOticalroute.status == 201) {
-            networkopticalCopy[finddata].opticalrouts = [];
+          // if (deleteOticalroute?.status == 201) {
+          networkopticalCopy[finddata].opticalrouts = [];
           // }
           dispatch(setNetworkoptical(networkopticalCopy));
           // -------------------------------
@@ -244,20 +245,16 @@ const OpticalRouteLayout: FC = () => {
           dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
         } catch (error) {
           console.log(`deletenetworkError is:${error}`);
-          
-        } finally{
-          navigte(`/config/optical-routes`)
+        } finally {
+          navigte(`/config/optical-routes`);
         }
-
       }
     });
   };
-  
-  const lastnetwork =useMemo(()=>{
-  return (list && list[list.length - 1]?.id) || '';
-  },[list]) 
 
-
+  const lastnetwork = useMemo(() => {
+    return (list && list[list.length - 1]?.id) || '';
+  }, [list]);
 
   return (
     <SidebarLayout createTitle="" canAdd>
@@ -296,68 +293,74 @@ const OpticalRouteLayout: FC = () => {
 
         {openall ? (
           <>
-            {Array.isArray(list) && list?.map((networkdata, index) => (
-              <div
-                key={index}
-                className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
-                  list && index == list?.length - 1
-                    ? 'border-none'
-                    : 'border-[#000000]'
-                }  `}>
-                {list && index == list?.length - 1 ? (
-                  <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
-                ) : null}
+            {Array.isArray(list) &&
+              list?.map((networkdata, index) => (
                 <div
-                  className={`absolute z-10 ${
-                    networkselectedlist.indexOf(networkdata.id) > -1
-                      ? 'bottom-[-2px]'
-                      : 'bottom-[-7px]'
-                  }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
-
-                <div className="relative flex flex-col">
-                  <Itembtn
-                    classname="mb-[-10px]"
-                    name={networkdata.name}
-                    id={networkdata.id}
-                  />
-
-                  {networkselectedlist.indexOf(networkdata.id) > -1 ? (
-                    <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
-                      <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
-                      {networkoptical
-                        ?.find(dataa => dataa.networkid == networkdata.id)
-                        ?.opticalrouts.map((data, index: number) => (
-                          <div
-                            key={index}
-                            className="flex w-full flex-row items-center">
-                            <span className="w-[15px] text-[12px]">.....</span>
-
-                            <SidebarItem
-                              selected={selectedId == data.id ? true : false}
-                              onclick={() => setSelectedId(data.id)}
-                              onclickcheckbox={e =>
-                                onclickopticalchecbox(
-                                  e,
-                                  data.id,
-                                  networkdata.id,
-                                )
-                              }
-                              checkstatus={findoptical(networkdata.id, data.id)}
-                              onDelete={() =>
-                                deleteoneopticalroute(data.id, networkdata.id)
-                              }
-                              enabelcheck={true}
-                              className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
-                              name={data.name}
-                              to={`${data.id}_${networkdata.id}`}
-                            />
-                          </div>
-                        ))}
-                    </div>
+                  key={index}
+                  className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
+                    list && index == list?.length - 1
+                      ? 'border-none'
+                      : 'border-[#000000]'
+                  }  `}>
+                  {list && index == list?.length - 1 ? (
+                    <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
                   ) : null}
+                  <div
+                    className={`absolute z-10 ${
+                      networkselectedlist.indexOf(networkdata.id) > -1
+                        ? 'bottom-[-2px]'
+                        : 'bottom-[-7px]'
+                    }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
+
+                  <div className="relative flex flex-col">
+                    <Itembtn
+                      classname="mb-[-10px]"
+                      name={networkdata.name}
+                      id={networkdata.id}
+                    />
+
+                    {networkselectedlist.indexOf(networkdata.id) > -1 ? (
+                      <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                        <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                        {networkoptical
+                          ?.find(dataa => dataa.networkid == networkdata.id)
+                          ?.opticalrouts.map((data, index: number) => (
+                            <div
+                              key={index}
+                              className="flex w-full flex-row items-center">
+                              <span className="w-[15px] text-[12px]">
+                                .....
+                              </span>
+
+                              <SidebarItem
+                                selected={selectedId == data.id ? true : false}
+                                onclick={() => setSelectedId(data.id)}
+                                onclickcheckbox={e =>
+                                  onclickopticalchecbox(
+                                    e,
+                                    data.id,
+                                    networkdata.id,
+                                  )
+                                }
+                                checkstatus={findoptical(
+                                  networkdata.id,
+                                  data.id,
+                                )}
+                                onDelete={() =>
+                                  deleteoneopticalroute(data.id, networkdata.id)
+                                }
+                                enabelcheck={true}
+                                className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
+                                name={data.name}
+                                to={`${data.id}_${networkdata.id}`}
+                              />
+                            </div>
+                          ))}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </>
         ) : null}
       </div>

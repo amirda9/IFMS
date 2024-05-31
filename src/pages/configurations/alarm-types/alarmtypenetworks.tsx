@@ -31,8 +31,8 @@ const Alarmtypenetworks = () => {
       dispatch(setAlarmtypeloading(true));
       const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
 
-      if (alarmdetailresponse.status == 200) {
-        const alarmdetailresponsedata = await alarmdetailresponse.json();
+      if (alarmdetailresponse?.status == 200) {
+        const alarmdetailresponsedata = await alarmdetailresponse?.json();
         let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
           alarmdetailresponsedata,
         );
@@ -288,8 +288,8 @@ const Alarmtypenetworks = () => {
   const cancel = async () => {
     const alarmtypedetailCopy = deepcopy(alarmtypedetail);
     const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
-    if (alarmdetailresponse.status == 200) {
-      const alarmdetailresponsedata = await alarmdetailresponse.json();
+    if (alarmdetailresponse?.status == 200) {
+      const alarmdetailresponsedata = await alarmdetailresponse?.json();
       if (alarmdetailresponsedata.alarm_networks == null) {
         alarmtypedetailCopy.alarm_networks = {network_id_list: []};
       } else {
@@ -310,10 +310,10 @@ const Alarmtypenetworks = () => {
           ),
         },
       });
-      if (response.status == 201) {
+      if (response?.status == 201) {
         const alarmdetailresponse = await $Get(`otdr/alarm/${params.alarmId}`);
-        if (alarmdetailresponse.status == 200) {
-          const alarmdetailresponsedata = await alarmdetailresponse.json();
+        if (alarmdetailresponse?.status == 200) {
+          const alarmdetailresponsedata = await alarmdetailresponse?.json();
           dispatch(setalarmsdetail(alarmdetailresponsedata));
           toast('It was done successfully', {type: 'success', autoClose: 1000});
         } else {

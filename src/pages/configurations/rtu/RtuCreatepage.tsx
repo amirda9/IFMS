@@ -86,9 +86,9 @@ const RtuCreatePage: FC = () => {
           subnet_mask: values.SubnetMask,
           default_gateway: values.DefaultGateway,
         });
-        const getdata = await creatertu.json();
+        const getdata = await creatertu?.json();
 
-        if (creatertu.status == 201) {
+        if (creatertu?.status == 201) {
           const stationsrtuCopy = deepcopy(stationsrtu);
 
           const findrtu = stationsrtu.findIndex(

@@ -9,11 +9,14 @@ import {useEffect, useState} from 'react';
 import {setLinkdetail, settypestate} from './../../store/slices/networkslice';
 import {BASE_URL} from './../../constant';
 import {useDispatch, useSelector} from 'react-redux';
-import {updatedefaltlinkname, updatelinkname} from './../../store/slices/networktreeslice';
+import {
+  updatedefaltlinkname,
+  updatelinkname,
+} from './../../store/slices/networktreeslice';
 import {$Get, $Post, $Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import {LinksType} from '~/types';
-import { UserRole } from '~/constant/users';
+import {UserRole} from '~/constant/users';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
@@ -80,26 +83,26 @@ const LinkDetailPage = () => {
   const [source, setSource] = useState<string>('');
   const [destinationid, setDestinationid] = useState<string>('');
   const [linkDetaildata, setLinkdetailData] = useState<any>([]);
-  const [loading,setLoading]=useState(false)
-   useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
     // const getrole = async () => {
     //   const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
     //     headers: {
     //       Authorization: `Bearer ${accesstoken}`,
-    //       Accept: 'application.json',
+    //       Accept: 'application?.json',
     //       'Content-Type': 'application/json',
     //     },
-    //   }).then(res => res.json());
+    //   }).then(res => res?.json());
     //   setuserrole(role.role);
     // };
     // getrole();
     // const getnetworks = async () => {
     //   const getstationdetail = await $Get(`otdr/link/${params.linkId!}`);
-    //   if (getstationdetail.status == 200) {
-    // const getstationdetaildata = await getstationdetail.json();
+    //   if (getstationdetail?.status == 200) {
+    // const getstationdetaildata = await getstationdetail?.json();
     // const response = await $Get(`otdr/network`);
-    // if (response.status == 200) {
-    //   const responsedata = await response.json();
+    // if (response?.status == 200) {
+    //   const responsedata = await response?.json();
     //   const Defaultnetworkname = responsedata.find(
     //     (data: any) => data.id == getstationdetaildata.network_id,
     //   )?.name;
@@ -110,9 +113,9 @@ const LinkDetailPage = () => {
     //       (data: any) => data.id == getstationdetaildata.network_id,
     //     )?.id}`,
     //   );
-    //   if (networkregionresponse.status == 200) {
+    //   if (networkregionresponse?.status == 200) {
     //     const networkregionresponsedata =
-    //       await networkregionresponse.json();
+    //       await networkregionresponse?.json();
     //     const Defaultegionname =
     //       networkregionresponsedata.find(
     //         (data: any) => data.id == getstationdetaildata.region_id,
@@ -128,87 +131,82 @@ const LinkDetailPage = () => {
   const getlinkdetail = async () => {
     // const linkdetailresponse=await $Get(`otdr/link/${params.linkId!}`)
     try {
-      setLoading(true)
-      let linkdetailurl = `otdr/link/${params?.linkId?.split("_")[0]!}`;
-    let regionstationurl = `otdr/station`;
+      setLoading(true);
+      let linkdetailurl = `otdr/link/${params?.linkId?.split('_')[0]!}`;
+      let regionstationurl = `otdr/station`;
 
-    const [linkdetailresponse, networkstation] = await Promise.all([
-      $Get(linkdetailurl),
-      $Get(regionstationurl),
-    ]);
-    if (linkdetailresponse.status == 200 && networkstation.status == 200) {
-  
-      const linkdata: LinksType = await linkdetailresponse.json();
-      const findInlinkdata=linkdata?.versions?.find(
-        version => version.id === linkdata?.current_version?.id,
-      )
-      const networkstationdata = await networkstation.json();
-      dispatch(setLinkdetail(linkdata));
-     setLinkdetailData(linkdata)
-      setName(linkdata.name);
-      setComment(findInlinkdata?.description || '');
-      setDestinationid(findInlinkdata?.destination.id || '');
-      setDefaultdestinationname(findInlinkdata?.destination.name || '');
-      setSource(findInlinkdata?.source.id || '');
-      setdefaultsource(findInlinkdata?.source.name || '');
-      let findtaype = type.findIndex((data: any) => data.id == linkdata?.id);
-
-      if (findtaype > -1) {
-        setType(type[findtaype].type);
-      } else {
-        setType(findInlinkdata?.type || '');
-        dispatch(
-          settypestate({
-            type: findInlinkdata?.type,
-            id: linkdata?.id,
-          }),
+      const [linkdetailresponse, networkstation] = await Promise.all([
+        $Get(linkdetailurl),
+        $Get(regionstationurl),
+      ]);
+      if (linkdetailresponse?.status == 200 && networkstation?.status == 200) {
+        const linkdata: LinksType = await linkdetailresponse?.json();
+        const findInlinkdata = linkdata?.versions?.find(
+          version => version.id === linkdata?.current_version?.id,
         );
-      }
+        const networkstationdata = await networkstation?.json();
+        dispatch(setLinkdetail(linkdata));
+        setLinkdetailData(linkdata);
+        setName(linkdata.name);
+        setComment(findInlinkdata?.description || '');
+        setDestinationid(findInlinkdata?.destination.id || '');
+        setDefaultdestinationname(findInlinkdata?.destination.name || '');
+        setSource(findInlinkdata?.source.id || '');
+        setdefaultsource(findInlinkdata?.source.name || '');
+        let findtaype = type.findIndex((data: any) => data.id == linkdata?.id);
 
+        if (findtaype > -1) {
+          setType(type[findtaype].type);
+        } else {
+          setType(findInlinkdata?.type || '');
+          dispatch(
+            settypestate({
+              type: findInlinkdata?.type,
+              id: linkdata?.id,
+            }),
+          );
+        }
 
-      let data: any = [];
-      const all = networkstationdata || [];
-      for (let i = 0; i < all.length; i++) {
-        data.push({value: all[i].id, label: all[i].name});
-      }
-      setAllsource(data);
-      setAlldestination(data);
-      setSelectedstations(data);
+        let data: any = [];
+        const all = networkstationdata || [];
+        for (let i = 0; i < all.length; i++) {
+          data.push({value: all[i].id, label: all[i].name});
+        }
+        setAllsource(data);
+        setAlldestination(data);
+        setSelectedstations(data);
 
-      const response = await $Get(`otdr/network`);
-      if (response.status == 200) {
-        const responsedata = await response.json();
-        const Defaultnetworkname = responsedata.find(
-          (data: any) => data.id == linkdata.network_id,
-        )?.name;
-        setDefaultnetworkname(Defaultnetworkname || 'select');
-        setNetworklist(responsedata);
-        const networkregionresponse = await $Get(
-          `otdr/region/network/${responsedata.find(
+        const response = await $Get(`otdr/network`);
+        if (response?.status == 200) {
+          const responsedata = await response?.json();
+          const Defaultnetworkname = responsedata.find(
             (data: any) => data.id == linkdata.network_id,
-          )?.id}`,
-        );
-        if (networkregionresponse.status == 200) {
-          const networkregionresponsedata =
-            await networkregionresponse.json();
-          const Defaultegionname =
-            networkregionresponsedata.find(
-              (data: any) => data.id == linkdata.region_id,
-            )?.name || 'select';
-          setDefaultregionname(Defaultegionname);
-          setRegionlist(networkregionresponsedata);
+          )?.name;
+          setDefaultnetworkname(Defaultnetworkname || 'select');
+          setNetworklist(responsedata);
+          const networkregionresponse = await $Get(
+            `otdr/region/network/${responsedata.find(
+              (data: any) => data.id == linkdata.network_id,
+            )?.id}`,
+          );
+          if (networkregionresponse?.status == 200) {
+            const networkregionresponsedata =
+              await networkregionresponse?.json();
+            const Defaultegionname =
+              networkregionresponsedata.find(
+                (data: any) => data.id == linkdata.region_id,
+              )?.name || 'select';
+            setDefaultregionname(Defaultegionname);
+            setRegionlist(networkregionresponsedata);
+          }
         }
       }
-    }
     } catch (error) {
-      
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-    
-  }
+  };
   useEffect(() => {
- 
     getlinkdetail();
   }, []);
 
@@ -249,29 +247,32 @@ const LinkDetailPage = () => {
       setSourcerror('');
       setDestinationerror('');
       try {
-        const response = await $Put(`otdr/link/${params?.linkId?.split("_")[0]}`, {
-          description: comment,
-          network_id:params?.linkId?.split("_")[1],
-          region_id: selectedregion.length>0?selectedregion:"",
-          name: name,
-          link_points: [],
-          source_id: source,
-          destination_id: destinationid,
-          type: types,
-        });
-        if (response.status == 200) {  
+        const response = await $Put(
+          `otdr/link/${params?.linkId?.split('_')[0]}`,
+          {
+            description: comment,
+            network_id: params?.linkId?.split('_')[1],
+            region_id: selectedregion.length > 0 ? selectedregion : '',
+            name: name,
+            link_points: [],
+            source_id: source,
+            destination_id: destinationid,
+            type: types,
+          },
+        );
+        if (response?.status == 200) {
           dispatch(
             updatedefaltlinkname({
-              regionid:selectedregion.length>0?selectedregion:"",
-              networkid:params?.linkId?.split("_")[1]!,
-              linkid: params?.linkId?.split("_")[0]!,
+              regionid: selectedregion.length > 0 ? selectedregion : '',
+              networkid: params?.linkId?.split('_')[1]!,
+              linkid: params?.linkId?.split('_')[0]!,
               linkname: name,
-              source_id:source,
-              destination_id:destinationid,
+              source_id: source,
+              destination_id: destinationid,
             }),
           );
         }
-        getlinkdetail()
+        getlinkdetail();
       } catch (error) {}
     }
   };
@@ -279,13 +280,13 @@ const LinkDetailPage = () => {
   const onclicknetwork = async (id: string) => {
     setSelectednetwork(id);
     const networkregionresponse = await $Get(`otdr/region/network/${id}`);
-    if (networkregionresponse.status == 200) {
-      const networkregionresponsedata = await networkregionresponse.json();
+    if (networkregionresponse?.status == 200) {
+      const networkregionresponsedata = await networkregionresponse?.json();
       setRegionlist(networkregionresponsedata);
     }
   };
-  if(loading){
-    return <h1>Loading...</h1>
+  if (loading) {
+    return <h1>Loading...</h1>;
   }
   // ---------------------------------------------------------------
   return (
@@ -443,7 +444,7 @@ const LinkDetailPage = () => {
       </Description>
 
       <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
-      {loggedInUser.role === UserRole.SUPER_USER ||
+        {loggedInUser.role === UserRole.SUPER_USER ||
         networkidadmin.includes(params.linkId!.split('_')[1]) ? (
           <SimpleBtn onClick={updatelink} type="button">
             Save

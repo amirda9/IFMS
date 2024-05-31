@@ -202,8 +202,8 @@ function Chart() {
         const getdata = await $Get(
           `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
         );
-        let datass = await getdata.json();
-console.log("😶‍🌫️",datass);
+        let datass = await getdata?.json();
+        console.log('😶‍🌫️', datass);
 
         let allpointsdata = datass?.datapoints?.data_points?.map(
           (data: [number, number]) => ({x: data[0], y: data[1]}),
@@ -507,7 +507,7 @@ console.log("😶‍🌫️",datass);
             `otdr/optical-route/${location.state.opticalrout_id}/routes`,
           );
           const getopticalroteRoutedata =
-            await getopticalroteRouteResponse.json();
+            await getopticalroteRouteResponse?.json();
 
           const promises = getopticalroteRoutedata.map((data: any) =>
             $Get(`otdr/link/${data.link_id}`),
@@ -515,7 +515,7 @@ console.log("😶‍🌫️",datass);
 
           const alllinksdata = await Promise.all(promises);
           const results = await Promise.all(
-            alllinksdata.map(response => response.json()),
+            alllinksdata.map(response => response?.json()),
           );
           // type linklengthtype = {
           //   id: string;
@@ -524,7 +524,7 @@ console.log("😶‍🌫️",datass);
           //   segments: {length: number; offset: number; position: number}[];
           // }[]
           let allLinkdata: linklengthtype = [];
-          let alloffset=0
+          let alloffset = 0;
           for (let i = 0; i < results.length; i++) {
             let sementsdata =
               results[i].current_version.type == 'cable'
@@ -534,21 +534,21 @@ console.log("😶‍🌫️",datass);
             // for(let j=0;j<sementsdata.length;j++){
             let data = [];
             for (let c = 0; c < sementsdata[0].segments.length; c++) {
-              alloffset +=sementsdata[0].segments[c].offset,
-              data.push({
-                Length: sementsdata[0].segments[c].length,
-                offset: sementsdata[0].segments[c].offset,
-                position:
-                  sementsdata[0].segments[c].start +
-                  sementsdata[0].segments[c].length +
-                  sementsdata[0].segments[c].offset,
-              });
+              (alloffset += sementsdata[0].segments[c].offset),
+                data.push({
+                  Length: sementsdata[0].segments[c].length,
+                  offset: sementsdata[0].segments[c].offset,
+                  position:
+                    sementsdata[0].segments[c].start +
+                    sementsdata[0].segments[c].length +
+                    sementsdata[0].segments[c].offset,
+                });
             }
 
             // }
             allLinkdata.push({
               id: results[i].id,
-              Length: results[i].current_version.length+alloffset,
+              Length: results[i].current_version.length + alloffset,
               segments: data,
             });
           }
@@ -1111,7 +1111,6 @@ console.log("😶‍🌫️",datass);
     );
   };
 
-  
   const onclickshap = () => {
     let x = mousecoordinate.x;
     const fakeeventsCopy = deepcopy(fakeevents);
@@ -1258,7 +1257,6 @@ console.log("😶‍🌫️",datass);
     }
   };
 
-
   const onclickwordtab = (a: string) => {
     const fakeeventsCopy = deepcopy(fakeevents);
     if (selectedevents != null) {
@@ -1307,7 +1305,6 @@ console.log("😶‍🌫️",datass);
     setfakeEvents(fakeeventsCopy);
   };
 
-
   const moveshapes = (e: any) => {
     const dataaa = filterArray(
       ['a', 'A', 'b', 'B'],
@@ -1350,11 +1347,11 @@ console.log("😶‍🌫️",datass);
     }
   };
 
-  const plotwidth=window.innerWidth-510
-  console.log(window.innerWidth-510);
-  console.log("maxx",maxx);
-  const ratio=plotwidth/maxx
-  console.log("ratio",ratio);
+  const plotwidth = window.innerWidth - 510;
+  console.log(window.innerWidth - 510);
+  console.log('maxx', maxx);
+  const ratio = plotwidth / maxx;
+  console.log('ratio', ratio);
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       <div className="flex h-[540px]  w-full flex-row">
@@ -1512,8 +1509,8 @@ console.log("😶‍🌫️",datass);
           <div className="flex flex-row">
             {linkslengthdata.map(segmentsdata => {
               let linklength = Number(segmentsdata.Length) * 100;
-                  console.log("linklength",linklength);
-                  
+              console.log('linklength', linklength);
+
               return (
                 <div
                   style={{width: `${linklength}px`}}

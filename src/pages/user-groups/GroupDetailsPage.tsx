@@ -33,7 +33,7 @@ const GroupDetailsPage: FC = () => {
         if (state.updateGroup?.httpRequestStatus === 'success') {
           toast('Group detail was updated successfully!', {type: 'success'});
           request('groupDetail', {params: {group_id: groupId!}});
-          request("groupList", undefined);
+          request('groupList', undefined);
         } else if (state.updateGroup?.httpRequestStatus === 'error') {
           if (state.updateGroup.error?.status === 422) {
             toast('Validation Error', {type: 'error'});
@@ -69,7 +69,7 @@ const GroupDetailsPage: FC = () => {
             <Description label="Name">
               <TextInput
                 name="groupName"
-                className="disabled:cursor-not-allowed disabled:bg-slate-200 w-3/5"
+                className="w-3/5 disabled:cursor-not-allowed disabled:bg-slate-200"
                 value={groupNameValue}
                 onChange={e => setGroupNameValue(e.target.value)}
               />
@@ -88,7 +88,7 @@ const GroupDetailsPage: FC = () => {
           <GeneralLoadingSpinner />
         )}
       </div>
-      <div className="flex flex-row self-end gap-x-4">
+      <div className="flex flex-row gap-x-4 self-end">
         <SimpleBtn
           disabled={
             !groupDetail?.data || updateGroup?.httpRequestStatus === 'loading'

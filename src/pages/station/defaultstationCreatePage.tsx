@@ -36,8 +36,8 @@ const defaultStationDetailPage = () => {
             model: 'cables',
             network_id: params.networkid,
           });
-          const responsedata = await response.json();
-          if (response.status == 200) {
+          const responsedata = await response?.json();
+          if (response?.status == 200) {
             // we should update the network tree
             dispatch(
               createdefaultStation({
@@ -57,9 +57,7 @@ const defaultStationDetailPage = () => {
       }}
       validationSchema={stationSchema}>
       <Form className="w-full">
-        <div className="text-md  mt-4 font-bold text-black">
-          Create station
-        </div>
+        <div className="text-md  mt-4 font-bold text-black">Create station</div>
         <div className="relative flex min-h-[calc(100vh-200px)] flex-grow flex-col justify-between ">
           <div className="flex flex-col gap-y-4">
             <Description label="Name" labelClassName="mt-2" items="start">

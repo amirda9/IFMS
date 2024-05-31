@@ -37,9 +37,8 @@ const swalsetting: any = {
   confirmButtonText: 'Yes, delete it!',
 };
 
-
 const ReportsRouteLayout: FC = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState('');
   const {networkselectedlist, networkoptical, alldeleteopticalroute} =
@@ -93,7 +92,7 @@ const ReportsRouteLayout: FC = () => {
         <button
           onClick={() => {
             opennetworkopticallist(id), setSelectedId(id);
-            navigate('4646')
+            navigate('4646');
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -132,8 +131,8 @@ const ReportsRouteLayout: FC = () => {
     // -------------------
     const findopt = networkoptical.findIndex(data => data.networkid == id);
     const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
-    if (opticals.status == 200) {
-      const opticalslist = await opticals.json();
+    if (opticals?.status == 200) {
+      const opticalslist = await opticals?.json();
       //Here we add or remove the opticalroutes related to this network to the list.
       if (findopt > -1) {
         let old = [...networkoptical];
@@ -193,7 +192,7 @@ const ReportsRouteLayout: FC = () => {
             `otdr/optical-route/batch_delete`,
             alldeleteopticalroute[findopticalroute]!.opticalrouts,
           );
-          if (deleteOticalroute.status == 201) {
+          if (deleteOticalroute?.status == 201) {
             let networkopticalCopy = deepcopy(networkoptical);
             const finddataindex = networkoptical.findIndex(
               data => data.networkid == networkid,
@@ -243,7 +242,7 @@ const ReportsRouteLayout: FC = () => {
           `otdr/optical-route/batch_delete`,
           networkopticalCopy[finddata].opticalrouts.map(data => data.id),
         );
-        if (deleteOticalroute.status == 201) {
+        if (deleteOticalroute?.status == 201) {
           networkopticalCopy[finddata].opticalrouts = [];
         }
         dispatch(setNetworkoptical(networkopticalCopy));
@@ -265,7 +264,7 @@ const ReportsRouteLayout: FC = () => {
 
   return (
     <SidebarLayout createTitle="" canAdd>
-  <h1 className="my-6 mt-12 font-bold text-[red] text-[20px]">
+      <h1 className="my-6 mt-12 text-[20px] font-bold text-[red]">
         This page requires a Full-Access license to view the content
       </h1>
       <div className="flex flex-row items-center ">
@@ -364,7 +363,7 @@ const ReportsRouteLayout: FC = () => {
           </>
         ) : null}
       </div>
-  
+
       {/* </div> */}
     </SidebarLayout>
   );

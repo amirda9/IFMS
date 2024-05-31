@@ -13,8 +13,8 @@ import Swal from 'sweetalert2';
 const login = localStorage.getItem('login');
 import axios from 'axios';
 import {$Delete, $Get} from '~/util/requestapi';
-import { deepcopy } from '~/util';
-import { BASE_URL } from '~/constant';
+import {deepcopy} from '~/util';
+import {BASE_URL} from '~/constant';
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
   // text: "You won't be able to revert this!",
@@ -24,11 +24,11 @@ const swalsetting: any = {
   cancelButtonColor: '#d33',
   confirmButtonText: 'Yes, delete it!',
 };
-type shapetype={
+type shapetype = {
   id: string;
   path: string;
   title: string;
-}
+};
 const NetworkGisPage = () => {
   const inputref: any = useRef(null);
   const [modal, setModal] = useState(false);
@@ -38,8 +38,8 @@ const NetworkGisPage = () => {
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const [title, setTitle] = useState('');
   const [shapefile, setShapefile] = useState<any>();
-  const [loading,setLoading]=useState(false)
-  const [loadalldata,setLoadalldata]=useState(false)
+  const [loading, setLoading] = useState(false);
+  const [loadalldata, setLoadalldata] = useState(false);
   const [shapefiles, setShapefiles] = useState<
     {id: string; path: string; title: string}[]
   >([]);
@@ -47,9 +47,7 @@ const NetworkGisPage = () => {
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
-
-console.log("shapefiles",shapefiles);
-
+  console.log('shapefiles', shapefiles);
 
   const canchange = useMemo(() => {
     let isnetworkadmin =
@@ -73,44 +71,41 @@ console.log("shapefiles",shapefiles);
     </>
   );
 
-
-  const downloadShapefile = async (path:string) => {
+  const downloadShapefile = async (path: string) => {
     try {
-    const response = await axios.get(path, {
-    responseType: 'blob', 
-    headers: {
-    Authorization: `Bearer ${accesstoken}`, 
-    },
-    });
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'shapefile.zip');
-    document.body.appendChild(link);
-    link.click();
-    link?.parentNode?.removeChild(link);
+      const response = await axios.get(path, {
+        responseType: 'blob',
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+        },
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'shapefile.zip');
+      document.body.appendChild(link);
+      link.click();
+      link?.parentNode?.removeChild(link);
     } catch (error) {
-    console.error('Download error:', error);
-    toast('Error downloading the file', { type: 'error', autoClose: 1000 });
+      console.error('Download error:', error);
+      toast('Error downloading the file', {type: 'error', autoClose: 1000});
     }
-    };
-
+  };
 
   const getshapefiles = async () => {
-    
     try {
-      setLoadalldata(true)
+      setLoadalldata(true);
       const response = await $Get(
         `otdr/network/${params.networkId}/shapefiles`,
       );
-      if (response.status == 200) {
-        const responsedata = await response.json();
+      if (response?.status == 200) {
+        const responsedata = await response?.json();
         setShapefiles(responsedata);
       }
     } catch (error) {
       console.log(`getshapefileError is:${error}`);
     } finally {
-      setLoadalldata(false)
+      setLoadalldata(false);
     }
   };
 
@@ -120,7 +115,7 @@ console.log("shapefiles",shapefiles);
   const canselupload = () => {
     setTitle('');
     setShapefile('');
-    setModal(false)
+    setModal(false);
   };
 
   const createshape = async () => {
@@ -129,9 +124,8 @@ console.log("shapefiles",shapefiles);
     } else if (shapefile.length == 0) {
       setError('فایلی آپلود نشده است');
     } else {
-    
       try {
-        setLoading(true)
+        setLoading(true);
         let formData = new FormData();
         formData.append('title', title);
         formData.append('shapefile', shapefile, shapefile.name);
@@ -144,7 +138,7 @@ console.log("shapefiles",shapefiles);
             },
           },
         );
-        if (response.status == 201) {
+        if (response?.status == 201) {
           getshapefiles();
           toast('It was done successfully', {type: 'success', autoClose: 1000});
         } else {
@@ -153,12 +147,10 @@ console.log("shapefiles",shapefiles);
       } catch (error) {
         console.log(`create shape error is:${error}`);
       } finally {
-        setLoading(false)
+        setLoading(false);
         setModal(false);
       }
     }
-
-  
   };
 
   const deleteshapefile = async (id: string) => {
@@ -168,27 +160,28 @@ console.log("shapefiles",shapefiles);
           const response = await $Delete(
             `otdr/network/${params.networkId}/shapefile/${id}`,
           );
-          
-          if (response.status == 201) {
-            toast('It was done successfully', {type: 'success', autoClose: 1000});
-            const shapefilesCopy:shapetype[]=deepcopy(shapefiles)
-            const newlist=shapefilesCopy.filter(data => data.id != id)
-            setShapefiles(newlist)
-          } else{
+
+          if (response?.status == 201) {
+            toast('It was done successfully', {
+              type: 'success',
+              autoClose: 1000,
+            });
+            const shapefilesCopy: shapetype[] = deepcopy(shapefiles);
+            const newlist = shapefilesCopy.filter(data => data.id != id);
+            setShapefiles(newlist);
+          } else {
             toast('Encountered an error', {type: 'error', autoClose: 1000});
           }
         } catch (error) {
           console.log(`deleteshapefileError is:${error}`);
-          
         }
-      
       }
     });
   };
 
-if(loadalldata){
-  return <h1 className='font-bold m-2'>Loading...</h1>
-}
+  if (loadalldata) {
+    return <h1 className="m-2 font-bold">Loading...</h1>;
+  }
 
   if (canchange) {
     return (
@@ -217,7 +210,10 @@ if(loadalldata){
                   <span className="mr-4 font-bold text-[red]">{error}</span>
                 ) : null}
 
-                <SimpleBtn loading={loading} onClick={createshape} className="h-[40px]">
+                <SimpleBtn
+                  loading={loading}
+                  onClick={createshape}
+                  className="h-[40px]">
                   Ok
                 </SimpleBtn>
                 <SimpleBtn onClick={canselupload} className="mx-2 h-[40px]">
@@ -259,12 +255,19 @@ if(loadalldata){
                     <span>{data.title}</span>
                   </div>
                   <div className="flex flex-row gap-x-8">
-                    <SimpleBtn onClick={() => downloadShapefile(`http://37.32.27.143:8080/${data.path}`)}>Download</SimpleBtn>
+                    <SimpleBtn
+                      onClick={() =>
+                        downloadShapefile(
+                          `http://37.32.27.143:8080/${data.path}`,
+                        )
+                      }>
+                      Download
+                    </SimpleBtn>
                     {canchange ? (
                       <IoTrashOutline
                         onClick={() => deleteshapefile(data.id)}
                         size={24}
-                        className="text-red-500 active:text-red-300 cursor-pointer"
+                        className="cursor-pointer text-red-500 active:text-red-300"
                       />
                     ) : null}
                   </div>

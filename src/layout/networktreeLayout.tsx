@@ -55,7 +55,7 @@ type ItemspROPS = {
   disabledcheckbox?: boolean;
 };
 type Iprops = {
-  children: React.ReactNode;
+  children: any;
 };
 
 const swalsetting: any = {
@@ -68,7 +68,7 @@ const swalsetting: any = {
   confirmButtonText: 'Yes, delete it!',
 };
 
-function NetworktreeLayout({children}: Iprops) {
+function NetworktreeLayout({ children}:Iprops) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const [showAllnetworks, setShowallnetworks] = useState(false);
@@ -109,7 +109,7 @@ function NetworktreeLayout({children}: Iprops) {
     },
   });
   const onclicknetwork = async (id: string) => {
-      request('regionList', {params: {network_id: id}});
+    request('regionList', {params: {network_id: id}});
   };
 
   useEffect(() => {
@@ -123,8 +123,8 @@ function NetworktreeLayout({children}: Iprops) {
     const getnetworklist = async () => {
       try {
         const getnetworks = await $Get(`otdr/network`);
-        const networksdata = await getnetworks.json();
-        if (getnetworks.status == 200) {
+        const networksdata = await getnetworks?.json();
+        if (getnetworks?.status == 200) {
           dispatch(setNetworklist(networksdata));
         }
       } catch (error) {}
@@ -219,8 +219,8 @@ function NetworktreeLayout({children}: Iprops) {
   const onclickstations = async (networkid: string, id: string) => {
     let old = deepcopy(regionstations);
     const allstation = await $Get(`otdr/region/${id}/stations`);
-    if (allstation.status === 200) {
-      let allstationdata = await allstation.json();
+    if (allstation?.status === 200) {
+      let allstationdata = await allstation?.json();
 
       const finddata = regionstations.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
@@ -246,11 +246,11 @@ function NetworktreeLayout({children}: Iprops) {
       $Get(alllinksurl),
       // $Get(getnetworkstationsurl),
     ]);
-    // const dataaaa=await getnetworkstations.json()
+    // const dataaaa=await getnetworkstations?.json()
     // console.log("getnetworkstations",dataaaa);
-    // && getnetworkstations.status == 200
-    if (alllinks.status === 200) {
-      let alllinksdata = await alllinks.json();
+    // && getnetworkstations?.status == 200
+    if (alllinks?.status === 200) {
+      let alllinksdata = await alllinks?.json();
 
       // const allnetworkstations:[
       //   {
@@ -261,7 +261,7 @@ function NetworktreeLayout({children}: Iprops) {
       //     time_updated: string,
       //     region_id: string
       //   }
-      // ]=await getnetworkstations.json()
+      // ]=await getnetworkstations?.json()
       const finddata = regionLinks.findIndex(data => data.regionid == id);
       let allregionsid: any = [];
       if (alllinksdata.length > 0 && finddata < 0) {
@@ -295,7 +295,7 @@ function NetworktreeLayout({children}: Iprops) {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
-          dispatch(chageLoading(true))
+          dispatch(chageLoading(true));
           const deletestationlist = selectedstations.find(
             data => data.regionid == regionid,
           );
@@ -306,20 +306,18 @@ function NetworktreeLayout({children}: Iprops) {
           );
 
           const results = await Promise.all(promises);
-console.log("results",results);
+          console.log('results', results);
 
-dispatch(
-  deletegroupstation({
-    regionid: regionid,
-    stationsid: deletestationlist?.stationsID || [],
-  }),
-);
-      
+          dispatch(
+            deletegroupstation({
+              regionid: regionid,
+              stationsid: deletestationlist?.stationsID || [],
+            }),
+          );
         } catch (error) {
           `deleteStationError is:${error}`;
         } finally {
-       
-          dispatch(chageLoading(false))
+          dispatch(chageLoading(false));
           navigate(`/regions/defaultregionemptypage/${regionid}_Stations`);
         }
       }
@@ -330,7 +328,7 @@ dispatch(
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
-          dispatch(chageLoading(true))
+          dispatch(chageLoading(true));
           const deletestationlist = selecteddefaultstations.find(
             data => data.networkid == networkid,
           );
@@ -346,11 +344,10 @@ dispatch(
               stationsid: deletestationlist?.stationsID || [],
             }),
           );
-
         } catch (error) {
           `deleteStationError is:${error}`;
         } finally {
-          dispatch(chageLoading(false))
+          dispatch(chageLoading(false));
           navigate(`/regions/defaultregionemptypage/${networkid}_Stations`);
         }
       }
@@ -361,7 +358,7 @@ dispatch(
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
-          dispatch(chageLoading(true))
+          dispatch(chageLoading(true));
           const deletestationlist = selectedlinks.find(
             data => data.regionid == regionid,
           );
@@ -376,11 +373,10 @@ dispatch(
               linksid: deletestationlist?.linkID || [],
             }),
           );
-         
         } catch (error) {
           console.log(`deletelinkError is:${error}`);
         } finally {
-          dispatch(chageLoading(false))
+          dispatch(chageLoading(false));
           navigate(`/regions/defaultregionemptypage/${regionid}_Linkss`);
         }
       }
@@ -391,7 +387,7 @@ dispatch(
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
-          dispatch(chageLoading(true))
+          dispatch(chageLoading(true));
           const deletestationlist = selectedefaultdlinks.find(
             data => data.networkid == networkid,
           );
@@ -407,11 +403,10 @@ dispatch(
               linksid: deletestationlist?.linkID || [],
             }),
           );
-        
         } catch (error) {
           console.log(`deletelinkError is:${error}`);
-        } finally{
-          dispatch(chageLoading(true))
+        } finally {
+          dispatch(chageLoading(true));
           navigate(`/regions/defaultregionemptypage/${networkid}_Linkss`);
         }
       }
@@ -421,15 +416,12 @@ dispatch(
   const Deleteregion = async (regionid: string, networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-
-          dispatch(chageLoading(true))
-          const response = await $Delete(`otdr/region/${regionid}`);
-          if (response.status == 200) {
-            dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
-            dispatch(chageLoading(false))
-          }
-     
-       
+        dispatch(chageLoading(true));
+        const response = await $Delete(`otdr/region/${regionid}`);
+        if (response?.status == 200) {
+          dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
+          dispatch(chageLoading(false));
+        }
       }
     });
   };
@@ -437,11 +429,11 @@ dispatch(
     let allLinks = [];
     let allStations = [];
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
-    const responsestationData = await responsestation.json();
+    const responsestationData = await responsestation?.json();
     const responselink = await $Get(`otdr/link/network/${networkid}`);
 
-    const responselinkData = await responselink.json();
-    if (responsestation.status == 200 && responselink.status == 200) {
+    const responselinkData = await responselink?.json();
+    if (responsestation?.status == 200 && responselink?.status == 200) {
       for (let i = 0; i < responsestationData.length; i++) {
         if (responsestationData[i].region_id == null) {
           allStations.push({
@@ -473,7 +465,7 @@ dispatch(
         const deletenetworkresponse = await $Delete(
           `otdr/network/${networkid}`,
         );
-        if (deletenetworkresponse.status == 200) {
+        if (deletenetworkresponse?.status == 200) {
           dispatch(deletenetwork(networkid));
           navigate('./');
         }
@@ -860,7 +852,7 @@ dispatch(
                                   )
                                   ?.stations.map((stationsdata, index) => (
                                     <Items
-                                      key={stationsdata.id+stationsdata.id}
+                                      key={stationsdata.id + stationsdata.id}
                                       to={`/stations/${stationsdata.id}_${networkdata.id}/defaultstationDetailPage`}
                                       canAdd={false}
                                       disabledcheckbox={
@@ -940,7 +932,7 @@ dispatch(
                                   )
                                   ?.links.map((linksdata, index) => (
                                     <Items
-                                      key={linksdata.id+index}
+                                      key={linksdata.id + index}
                                       to={`/links/${linksdata.id}_${networkdata.id}/defaultregionlinkdetailpage`}
                                       createurl={`/links/create`}
                                       canAdd={false}

@@ -18,10 +18,10 @@ const StationsPage = () => {
     const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
       headers: {
         Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application.json',
+        Accept: 'application?.json',
         'Content-Type': 'application/json',
       },
-    }).then(res => res.json());
+    }).then(res => res?.json());
     setuserrole(role.role);
     console.log(role, 'getrole');
   };
@@ -57,29 +57,9 @@ const StationsPage = () => {
   // console.log(networkstations,'networkstations');
 
   return (
-    <NetworktreeLayout
-      // searchOnChange={() => {}}
-      // createTitle="Stations"
-      // canAdd={
-      //   userrole == 'superuser' ||
-      //   networkDetail?.data?.access?.access == 'ADMIN'
-      //     ? true
-      //     : false
-      // }
-      >
-      {/* {stations?.data?.map(value => (
-        <SidebarItem
-          onDelete={
-            userrole == 'superuser' ||
-            networkDetail?.data?.access?.access == 'ADMIN'
-              ? () => request('stationDelete', {params: {station_id: value.id}})
-              : () => {}
-          }
-          name={value.name}
-          to={value.id}
-          key={value.id}
-        />
-      ))} */}
+    <NetworktreeLayout>
+    <>
+    </>
     </NetworktreeLayout>
   );
 };

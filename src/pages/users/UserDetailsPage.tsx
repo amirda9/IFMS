@@ -75,7 +75,7 @@ const UsersDetailsPage: FC = () => {
         if (state.userDetailUpdate?.httpRequestStatus === 'success') {
           toast('User updated successfully.', {type: 'success'});
         } else if (state.userDetailUpdate?.httpRequestStatus === 'error') {
-          if (state.userDetailUpdate.error!.status === 422)
+          if (state.userDetailUpdate.error!?.status === 422)
             toast('Validation Error', {type: 'error'});
           else
             toast(

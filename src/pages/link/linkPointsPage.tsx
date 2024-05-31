@@ -35,8 +35,8 @@ const Addbox = ({classname, onclick}: Iprops) => {
 const LinkPointsPage = () => {
   const params = useParams<{linkId: string}>();
   const networkId = params.linkId!.split('_')[2];
-  const [linkdata,setLinkdata]=useState<any>([])
-  const [loading,setLoading]=useState(false)
+  const [linkdata, setLinkdata] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
   );
@@ -56,19 +56,16 @@ const LinkPointsPage = () => {
     };
   }, []);
 
-  const {state,} = useHttpRequest({
-    selector: state => ({
-    }),
+  const {state} = useHttpRequest({
+    selector: state => ({}),
   });
 
-
-
   const getlinkDetail = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await $Get(`otdr/link/${params.linkId!.split('_')[0]}`);
-      const responsedata = await response.json();
-      setLinkdata(responsedata)
+      const responsedata = await response?.json();
+      setLinkdata(responsedata);
       const all =
         responsedata?.versions?.find(
           (version: any) => version.id === responsedata?.current_version?.id,
@@ -80,9 +77,8 @@ const LinkPointsPage = () => {
       }
       setlinkpoints(neadata);
     } catch (error) {
-   
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -136,16 +132,16 @@ const LinkPointsPage = () => {
       latitude: data.latitude,
       longitude: data.longitude,
     }));
-    newpoints.splice(0,1)
-    newpoints.splice(newpoints.length-1,1)
+    newpoints.splice(0, 1);
+    newpoints.splice(newpoints.length - 1, 1);
 
     const respnse = await $Put(
       `otdr/link/${params.linkId!.split('_')[0] || ''}/link_points`,
       newpoints,
     );
 
-    if (respnse.status == 201) {
-      getlinkDetail()
+    if (respnse?.status == 201) {
+      getlinkDetail();
     }
   };
 

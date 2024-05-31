@@ -43,7 +43,12 @@ const SystemPage = () => {
     },
   });
 
-  const [system, setSystem] = useState<{break_strategy:string,fiber_test_setup_definition_strategy:string,data_save_policy:string,test_type:string}>();
+  const [system, setSystem] = useState<{
+    break_strategy: string;
+    fiber_test_setup_definition_strategy: string;
+    data_save_policy: string;
+    test_type: string;
+  }>();
   // {
   //   break_strategy: 'skip',
   //   fiber_test_setup_definition_strategy: 'both',
@@ -55,11 +60,10 @@ const SystemPage = () => {
   };
   const getAppsettingsdata = async () => {
     const appsettings = await $Get(`otdr/settings/app-settings`);
-    if(appsettings.status == 200){
-      let appsettingsdata=await appsettings.json()
+    if (appsettings?.status == 200) {
+      let appsettingsdata = await appsettings?.json();
       setSystem(appsettingsdata?.system);
     }
- 
   };
 
   useEffect(() => {

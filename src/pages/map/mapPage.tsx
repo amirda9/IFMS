@@ -67,9 +67,9 @@ type linktype = {
 };
 
 type regiontype = {
-  id: string;
-  links: linktype[];
-  name: string;
+  id: string
+  links: linktype[]
+  name: string
   stations: Stationtype[];
 };
 /* ------ component ----------- */
@@ -81,7 +81,10 @@ function ZoomComponent({fullscreen}: fullscreen) {
     map.setZoom(zoomstate);
   }, [zoomstate]);
   return (
-    <div className={`absolute right-[26px] ${fullscreen?`top-[107px]`:`top-[17px]`} z-[400] h-auto w-auto`}>
+    <div
+      className={`absolute right-[26px] ${
+        fullscreen ? `top-[107px]` : `top-[17px]`
+      } z-[400] h-auto w-auto`}>
       <img
         onClick={() => setZoomstate(zoomstate + 1)}
         src={pluse}
@@ -156,7 +159,7 @@ const MapPage = () => {
     const getallnetwork = async () => {
       try {
         const response = await $Get(`otdr/network`);
-        const responseData = await response.json();
+        const responseData = await response?.json();
         const newdata = responseData.map((data: any) => ({
           name: data.name,
           id: data.id,
@@ -175,7 +178,7 @@ const MapPage = () => {
     setRegionname('');
     try {
       const response = await $Post(`otdr/map`, selectednetworks);
-      const responsedata = await response.json();
+      const responsedata = await response?.json();
       let regiondata: any = [];
       let stationdata: Stationtype[] = [];
       let linksdata = [];
@@ -836,7 +839,7 @@ const MapPage = () => {
 
           {regionname.length > 0 ? (
             <>
-              {switchstatus ? (
+              {/* {switchstatus ? (
                 <>
                   {Regions?.links?.map((data: any, index: any) => {
                     let start = Stations.find(
@@ -905,7 +908,7 @@ const MapPage = () => {
                     }
                   })}
                 </>
-              ) : null}
+              ) : null} */}
             </>
           ) : (
             <>

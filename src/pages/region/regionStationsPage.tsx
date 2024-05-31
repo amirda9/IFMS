@@ -100,7 +100,6 @@ const RegionStationsPage = () => {
     }
   }, [state]);
 
-
   const sortddata = (tabnamee: string, sortalfabet: boolean) => {
     const newdataa: any = newregionstationliststatus
       ? [...newregionstationlist]
@@ -191,12 +190,10 @@ const RegionStationsPage = () => {
         data => data.regionid == params.regionId!.split('_')[0],
       );
 
-
       let first = state?.list?.data || [];
       if (first.length == 0 && newregionstationlist2?.length == 0) {
       } else {
-
-        const [append,remove] = await Promise.all([
+        const [append, remove] = await Promise.all([
           $Post(
             `otdr/region/${
               params.regionId!.split('_')[0]
@@ -211,15 +208,13 @@ const RegionStationsPage = () => {
           ),
         ]);
 
-
         // // we should update regionstations in networktree
-        if (append.status == 201 && remove.status == 201) {
+        if (append?.status == 201 && remove?.status == 201) {
           // add stations to some regionstations in networktree
           regionstationsCopy[findregionindex].stations = [
             ...regionstations[findregionindex].stations,
             ...appenddata.map(data => ({id: data.id, name: data.name})),
           ];
-
 
           //   //We remove the stations from some regionstations because we have connected some of the stations to another region.
 
@@ -254,7 +249,7 @@ const RegionStationsPage = () => {
         }
 
         // //remove stations from some regionstations in networktree
-        if (remove.status == 201 && append.status == 201) {
+        if (remove?.status == 201 && append?.status == 201) {
           for (let s = 0; s < removedata.length; s++) {
             const findindexdata = regionstationsCopy[
               findregionindex
@@ -300,8 +295,6 @@ const RegionStationsPage = () => {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className="flex h-full flex-col justify-between">

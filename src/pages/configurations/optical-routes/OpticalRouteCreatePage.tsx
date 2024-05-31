@@ -1,14 +1,13 @@
-
 import * as Yup from 'yup';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {FC} from 'react';
-import { useParams,useNavigate } from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
 import {InputFormik, SelectFormik, TextareaFormik} from '~/container';
-import {setNetworkoptical} from './../../../store/slices/opticalroutslice'
-import { useDispatch, useSelector } from 'react-redux';
-import {$Get, $Post } from '~/util/requestapi';
-import { deepcopy } from '~/util';
+import {setNetworkoptical} from './../../../store/slices/opticalroutslice';
+import {useDispatch, useSelector} from 'react-redux';
+import {$Get, $Post} from '~/util/requestapi';
+import {deepcopy} from '~/util';
 
 const rtuSchema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
@@ -16,14 +15,11 @@ const rtuSchema = Yup.object().shape({
 });
 const OpticalRouteCreatePage: FC = () => {
   const params = useParams();
-  let navigate=useNavigate()
+  let navigate = useNavigate();
   const dispatch = useDispatch();
-  const {networkselectedlist,networkoptical} = useSelector(
+  const {networkselectedlist, networkoptical} = useSelector(
     (state: any) => state.opticalroute,
   );
-
-
-
 
   const formik = useFormik({
     validationSchema: rtuSchema,
@@ -35,52 +31,60 @@ const OpticalRouteCreatePage: FC = () => {
       avg_hellix_factor: 0,
       network_id: '',
     },
-    onSubmit: async(values) => {
+    onSubmit: async values => {
       try {
-        const createoptical=await $Post(`otdr/optical-route/`,{
+        const createoptical = await $Post(`otdr/optical-route/`, {
           name: values.name,
           comment: values.comment,
           test_ready: values.test_ready,
           type: values.type,
-          avg_hellix_factor:values.avg_hellix_factor,
-          network_id:params.id || "",
-        })
-        const createopticaldata=await createoptical.json();
-        if(createoptical.status == 201){
-          const findopt = networkoptical.findIndex((data:any) => data.networkid == params.id);
-          const opticals = await $Get(`otdr/optical-route/?network_id=${params.id}`);
-          const opticaldata=await opticals.json();
-         if(opticals.status == 200){
-           let networkopticalCopy =deepcopy(networkoptical);
-           if (findopt > -1) {
-            let newdata=networkopticalCopy.filter((data:any) => data.networkid != params.id)
-            newdata.push({networkid: params.id, opticalrouts:opticaldata})           
-           dispatch(setNetworkoptical(newdata));
-          } else {
-            networkopticalCopy.push({networkid: params.id, opticalrouts:opticaldata})
-           dispatch(setNetworkoptical(networkopticalCopy)) ;
+          avg_hellix_factor: values.avg_hellix_factor,
+          network_id: params.id || '',
+        });
+        const createopticaldata = await createoptical?.json();
+        if (createoptical?.status == 201) {
+          const findopt = networkoptical.findIndex(
+            (data: any) => data.networkid == params.id,
+          );
+          const opticals = await $Get(
+            `otdr/optical-route/?network_id=${params.id}`,
+          );
+          const opticaldata = await opticals?.json();
+          if (opticals?.status == 200) {
+            let networkopticalCopy = deepcopy(networkoptical);
+            if (findopt > -1) {
+              let newdata = networkopticalCopy.filter(
+                (data: any) => data.networkid != params.id,
+              );
+              newdata.push({networkid: params.id, opticalrouts: opticaldata});
+              dispatch(setNetworkoptical(newdata));
+            } else {
+              networkopticalCopy.push({
+                networkid: params.id,
+                opticalrouts: opticaldata,
+              });
+              dispatch(setNetworkoptical(networkopticalCopy));
+            }
+            navigate(
+              `/config/optical-routes/${createopticaldata.id}_${params.id}`,
+            );
+            //  navigate(`../${createopticaldata.id}`)
           }
-          navigate(`/config/optical-routes/${createopticaldata.id}_${params.id}`)
-          //  navigate(`../${createopticaldata.id}`)
-         }
         }
-  
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     },
   });
-
 
   return (
     <div className="flex flex-grow flex-col">
       <FormikProvider value={formik}>
-        <Form
-          className="flex h-full flex-col justify-between">
+        <Form className="flex h-full flex-col justify-between">
           <div className="flex w-2/3 flex-col gap-y-4">
-          <span className='text-md text-black font-bold mb-6'>Create opticalroute</span>
+            <span className="text-md mb-6 font-bold text-black">
+              Create opticalroute
+            </span>
             <Description label="Name" items="start">
-              <InputFormik  name="name" wrapperClassName="w-full" />
+              <InputFormik name="name" wrapperClassName="w-full" />
             </Description>
 
             <Description label="Comment" items="start">
@@ -90,13 +94,15 @@ const OpticalRouteCreatePage: FC = () => {
             <Description label="Test Ready">
               <ControlledSelect
                 options={[{label: 'No'}, {label: 'Yes'}]}
-                onChange={(e) => formik.setFieldValue("test_ready",e == 1?true:false)}
+                onChange={e =>
+                  formik.setFieldValue('test_ready', e == 1 ? true : false)
+                }
                 className="min-w-[13rem]"
               />
             </Description>
 
             <Description label="Type">
-            <SelectFormik
+              <SelectFormik
                 placeholder="select"
                 name="type"
                 className="w-[400px]">
@@ -107,17 +113,15 @@ const OpticalRouteCreatePage: FC = () => {
                   key={0}
                   label={'dark'}
                   className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                 dark
+                  dark
                 </option>
                 <option
                   key={2}
                   label={'light'}
                   className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                    light
+                  light
                 </option>
               </SelectFormik>
-          
-       
             </Description>
 
             <Description label="Average Helix (%)">

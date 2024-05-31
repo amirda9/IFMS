@@ -110,7 +110,7 @@ function Testondemand() {
           `otdr/optical-route/batch_delete`,
           networkopticalCopy[finddata].opticalrouts.map(data => data.id),
         );
-        if (deleteOticalroute.status == 201) {
+        if (deleteOticalroute?.status == 201) {
           networkopticalCopy[finddata].opticalrouts = [];
         }
         dispatch(setNetworkoptical(networkopticalCopy));
@@ -231,7 +231,7 @@ function Testondemand() {
             `otdr/optical-route/batch_delete`,
             alldeleteopticalroute[findopticalroute]!.opticalrouts,
           );
-          if (deleteOticalroute.status == 201) {
+          if (deleteOticalroute?.status == 201) {
             let networkopticalCopy = deepcopy(networkoptical);
             const finddataindex = networkoptical.findIndex(
               data => data.networkid == networkid,
@@ -476,11 +476,11 @@ function Testondemand() {
             {
               name: 'status',
               bg:
-                data.status == 'PENDING'
+                data?.status == 'PENDING'
                   ? '#FFE600'
-                  : data.status == 'SUCCESS'
+                  : data?.status == 'SUCCESS'
                   ? '#18C047'
-                  : data.status == 'STARTED'
+                  : data?.status == 'STARTED'
                   ? '#4296FF'
                   : 'white',
             },
@@ -493,7 +493,7 @@ function Testondemand() {
           measurmenttestid: data.id,
           testsetup: data?.test_setup?.name || null,
           station: data?.test_setup?.station?.name || null,
-          status: data.status,
+          status: data?.status,
           detail: '',
           delete: '',
         })),
@@ -543,9 +543,9 @@ function Testondemand() {
               },
             },
           );
-          if (createondemandmeasurmentresponse.status == 201) {
+          if (createondemandmeasurmentresponse?.status == 201) {
             const createondemandmeasurmentresponseData =
-              await createondemandmeasurmentresponse.json();
+              await createondemandmeasurmentresponse?.json();
             getmeasurments();
           }
         }
@@ -559,14 +559,14 @@ function Testondemand() {
     getmeasurments();
   }, []);
 
-  const deletehistory = async (id:string) => {
+  const deletehistory = async (id: string) => {
     try {
       const deleteonehistory = await $Delete(
         `otdr/optical-route/${selectedId}/measurements`,
         [id],
       );
 
-      if (deleteonehistory.status == 201) {
+      if (deleteonehistory?.status == 201) {
         getmeasurments();
       }
       toast('It was done successfully', {type: 'success', autoClose: 1000});
@@ -826,7 +826,7 @@ function Testondemand() {
               <IoTrashOutline
                 onClick={
                   async () => {
-                    deletehistory(value.measurmenttestid)
+                    deletehistory(value.measurmenttestid);
                     // const findidindex = deletelist.findIndex(
                     //   data => data == value.measurmenttestid,
                     // );
@@ -841,7 +841,7 @@ function Testondemand() {
                   //         `otdr/optical-route/${value.opticalrouteid}/measurements`,
                   //         [value.measurmenttestid],
                   //       );
-                  //       if (deletetest.status == 201) {
+                  //       if (deletetest?.status == 201) {
                   //         getmeasurments();
                   //       }
                   //     } catch (error) {

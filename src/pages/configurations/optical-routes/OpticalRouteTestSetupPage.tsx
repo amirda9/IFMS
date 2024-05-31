@@ -1,12 +1,18 @@
 import {FC, useEffect, useState} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import { useDispatch } from 'react-redux';
-import {Link, Outlet, useNavigate, useParams,useLocation } from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import {
+  Link,
+  Outlet,
+  useNavigate,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import { setopticalroutUpdateTestsetupDetail } from '~/store/slices/opticalroutslice';
-import { deepcopy } from '~/util';
+import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
+import {deepcopy} from '~/util';
 import {$Get} from '~/util/requestapi';
 
 const columns = {
@@ -51,8 +57,8 @@ const items = [
 
 const OpticalRouteTestSetupPage: FC = () => {
   const params = useParams();
-  const { pathname} = useLocation()
-  const [loading,setLoading]=useState(false)
+  const {pathname} = useLocation();
+  const [loading, setLoading] = useState(false);
   const [alldelets, setAlldelets] = useState<string[]>([]);
   const [allitems, setAllitems] = useState<
     {
@@ -67,48 +73,42 @@ const OpticalRouteTestSetupPage: FC = () => {
   >([]);
 
   const [selectedTab, setSelectedtab] = useState('Name');
-  const {
-    request,
-    state
-  } = useHttpRequest({
-    selector: state => ({
-    }),
-    initialRequests: request => {
-
-    },
- 
+  const {request, state} = useHttpRequest({
+    selector: state => ({}),
+    initialRequests: request => {},
   });
 
-  const Getsetup=async()=>{
-      try {
-        setLoading(true)
-        const getalldata = await $Get(
-          `otdr/optical-route/${params.opticalRouteId!.split("_")[0]}/test-setups`,
-        );
-        const getdata=await getalldata.json();
-        if(getalldata.status == 200){
-          const all =
-            getdata?.map((data: any) => ({
-              name: data.name,
-              type: data.type,
-              wavelength: data.wavelength,
-              rtu: data.rtu.name,
-              station: data.station.name,
-              detail: data.id,
-              delete: data.id,
-            })) || [];
-          setAllitems(all);
-        }
-      } catch (error) {
-        console.log(`gettestsetupError is:${error}`);
-        
-      } finally {
-        setLoading(false)
+  const Getsetup = async () => {
+    try {
+      setLoading(true);
+      const getalldata = await $Get(
+        `otdr/optical-route/${
+          params.opticalRouteId!.split('_')[0]
+        }/test-setups`,
+      );
+      const getdata = await getalldata?.json();
+      if (getalldata?.status == 200) {
+        const all =
+          getdata?.map((data: any) => ({
+            name: data.name,
+            type: data.type,
+            wavelength: data.wavelength,
+            rtu: data.rtu.name,
+            station: data.station.name,
+            detail: data.id,
+            delete: data.id,
+          })) || [];
+        setAllitems(all);
       }
-  }
+    } catch (error) {
+      console.log(`gettestsetupError is:${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    Getsetup()
+    Getsetup();
   }, [pathname]);
 
   const sortddata = (tabname: string, sortalfabet: boolean) => {
@@ -141,62 +141,52 @@ const OpticalRouteTestSetupPage: FC = () => {
 
   const save = () => {
     request('opticalrouteDeletTestsetup', {
-      params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
+      params: {optical_route_id: params.opticalRouteId!.split('_')[0] || ''},
       data: alldelets,
     });
     setAlldelets([]);
-    Getsetup()
+    Getsetup();
   };
-  const dispatch=useDispatch()
- const navigate=useNavigate()
- const create=()=>{
-  dispatch(
-    setopticalroutUpdateTestsetupDetail({
-      name: '',
-      station_id: '',
-      station_name: '',
-      init_rtu_id: '',
-      init_rtu_name: '',
-      startdatePart: '',
-      starttimePart: '',
-      enddatePart: '',
-      endtimePart: '',
-      parameters: {
-        enabled: true,
-        type: 'monitoring',
-        wavelength: '1625',
-        break_strategy: 'skip',
-        date_save_policy: 'save',
-        test_mode: 'fast',
-        run_mode: 'average',
-        distance_mode: 'manual',
-        range: 3,
-        pulse_width_mode: 'manual',
-        pulse_width: 3,
-        sampling_mode: 'duration',
-        sampling_duration: 4,
-        IOR: 1.476,
-        RBS: -79,
-        event_loss_threshold: 0.05,
-        event_reflection_threshold: -40,
-        fiber_end_threshold: 5,
-        total_loss_threshold: 5,
-        section_loss_threshold: 5,
-        injection_level_threshold: 5,
-      },
-      learning_data: {
-        targeted_count_per_cycle: 30,
-        start_cycle_time: {
-          type: 'fixed',
-          time: '',
-          periodic_options: {
-            value: 0,
-            period_time: 'secondly',
-          },
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const create = () => {
+    dispatch(
+      setopticalroutUpdateTestsetupDetail({
+        name: '',
+        station_id: '',
+        station_name: '',
+        init_rtu_id: '',
+        init_rtu_name: '',
+        startdatePart: '',
+        starttimePart: '',
+        enddatePart: '',
+        endtimePart: '',
+        parameters: {
+          enabled: true,
+          type: 'monitoring',
+          wavelength: '1625',
+          break_strategy: 'skip',
+          date_save_policy: 'save',
+          test_mode: 'fast',
+          run_mode: 'average',
+          distance_mode: 'manual',
+          range: 3,
+          pulse_width_mode: 'manual',
+          pulse_width: 3,
+          sampling_mode: 'duration',
+          sampling_duration: 4,
+          IOR: 1.476,
+          RBS: -79,
+          event_loss_threshold: 0.05,
+          event_reflection_threshold: -40,
+          fiber_end_threshold: 5,
+          total_loss_threshold: 5,
+          section_loss_threshold: 5,
+          injection_level_threshold: 5,
         },
-        increase_count_options: {
-          count: 2,
-          timing: {
+        learning_data: {
+          targeted_count_per_cycle: 30,
+          start_cycle_time: {
             type: 'fixed',
             time: '',
             periodic_options: {
@@ -204,31 +194,41 @@ const OpticalRouteTestSetupPage: FC = () => {
               period_time: 'secondly',
             },
           },
-          maximum_count: 60,
+          increase_count_options: {
+            count: 2,
+            timing: {
+              type: 'fixed',
+              time: '',
+              periodic_options: {
+                value: 0,
+                period_time: 'secondly',
+              },
+            },
+            maximum_count: 60,
+          },
         },
-      },
-      test_program: {
-        starting_date: {
-          immediately: false,
+        test_program: {
+          starting_date: {
+            immediately: false,
+          },
+          end_date: {
+            indefinite: true,
+          },
+          period_time: {
+            value: 0,
+            period_time: 'secondly',
+          },
         },
-        end_date: {
-          indefinite: true,
-        },
-        period_time: {
-          value: 0,
-          period_time: 'secondly',
-        },
-      },
-    }),
-  );
-  navigate("create")
- }
+      }),
+    );
+    navigate('create');
+  };
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex  flex-grow flex-col gap-y-4 pr-16">
         <Link to={'create'}>
           <BsPlusLg
-          onClick={create}
+            onClick={create}
             size={25}
             color="#18C047"
             className=" absolute right-[30px]"
@@ -236,7 +236,7 @@ const OpticalRouteTestSetupPage: FC = () => {
         </Link>
 
         <Table
-        loading={loading}
+          loading={loading}
           cols={columns}
           items={allitems}
           tdclassname="text-left pl-[6px]"
@@ -249,15 +249,15 @@ const OpticalRouteTestSetupPage: FC = () => {
           renderDynamicColumn={({key, value}) => {
             if (key === 'details')
               return (
-                 <Link to={value.detail}>
-                  <IoOpenOutline  size={22} className="mx-auto" />
-            </Link>
+                <Link to={value.detail}>
+                  <IoOpenOutline size={22} className="mx-auto" />
+                </Link>
               );
             else if (key === 'delete')
               return (
                 <IoTrashOutline
                   onClick={() => deletetest(value.delete)}
-                  className="mx-auto text-red-500 cursor-pointer"
+                  className="mx-auto cursor-pointer text-red-500"
                   size={22}
                 />
               );
@@ -266,7 +266,7 @@ const OpticalRouteTestSetupPage: FC = () => {
           bordered
         />
       </div>
-      <div className="flex flex-row gap-x-4 self-end mt-[20px]">
+      <div className="mt-[20px] flex flex-row gap-x-4 self-end">
         <SimpleBtn onClick={save}>Save</SimpleBtn>
         <SimpleBtn>Cancel</SimpleBtn>
       </div>

@@ -70,7 +70,7 @@ const RegionDetailPage = () => {
         );
         console.log('response', response);
 
-        if (response.status == 200) {
+        if (response?.status == 200) {
           dispatch(
             updateregionname({
               newnetworkid: selectenetwork,
@@ -97,8 +97,8 @@ const RegionDetailPage = () => {
           // $Get(`otdr/network`),
         ]);
 
-        if (getstationdetail.status == 200) {
-          const getstationdetaildata = await getstationdetail.json();
+        if (getstationdetail?.status == 200) {
+          const getstationdetaildata = await getstationdetail?.json();
           if (getstationdetaildata?.access?.access == 'ADMIN') {
             dispatch(setRegionidadmin(getstationdetaildata?.id!));
           }
@@ -113,8 +113,8 @@ const RegionDetailPage = () => {
           });
         }
 
-        // if (response.status == 200) {
-        //   const responsedata = await response.json();
+        // if (response?.status == 200) {
+        //   const responsedata = await response?.json();
         //   const Defaultnetworkname = responsedata.find(
         //     (data: any) => data.id == params.regionId!.split('_')[1],
         //   );

@@ -7,7 +7,8 @@ type PropsType = {
 };
 const Switch: FC<PropsType> = ({checked, wrapperClassName, onChange}) => {
   const [state, setState] = useState(checked);
-  const isChecked = checked ?? state;
+
+  const isChecked = state ;
   return (
     <div
       className={`flex w-12 flex-row rounded-lg bg-white [&_.switch-btn]:active:opacity-50 ${

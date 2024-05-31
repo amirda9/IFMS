@@ -5,14 +5,14 @@ import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useNavigate} from 'react-router-dom';
-import {createnetwork} from './../../store/slices/networktreeslice'
-import { useDispatch } from 'react-redux';
-import { $Post } from '~/util/requestapi';
+import {createnetwork} from './../../store/slices/networktreeslice';
+import {useDispatch} from 'react-redux';
+import {$Post} from '~/util/requestapi';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
 const NetworkCreatePage = () => {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {state, request} = useHttpRequest({
     selector: state => state.http.networkCreate,
@@ -28,22 +28,21 @@ const NetworkCreatePage = () => {
   });
   return (
     <div className="flex w-full flex-col gap-4">
-      <h1 className="mb-4 text-md font-bold">Create Network</h1>
+      <h1 className="text-md mb-4 font-bold">Create Network</h1>
       <Formik
         validationSchema={networkSchema}
         initialValues={{name: '', description: ''}}
-        onSubmit={async(values) => {
+        onSubmit={async values => {
           try {
-            const response=await $Post(`otdr/network`,values)
-            const responsedata=await response.json()
-            if(response.status == 200){
-              dispatch(createnetwork({id:responsedata.network_id,name:values.name}))
-              navigate(`/networks/${responsedata.network_id}`)
+            const response = await $Post(`otdr/network`, values);
+            const responsedata = await response?.json();
+            if (response?.status == 200) {
+              dispatch(
+                createnetwork({id: responsedata.network_id, name: values.name}),
+              );
+              navigate(`/networks/${responsedata.network_id}`);
             }
-          } catch (error) {
-            
-          }
-          
+          } catch (error) {}
         }}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col gap-y-4">

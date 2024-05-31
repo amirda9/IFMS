@@ -101,10 +101,10 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
       ]);
       // const listuser = await $Get(`auth/users/`);
       //  const listacsessuser=await $Get(`otdr/network/${Object.entries(params)[0][1]}/access`)
-      const listuserdata: any = await listuser.json();
-      const listacsessuserdata = await listacsessuser.json();
+      const listuserdata: any = await listuser?.json();
+      const listacsessuserdata = await listacsessuser?.json();
 
-      if (listuser.status == 200) {
+      if (listuser?.status == 200) {
         setUserlist(
           listuserdata?.map((user: any) => ({
             user: user.username,
