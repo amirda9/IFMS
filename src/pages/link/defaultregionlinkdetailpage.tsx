@@ -252,7 +252,7 @@ const LinkDetailPage = () => {
           {
             description: comment,
             network_id: params?.linkId?.split('_')[1],
-            region_id: selectedregion.length > 0 ? selectedregion : '',
+            region_id: selectedregion.length > 0 ? selectedregion : null,
             name: name,
             link_points: [],
             source_id: source,
@@ -263,7 +263,7 @@ const LinkDetailPage = () => {
         if (response?.status == 200) {
           dispatch(
             updatedefaltlinkname({
-              regionid: selectedregion.length > 0 ? selectedregion : '',
+              regionid: selectedregion.length > 0 ? selectedregion : null,
               networkid: params?.linkId?.split('_')[1]!,
               linkid: params?.linkId?.split('_')[0]!,
               linkname: name,
