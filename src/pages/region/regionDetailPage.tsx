@@ -66,14 +66,14 @@ const RegionDetailPage = () => {
       try {
         const response = await $Put(
           `otdr/region/${params.regionId!.split('_')[0]}`,
-          {...values, network_id: selectenetwork},
+          {...values, network_id: params.regionId!.split('_')[1]},
         );
         console.log('response', response);
 
         if (response?.status == 200) {
           dispatch(
             updateregionname({
-              newnetworkid: selectenetwork,
+              newnetworkid:params.regionId!.split('_')[1],
               networkid: regiondata?.network_id,
               regionid: params.regionId!.split('_')[0],
               regionname: values.name!,
