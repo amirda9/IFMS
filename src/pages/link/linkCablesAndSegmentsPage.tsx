@@ -445,9 +445,15 @@ const LinkCablesAndSegmentsPage = () => {
     2,
   );
   let mainlength = Math.sqrt(lengthlatitude + lengthlongitude);
-  if(state.update?.httpRequestStatus === 'loading'){
+  if(state?.update?.httpRequestStatus === 'loading' || state?.detail?.httpRequestStatus == "loading"){
     return <h1 className='text-left'>Loading</h1>
   }
+  
+
+  console.log("😃",parentcabl);
+  console.log("state?.detail",state?.detail);
+  
+  
   return (
     <div className="relative  min-h-[calc(100vh-220px)] w-full">
       {(parentcabl?.cables && parentcabl?.cables?.length > 0) ||

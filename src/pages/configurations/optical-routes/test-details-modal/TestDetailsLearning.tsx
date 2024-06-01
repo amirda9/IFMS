@@ -151,9 +151,8 @@ const TestDetailsLearning: FC = () => {
             <TextInput
               onChange={e => {
                 formik.setFieldValue('countpercycle', e.target.value);
-                let dataa: any = JSON.parse(
-                  JSON.stringify(opticalroutUpdateTestsetupDetail),
-                );
+                let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail);
+                
                 dataa.learning_data.targeted_count_per_cycle = e.target.value;
                 dispatch(setopticalroutUpdateTestsetupDetail(dataa));
               }}
@@ -204,9 +203,8 @@ const TestDetailsLearning: FC = () => {
                       'periodicoptionsvalue',
                       e.target.value,
                     );
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
-                    );
+                    let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail);
+                    
                     dataa.learning_data.start_cycle_time.periodic_options.value =
                       Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
@@ -223,17 +221,14 @@ const TestDetailsLearning: FC = () => {
                       'periodicoptionsperiodtime',
                       e.target.value,
                     );
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
-                    );
-                    dataa.learning_data.start_cycle_time.periodic_options.period_time =
-                      e.target.value;
+                    let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
+        
+                    dataa.learning_data.start_cycle_time.periodic_options.period_time = e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={convertperiod(
-                    opticalroutUpdateTestsetupDetail?.learning_data
-                      ?.start_cycle_time?.periodic_options?.period_time || '',
-                  )}
+                  value={
+                    opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.periodic_options?.period_time || ''
+                  }
                   className="w-26">
                   <option>secondly</option>
                   <option>monthly</option>
@@ -312,9 +307,8 @@ const TestDetailsLearning: FC = () => {
                       'increaseperiodicoptionsvalue',
                       e.target.value,
                     );
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
-                    );
+                    let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail)
+                 
                     dataa.learning_data.increase_count_options.timing.periodic_options.value =
                       Number(e.target.value);
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
@@ -331,18 +325,17 @@ const TestDetailsLearning: FC = () => {
                       'increasecountoptionstiming',
                       e.target.value,
                     );
-                    let dataa: any = JSON.parse(
-                      JSON.stringify(opticalroutUpdateTestsetupDetail),
-                    );
+                    let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail);
+                    
                     dataa.learning_data.increase_count_options.timing.periodic_options.period_time =
                       e.target.value;
                     dispatch(setopticalroutUpdateTestsetupDetail(dataa));
                   }}
-                  value={convertperiod(
+                  value={
                     opticalroutUpdateTestsetupDetail?.learning_data
                       ?.increase_count_options?.timing?.periodic_options
-                      ?.period_time || '',
-                  )}
+                      ?.period_time || ''
+                  }
                   className="w-26">
                   <option>secondly</option>
                   <option>monthly</option>

@@ -697,6 +697,7 @@ const OpticalRouteRoutePage: FC = () => {
 
   const save = () => {
     try {
+      setLoading(true)
       if (alldeleteroutes.length > 0) {
         request('opticalrouteDeleteRoute', {
           params: {
@@ -732,12 +733,14 @@ const OpticalRouteRoutePage: FC = () => {
           })),
         });
       }
+     
     } catch (error) {
     } finally {
-      getallroute();
+      setAllroutes([])
       setAllCreatedroutes([]);
       setAllUpdatedroutes([]);
       setAllDeleteroutes([]);
+      getallroute();
     }
   };
   // ###################################################################################################

@@ -46,7 +46,9 @@ const TestDetailsTestProgram: FC = () => {
       setSelectedradio(prev => [...prev, 'Indefinite']);
     }
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
-    let a = opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time.toString() || '';
+    let a = opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time.toString() || 'hourly';
+    console.log("💆‍♀️",opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time);
+    
     // let result;
     // if(a == "month"){
     //   result="Monthly"

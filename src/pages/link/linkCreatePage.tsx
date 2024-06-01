@@ -27,6 +27,7 @@ const LinkCreatePage = () => {
     [],
   );
   const [soueceerror, setSourcerror] = useState('');
+  const [loading,setLoading]=useState(false)
   const [destenationerror, setDestinationerror] = useState('');
   const [alldestinaton, setAlldestination] = useState([]);
   const [source, setSource] = useState<string>('');
@@ -36,6 +37,7 @@ const LinkCreatePage = () => {
   useEffect(() => {
     const getregionstations = async () => {
       try {
+        setLoading(true)
         const response = await $Get(
           `otdr/region/${params.regionid!.split('_')[0]}/stations`,
         );
@@ -53,7 +55,9 @@ const LinkCreatePage = () => {
             setSelectedstations(data);
           }
         }
-      } catch (error) {}
+      } catch (error) {} finally {
+        setLoading(false)
+      }
     };
     getregionstations();
   }, []);
@@ -129,6 +133,9 @@ const LinkCreatePage = () => {
     }
   };
 
+  if(loading){
+    return <h1>Loading...</h1>
+  }
   return (
     <div className="relative flex min-h-[calc(100%-80px)] w-full flex-col">
       <span className="text-md mb-6 font-bold text-black">Create link</span>
