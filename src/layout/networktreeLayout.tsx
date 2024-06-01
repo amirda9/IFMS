@@ -291,7 +291,7 @@ function NetworktreeLayout({ children}:Iprops) {
     dispatch(setAllselectedId(id));
   };
 
-  const deletegroupsationds = async (regionid: string) => {
+  const deletegroupsationds = async (regionid: string,networkid:string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
@@ -310,6 +310,7 @@ function NetworktreeLayout({ children}:Iprops) {
 
           dispatch(
             deletegroupstation({
+              networkid:networkid,
               regionid: regionid,
               stationsid: deletestationlist?.stationsID || [],
             }),
@@ -425,15 +426,14 @@ function NetworktreeLayout({ children}:Iprops) {
       }
     });
   };
-  const onclickdefaltregion = async (networkid: string) => {
-    let allLinks = [];
+
+
+
+  const onclikdefaultStations=async (networkid: string) => {
     let allStations = [];
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
-    const responsestationData = await responsestation?.json();
-    const responselink = await $Get(`otdr/link/network/${networkid}`);
-
-    const responselinkData = await responselink?.json();
-    if (responsestation?.status == 200 && responselink?.status == 200) {
+    if(responsestation?.status == 200){
+      const responsestationData = await responsestation?.json();
       for (let i = 0; i < responsestationData.length; i++) {
         if (responsestationData[i].region_id == null) {
           allStations.push({
@@ -442,6 +442,17 @@ function NetworktreeLayout({ children}:Iprops) {
           });
         }
       }
+    } 
+    dispatch(
+      setdefaultRegionstations({networkid: networkid, stations: allStations}),
+    );
+  }
+
+  const onclickdefaultlinks=async (networkid: string) => {
+    let allLinks = [];
+    const responselink = await $Get(`otdr/link/network/${networkid}`);
+    if(responselink?.status == 200){
+      const responselinkData = await responselink?.json();
       for (let j = 0; j < responselinkData.length; j++) {
         if (responselinkData[j].region_id == null) {
           allLinks.push({
@@ -453,11 +464,9 @@ function NetworktreeLayout({ children}:Iprops) {
         }
       }
       dispatch(setdefaultRegionLinks({networkid: networkid, links: allLinks}));
-      dispatch(
-        setdefaultRegionstations({networkid: networkid, stations: allStations}),
-      );
     }
-  };
+  }
+
 
   const Deletenetwork = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
@@ -640,7 +649,7 @@ function NetworktreeLayout({ children}:Iprops) {
                                           selected={false}
                                           canDelete={true}
                                           onDelete={() =>
-                                            deletegroupsationds(regionsdata.id)
+                                            deletegroupsationds(regionsdata.id,networkdata.id)
                                           }
                                           disabledcheckbox={
                                             loggedInUser.role !==
@@ -792,8 +801,8 @@ function NetworktreeLayout({ children}:Iprops) {
                             )
                           }
                           onclick={() => {
-                            onclikitems(`${networkdata.id}${networkdata.id}&`),
-                              onclickdefaltregion(networkdata.id);
+                            onclikitems(`${networkdata.id}${networkdata.id}&`)
+                              // onclickdefaltregion(networkdata.id);
                           }}
                           id={'ikuiuiu'}
                           name="Default Region"
@@ -834,6 +843,7 @@ function NetworktreeLayout({ children}:Iprops) {
                                   onclikitems(
                                     `&${networkdata.id}${networkdata.id}&`,
                                   );
+                                  onclikdefaultStations(networkdata.id)
                                 // onclickstations(networkdata.id);
                               }}
                               id={`&${networkdata.id}${networkdata.id}&`}
@@ -907,7 +917,8 @@ function NetworktreeLayout({ children}:Iprops) {
                                   onclikitems(
                                     `&${networkdata.id}&${networkdata.id}_Linkss`,
                                   );
-                                // onclicklinks(networkdata.id);
+                                  onclickdefaultlinks(networkdata.id)
+                            //  onclicklinks(networkdata.id);
                               }}
                               createurl={`/links/createdefaultregionlink/${networkdata.id}`}
                               id={`&${networkdata.id}&${networkdata.id}&`}

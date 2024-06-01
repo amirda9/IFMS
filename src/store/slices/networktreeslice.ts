@@ -123,7 +123,7 @@ export type allnetworkregionstype = {
 };
 
 type deletegroupstationtype = {
-  payload: {regionid: string; stationsid: string[]};
+  payload: {networkid:string,regionid: string; stationsid: string[]};
   type: string;
 };
 
@@ -1233,6 +1233,7 @@ const networktreeslice = createSlice({
     deletegroupstation: (state, action: deletegroupstationtype) => {
       const regionstationsCopy = deepcopy(state.regionstations);
       const regionlinksCopy = deepcopy(state.regionLinks);
+      const defaulregionlinksCopy=deepcopy(state.defaultregionLinks)
       const allselectedIdCopy = deepcopy(state.allselectedId);
       const findstations = state.regionstations.findIndex(
         data => data.regionid == action.payload.regionid,
@@ -1264,10 +1265,15 @@ const networktreeslice = createSlice({
       }
       state.regionLinks = regionlinksCopy;
       state.allselectedId = allselectedIdCopy.filter(
-        (data: string) =>
-          data !=
-          `${action.payload.regionid}&${action.payload.regionid}_Linkss`,
-      );
+        // (!data.includes(`_Links`) &&  !data.includes(`${action.payload.networkid}`))
+          (data: string) => data !=`${action.payload.regionid}&${action.payload.regionid}_Linkss`
+      ).filter((data:string)=> data != `&${action.payload.networkid}&${action.payload.networkid}_Linkss`);
+      const finlindefaultregion=state.defaultregionLinks.findIndex(data => data.networkid == action.payload.networkid)
+      if(finlindefaultregion >-1){
+        defaulregionlinksCopy[finlindefaultregion].links=[]
+      }
+      state.defaultregionLinks=defaulregionlinksCopy
+      // state.regionLinks=[]
       state.regionstations = regionstationsCopy;
       state.selectedstations = newselectedstations;
     },
@@ -1276,6 +1282,7 @@ const networktreeslice = createSlice({
       state,
       action: deletedefaultgroupstationtype,
     ) => {
+      const allselectedIdCopy = deepcopy(state.allselectedId);
       const regionstationsCopy = deepcopy(state.defaultregionstations);
       const findstations = state.defaultregionstations.findIndex(
         data => data.networkid == action.payload.networkid,
@@ -1299,6 +1306,11 @@ const networktreeslice = createSlice({
       const newselectedstations = state.selecteddefaultstations.filter(
         data => data.networkid != action.payload.networkid,
       );
+      state.allselectedId = allselectedIdCopy.filter(
+        (data: string) => !data.includes(`_Links`)
+      );
+      state.defaultregionLinks=[]
+      state.regionLinks=[]
       state.defaultregionstations = regionstationsCopy;
       state.selecteddefaultstations = newselectedstations;
     },
