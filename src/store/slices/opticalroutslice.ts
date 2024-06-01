@@ -105,7 +105,7 @@ const initialState:initialStatetype = {
       },
       period_time: {
         value: 0,
-        period_time: "secondly"
+        period_time: "hourly"
       }
     }},
     networkselectedlist:[],
