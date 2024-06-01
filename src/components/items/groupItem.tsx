@@ -13,7 +13,6 @@ type PropsType = {
   selected: Array<string | number>;
 };
 const GroupItem: FC<PropsType> = ({items, label, onSelect, selected}) => {
-  console.log(items, 'items');
 const [selectedlist,setSelectedlist]=useState<any[]>([])
 useEffect(()=>{
   setSelectedlist(selected)
@@ -46,9 +45,8 @@ useEffect(()=>{
     }
   };
 
-  const selectItem = (value: string | number) => () => {
-
   
+  const selectItem = (value: string | number) => () => {
    onSelect?.(value,(value in state.selected));
     if (value in state.selected) {
       const selected = {...state.selected};
@@ -62,7 +60,7 @@ useEffect(()=>{
     }
   };
 
-  console.log('🤰🌕',selected);
+
   
   return (
     <div>

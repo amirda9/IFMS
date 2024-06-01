@@ -124,7 +124,8 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   };
   useEffect(() => {
     getuserlist();
-  }, []);
+  }, [state.group]);
+
 
   const [mount, setmount] = useState(false);
   const [usertabselected, setUsertabselected] = useState('User');
@@ -427,18 +428,13 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
               classname={' border-[1px] text-[#18C047] border-[#000000]'}
             />
           </div>
-          // <input
-          //   type="checkbox"
-          //   checked={(side === 'left'
-          //     ? state.selectLeft
-          //     : state.selectRight
-          //   ).includes(value.id)}
-          //   onChange={changeSelect(side, value.id)}
-          // />
         );
     };
   };
 
+
+
+  
   // ****************************
   return (
     <div className="mb-4 flex  h-full w-full flex-row items-center justify-between">
