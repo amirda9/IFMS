@@ -75,7 +75,11 @@ const TestDetailsParameters: FC = () => {
     //   }
     // },
   });
+console.log("params",params);
 
+  console.log("params.opticalRouteId",params.opticalRouteId);
+  console.log("params.testId",params.testId);
+  
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
     if (params.testId == 'create') {

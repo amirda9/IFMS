@@ -149,7 +149,7 @@ const SidebarLayout: FC<PropsType> = ({
         <Outlet />
       </div> */}
       {!hideSidebar && (
-        <div className="no-scrollbar fixed bottom-[0px] left-0  top-10 flex h-[calc(100vh-120px)] w-[25%]  flex-col overflow-scroll  border-r-2 border-g bg-[#E7EFF7] p-4 pt-0">
+        <div className="no-scrollbar fixed bottom-[0px] left-0  top-10 flex h-[calc(100vh-100px)] w-[25%]  flex-col overflow-scroll  border-r-2 border-g bg-[#E7EFF7] p-4 pt-0">
           {searchOnChange ? (
             <div className="flex flex-row items-center">
               <label htmlFor="search" className="mr-2">

@@ -425,6 +425,7 @@ const RtuLayout: FC = () => {
             {networkselectedlist.indexOf(id) > -1 ? (
               <BsPlusLg
                 onClick={() =>
+               
                   navigate(`create/${id}_${regionid}_${networkid}`)
                 }
                 color="#18C047"

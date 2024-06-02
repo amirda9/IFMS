@@ -111,10 +111,10 @@ const RtuCreatePage: FC = () => {
             });
           }
           dispatch(setStationsrtu(stationsrtuCopy));
+
           navigate(
             `../../remote-test-units/${getdata.id}_${
-              params!.id!.split('_')[0]
-            }`,
+              params!.id!.split('_')[0]}_${params!.id!.split('_')[2]}_${params!.id!.split('_')[1]}`,
           );
         } else {
           setErrortext(getdata.detail[0].msg);
