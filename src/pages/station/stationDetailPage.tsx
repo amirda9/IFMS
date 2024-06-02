@@ -12,6 +12,7 @@ import {updateStationName} from './../../store/slices/networktreeslice';
 import {useDispatch, useSelector} from 'react-redux';
 import {$Get, $Put} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
   latitude: Yup.string().required('Please enter latitude'),
@@ -133,6 +134,7 @@ const StationDetailPage = () => {
           );
 
           if (response?.status == 200) {
+            toast('It was done successfully', {type: 'success', autoClose: 1000});
             dispatch(
               updateStationName({
                 newregionid: selectedregion,
@@ -148,8 +150,12 @@ const StationDetailPage = () => {
                 params.stationId!.split('_')[2]
               }`,
             );
+          }else{
+            toast('Encountered an error', {type: 'error', autoClose: 1000});
           }
-        } catch (error) {}
+        } catch (error) {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
       }}
       validationSchema={stationSchema}>
       <Form>

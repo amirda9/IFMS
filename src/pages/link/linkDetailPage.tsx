@@ -11,6 +11,7 @@ import {deepcopy} from '~/util';
 import {LinksType} from '~/types/RegionType';
 import {useAppSelector} from '~/hooks';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
@@ -186,6 +187,7 @@ const LinkDetailPage = () => {
           },
         );
         if (response?.status == 200) {
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
           dispatch(
             updatelinkname({
               // state!.detail!.data!.region_id!
@@ -198,8 +200,12 @@ const LinkDetailPage = () => {
               destination_id: destinationid,
             }),
           );
+        }else{
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
-      } catch (error) {}
+      } catch (error) {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
     }
   };
 

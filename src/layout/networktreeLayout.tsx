@@ -36,6 +36,7 @@ import {BsPlusLg} from 'react-icons/bs';
 import Mainloading from '~/components/loading/mainloading';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 
 type ItemspROPS = {
   to: string;
@@ -346,6 +347,7 @@ function NetworktreeLayout({ children}:Iprops) {
             }),
           );
         } catch (error) {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
           `deleteStationError is:${error}`;
         } finally {
           dispatch(chageLoading(false));
@@ -417,12 +419,20 @@ function NetworktreeLayout({ children}:Iprops) {
   const Deleteregion = async (regionid: string, networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        dispatch(chageLoading(true));
-        const response = await $Delete(`otdr/region/${regionid}`);
-        if (response?.status == 200) {
-          dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
+        try {
+          dispatch(chageLoading(true));
+          const response = await $Delete(`otdr/region/${regionid}`);
+          if (response?.status == 200) {
+            dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
+            
+          }
+        } catch (error) {
+          console.log(`delete region Error is:${error}`);
+          
+        } finally {
           dispatch(chageLoading(false));
         }
+       
       }
     });
   };
@@ -471,13 +481,26 @@ function NetworktreeLayout({ children}:Iprops) {
   const Deletenetwork = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        const deletenetworkresponse = await $Delete(
-          `otdr/network/${networkid}`,
-        );
-        if (deletenetworkresponse?.status == 200) {
-          dispatch(deletenetwork(networkid));
-          navigate('./');
+        try {
+          dispatch(chageLoading(true));
+          const deletenetworkresponse = await $Delete(
+            `otdr/network/${networkid}`,
+          );
+          if (deletenetworkresponse?.status == 200) {
+            toast('It was done successfully', {type: 'success', autoClose: 1000});
+            dispatch(deletenetwork(networkid));
+            navigate('./');
+          } else{
+            toast('Encountered an error', {type: 'error', autoClose: 1000});
+          }
+        } catch (error) {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+          console.log(`delete network error is:${error}`);
+          
+        } finally{
+dispatch(chageLoading(false));
         }
+      
       }
     });
   };

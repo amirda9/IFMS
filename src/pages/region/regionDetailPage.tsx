@@ -15,6 +15,7 @@ import {$Get, $Put} from '~/util/requestapi';
 import Selectbox from '~/components/selectbox/selectbox';
 import {useAppSelector} from '~/hooks';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
 });
@@ -71,6 +72,7 @@ const RegionDetailPage = () => {
         console.log('response', response);
 
         if (response?.status == 200) {
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
           dispatch(
             updateregionname({
               newnetworkid:params.regionId!.split('_')[1],
@@ -82,8 +84,12 @@ const RegionDetailPage = () => {
           navigate(
             `/regions/${params.regionId!.split('_')[0]}_${selectenetwork}`,
           );
+        } else{
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
-      } catch (error) {}
+      } catch (error) {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
     },
     validationSchema: regionSchema,
   });

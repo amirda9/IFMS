@@ -14,6 +14,7 @@ import {getPrettyDateTime} from '~/util/time';
 import {useEffect} from 'react';
 import {$Put} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
@@ -71,11 +72,16 @@ const NetworkDetailPage = () => {
             );
             //we should update the networktree
             if (response?.status == 200) {
+              toast('It was done successfully', {type: 'success', autoClose: 1000});
               dispatch(
                 changeNetworkname({id: params.networkId!, name: values.name}),
               );
+            }else{
+              toast('Encountered an error', {type: 'error', autoClose: 1000});
             }
-          } catch (error) {}
+          } catch (error) {
+            toast('Encountered an error', {type: 'error', autoClose: 1000});
+          }
         }}
         validationSchema={networkSchema}>
         <Form className="flex h-full flex-col justify-between">
