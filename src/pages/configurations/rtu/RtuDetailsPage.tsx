@@ -132,7 +132,7 @@ const RtuDetailsPage: FC = () => {
     return <h1>Loading...</h1>
   }
   return (
-    <div className="flex flex-grow">
+    <div className="flex flex-grow w-[calc(100%-10px)] overflow-x-hidden">
       <FormikProvider value={formik}>
         <Form className="flex flex-grow flex-col gap-y-8">
           <div className="flex flex-grow flex-col gap-y-4">
@@ -305,7 +305,7 @@ const RtuDetailsPage: FC = () => {
             <Rowtext name="Owner" value={formik.values.owner.username || ''} />
             {/* --------------------------------------------------- */}
           </div>
-          <div className="flex gap-x-4 self-end">
+          <div className="flex gap-x-4 justify-end w-[calc(100%-60px)]">
             {loggedInUser.role === UserRole.SUPER_USER ||
             rtunetworkidadmin.includes(params?.rtuId?.split('_')[2]!) ||
             rturegionidadmin.includes(params?.rtuId?.split('_')[3]!) ||
