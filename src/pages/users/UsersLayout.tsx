@@ -31,7 +31,7 @@ console.log(loggedInUser,'loggedInUser');
     <SidebarLayout
       searchOnChange={() => {}}
       createTitle="Users"
-      canAdd={loggedInUser.role === UserRole.SUPER_USER || loggedInUser.is_admin}
+      canAdd={loggedInUser.role === UserRole.SUPER_USER}
       addButtonLink="register"
       hideSidebar={location.state?.isEditingUserAccess}>
       <SidebarItem
@@ -45,7 +45,8 @@ console.log(loggedInUser,'loggedInUser');
         userListQuery.state.data!.map(user => (
           <SidebarItem
             name={user.username}
-            to={loggedInUser.role === UserRole.SUPER_USER?user.id:"#"}
+            // loggedInUser.role === UserRole.SUPER_USER?
+            to={user.id}
             key={user.id}
             selected={true}
             onDelete={
