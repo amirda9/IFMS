@@ -1,7 +1,8 @@
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
+import ErrorPage403 from '../errors/403';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -12,6 +13,7 @@ const columns = {
 
 const GroupMembersPage: FC = () => {
   const {groupId} = useParams();
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const groupDetailQuery = useHttpRequest({
     selector: state => state.http.groupDetail,
@@ -29,6 +31,9 @@ const GroupMembersPage: FC = () => {
       }))
     : [];
 
+    if(loggedInUser?.id != groupDetailQuery?.state?.data?.owner?.id){
+      return <ErrorPage403 />
+     }
   return (
     <>
       <div className="flex flex-grow flex-col gap-y-10">

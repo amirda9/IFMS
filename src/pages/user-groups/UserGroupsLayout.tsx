@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {SidebarItem} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import ConfirmationModal from '~/components/modals/ConfirmationModal';
-import { UserRole } from '~/constant/users';
+import {UserRole} from '~/constant/users';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
 
@@ -17,8 +17,6 @@ const UserGroupsLayout: FC = () => {
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
-  console.log("loggedInUser",loggedInUser);
-  
   const {
     request,
     state: {groupList, deleteGroup},
@@ -68,6 +66,7 @@ const UserGroupsLayout: FC = () => {
       )
     : [];
 
+
   return (
     <SidebarLayout
       searchOnChange={() => {}}
@@ -76,15 +75,24 @@ const UserGroupsLayout: FC = () => {
       hideSidebar={location.state?.fullLayout}>
       {groupList?.httpRequestStatus === 'success' ? (
         groupListSorted.map(group => (
-          <SidebarItem
-            name={group.name}
-            to={group.id}
-            key={group.id}
-            onDelete={() => {
-              selectedGroupToDelete.current = group.id;
-              setDeleteConfirmationOpen(true);
-            }}
-          />
+          <>
+            {loggedInUser?.id != group?.owner?.id ? (
+              <></>
+            ) : (
+              <SidebarItem
+                selected={true}
+                name={group.name}
+                to={group.id}
+                key={group.id}
+                onDelete={() => {
+                  if (loggedInUser?.id == group?.owner?.id) {
+                    selectedGroupToDelete.current = group.id;
+                    setDeleteConfirmationOpen(true);
+                  }
+                }}
+              />
+            )}
+          </>
         ))
       ) : groupList?.httpRequestStatus === 'loading' ? (
         <GeneralLoadingSpinner />

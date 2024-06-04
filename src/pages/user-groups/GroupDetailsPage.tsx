@@ -3,12 +3,14 @@ import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {Description, SimpleBtn, TextInput} from '~/components';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
+import ErrorPage403 from '../errors/403';
 
 const GroupDetailsPage: FC = () => {
   const {groupId} = useParams();
 
   const [groupNameValue, setGroupNameValue] = useState('');
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const {
     request,
@@ -60,6 +62,11 @@ const GroupDetailsPage: FC = () => {
       },
     });
   };
+
+  
+  if(loggedInUser?.id != groupDetail?.data?.owner?.id){
+   return <ErrorPage403 />
+  }
 
   return (
     <form className="flex flex-grow flex-col justify-between">

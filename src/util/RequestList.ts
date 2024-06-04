@@ -1246,7 +1246,7 @@ export type ResponseListType = {
   networkAccessList: {users: T.AccessListType[]};
   networkAccessUpdate: {count: number};
   deleteShapefile: string;
-  groupList: T.GroupType[];
+  groupList: T.GroupDetailType[];
   groupDetail: T.GroupDetailType;
   createGroup: string | null;
   updateGroup: T.GroupType;
