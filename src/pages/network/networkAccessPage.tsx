@@ -1,11 +1,11 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import { useMemo, useState} from 'react';
 import { Select, SimpleBtn, Table} from '~/components';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {useParams} from 'react-router-dom';
 import {FormLayout} from '~/layout';
 import {useDispatch} from 'react-redux';
-import networkslice, {
+import  {
   setnetworkviewers,
   setnetworkviewersstatus,
 } from './../../store/slices/networkslice';
@@ -19,9 +19,6 @@ const columns = {
 };
 
 const NetworkAccessPage = () => {
-  const login = localStorage.getItem('login');
-
-
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
   const {networkDetail} = useSelector((state: any) => state.http);

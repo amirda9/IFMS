@@ -20,7 +20,6 @@ const networkSchema = Yup.object().shape({
 });
 const NetworkDetailPage = () => {
   const dispatch = useDispatch();
-  const login = localStorage.getItem('login');
   const {networkDetail} = useSelector((state: any) => state.http);
   const params = useParams<{networkId: string}>();
   const navigate = useNavigate();
@@ -47,7 +46,7 @@ const NetworkDetailPage = () => {
     }
   }, []);
 
-  console.log('detail', detail);
+
 
   if (detail?.httpRequestStatus !== 'success') {
     return <>loading</>;
