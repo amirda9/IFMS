@@ -10,8 +10,6 @@ const GroupDetailsPage: FC = () => {
   const {groupId} = useParams();
 
   const [groupNameValue, setGroupNameValue] = useState('');
-  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-
   const {
     request,
     state: {groupDetail, updateGroup},
@@ -64,9 +62,6 @@ const GroupDetailsPage: FC = () => {
   };
 
   
-  if(loggedInUser?.id != groupDetail?.data?.owner?.id){
-   return <ErrorPage403 />
-  }
 
   return (
     <form className="flex flex-grow flex-col justify-between">

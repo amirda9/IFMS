@@ -13,7 +13,6 @@ const columns = {
 
 const GroupMembersPage: FC = () => {
   const {groupId} = useParams();
-  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const groupDetailQuery = useHttpRequest({
     selector: state => state.http.groupDetail,
@@ -31,9 +30,7 @@ const GroupMembersPage: FC = () => {
       }))
     : [];
 
-    if(loggedInUser?.id != groupDetailQuery?.state?.data?.owner?.id){
-      return <ErrorPage403 />
-     }
+ 
   return (
     <>
       <div className="flex flex-grow flex-col gap-y-10">
