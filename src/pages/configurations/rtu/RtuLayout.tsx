@@ -23,6 +23,7 @@ import {IoTrashOutline} from 'react-icons/io5';
 import {RootState} from '~/store';
 import Swal from 'sweetalert2';
 import {UserRole} from '~/constant/users';
+import {toast} from 'react-toastify';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -141,28 +142,33 @@ const RtuLayout: FC = () => {
         $Get(`otdr/station/${id}/rtus`),
         $Get(`otdr/station/${id}`),
       ]);
-      let stationdetail = await stationdetailresponse?.json();
-
-      if (stationrtuesresponse?.status == 200) {
-        const stationrtuesdata = await stationrtuesresponse?.json();
-        const findstation = stationsrtu.findIndex(data => data.stationid == id);
-        if (findstation < 0 && stationrtuesdata.length > 0) {
-          let stationsrtuCopy = deepcopy(stationsrtu);
-
-          stationsrtuCopy.push({
-            regionid: regionid,
-            networkid: networkid,
-            stationid: id,
-            rtues: stationrtuesdata,
-            deletertues: [...(stationsrtuCopy.deletertues || [])],
-          });
-          dispatch(setStationsrtu(stationsrtuCopy));
+      if(stationrtuesresponse?.status == 200 && stationdetailresponse?.status == 200){
+        let stationdetail = await stationdetailresponse?.json();
+        if (stationrtuesresponse?.status == 200) {
+          const stationrtuesdata = await stationrtuesresponse?.json();
+          const findstation = stationsrtu.findIndex(data => data.stationid == id);
+          if (findstation < 0 && stationrtuesdata.length > 0) {
+            let stationsrtuCopy = deepcopy(stationsrtu);
+  
+            stationsrtuCopy.push({
+              regionid: regionid,
+              networkid: networkid,
+              stationid: id,
+              rtues: stationrtuesdata,
+              deletertues: [...(stationsrtuCopy.deletertues || [])],
+            });
+            dispatch(setStationsrtu(stationsrtuCopy));
+          }
         }
+        if (stationdetail.access.access === 'ADMIN') {
+          dispatch(setRtuStationidadmin(id));
+        }
+      } else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
-      if (stationdetail.access.access === 'ADMIN') {
-        dispatch(setRtuStationidadmin(id));
-      }
+   
     } catch (error) {
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
       console.log(error);
     }
 
@@ -425,7 +431,6 @@ const RtuLayout: FC = () => {
             {networkselectedlist.indexOf(id) > -1 ? (
               <BsPlusLg
                 onClick={() =>
-               
                   navigate(`create/${id}_${regionid}_${networkid}`)
                 }
                 color="#18C047"
@@ -466,63 +471,77 @@ const RtuLayout: FC = () => {
         await $Get(`otdr/region/network/${id}`),
         await $Get(`otdr/network/${id}`),
       ]);
-      const regions = await allregions?.json();
-      const networkdetaildata = await networkdetail?.json();
-      const finddata = networkregions.filter(data => data.networkid == id);
-      const maindata = regions || [];
-
-      let allregionsid: any = [];
-      if (maindata.length > 0 && finddata.length == 0) {
-        for (let i = 0; i < maindata?.length; i++) {
-          allregionsid.push({id: maindata[i].id, name: maindata[i].name});
+      if(allregions?.status == 200 && networkdetail?.status == 200){
+        const regions = await allregions?.json();
+        const networkdetaildata = await networkdetail?.json();
+        const finddata = networkregions.filter(data => data.networkid == id);
+        const maindata = regions || [];
+  
+        let allregionsid: any = [];
+        if (maindata.length > 0 && finddata.length == 0) {
+          for (let i = 0; i < maindata?.length; i++) {
+            allregionsid.push({id: maindata[i].id, name: maindata[i].name});
+          }
+          const old = deepcopy(networkregions);
+  
+          old.push({
+            networkid: (regions && regions[0]?.network_id) || '',
+            regions: allregionsid,
+          });
+  
+          dispatch(setNetworkregions(old));
         }
-        const old = deepcopy(networkregions);
-
-        old.push({
-          networkid: (regions && regions[0]?.network_id) || '',
-          regions: allregionsid,
-        });
-
-        dispatch(setNetworkregions(old));
+  
+        if (networkdetaildata.access.access === 'ADMIN') {
+          dispatch(setRtuNetworkidadmin(id));
+        }
+      }else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
-
-      if (networkdetaildata.access.access === 'ADMIN') {
-        dispatch(setRtuNetworkidadmin(id));
-      }
-    } catch (error) {}
+     
+    } catch (error) {
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+      console.log(`error is :${error}`);
+    }
   };
 
   const onclickregion = async (regionid: string) => {
-    let old = deepcopy(regionstations);
-    const [allstationresponse, regiondetail] = await Promise.all([
-      await $Get(`otdr/region/${regionid}/stations`),
-      await $Get(`otdr/region/${regionid}`),
-    ]);
+    try {
+      let old = deepcopy(regionstations);
+      const [allstationresponse, regiondetail] = await Promise.all([
+        await $Get(`otdr/region/${regionid}/stations`),
+        await $Get(`otdr/region/${regionid}`),
+      ]);
 
-    const regiondetaildata = await regiondetail?.json();
+      if (allstationresponse?.status === 200 && regiondetail?.status == 200) {
+        const regiondetaildata = await regiondetail?.json();
 
-    dispatch(setRtuRegionidadmin(regionid));
-
-    if (allstationresponse?.status === 200) {
-      let allstationdata = await allstationresponse?.json();
-      const finddata = regionstations.findIndex(
-        data => data.regionid == regionid,
-      );
-      let allregionsid: any = [];
-      if (allstationdata.length > 0 && finddata < 0) {
-        for (let i = 0; i < allstationdata?.length; i++) {
-          allregionsid.push({
-            id: allstationdata[i].id,
-            name: allstationdata[i].name,
-          });
+        let allstationdata = await allstationresponse?.json();
+        const finddata = regionstations.findIndex(
+          data => data.regionid == regionid,
+        );
+        let allregionsid: any = [];
+        if (allstationdata.length > 0 && finddata < 0) {
+          for (let i = 0; i < allstationdata?.length; i++) {
+            allregionsid.push({
+              id: allstationdata[i].id,
+              name: allstationdata[i].name,
+            });
+          }
+          old.push({regionid: regionid, stations: allregionsid});
         }
-        old.push({regionid: regionid, stations: allregionsid});
-      }
-      dispatch(setRegionstations(old));
-    }
+        dispatch(setRegionstations(old));
 
-    if (regiondetaildata.access.access === 'ADMIN') {
-      dispatch(setRtuNetworkidadmin(regionid));
+        if (regiondetaildata.access.access === 'ADMIN') {
+          dispatch(setRtuRegionidadmin(regionid));
+          // dispatch(setRtuNetworkidadmin(regionid));
+        }
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      console.log(`error is :${error}`);
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
     }
   };
 
