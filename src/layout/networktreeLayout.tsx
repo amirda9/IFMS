@@ -568,10 +568,11 @@ dispatch(chageLoading(false));
                   createurl={`/regions/create/${networkdata.id}`}
                   selected={false}
                   canAdd={
-                    loggedInUser.role === UserRole.SUPER_USER 
-                    // || networkidadmin.includes(networkdata.id)
+                    loggedInUser.role === UserRole.SUPER_USER ||
+                    networkidadmin.includes(networkdata.id)
                   }
-                  canDelete={loggedInUser.role === UserRole.SUPER_USER}
+                  canDelete={loggedInUser.role === UserRole.SUPER_USER ||
+                    networkidadmin.includes(networkdata.id)}
                   onDelete={() => Deletenetwork(networkdata.id)}
                   onclick={() => {
                     dispatch(setSelectedid(networkdata.id)),

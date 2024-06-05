@@ -2,11 +2,12 @@ import {SidebarItem} from '~/components';
 import { UserRole } from '~/constant/users';
 import { useAppSelector } from '~/hooks';
 import {SidebarLayout} from '~/layout';
+import ErrorPage403 from '~/pages/errors/403';
 
 const SystemSettingsPage = () => {
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   if(loggedInUser.role !== UserRole.SUPER_USER){
-    return <></>
+    return <ErrorPage403 />
   }
   return (
     <SidebarLayout createTitle="System Settings">

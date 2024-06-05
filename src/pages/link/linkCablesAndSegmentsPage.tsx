@@ -1,9 +1,8 @@
 import React, {Fragment, useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
-import {BASE_URL} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
-import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
+import useHttpRequest from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import {deepcopy} from '~/util';
@@ -31,13 +30,10 @@ const Addbox = ({classname, onclick}: Iprops) => {
 // *******************************
 const LinkCablesAndSegmentsPage = () => {
   const params = useParams<{linkId: string}>();
-  const login = localStorage.getItem('login');
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
   );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const networkId = params.linkId!.split('_')[2];
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
@@ -109,11 +105,6 @@ const LinkCablesAndSegmentsPage = () => {
   });
 
 
-  // const findlinkdetail=state.detail?.data?.versions?.find(
-  //   (version: any) =>
-  //     version.id === state.detail?.data?.current_version?.id,
-  // )
-
   const findlinkdetail = useMemo(
     () =>
       state.detail?.data?.versions?.find(
@@ -182,8 +173,6 @@ const LinkCablesAndSegmentsPage = () => {
   };
 
   // **********************************************************
-  let timer: string | number | NodeJS.Timeout | undefined;
-
   const setcores = (id: number, x: string) => {
     let beforadddata = deepcopy(parentcabl?.cables);
     const findcable = beforadddata.findIndex((data: any) => data.id == id);
@@ -450,8 +439,6 @@ const LinkCablesAndSegmentsPage = () => {
   }
   
 
-  console.log("😃",parentcabl);
-  console.log("state?.detail",state?.detail);
   
   
   return (
@@ -612,7 +599,6 @@ const LinkCablesAndSegmentsPage = () => {
                                     )
                                   }
                                   className="w-[80%]"
-                                  // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
                                 >
                                   <option value="" className="hidden">
                                     {dataa.connection_type}
@@ -625,24 +611,7 @@ const LinkCablesAndSegmentsPage = () => {
                                     fusion_splice
                                   </option>
                                 </Select>
-                                {/* <TextInput
                               
-                                  value={dataa.connection_type}
-
-                                  onChange={
-                                    e =>
-                                          setcableslicecabsegment(
-                                            data.id,
-                                            dataa.id,
-                                            e.target.value,
-                                            'connection_type',
-                                            index
-                                          )
-                                  }
-
-                                  className="w-[80%]"
-                                  type="number"
-                                /> */}
                               </div>
                               <div className="box-border flex   w-[30%] flex-row justify-between ">
                                 <span className="mr-[5px] w-[100px]  text-left">
@@ -711,20 +680,7 @@ const LinkCablesAndSegmentsPage = () => {
                                 </span>
                                 <TextInput
                                   value={dataa.length}
-                                  onChange={() => {}}
-                                  // onChange={
-                                  //   data?.segments?.length > 1
-                                  //     ? () => {}
-                                  //     : e =>
-                                  //         setcableslicecabsegment(
-                                  //           data.id,
-                                  //           dataa.id,
-                                  //           e.target.value,
-                                  //           'length',
-                                  //           index,
-
-                                  //         )
-                                  // }
+                                  onChange={() => {}} 
                                   className="w-[60%]"
                                   type="number"
                                 />
