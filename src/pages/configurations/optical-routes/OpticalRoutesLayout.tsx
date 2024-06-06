@@ -17,6 +17,8 @@ import {
 } from './../../../store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
+import { useAppSelector } from '~/hooks';
+import { UserRole } from '~/constant/users';
 type networklisttype = {
   id: string;
   name: string;
@@ -48,7 +50,7 @@ const OpticalRouteLayout: FC = () => {
   const [list, setList] = useState<networklisttype[]>([]);
   const {networkselectedlist, networkoptical, alldeleteopticalroute} =
     useSelector((state: RootState) => state.opticalroute);
-
+    const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   useEffect(() => {
     const getnetworklist = async () => {
       const response = await $Get(`otdr/network`);
@@ -91,17 +93,29 @@ const OpticalRouteLayout: FC = () => {
           {name}
         </button>
         {networkselectedlist.indexOf(id) > -1 ? (
-          <NavLink to={`create/${id}`} end>
-            <BsPlusLg color="#18C047" className="ml-[10px]" />
-          </NavLink>
+          <>
+        {loggedInUser.role === UserRole.SUPER_USER?
+             <NavLink to={`create/${id}`} end>
+             <BsPlusLg color="#18C047" className="ml-[10px]" />
+           </NavLink>
+      :
+      <></>
+      }
+          </>
+     
         ) : null}
         {selectedId == id ? (
-          <IoTrashOutline
-            onClick={() => deletenetworkoptical(id)}
-            color="#FF0000"
-            size={24}
-            className="ml-[20px] cursor-pointer"
-          />
+          <>
+          {loggedInUser.role === UserRole.SUPER_USER?
+           <IoTrashOutline
+           onClick={() => deletenetworkoptical(id)}
+           color="#FF0000"
+           size={24}
+           className="ml-[20px] cursor-pointer"
+         />:null
+          }
+          </>
+         
         ) : null}
       </div>
     );

@@ -1,14 +1,14 @@
-
 import {Form, FormikProvider, useFormik} from 'formik';
 import {FC} from 'react';
 import * as Yup from 'yup';
 import {useParams} from 'react-router-dom';
 import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
-import { useDispatch } from 'react-redux';
-import { changeOpticalroutename } from '~/store/slices/opticalroutslice';
+import {useDispatch} from 'react-redux';
+import {changeOpticalroutename} from '~/store/slices/opticalroutslice';
+import {UserRole} from '~/constant/users';
 
 const Schema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
@@ -16,8 +16,9 @@ const Schema = Yup.object().shape({
 });
 
 const OpticalRouteDetailsPage: FC = () => {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const params = useParams();
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const {
     request,
@@ -29,14 +30,14 @@ const OpticalRouteDetailsPage: FC = () => {
     initialRequests: request => {
       // if (list?.httpRequestStatus !== 'success') {
       request('opticalrouteDetail', {
-        params: {optical_route_id:params.opticalRouteId!.split("_")[0] || ''},
+        params: {optical_route_id: params.opticalRouteId!.split('_')[0] || ''},
       });
       // }
     },
   });
 
   const formik = useFormik({
-    validationSchema:Schema,
+    validationSchema: Schema,
     enableReinitialize: true,
     initialValues: {
       name: opticalrouteDetail?.data?.name,
@@ -53,32 +54,32 @@ const OpticalRouteDetailsPage: FC = () => {
       time_updated: opticalrouteDetail?.data?.time_updated,
     },
     onSubmit: () => {
-try {
-  request('opticalrouteUpdate', {
-    params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
-    data: {
-      name: formik.values.name || '',
-      comment: formik.values.comment || '',
-      test_ready: formik.values.test_ready || false,
-      type: formik.values.type || '',
-      avg_hellix_factor: formik.values.avg_hellix_factor || 0,
+      try {
+        request('opticalrouteUpdate', {
+          params: {
+            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+          },
+          data: {
+            name: formik.values.name || '',
+            comment: formik.values.comment || '',
+            test_ready: formik.values.test_ready || false,
+            type: formik.values.type || '',
+            avg_hellix_factor: formik.values.avg_hellix_factor || 0,
+          },
+        });
+        dispatch(
+          changeOpticalroutename({
+            networkid: params.opticalRouteId!.split('_')[1]!,
+            opticalId: params.opticalRouteId!.split('_')[0]!,
+            opticalName: formik.values.name!,
+          }),
+        );
+      } catch (error) {}
     },
   });
-  dispatch(changeOpticalroutename({networkid:params.opticalRouteId!.split("_")[1]!,opticalId:params.opticalRouteId!.split("_")[0]!,opticalName:formik.values.name!}))
-} catch (error) {
-  
-}
 
-     
-     
-
-
-      
-    },
-  });
-
-  if(opticalrouteDetail?.httpRequestStatus == "loading"){
-    return <h1>Loading ...</h1>
+  if (opticalrouteDetail?.httpRequestStatus == 'loading') {
+    return <h1>Loading ...</h1>;
   }
 
   return (
@@ -165,7 +166,9 @@ try {
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
+            {loggedInUser.role === UserRole.SUPER_USER ? (
+              <SimpleBtn type="submit">Save</SimpleBtn>
+            ) : null}
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>

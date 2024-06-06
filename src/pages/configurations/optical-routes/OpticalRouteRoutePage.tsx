@@ -1,6 +1,6 @@
 import {FC, useEffect, useState} from 'react';
 import {Select, SimpleBtn} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
 import Cookies from 'js-cookie';
@@ -8,6 +8,8 @@ import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
 import {$Get} from '~/util/requestapi';
 import {deepcopy} from '~/util';
+import { UserRole } from '~/constant/users';
+import ErrorPage403 from '~/pages/errors/403';
 // ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
   classname: string;
@@ -126,6 +128,9 @@ const OpticalRouteRoutePage: FC = () => {
     );
     return data;
   };
+
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
 
   const finrouteIndex = (index: number) => {
     const data = allroutes?.findIndex((data: any) => data.index == index);
@@ -744,6 +749,10 @@ const OpticalRouteRoutePage: FC = () => {
     }
   };
   // ###################################################################################################
+  if(loggedInUser.role !== UserRole.SUPER_USER){
+    return <ErrorPage403 />
+  }
+  
   if (loading) {
     return <h1 className="mt-6 font-bold">Loading..</h1>;
   }

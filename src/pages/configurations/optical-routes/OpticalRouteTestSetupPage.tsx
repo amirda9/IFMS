@@ -10,7 +10,9 @@ import {
   useLocation,
 } from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import { UserRole } from '~/constant/users';
+import {useAppSelector, useHttpRequest} from '~/hooks';
+import ErrorPage403 from '~/pages/errors/403';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {$Get} from '~/util/requestapi';
@@ -106,6 +108,7 @@ const OpticalRouteTestSetupPage: FC = () => {
       setLoading(false);
     }
   };
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   useEffect(() => {
     Getsetup();
@@ -223,6 +226,10 @@ const OpticalRouteTestSetupPage: FC = () => {
     );
     navigate('create');
   };
+
+  if(loggedInUser.role !== UserRole.SUPER_USER){
+    return <ErrorPage403 />
+  }
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex  flex-grow flex-col gap-y-4 pr-16">
