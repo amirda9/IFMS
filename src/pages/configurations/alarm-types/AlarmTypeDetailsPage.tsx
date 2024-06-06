@@ -4,7 +4,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {Description, SimpleBtn} from '~/components';
+import {UserRole} from '~/constant/users';
 import {InputFormik, TextareaFormik} from '~/container';
+import {useAppSelector} from '~/hooks';
 import {RootState} from '~/store';
 import {
   alarmtypedetailtype,
@@ -26,7 +28,7 @@ type FormType = {
 const AlarmTypeDetailsPage: FC = () => {
   const params = useParams();
   const dispatch = useDispatch();
-
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {alarmtypedetail, alarmtypelist, alarmtypeloading, getalarmtype} =
     useSelector((state: RootState) => state.alarmtypes);
 
@@ -358,7 +360,10 @@ const AlarmTypeDetailsPage: FC = () => {
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
+            {loggedInUser.role === UserRole.SUPER_USER ? (
+              <SimpleBtn type="submit">Save</SimpleBtn>
+            ) : null}
+
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>

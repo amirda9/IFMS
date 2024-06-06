@@ -13,6 +13,8 @@ import {
 import {$Get, $Put} from '~/util/requestapi';
 import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
+import { UserRole } from '~/constant/users';
+import { useAppSelector } from '~/hooks';
 
 const item = [
   {
@@ -55,6 +57,8 @@ const AlarmTypeAlertPage: FC = () => {
   const {alarmtypedetail, alarmtypeloading, getalarmtype} = useSelector(
     (state: RootState) => state.alarmtypes,
   );
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
   const dispatch = useDispatch();
   const getalarmdetail = async () => {
     try {
@@ -358,9 +362,12 @@ const AlarmTypeAlertPage: FC = () => {
         </div>
       </div>
       <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={updatedefinition} type="button">
-          Save
-        </SimpleBtn>
+      {loggedInUser.role === UserRole.SUPER_USER ? (
+           <SimpleBtn onClick={updatedefinition} type="button">
+           Save
+         </SimpleBtn>
+            ) : null}
+  
         <SimpleBtn link to="../">
           Cancel
         </SimpleBtn>

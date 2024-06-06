@@ -14,6 +14,8 @@ import {
   setGetalarmtype,
   setalarmsdetail,
 } from '~/store/slices/alarmstypeslice';
+import { UserRole } from '~/constant/users';
+import { useAppSelector } from '~/hooks';
 
 const items = [
   {
@@ -127,6 +129,7 @@ const AlarmTypeContentPage: FC = () => {
   const {alarmtypedetail, alarmtypeloading, getalarmtype} = useSelector(
     (state: RootState) => state.alarmtypes,
   );
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const getalarmdetail = async () => {
     try {
@@ -431,9 +434,12 @@ const AlarmTypeContentPage: FC = () => {
         <AlarmDetailCheckboxList title="Alarm Details" items={items} />
       </div>
       <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={updatedefinition} type="button">
-          Save
-        </SimpleBtn>
+      {loggedInUser.role === UserRole.SUPER_USER ? (
+           <SimpleBtn onClick={updatedefinition} type="button">
+           Save
+         </SimpleBtn>
+            ) : null}
+     
         <SimpleBtn link to="../">
           Cancel
         </SimpleBtn>

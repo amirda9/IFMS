@@ -7,6 +7,8 @@ import {RootState} from '~/store';
 import {deletealarmtype, setalarmlist} from '~/store/slices/alarmstypeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import Swal from 'sweetalert2';
+import { useAppSelector } from '~/hooks';
+import { UserRole } from '~/constant/users';
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
   // text: "You won't be able to revert this!",
@@ -16,9 +18,11 @@ const swalsetting: any = {
   cancelButtonColor: '#d33',
   confirmButtonText: 'Yes, delete it!',
 };
+
 const AlarmTypesLayout: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {alarmtypelist} = useSelector((state: RootState) => state.alarmtypes);
   useEffect(() => {
     const getalarmms = async () => {
@@ -44,11 +48,11 @@ const AlarmTypesLayout: FC = () => {
   };
 
   return (
-    <SidebarLayout createTitle="Alarm Types Definition" canAdd>
+    <SidebarLayout createTitle="Alarm Types Definition" canAdd={loggedInUser.role !== UserRole.SUPER_USER?false:true} >
       {alarmtypelist.map((data: any) => (
         <SidebarItem
           selected={true}
-          canDelete={true}
+          canDelete={loggedInUser.role !== UserRole.SUPER_USER?false:true}
           onDelete={() => Deletealarms(data.id)}
           name={data.name}
           to={data.id}

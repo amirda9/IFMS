@@ -1,5 +1,7 @@
 import {FC} from 'react';
 import {Description, SimpleBtn, Table} from '~/components';
+import {UserRole} from '~/constant/users';
+import {useAppSelector} from '~/hooks';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -17,6 +19,8 @@ const items = [
 ];
 
 const AlarmTypeAccessPage: FC = () => {
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
   return (
     <div className="flex flex-grow flex-col gap-y-12">
       <div className="flex w-3/5 flex-grow flex-col gap-y-8">
@@ -30,8 +34,13 @@ const AlarmTypeAccessPage: FC = () => {
       </div>
 
       <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn type="submit">Edit Access</SimpleBtn>
-        <SimpleBtn type="submit">Save</SimpleBtn>
+        {loggedInUser.role === UserRole.SUPER_USER ? (
+          <>
+            <SimpleBtn type="submit">Edit Access</SimpleBtn>
+            <SimpleBtn type="submit">Save</SimpleBtn>
+          </>
+        ) : null}
+
         <SimpleBtn link to="../">
           Cancel
         </SimpleBtn>

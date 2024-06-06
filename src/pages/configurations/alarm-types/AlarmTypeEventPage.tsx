@@ -15,6 +15,8 @@ import {deepcopy} from '~/util';
 import {$Get, $Put} from '~/util/requestapi';
 import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
+import { useAppSelector } from '~/hooks';
+import { UserRole } from '~/constant/users';
 
 const AlarmTypeEventPage: FC = () => {
   const params = useParams();
@@ -25,6 +27,7 @@ const AlarmTypeEventPage: FC = () => {
     alarmtypeloading,
     getalarmtype,
   } = useSelector((state: RootState) => state.alarmtypes);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const getalarmdetail = async () => {
     try {
@@ -606,9 +609,12 @@ const AlarmTypeEventPage: FC = () => {
       </div>
 
       <div className="flex flex-row gap-x-4 self-end">
+      {loggedInUser.role === UserRole.SUPER_USER ? (
         <SimpleBtn onClick={updateevents} type="button">
-          Save
-        </SimpleBtn>
+        Save
+      </SimpleBtn>
+            ) : null}
+        
         <SimpleBtn link to="../">
           Cancel
         </SimpleBtn>

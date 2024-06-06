@@ -14,13 +14,15 @@ import {
   alarmtypedetailtype,
 } from '~/store/slices/alarmstypeslice';
 import {deepcopy} from '~/util';
+import { UserRole } from '~/constant/users';
+import { useAppSelector } from '~/hooks';
 const AlarmTypeDefinitionPage: FC = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const {alarmtypedetail, alarmtypeloading, getalarmtype} = useSelector(
     (state: RootState) => state.alarmtypes,
   );
-
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const getalarmdetail = async () => {
     try {
       dispatch(setAlarmtypeloading(true));
@@ -350,10 +352,13 @@ const AlarmTypeDefinitionPage: FC = () => {
 
         <ConditionGroup title="High Severity Condition" />
       </div>
-      <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={updatedefinition} type="button">
-          Save
-        </SimpleBtn>
+      <div className="flex flex-row gap-x-4 self-end mt-4">
+      {loggedInUser.role === UserRole.SUPER_USER ? (
+            <SimpleBtn onClick={updatedefinition} type="button">
+            Save
+          </SimpleBtn>
+            ) : null}
+        
         <SimpleBtn link to="../">
           Cancel
         </SimpleBtn>

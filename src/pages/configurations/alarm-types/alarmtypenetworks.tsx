@@ -12,6 +12,8 @@ import {
 } from '~/store/slices/alarmstypeslice';
 import {toast} from 'react-toastify';
 import {useEffect, useState} from 'react';
+import { UserRole } from '~/constant/users';
+import { useAppSelector } from '~/hooks';
 
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
@@ -25,6 +27,7 @@ const Alarmtypenetworks = () => {
     (state: RootState) => state.alarmtypes,
   );
   const [loading, setLoading] = useState(false);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const getalarmdetail = async () => {
     try {
@@ -341,11 +344,16 @@ const Alarmtypenetworks = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn link to="../edit-alert-networks">
+      {loggedInUser.role === UserRole.SUPER_USER ? (
+          <>
+           <SimpleBtn link to="../edit-alert-networks">
           Edit Networks
         </SimpleBtn>
 
         <SimpleBtn onClick={() => updatealarmtypenetworks()}>Save</SimpleBtn>
+          </>
+            ) : null}
+       
 
         <SimpleBtn type="button" onClick={() => cancel()}>
           Cancel
