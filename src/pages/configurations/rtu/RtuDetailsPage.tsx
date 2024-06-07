@@ -32,6 +32,12 @@ type Rowtext = {
   value: string;
 };
 
+type Iprops={
+  rtuId:string
+  stationId:string
+  regionId:string
+  networkId:string
+}
 const Rowtext = ({name, value}: Rowtext) => {
   return (
     <div className="mb-[4px] flex flex-row">
@@ -45,7 +51,7 @@ const Rowtext = ({name, value}: Rowtext) => {
 
 const RtuDetailsPage: FC = () => {
   const dispatch=useDispatch()
-  const params = useParams();
+  const params = useParams<Iprops>();
   const {
     stationsrtu,
     regionstations,
@@ -66,7 +72,7 @@ const RtuDetailsPage: FC = () => {
     }),
     initialRequests: request => {
       request('rtuDetail', {
-        params: {rtu_Id: params?.rtuId?.split('_')[0] || ''},
+        params: {rtu_Id: params?.rtuId! || ''},
       });
 
       request('userList', undefined);
@@ -77,7 +83,7 @@ const RtuDetailsPage: FC = () => {
         state.update?.httpRequestStatus === 'success'
       ) {
         request('rtuDetail', {
-          params: {rtu_Id: params?.rtuId?.split('_')[0] || ''},
+          params: {rtu_Id: params?.rtuId! || ''},
         });
       }
     },
@@ -106,7 +112,7 @@ const RtuDetailsPage: FC = () => {
     onSubmit: () => {
     
       request('rtuUpdate', {
-        params: {rtu_id: params?.rtuId?.split('_')[0] || ''},
+        params: {rtu_id: params?.rtuId! || ''},
         data: {
           name: formik.values.name,
           model: formik.values.model,
@@ -122,7 +128,7 @@ const RtuDetailsPage: FC = () => {
       });
       const stationsrtuCopy=deepcopy(stationsrtu)
       const findstationrtuindex=stationsrtu.findIndex(data => data.stationid == rtuDetail?.data?.station_id || "")
-       const findrtuid=stationsrtu[findstationrtuindex].rtues.findIndex(data => data.id == params?.rtuId?.split('_')[0]!)
+       const findrtuid=stationsrtu[findstationrtuindex]?.rtues?.findIndex(data => data.id == params?.rtuId!)
        stationsrtuCopy[findstationrtuindex].rtues[findrtuid].name=formik.values.name
        dispatch(setStationsrtu(stationsrtuCopy))
       },
@@ -307,9 +313,9 @@ const RtuDetailsPage: FC = () => {
           </div>
           <div className="flex gap-x-4 justify-end w-[calc(100%-60px)]">
             {loggedInUser.role === UserRole.SUPER_USER ||
-            rtunetworkidadmin.includes(params?.rtuId?.split('_')[2]!) ||
-            rturegionidadmin.includes(params?.rtuId?.split('_')[3]!) ||
-            rtustationidadmin.includes(params?.rtuId?.split('_')[0]!) ? (
+            rtunetworkidadmin.includes(params?.networkId!) ||
+            rturegionidadmin.includes(params?.regionId!) ||
+            rtustationidadmin.includes(params?.rtuId!) ? (
               <SimpleBtn type="submit">Save</SimpleBtn>
             ) : null}
             <SimpleBtn>Cancel</SimpleBtn>

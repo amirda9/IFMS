@@ -16,6 +16,11 @@ type Rowtext = {
   name: string;
   value: string;
 };
+type Iprops={
+  stationId:string
+  regionId:string
+  networkId:string
+}
 // --------------- component ---------------- component ------------- component -------
 const Rowtext = ({name, value}: Rowtext) => {
   return (
@@ -41,7 +46,7 @@ const rtuSchema = Yup.object().shape({
 });
 // ------ main -------------------- main --------main -------------- main -----
 const RtuCreatePage: FC = () => {
-  const params = useParams();
+  const params = useParams<Iprops>();
   const [errortext, setErrortext] = useState('');
   const {stationsrtu} = useSelector((state: RootState) => state.rtu);
   const dispatch = useDispatch();
@@ -77,7 +82,7 @@ const RtuCreatePage: FC = () => {
         const creatertu = await $Post(`otdr/rtu/`, {
           name: values.name,
           model: values.model,
-          station_id: params!.id!.split('_')[0] || '',
+          station_id: params!.stationId! || '',
           contact_person_id: values.ContactPerson,
           otdr_ip: values.OTDRFIRST,
           otdr_port: Number(values.OTDRSECEND),
@@ -92,7 +97,7 @@ const RtuCreatePage: FC = () => {
           const stationsrtuCopy = deepcopy(stationsrtu);
 
           const findrtu = stationsrtu.findIndex(
-            (data: any) => data.stationid == params!.id!.split('_')[0],
+            (data: any) => data.stationid == params.stationId!,
           );
           //Then we update the list of rtus of the station so that we can see the updated list of rtus in the left bar.
 
@@ -103,9 +108,9 @@ const RtuCreatePage: FC = () => {
             });
           } else {
             stationsrtuCopy.push({
-              stationid: params!.id!.split('_')[0],
-              networkid: params!.id!.split('_')[2],
-              regionid: params!.id!.split('_')[1],
+              stationid: params!.stationId!,
+              networkid: params!.networkId!,
+              regionid: params!.regionId!,
               rtues: [{name: getdata.name, id: getdata.id}],
               deletertues: [],
             });
@@ -113,8 +118,8 @@ const RtuCreatePage: FC = () => {
           dispatch(setStationsrtu(stationsrtuCopy));
 
           navigate(
-            `../../remote-test-units/${getdata.id}_${
-              params!.id!.split('_')[0]}_${params!.id!.split('_')[2]}_${params!.id!.split('_')[1]}`,
+            `../../remote-test-units/${getdata.id}/${
+              params!.stationId!}/${params!.regionId}/${params!.networkId!}`,
           );
         } else {
           setErrortext(getdata.detail[0].msg);

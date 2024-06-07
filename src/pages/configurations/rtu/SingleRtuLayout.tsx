@@ -2,8 +2,14 @@ import {FC} from 'react';
 import {Outlet, useParams} from 'react-router-dom';
 import {TabItem} from '~/components';
 
+type Iprops={
+  rtuId:string
+  stationId:string
+  regionId:string
+  networkId:string
+}
 const SingleRtuLayout: FC = () => {
-  const params = useParams();
+  const params = useParams<Iprops>();
   return (
     <div className="flex h-full w-full flex-col">
       <div className="mb-8 flex h-fit [&_*]:mx-[0.5px]">

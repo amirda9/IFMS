@@ -50,6 +50,13 @@ type allcreateports = {
   state: string;
   optical_switch_port_index: number;
 }[];
+
+type Iprops={
+  rtuId:string
+  stationId:string
+  regionId:string
+  networkId:string
+}
 // -------- main ------------------ main -------------------- main -------------main --------
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
@@ -61,7 +68,7 @@ const swalsetting: any = {
   confirmButtonText: 'Yes, delete it!',
 };
 const RtuPortsPage: FC = () => {
-  const params = useParams();
+  const params = useParams<Iprops>();
   const [allrtuports, setAllrtuports] = useState<allportstype>([]);
   const [loading, setLoading] = useState(false);
   const [selectedboxoptions, setSelectedboxoptions] =
@@ -81,11 +88,9 @@ const RtuPortsPage: FC = () => {
       setLoading(true);
       //get rtu ports
       const [getdata, getrtuopticalrote] = await Promise.all([
-        $Get(`otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`),
+        $Get(`otdr/rtu/${params?.rtuId!}/ports`),
         $Get(
-          `otdr/optical-route?rtu_station_id=${params?.rtuId?.split(
-            '_',
-          )[1]}&network_id=${params?.rtuId?.split('_')[2]}`,
+          `otdr/optical-route?rtu_station_id=${params?.stationId!}&network_id=${params?.networkId!}`,
         ),
       ]);
       const allrtuports: allportstype = await getdata?.json();
@@ -156,7 +161,7 @@ const RtuPortsPage: FC = () => {
     if (allcreateport.length > 0) {
       try {
         await $Post(
-          `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
+          `otdr/rtu/${params?.rtuId!}/ports`,
           allcreateport,
         );
       } catch (error) {
@@ -166,7 +171,7 @@ const RtuPortsPage: FC = () => {
     if (allupdatesports && allupdatesports?.length > 0) {
       try {
         await $Put(
-          `otdr/rtu/${params?.rtuId?.split('_')[0]}/ports`,
+          `otdr/rtu/${params?.rtuId!}/ports`,
           allupdatesports.map(data => ({
             id: data?.id,
             state: data.state,
@@ -180,9 +185,10 @@ const RtuPortsPage: FC = () => {
     }
 
     if (alldeletedports.length > 0) {
+    
       try {
         const promises = alldeletedports.map((data: string) =>
-          $Delete(`/api/otdr/rtu/${data}`),
+          $Delete(`otdr/rtu/${data}`),
         );
         const results = await Promise.all(promises);
       } catch (error) {
@@ -402,9 +408,9 @@ const RtuPortsPage: FC = () => {
   }
   if (
     loggedInUser.role === UserRole.SUPER_USER ||
-    rtunetworkidadmin.includes(params?.rtuId?.split('_')[2]!) ||
-    rturegionidadmin.includes(params?.rtuId?.split('_')[3]!) ||
-    rtustationidadmin.includes(params?.rtuId?.split('_')[0]!)
+    rtunetworkidadmin.includes(params?.networkId!) ||
+    rturegionidadmin.includes(params?.regionId!) ||
+    rtustationidadmin.includes(params?.rtuId!)
   ) {
     return (
       <div className="flex flex-col gap-y-8">
@@ -536,8 +542,8 @@ const RtuPortsPage: FC = () => {
 
           <div className="flex gap-x-4 self-end">
             {loggedInUser.role === UserRole.SUPER_USER ||
-            rtunetworkidadmin.includes(params?.rtuId?.split('_')[2]!) ||
-            rturegionidadmin.includes(params?.rtuId?.split('_')[3]!) ? (
+            rtunetworkidadmin.includes(params?.networkId!) ||
+            rturegionidadmin.includes(params?.regionId!) ? (
               <SimpleBtn type="button" onClick={save}>
                 Save
               </SimpleBtn>

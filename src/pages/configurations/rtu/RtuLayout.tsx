@@ -426,7 +426,7 @@ const RtuLayout: FC = () => {
               <BsPlusLg
                 onClick={() =>
                
-                  navigate(`create/${id}_${regionid}_${networkid}`)
+                  navigate(`create/${id}/${regionid}/${networkid}`)
                 }
                 color="#18C047"
                 className="ml-[10px] cursor-pointer"
@@ -817,7 +817,7 @@ const RtuLayout: FC = () => {
                                                               name={
                                                                 rtudata.name
                                                               }
-                                                              to={`${rtudata.id}_${satationdata.id}_${networkdata.id}_${regionsdata.id}`}
+                                                              to={`${rtudata.id}/${satationdata.id}/${regionsdata.id}/${networkdata.id}`}
                                                             />
                                                           </div>
                                                         );

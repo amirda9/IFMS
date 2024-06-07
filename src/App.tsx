@@ -352,11 +352,11 @@ function App() {
             <Route path="chart" Component={pages.Chart} />
 
             <Route path="remote-test-units" Component={pages.RtuLayout}>
-              <Route path=":rtuId" Component={pages.SingleRtuLayout}>
+              <Route path=":rtuId/:stationId/:regionId/:networkId" Component={pages.SingleRtuLayout}>
                 <Route index Component={pages.RtuDetailsPage} />
                 <Route path="ports" Component={pages.RtuPortsPage} />
               </Route>
-              <Route path="create/:id" Component={pages.RtuCreatepage} />
+              <Route path="create/:stationId/:regionId/:networkId" Component={pages.RtuCreatepage} />
             </Route>
           </Route>
 
