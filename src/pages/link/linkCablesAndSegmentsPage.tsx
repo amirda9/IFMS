@@ -15,6 +15,9 @@ type Iprops = {
   onclick: Function;
 };
 
+type mainprops={
+  regionId:string,networkId:string,linkId:string
+  }
 const Addbox = ({classname, onclick}: Iprops) => {
   return (
     <div
@@ -30,7 +33,7 @@ const Addbox = ({classname, onclick}: Iprops) => {
 };
 // *******************************
 const LinkCablesAndSegmentsPage = () => {
-  const params = useParams<{linkId: string}>();
+  const params = useParams<mainprops>();
   const login = localStorage.getItem('login');
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
@@ -38,7 +41,7 @@ const LinkCablesAndSegmentsPage = () => {
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
-  const networkId = params.linkId!.split('_')[2];
+  const networkId = params.networkId!;
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
 
@@ -91,7 +94,7 @@ const LinkCablesAndSegmentsPage = () => {
       update: state.http.linkupdatecables,
     }),
     initialRequests: request => {
-      request('linkDetail', {params: {link_id: params.linkId!.split('_')[0]}});
+      request('linkDetail', {params: {link_id: params.linkId!}});
       if (networkId) {
         request('allStations', undefined);
       }
@@ -102,7 +105,7 @@ const LinkCablesAndSegmentsPage = () => {
         state.update!.httpRequestStatus === 'success'
       ) {
         request('linkDetail', {
-          params: {link_id: params.linkId!.split('_')[0]},
+          params: {link_id: params.linkId!},
         });
       }
     },
@@ -164,7 +167,7 @@ const LinkCablesAndSegmentsPage = () => {
     }
 
     request('linkupdatecables', {
-      params: {link_id: params.linkId!.split('_')[0]},
+      params: {link_id: params.linkId!},
       data: {cables: newcable, ducts: beforadddata.ducts},
     });
   };
@@ -841,8 +844,8 @@ const LinkCablesAndSegmentsPage = () => {
 
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
         {loggedInUser.role === UserRole.SUPER_USER ||
-        networkidadmin.includes(params.linkId!.split('_')[2]) ||
-        regionidadmin.includes(params.linkId!.split('_')[1]) || state?.detail?.data?.access?.access == "ADMIN" ? (
+        networkidadmin.includes(params.networkId!) ||
+        regionidadmin.includes(params.regionId!) || state?.detail?.data?.access?.access == "ADMIN" ? (
           <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
         ) : null}
 

@@ -12,9 +12,12 @@ const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
 ];
+type Iprops={
+  regionId:string,networkId:string
+  }
 // -------------------------------------------------------------------------------------------------------
 const LinkCreatePage = () => {
-  const params = useParams();
+  const params = useParams<Iprops>();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
@@ -39,7 +42,7 @@ const LinkCreatePage = () => {
       try {
         setLoading(true)
         const response = await $Get(
-          `otdr/region/${params.regionid!.split('_')[0]}/stations`,
+          `otdr/region/${params.regionId!}/stations`,
         );
 
         if (response?.status == 200) {
@@ -102,11 +105,11 @@ const LinkCreatePage = () => {
       try {
         const response = await $Post(`otdr/link/`, {
           name: name,
-          network_id: params.regionid!.split('_')[1],
+          network_id: params.networkId!,
           source_id: source,
           destination_id: destinationid,
           link_points: [],
-          region_id: params.regionid!.split('_')[0],
+          region_id: params.regionId!,
           description: comment,
           type: types,
         });
@@ -115,8 +118,8 @@ const LinkCreatePage = () => {
         if (response?.status == 200) {
           dispatch(
             createLinks({
-              networkid: params.regionid!.split('_')[1]!,
-              regionid: params.regionid!.split('_')[0]!,
+              networkid: params.networkId!!,
+              regionid: params.regionId!,
               linkid: responsedata.link_id,
               linkname: name,
               source_id: source,
@@ -125,9 +128,7 @@ const LinkCreatePage = () => {
           );
         }
         navigate(
-          `/links/${responsedata.link_id}_${params.regionid!.split(
-            '_',
-          )[0]!}_${params.regionid!.split('_')[1]!}`,
+          `/links/${responsedata.link_id}/${params.regionId!}/${params.networkId!}`,
         );
       } catch (error) {}
     }

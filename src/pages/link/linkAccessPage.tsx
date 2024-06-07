@@ -16,9 +16,12 @@ const columns = {
   region: {label: 'Region', size: 'w-[30%]'},
   station: {label: 'Station', size: 'w-[30%]'},
 };
-
+type Iprops={
+  regionId:string,networkId:string,linkId:string
+  }
 const LinkAccessPage = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
+  const params = useParams<Iprops>();
   const {network} = useSelector((state: any) => state);
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
@@ -34,7 +37,7 @@ const LinkAccessPage = () => {
   >([]);
   const login = localStorage.getItem('login');
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
-  const params = useParams<{linkId: string}>();
+ 
   const {
     request,
     state: {viewers, users, update},
@@ -45,7 +48,7 @@ const LinkAccessPage = () => {
       update: state.http.linkAccessUpdate,
     }),
     initialRequests: request => {
-      request('linkAccessList', {params: {link_id: params.linkId!.split("_")[0]}});
+      request('linkAccessList', {params: {link_id: params.linkId!}});
       request('userList', undefined);
     },
     onUpdate: (lastState, state) => {
@@ -53,7 +56,7 @@ const LinkAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkAccessList', {params: {link_id:params.linkId!.split("_")[0]}});
+        request('linkAccessList', {params: {link_id:params.linkId!}});
       }
     },
   });
@@ -113,11 +116,11 @@ const LinkAccessPage = () => {
       access_types: AccessEnum.admin,
     });
     request('linkAddadmin', {
-      params: {link_id: params.linkId!.split("_")[0]},
+      params: {link_id: params.linkId!},
       data: {user_id: userAdmin || admin!.user.id!},
     });
     request('linkAccessUpdate', {
-      params: {link_id: params.linkId!.split("_")[0]!},
+      params: {link_id: params.linkId!},
       data: {users: network?.linkviewers},
     });
     dispatch(setlinkviewersstatus(false)), dispatch(setlinkviewers([]));
@@ -155,7 +158,7 @@ const LinkAccessPage = () => {
             value={userAdmin || admin?.user.id}
             disabled={
               loggedInUser.role !== UserRole.SUPER_USER &&
-              !networkidadmin.includes(params.linkId!.split("_")[2]) && !regionidadmin.includes(params.linkId!.split("_")[1])
+              !networkidadmin.includes(params.networkId!) && !regionidadmin.includes(params.regionId!)
             }
             onChange={e => setUserAdmin(e.target.value)}
             className="w-[70%] text-sm">

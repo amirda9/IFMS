@@ -737,7 +737,7 @@ dispatch(chageLoading(false));
                                     );
                                     // onclicklinks(regionsdata.id);
                                   }}
-                                  createurl={`/links/create/${regionsdata.id}_${networkdata.id}`}
+                                  createurl={`/links/create/${regionsdata.id}/${networkdata.id}`}
                                   id={`${regionsdata.id}&${regionsdata.id}`}
                                   name="Links"
                                 />
@@ -763,7 +763,7 @@ dispatch(chageLoading(false));
                                         <Items
                                           key={linksdata.id}
                                           canAdd={false}
-                                          to={`/links/${linksdata.id}_${regionsdata.id}_${networkdata.id}`}
+                                          to={`/links/${linksdata.id}/${regionsdata.id}/${networkdata.id}`}
                                           createurl={`/links/create`}
                                           selected={false}
                                           disabledcheckbox={
@@ -967,7 +967,7 @@ dispatch(chageLoading(false));
                                   ?.links.map((linksdata, index) => (
                                     <Items
                                       key={linksdata.id + index}
-                                      to={`/links/${linksdata.id}_${networkdata.id}/defaultregionlinkdetailpage`}
+                                      to={`/links/${linksdata.id}/${networkdata.id}/defaultregionlinkdetailpage`}
                                       createurl={`/links/create`}
                                       canAdd={false}
                                       selected={false}

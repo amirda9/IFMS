@@ -35,6 +35,9 @@ type regionlisttype = {
   time_created: string;
   time_updated: string;
 };
+type mainprops={
+networkId:string,linkId:string
+  }
 // *********************************************************************
 const LinkDetailPage = () => {
   const {networkDetail} = useSelector((state: any) => state.http);
@@ -46,7 +49,7 @@ const LinkDetailPage = () => {
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {type} = useSelector((state: any) => state.network);
   const dispatch = useDispatch();
-  const params = useParams<{linkId: string}>();
+  const params = useParams<mainprops>();
   const {state, request} = useHttpRequest({
     selector: state => ({
       detail: state.http.linkDetail,
@@ -132,7 +135,7 @@ const LinkDetailPage = () => {
     // const linkdetailresponse=await $Get(`otdr/link/${params.linkId!}`)
     try {
       setLoading(true);
-      let linkdetailurl = `otdr/link/${params?.linkId?.split('_')[0]!}`;
+      let linkdetailurl = `otdr/link/${params?.linkId!}`;
       let regionstationurl = `otdr/station`;
 
       const [linkdetailresponse, networkstation] = await Promise.all([
@@ -248,10 +251,10 @@ const LinkDetailPage = () => {
       setDestinationerror('');
       try {
         const response = await $Put(
-          `otdr/link/${params?.linkId?.split('_')[0]}`,
+          `otdr/link/${params?.linkId!}`,
           {
             description: comment,
-            network_id: params?.linkId?.split('_')[1],
+            network_id: params?.networkId!,
             region_id: selectedregion.length > 0 ? selectedregion : null,
             name: name,
             link_points: [],
@@ -264,8 +267,8 @@ const LinkDetailPage = () => {
           dispatch(
             updatedefaltlinkname({
               regionid: selectedregion.length > 0 ? selectedregion : null,
-              networkid: params?.linkId?.split('_')[1]!,
-              linkid: params?.linkId?.split('_')[0]!,
+              networkid: params?.networkId!,
+              linkid: params?.linkId!,
               linkname: name,
               source_id: source,
               destination_id: destinationid,
@@ -445,7 +448,7 @@ const LinkDetailPage = () => {
 
       <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
         {loggedInUser.role === UserRole.SUPER_USER ||
-        networkidadmin.includes(params.linkId!.split('_')[1]) ? (
+        networkidadmin.includes(params.networkId!) ? (
           <SimpleBtn onClick={updatelink} type="button">
             Save
           </SimpleBtn>

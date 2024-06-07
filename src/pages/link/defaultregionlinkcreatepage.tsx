@@ -16,8 +16,11 @@ const typeoptions = [
   {value: 'duct', label: 'duct'},
 ];
 
+type mainprops={
+networkId:string
+  }
 const LinkCreatePage = () => {
-  const params = useParams();
+  const params = useParams<mainprops>();
   console.log(params, 'params');
 
   const networkId = Cookies.get(networkExplored);
@@ -109,7 +112,7 @@ const LinkCreatePage = () => {
       try {
         const response = await $Post(`otdr/link/`, {
           name: name,
-          network_id: params.networkid,
+          network_id: params.networkId!,
           source_id: source,
           destination_id: destinationid,
           link_points: [],
@@ -121,7 +124,7 @@ const LinkCreatePage = () => {
         if (response?.status == 200) {
           dispatch(
             createdefaultRegionLinks({
-              networkid: params.networkid!,
+              networkid: params.networkId!,
               links: {
                 id: responsedata.link_id,
                 name: name,
@@ -130,11 +133,13 @@ const LinkCreatePage = () => {
               },
             }),
           );
+          navigate(
+            `/links/${responsedata.link_id}/${params.networkId!}/defaultregionlinkdetailpage`
+            // `../../links/${responsedata.link_id}/defaultregionlinkdetailpage`,
+          );
         }
 
-        navigate(
-          `../../links/${responsedata.link_id}/defaultregionlinkdetailpage`,
-        );
+   
       } catch (error) {}
     }
   };

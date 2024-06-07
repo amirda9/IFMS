@@ -19,6 +19,10 @@ type linkpointstype = {
   id: number;
   fix?: boolean;
 };
+
+type mainprops={
+  regionId:string,networkId:string,linkId:string
+  }
 const Addbox = ({classname, onclick}: Iprops) => {
   return (
     <div
@@ -33,8 +37,8 @@ const Addbox = ({classname, onclick}: Iprops) => {
   );
 };
 const LinkPointsPage = () => {
-  const params = useParams<{linkId: string}>();
-  const networkId = params.linkId!.split('_')[2];
+  const params = useParams<mainprops>();
+  const networkId = params.networkId!;
   const [linkdata, setLinkdata] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const {networkidadmin, regionidadmin} = useSelector(
@@ -63,7 +67,7 @@ const LinkPointsPage = () => {
   const getlinkDetail = async () => {
     setLoading(true);
     try {
-      const response = await $Get(`otdr/link/${params.linkId!.split('_')[0]}`);
+      const response = await $Get(`otdr/link/${params.linkId!}`);
       const responsedata = await response?.json();
       setLinkdata(responsedata);
       const all =
@@ -136,7 +140,7 @@ const LinkPointsPage = () => {
     newpoints.splice(newpoints.length - 1, 1);
 
     const respnse = await $Put(
-      `otdr/link/${params.linkId!.split('_')[0] || ''}/link_points`,
+      `otdr/link/${params.linkId! || ''}/link_points`,
       newpoints,
     );
 
@@ -219,8 +223,8 @@ const LinkPointsPage = () => {
       ))}
       <div className="absolute bottom-[-35px] right-0 flex flex-row">
         {loggedInUser.role === UserRole.SUPER_USER ||
-        networkidadmin.includes(params.linkId!.split('_')[2]) ||
-        regionidadmin.includes(params.linkId!.split('_')[1]) ||
+        networkidadmin.includes(params.networkId!) ||
+        regionidadmin.includes(params.regionId!) ||
         linkdata?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={() => savepoints()} type="submit">
             Save

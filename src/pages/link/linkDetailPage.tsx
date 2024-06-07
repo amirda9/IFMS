@@ -31,6 +31,11 @@ type regionlisttype = {
   time_created: string;
   time_updated: string;
 };
+type Iprops={
+  linkId:string
+  regionId:string
+  networkId:string
+}
 // *********************************************************************
 const LinkDetailPage = () => {
   const [defaultnetworkname, setDefaultnetworkname] = useState('');
@@ -39,7 +44,7 @@ const LinkDetailPage = () => {
   const [loading, setLoading] = useState(false);
   const login = localStorage.getItem('login');
   const dispatch = useDispatch();
-  const params = useParams<{linkId: string}>();
+  const params = useParams<Iprops>();
   const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [selectedregion, setSelectedregion] = useState('');
@@ -67,12 +72,12 @@ const LinkDetailPage = () => {
   );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   useEffect(() => {
-    setSelectedregion(params.linkId!.split('_')[1]);
+    setSelectedregion(params.regionId!);
     const getregionstations = async () => {
       try {
-        let linkdetailurl = `otdr/link/${params.linkId!.split('_')[0]}`;
+        let linkdetailurl = `otdr/link/${params.linkId!}`;
         let regionstationurl = `otdr/region/${
-          params.linkId!.split('_')[1]
+          params.regionId!
         }/stations`;
 
         const [linkdetail, regionstation] = await Promise.all([
@@ -174,9 +179,9 @@ const LinkDetailPage = () => {
       setDestinationerror('');
       try {
         const response = await $Put(
-          `otdr/link/${params.linkId!.split('_')[0]}`,
+          `otdr/link/${params.linkId!}`,
           {
-            network_id: params.linkId!.split('_')[2],
+            network_id: params.networkId!,
             region_id: selectedregion,
             description: comment,
             name: name,
@@ -191,10 +196,10 @@ const LinkDetailPage = () => {
           dispatch(
             updatelinkname({
               // state!.detail!.data!.region_id!
-              networkid: params.linkId!.split('_')[2],
+              networkid: params.networkId!,
               newregionid: selectedregion,
-              regionid: params.linkId!.split('_')[1],
-              linkid: params.linkId!.split('_')[0],
+              regionid: params.regionId!,
+              linkid: params.linkId!,
               linkname: name,
               source_id: source,
               destination_id: destinationid,
@@ -214,7 +219,7 @@ const LinkDetailPage = () => {
     const getnetworks = async () => {
       try {
         const getstationdetail = await $Get(
-          `otdr/link/${params.linkId!.split('_')[0]}`,
+          `otdr/link/${params.linkId!}`,
         );
         if (getstationdetail?.status == 200) {
           const getstationdetaildata = await getstationdetail?.json();
@@ -393,8 +398,8 @@ const LinkDetailPage = () => {
 
       <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
         {loggedInUser.role === UserRole.SUPER_USER ||
-        networkidadmin.includes(params.linkId!.split('_')[2]) ||
-        regionidadmin.includes(params.linkId!.split('_')[1]) ? (
+        networkidadmin.includes(params.networkId!) ||
+        regionidadmin.includes(params.regionId!) ? (
           <SimpleBtn onClick={updatelink} type="button">
             Save
           </SimpleBtn>

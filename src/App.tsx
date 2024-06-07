@@ -84,7 +84,7 @@ function App() {
               path=":stationId/:regionId/:networkId/edit-access"
               Component={pages.StationEditViewerPage}
             />
-                <Route
+            <Route
               path=":stationId/:networkId/edit-access"
               Component={pages.StationEditViewerPage}
             />
@@ -103,43 +103,76 @@ function App() {
                 path="defaultstationDetailPage"
                 Component={pages.defaultStationDetailPage}
               />
-                 <Route
+              <Route
                 path="access/defaultstationDetailPage"
                 Component={pages.StationAccessPage}
               />
             </Route>
-            
+
             <Route
               path=":stationId/:regionId/:networkId"
               Component={pages.StationEmptyPage}>
               <Route path="" Component={pages.StationDetailPage} />
 
-           
               <Route path="access" Component={pages.StationAccessPage} />
             </Route>
           </Route>
 
           <Route path="/links" Component={pages.LinksPage}>
             <Route
-              path=":linkId/edit-access"
+              path=":linkId/:regionId/:networkId/edit-access"
               Component={pages.LinkEditViewersPage}
             />
-            <Route path="create/:regionid" Component={pages.LinkCreatePage} />
             <Route
-              path="createdefaultregionlink/:networkid"
+              path=":linkId/:networkId/edit-access"
+              Component={pages.LinkEditViewersPage}
+            />
+            <Route
+              path="create/:regionId/:networkId"
+              Component={pages.LinkCreatePage}
+            />
+            <Route
+              path="createdefaultregionlink/:networkId"
               Component={pages.defaultregionlinkcreatepage}
             />
-            <Route path=":linkId" Component={pages.LinkEmptyPage}>
-              <Route path="" Component={pages.LinkDetailPage} />
+
+            <Route path=":linkId/:networkId" Component={pages.LinkEmptyPage}>
               <Route
                 path="defaultregionlinkdetailpage"
                 Component={pages.defaultregionlinkdetailpage}
               />
-
               <Route
                 path="access/defaultregionlinkdetailpage"
                 Component={pages.LinkAccessPage}
               />
+              <Route
+                path="cables-segments/defaultregionlinkdetailpage"
+                Component={pages.LinkCablesAndSegmentsPage}
+              />
+              <Route
+                path="cables-segments"
+                Component={pages.LinkCablesAndSegmentsPage}
+              />
+                <Route
+                path="ducts-segments/defaultregionlinkdetailpage"
+                Component={pages.LinkDuctsAndSegmentsPage}
+              />
+              <Route
+                path="ducts-segments"
+                Component={pages.LinkDuctsAndSegmentsPage}
+              />
+              <Route
+                path="points/defaultregionlinkdetailpage"
+                Component={pages.LinkPointsPage}
+              />
+              <Route path="points" Component={pages.LinkPointsPage} />
+            </Route>
+
+            <Route
+              path=":linkId/:regionId/:networkId"
+              Component={pages.LinkEmptyPage}>
+              <Route path="" Component={pages.LinkDetailPage} />
+
               <Route path="access" Component={pages.LinkAccessPage} />
               <Route
                 path="cables-segments/defaultregionlinkdetailpage"

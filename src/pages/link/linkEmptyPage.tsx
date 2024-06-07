@@ -3,7 +3,9 @@ import {TabItem} from '~/components';
 import {Outlet, useLocation, useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import { useMemo } from 'react';
-
+type mainprops={
+  regionId:string,networkId:string,linkId:string
+  }
 const LinkEmptyPage = () => {
   const path=useLocation()
   const {network, http} = useSelector((state: any) => state);
@@ -11,7 +13,7 @@ const LinkEmptyPage = () => {
     (data: any) => data.id == network.linkdetail?.id,
   );
 
-  const params = useParams<{linkId: string}>();
+  const params = useParams<mainprops>();
   const isinclude=useMemo(()=>path.pathname.includes(`defaultregionlinkdetailpage`),[path.pathname])
   
   return (
@@ -35,7 +37,7 @@ const LinkEmptyPage = () => {
 
         <TabItem  to={`${isinclude?"points/defaultregionlinkdetailpage":"points"}`}  name="Points" />
       </div>
-      <Outlet key={params.linkId} />
+      <Outlet key={params.linkId!} />
     </div>
   );
 };
