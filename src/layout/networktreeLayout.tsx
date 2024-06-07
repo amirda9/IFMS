@@ -409,7 +409,7 @@ function NetworktreeLayout({ children}:Iprops) {
         } catch (error) {
           console.log(`deletelinkError is:${error}`);
         } finally {
-          dispatch(chageLoading(true));
+          dispatch(chageLoading(false));
           navigate(`/regions/defaultregionemptypage/${networkid}_Linkss`);
         }
       }
@@ -425,7 +425,8 @@ function NetworktreeLayout({ children}:Iprops) {
           if (response?.status == 200) {
             dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
             
-          }
+          } else {
+            toast('Encountered an error', {type: 'error', autoClose: 1000});          }
         } catch (error) {
           console.log(`delete region Error is:${error}`);
           

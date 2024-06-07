@@ -51,7 +51,7 @@ const RegionDetailPage = () => {
                 }),
               );
               navigate(
-                `/regions/${responsedata.region_id}_${params.networkid}`,
+                `/regions/${responsedata.region_id}/${params.networkid}`,
               );
             }
           } catch (error) {}

@@ -27,6 +27,9 @@ const TestSetupDetailsModal: FC = () => {
     (state: any) => state.opticalroute,
   );
 
+
+  console.log("🔥",params);
+  
   const {request, state} = useHttpRequest({
     selector: state => ({
       stationrtulist: state.http.stationrtuList,
@@ -38,7 +41,7 @@ const TestSetupDetailsModal: FC = () => {
     initialRequests: request => {
       request('opticalrouteTestSetupDetail', {
         params: {
-          optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+          optical_route_id: params.opticalRouteId! || '',
           test_setup_id: params.testId || '',
         },
       });
@@ -56,7 +59,7 @@ const TestSetupDetailsModal: FC = () => {
         // });
         request('opticalrouteTestSetup', {
           params: {
-            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+            optical_route_id: params.opticalRouteId! || '',
           },
         });
       }
@@ -138,7 +141,7 @@ const TestSetupDetailsModal: FC = () => {
         } else {
           request('opticalrouteUpdateTestSetup', {
             params: {
-              optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+              optical_route_id: params.opticalRouteId! || '',
               test_setup_id: params.testId || '',
             },
             data: newdata,
@@ -155,8 +158,8 @@ const TestSetupDetailsModal: FC = () => {
           ? navigate('/monitoring/test-on-demand')
           : navigate(
               `/config/optical-routes/${
-                params.opticalRouteId!.split('_')[0]
-              }/test-setup`,
+                params.opticalRouteId!
+              }/${params.networkId}/test-setup`,
             );
       }, 3000);
     }
@@ -220,7 +223,7 @@ const TestSetupDetailsModal: FC = () => {
           ) : null}
         </div>
 
-        <Outlet key={params.alarmId} />
+        <Outlet key={params.testId} />
       </div>
     </AppDialog>
   );

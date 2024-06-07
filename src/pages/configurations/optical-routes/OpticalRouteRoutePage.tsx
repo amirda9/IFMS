@@ -1,12 +1,12 @@
 import {FC, useEffect, useState} from 'react';
 import {Select, SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import {useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
 import Cookies from 'js-cookie';
 import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
-import {$Get} from '~/util/requestapi';
+import {$Delete, $Get, $Post, $Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 // ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
@@ -101,6 +101,7 @@ const Addbox = ({classname, onclick}: Iprops) => {
 // ------------main ---------------main -------------------main ------------main -----------
 const OpticalRouteRoutePage: FC = () => {
   const params = useParams<mainprops>();
+  const navigate=useNavigate()
   const networkId = params.networkId!;
   const [loading, setLoading] = useState(false);
   const [allroutes, setAllroutes] = useState<allroutestype[]>([]);
@@ -664,30 +665,33 @@ const OpticalRouteRoutePage: FC = () => {
           params.opticalRouteId! || ''
         }/routes`,
       );
-      const allroutes = await allroutesrespone?.json();
-      setAllroutes(
-        allroutes.map((data: any, index: any) => ({
-          index: Number(index),
-          ...data,
-        })),
-      );
-      setAllselectedsource([]);
-      for (let i = 0; i < allroutes.length; i++) {
-        setAllselectedsource(prev => [
-          ...prev,
-          {
-            index: Number(i),
-            sourceId: allroutes[i].source.id,
-            linkId: allroutes[i].link_id,
-            cableid: allroutes[i].cable,
-            data: [],
-            cableandducts: {
-              cables: null,
-              ducts: null,
+      if(allroutesrespone?.status == 200){
+        const allroutes = await allroutesrespone?.json();
+        setAllroutes(
+          allroutes.map((data: any, index: any) => ({
+            index: Number(index),
+            ...data,
+          })),
+        );
+        setAllselectedsource([]);
+        for (let i = 0; i < allroutes.length; i++) {
+          setAllselectedsource(prev => [
+            ...prev,
+            {
+              index: Number(i),
+              sourceId: allroutes[i].source.id,
+              linkId: allroutes[i].link_id,
+              cableid: allroutes[i].cable,
+              data: [],
+              cableandducts: {
+                cables: null,
+                ducts: null,
+              },
             },
-          },
-        ]);
+          ]);
+        }
       }
+     
     } catch (error) {
     } finally {
       setLoading(false);
@@ -698,43 +702,58 @@ const OpticalRouteRoutePage: FC = () => {
     getallroute();
   }, []);
 
-  const save = () => {
+  const save = async() => {
     try {
       setLoading(true)
       if (alldeleteroutes.length > 0) {
-        request('opticalrouteDeleteRoute', {
-          params: {
-            optical_route_id: params.opticalRouteId! || '',
-          },
-          data: alldeleteroutes,
-        });
+        const deleteroute=await $Delete(`otdr/optical-route/${params.opticalRouteId!}/routes`,alldeleteroutes)
+        // request('opticalrouteDeleteRoute', {
+        //   params: {
+        //     optical_route_id: params.opticalRouteId! || '',
+        //   },
+        //   data: alldeleteroutes,
+        // });
       }
       if (allcreatedroutes.length > 0) {
-        request('opticalrouteCreateRoute', {
-          params: {
-            optical_route_id: params.opticalRouteId!|| '',
-          },
-          data: allcreatedroutes.map((data, index) => ({
-            link_id: data.link_id,
-            cable: data.cable,
-            core: data.core,
-            route_number: index,
-          })),
-        });
+       const newdata= allcreatedroutes.map((data, index) => ({
+          link_id: data.link_id,
+          cable: data.cable,
+          core: data.core,
+          route_number: index,
+        }))
+        const createroute=await $Post(`otdr/optical-route/${params.opticalRouteId!}/routes`,newdata)
+        // request('opticalrouteCreateRoute', {
+        //   params: {
+        //     optical_route_id: params.opticalRouteId!|| '',
+        //   },
+        //   data: allcreatedroutes.map((data, index) => ({
+        //     link_id: data.link_id,
+        //     cable: data.cable,
+        //     core: data.core,
+        //     route_number: index,
+        //   })),
+        // });
       }
 
       if (allupdatedroutes.length > 0) {
-        request('opticalrouteUpdateRoute', {
-          params: {
-            optical_route_id: params.opticalRouteId! || '',
-          },
-          data: allupdatedroutes.map((data, index) => ({
-            link_id: data.link_id,
-            cable: data.cable,
-            core: data.core,
-            id: data.id,
-          })),
-        });
+        const updatedata= allupdatedroutes.map((data, index) => ({
+          link_id: data.link_id,
+          cable: data.cable,
+          core: data.core,
+          id: data.id,
+        }))
+        const updaterote=$Put(`otdr/optical-route/${params.opticalRouteId!}/routes`,updatedata)
+        // request('opticalrouteUpdateRoute', {
+        //   params: {
+        //     optical_route_id: params.opticalRouteId! || '',
+        //   },
+          // data: allupdatedroutes.map((data, index) => ({
+          //   link_id: data.link_id,
+          //   cable: data.cable,
+          //   core: data.core,
+          //   id: data.id,
+          // })),
+        // });
       }
      
     } catch (error) {
@@ -744,6 +763,7 @@ const OpticalRouteRoutePage: FC = () => {
       setAllUpdatedroutes([]);
       setAllDeleteroutes([]);
       getallroute();
+    //  navigate(`/config/optical-routes/${params.opticalRouteId!}/${params.networkId!}/route`)
     }
   };
   // ###################################################################################################
