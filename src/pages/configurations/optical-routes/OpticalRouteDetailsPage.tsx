@@ -15,9 +15,13 @@ const Schema = Yup.object().shape({
   avg_hellix_factor: Yup.string().required('Please enter avg_hellix_factor'),
 });
 
+type Iprops={
+  opticalRouteId:string
+  networkId:string
+}
 const OpticalRouteDetailsPage: FC = () => {
   const dispatch=useDispatch()
-  const params = useParams();
+  const params = useParams<Iprops>();
 
   const {
     request,
@@ -29,7 +33,7 @@ const OpticalRouteDetailsPage: FC = () => {
     initialRequests: request => {
       // if (list?.httpRequestStatus !== 'success') {
       request('opticalrouteDetail', {
-        params: {optical_route_id:params.opticalRouteId!.split("_")[0] || ''},
+        params: {optical_route_id:params.opticalRouteId! || ''},
       });
       // }
     },
@@ -55,7 +59,7 @@ const OpticalRouteDetailsPage: FC = () => {
     onSubmit: () => {
 try {
   request('opticalrouteUpdate', {
-    params: {optical_route_id: params.opticalRouteId!.split("_")[0] || ''},
+    params: {optical_route_id: params.opticalRouteId!|| ''},
     data: {
       name: formik.values.name || '',
       comment: formik.values.comment || '',
@@ -64,7 +68,7 @@ try {
       avg_hellix_factor: formik.values.avg_hellix_factor || 0,
     },
   });
-  dispatch(changeOpticalroutename({networkid:params.opticalRouteId!.split("_")[1]!,opticalId:params.opticalRouteId!.split("_")[0]!,opticalName:formik.values.name!}))
+  dispatch(changeOpticalroutename({networkid:params.networkId!,opticalId:params.opticalRouteId!,opticalName:formik.values.name!}))
 } catch (error) {
   
 }

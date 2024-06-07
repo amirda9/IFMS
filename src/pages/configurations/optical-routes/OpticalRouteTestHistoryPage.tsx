@@ -30,6 +30,10 @@ type historydatatype = {
   delete: string;
 }[];
 
+type Iprops={
+  opticalRouteId:string
+  networkId:string
+}
 const items = [
   {
     index: 1,
@@ -68,7 +72,7 @@ const items = [
 
 const OpticalRouteTestHistoryPage: FC = () => {
   const navigate = useNavigate();
-  const params = useParams();
+  const params = useParams<Iprops>();
   const [mount, setMount] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedtab, setSelectedtab] = useState('Date');
@@ -81,7 +85,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
       setLoading(true);
       const getdata = await $Get(
         `otdr/optical-route/${
-          params.opticalRouteId!.split('_')[0]
+          params.opticalRouteId!
         }/test-setups/history`,
       );
 
@@ -156,7 +160,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
       setLoading(true);
       const deleteonehistory = await $Delete(
         `otdr/optical-route/${
-          params.opticalRouteId!.split('_')[0]
+          params.opticalRouteId!
         }/measurements`,
         deletelist,
       );
@@ -164,7 +168,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
       if (deleteonehistory?.status == 201) {
         const getdata = await $Get(
           `otdr/optical-route/${
-            params.opticalRouteId!.split('_')[0]
+            params.opticalRouteId!
           }/test-setups/history`,
         );
         const data: {
@@ -218,7 +222,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
                   onClick={() =>
                     navigate(`../../../chart`, {
                       state: {
-                        opticalrout_id: params.opticalRouteId!.split('_')[0],
+                        opticalrout_id: params.opticalRouteId!,
                         measurement_id: value.measurement_id,
                       },
                     })

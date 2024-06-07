@@ -322,7 +322,7 @@ function App() {
                 Component={pages.OpticalRouteCreatePage}
               />
               <Route
-                path=":opticalRouteId"
+                path=":opticalRouteId/:networkId"
                 Component={pages.SingleOpticalRouteLayout}>
                 <Route index Component={pages.OpticalRouteDetailsPage} />
 

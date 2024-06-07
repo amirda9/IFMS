@@ -352,7 +352,7 @@ const OpticalRouteLayout: FC = () => {
                                 enabelcheck={true}
                                 className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
                                 name={data.name}
-                                to={`${data.id}_${networkdata.id}`}
+                                to={`${data.id}/${networkdata.id}`}
                               />
                             </div>
                           ))}

@@ -79,7 +79,10 @@ type allupdatedroutestype = {
   cable: string;
   core: number;
 };
-
+type mainprops={
+  opticalRouteId:string
+  networkId:string
+}
 // ---- component ------ component -----------------component-------------------------------
 const Addbox = ({classname, onclick}: Iprops) => {
   return (
@@ -97,8 +100,8 @@ const Addbox = ({classname, onclick}: Iprops) => {
 
 // ------------main ---------------main -------------------main ------------main -----------
 const OpticalRouteRoutePage: FC = () => {
-  const params = useParams();
-  const networkId = params.opticalRouteId!.split('_')[1];
+  const params = useParams<mainprops>();
+  const networkId = params.networkId!;
   const [loading, setLoading] = useState(false);
   const [allroutes, setAllroutes] = useState<allroutestype[]>([]);
   const [alldeleteroutes, setAllDeleteroutes] = useState<string[]>([]);
@@ -658,7 +661,7 @@ const OpticalRouteRoutePage: FC = () => {
       setLoading(true);
       const allroutesrespone = await $Get(
         `otdr/optical-route/${
-          params.opticalRouteId!.split('_')[0] || ''
+          params.opticalRouteId! || ''
         }/routes`,
       );
       const allroutes = await allroutesrespone?.json();
@@ -701,7 +704,7 @@ const OpticalRouteRoutePage: FC = () => {
       if (alldeleteroutes.length > 0) {
         request('opticalrouteDeleteRoute', {
           params: {
-            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+            optical_route_id: params.opticalRouteId! || '',
           },
           data: alldeleteroutes,
         });
@@ -709,7 +712,7 @@ const OpticalRouteRoutePage: FC = () => {
       if (allcreatedroutes.length > 0) {
         request('opticalrouteCreateRoute', {
           params: {
-            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+            optical_route_id: params.opticalRouteId!|| '',
           },
           data: allcreatedroutes.map((data, index) => ({
             link_id: data.link_id,
@@ -723,7 +726,7 @@ const OpticalRouteRoutePage: FC = () => {
       if (allupdatedroutes.length > 0) {
         request('opticalrouteUpdateRoute', {
           params: {
-            optical_route_id: params.opticalRouteId!.split('_')[0] || '',
+            optical_route_id: params.opticalRouteId! || '',
           },
           data: allupdatedroutes.map((data, index) => ({
             link_id: data.link_id,

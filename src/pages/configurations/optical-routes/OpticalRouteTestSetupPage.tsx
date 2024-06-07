@@ -54,9 +54,12 @@ const items = [
     delete: '33333',
   },
 ];
-
+type Iprops={
+  opticalRouteId:string
+  networkId:string
+}
 const OpticalRouteTestSetupPage: FC = () => {
-  const params = useParams();
+  const params = useParams<Iprops>();
   const {pathname} = useLocation();
   const [loading, setLoading] = useState(false);
   const [alldelets, setAlldelets] = useState<string[]>([]);
@@ -83,7 +86,7 @@ const OpticalRouteTestSetupPage: FC = () => {
       setLoading(true);
       const getalldata = await $Get(
         `otdr/optical-route/${
-          params.opticalRouteId!.split('_')[0]
+          params.opticalRouteId!
         }/test-setups`,
       );
       const getdata = await getalldata?.json();
@@ -141,7 +144,7 @@ const OpticalRouteTestSetupPage: FC = () => {
 
   const save = () => {
     request('opticalrouteDeletTestsetup', {
-      params: {optical_route_id: params.opticalRouteId!.split('_')[0] || ''},
+      params: {optical_route_id: params.opticalRouteId! || ''},
       data: alldelets,
     });
     setAlldelets([]);
