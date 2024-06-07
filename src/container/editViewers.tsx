@@ -303,6 +303,8 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   }, [veiwertablesorte, veiwertabselected, change]);
 
   let type = window.location.href.split('/')[3];
+  console.log("😁",type);
+  
   let isnetworkadmin = useMemo(() => {
     return networkidadmin.includes(params.networkId!);
   }, []);

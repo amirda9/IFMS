@@ -16,7 +16,9 @@ const columns = {
   region: {label: 'Region', size: 'w-[30%]'},
   station: {label: 'Station', size: 'w-[30%]'},
 };
-
+type Iprops={
+  regionId:string,networkId:string,stationId:string
+  }
 const StationAccessPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {regionidadmin, networkidadmin} = useSelector(
@@ -35,7 +37,7 @@ const StationAccessPage = () => {
     }[]
   >([]);
 
-  const params = useParams<{stationId: string}>();
+  const params = useParams<Iprops>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {http, network} = useSelector((state: any) => state);
 
@@ -50,7 +52,7 @@ const StationAccessPage = () => {
     }),
     initialRequests: request => {
       request('stationAccessList', {
-        params: {station_id: params.stationId!.split('_')[0]},
+        params: {station_id: params.stationId!},
       });
       request('userList', undefined);
     },
@@ -60,7 +62,7 @@ const StationAccessPage = () => {
         state.update!.httpRequestStatus === 'success'
       ) {
         request('stationAccessList', {
-          params: {station_id: params.stationId!.split('_')[0]},
+          params: {station_id: params.stationId!},
         });
       }
     },
@@ -82,11 +84,11 @@ const StationAccessPage = () => {
       access_types: AccessEnum.admin,
     });
     request('stationAddadmin', {
-      params: {station_id: params.stationId!.split('_')[0]},
+      params: {station_id: params.stationId!},
       data: {user_id: userAdmin || admin!.user.id!},
     });
     request('stationAccessUpdate', {
-      params: {station_id: params.stationId!.split('_')[0]},
+      params: {station_id: params.stationId!},
       data: {users: network?.stationviewers},
     });
     dispatch(setstationviewers([]));
@@ -170,8 +172,8 @@ const StationAccessPage = () => {
                 value={userAdmin || admin?.user.id}
                 disabled={
                   loggedInUser.role !== UserRole.SUPER_USER &&
-                  !networkidadmin.includes(params.stationId!.split('_')[2]) &&
-                  !regionidadmin.includes(params.stationId!.split('_')[1])
+                  !networkidadmin.includes(params.networkId!) &&
+                  !regionidadmin.includes(params.regionId!)
                 }
                 onChange={e => setUserAdmin(e.target.value)}
                 className="w-[70%]">

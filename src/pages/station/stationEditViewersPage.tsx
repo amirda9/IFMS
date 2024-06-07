@@ -8,11 +8,13 @@ import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 import {useDispatch} from 'react-redux';
 import {setstationviewers,setstationviewersstatus} from './../../store/slices/networkslice';
-
+type Iprops={
+  regionId:string,networkId:string,stationId:string
+  }
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
-  const params = useParams<{stationId: string}>();
+  const params = useParams<Iprops>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +30,7 @@ const RegionAccessPage = () => {
       update: state.http.stationAccessUpdate,
     }),
     initialRequests: request => {
-      request('stationAccessList', {params: {station_id: params.stationId!.split("_")[0]}});
+      request('stationAccessList', {params: {station_id: params.stationId!}});
       editor.current?.setAdminid(
         viewers?.data?.users.find(data => data.access == 'ADMIN')?.user.id ||
           '',

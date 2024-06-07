@@ -24,11 +24,14 @@ type regionlisttype = {
   time_created: string;
   time_updated: string;
 };
+type Iprops={
+  stationId:string,networkId:string
+  }
 const StationDetailPage = () => {
-  const params = useParams<{stationId: string}>();
+  const params = useParams<Iprops>();
   const dispatch = useDispatch();
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
-  const [selectedregion, setSelectedregion] = useState('');
+  const [selectedregion, setSelectedregion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [detaildata, setDetaildata] = useState<any>([]);
   const [stationdetail, setStationdetail] = useState<any>([]);
@@ -41,13 +44,14 @@ const StationDetailPage = () => {
   const {state, request} = useHttpRequest({
     selector: state => ({}),
   });
+console.log("⌚",params);
 
   const getnetworks = async () => {
     setLoading(true);
     try {
       const [getstationdetail, networkregionresponse] = await Promise.all([
-        $Get(`otdr/station/${params.stationId!.split('_')[0]}`),
-        $Get(`otdr/region/network/${params.stationId!.split('_')[1]}`),
+        $Get(`otdr/station/${params.stationId!}`),
+        $Get(`otdr/region/network/${params.networkId!}`),
       ]);
 
       if (getstationdetail?.status == 200) {
@@ -92,9 +96,9 @@ const StationDetailPage = () => {
       onSubmit={async values => {
         try {
           const response = await $Put(
-            `otdr/station/${params.stationId!.split('_')[0]}`,
+            `otdr/station/${params.stationId!}`,
             {
-              region_id: selectedregion.length > 0 ? selectedregion : null,
+              region_id: selectedregion,
               name: values.name,
               longitude: Number(values.longitude),
               latitude: Number(values.latitude),
@@ -105,20 +109,23 @@ const StationDetailPage = () => {
           if (response?.status == 200) {
             dispatch(
               updatedefaultStationName({
-                networkid: params.stationId!.split('_')[1],
+                networkid: params.networkId!,
                 regionid: selectedregion,
-                stationid: params.stationId!.split('_')[0],
+                stationid: params.stationId!,
                 stationname: values.name,
               }),
             );
 
             navigate(
-              `/stations/${params.stationId!.split('_')[0]}_${
-                params.stationId!.split('_')[1]
+              `/stations/${params.stationId!}/${
+                params.networkId!
               }/defaultstationDetailPage`,
             );
           }
-        } catch (error) {}
+        } catch (error) {
+          console.log(`error is :${error}`);
+          
+        }
       }}
       validationSchema={stationSchema}>
       <Form>
@@ -194,7 +201,7 @@ const StationDetailPage = () => {
           </div>
           <div className="mt-6 flex flex-row gap-x-4 self-end">
             {loggedInUser.role === UserRole.SUPER_USER ||
-            networkidadmin.includes(params.stationId!.split('_')[1]) ? (
+            networkidadmin.includes(params.networkId!) ? (
               <SimpleBtn type="submit">Save</SimpleBtn>
             ) : null}
             <SimpleBtn link to="../">

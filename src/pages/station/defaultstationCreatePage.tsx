@@ -50,7 +50,7 @@ const defaultStationDetailPage = () => {
             navigate(
               `/stations/${
                 responsedata.station_id
-              }_${params.networkid!}/defaultstationDetailPage`,
+              }/${params.networkid!}/defaultstationDetailPage`,
             );
           }
         } catch (error) {}

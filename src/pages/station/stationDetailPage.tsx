@@ -33,8 +33,11 @@ type regionlisttype = {
   time_created: string;
   time_updated: string;
 };
+type Iprops={
+  regionId:string,networkId:string,stationId:string
+  }
 const StationDetailPage = () => {
-  const params = useParams<{stationId: string}>();
+  const params = useParams<Iprops>();
   const dispatch = useDispatch();
   const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
@@ -42,12 +45,12 @@ const StationDetailPage = () => {
   const [detaildata, setDetaildata] = useState<any>([]);
   const [stationdetail, setStationdetail] = useState<any>([]);
   const [selectedregion, setSelectedregion] = useState(
-    params.stationId!.split('_')[1],
+    params.regionId!
   );
   const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const [defaultregionkname, setDefaultregionname] = useState('');
   const [selectenetwork, setSelectednetwork] = useState(
-    params.stationId!.split('_')[2],
+    params.networkId!
   );
 
   const {networkidadmin, regionidadmin} = useSelector(
@@ -62,8 +65,8 @@ const StationDetailPage = () => {
         setLoading(true);
         try {
           const [getstationdetail, networkregionresponse] = await Promise.all([
-            $Get(`otdr/station/${params.stationId!.split('_')[0]}`),
-            $Get(`otdr/region/network/${params.stationId!.split('_')[2]}`),
+            $Get(`otdr/station/${params.stationId!}`),
+            $Get(`otdr/region/network/${params.networkId!}`),
           ]);
 
           if (getstationdetail?.status == 200) {
@@ -87,7 +90,7 @@ const StationDetailPage = () => {
                   network_id: string;
                   time_created: string;
                   time_updated: string;
-                }) => data.id == params.stationId!.split('_')[1],
+                }) => data.id == params.regionId!
               )?.name || 'select';
             setDefaultregionname(Defaultegionname);
             setRegionlist(networkregionresponsedata);
@@ -121,7 +124,7 @@ const StationDetailPage = () => {
       onSubmit={async values => {
         try {
           const response = await $Put(
-            `otdr/station/${params.stationId!.split('_')[0]}`,
+            `otdr/station/${params.stationId!}`,
             {
               network_id: selectenetwork,
               region_id: selectedregion,
@@ -138,16 +141,16 @@ const StationDetailPage = () => {
             dispatch(
               updateStationName({
                 newregionid: selectedregion,
-                networkid: params.stationId!.split('_')[2],
-                regionid: params.stationId!.split('_')[1],
-                stationid: params.stationId!.split('_')[0],
+                networkid: params.networkId!,
+                regionid: params.regionId!,
+                stationid: params.stationId!,
                 stationname: values.name,
               }),
             );
 
             navigate(
-              `/stations/${params.stationId!.split('_')[0]}_${selectedregion}_${
-                params.stationId!.split('_')[2]
+              `/stations/${params.stationId!}/${selectedregion}/${
+                params.networkId!
               }`,
             );
           }else{
@@ -255,8 +258,8 @@ const StationDetailPage = () => {
           </div>
           <div className="flex flex-row gap-x-4 self-end">
             {loggedInUser.role === UserRole.SUPER_USER ||
-            networkidadmin.includes(params.stationId!.split('_')[2]) ||
-            regionidadmin.includes(params.stationId!.split('_')[1]) ? (
+            networkidadmin.includes(params.networkId!) ||
+            regionidadmin.includes(params.regionId!) ? (
               <SimpleBtn type="submit">Save</SimpleBtn>
             ) : null}
 

@@ -69,7 +69,9 @@ function App() {
               Component={pages.defaultregionemptypage}
             />
 
-            <Route path=":regionId/:networkId" Component={pages.RegionEmptyPage}>
+            <Route
+              path=":regionId/:networkId"
+              Component={pages.RegionEmptyPage}>
               <Route path="" Component={pages.RegionDetailPage} />
               <Route path="access" Component={pages.RegionAccessPage} />
               <Route path="stations" Component={pages.RegionStationsPage} />
@@ -79,28 +81,40 @@ function App() {
 
           <Route path="/stations" Component={pages.StationsPage}>
             <Route
-              path=":stationId/edit-access"
+              path=":stationId/:regionId/:networkId/edit-access"
+              Component={pages.StationEditViewerPage}
+            />
+                <Route
+              path=":stationId/:networkId/edit-access"
               Component={pages.StationEditViewerPage}
             />
             <Route
-              path="create/:regionid"
+              path="create/:regionId/:networkId"
               Component={pages.StationCreatePage}
             />
             <Route
               path="createdefault/:networkid"
               Component={pages.defaultstationCreatePage}
             />
-            <Route path=":stationId" Component={pages.StationEmptyPage}>
-              <Route path="" Component={pages.StationDetailPage} />
+            <Route
+              path=":stationId/:networkId"
+              Component={pages.StationEmptyPage}>
               <Route
                 path="defaultstationDetailPage"
                 Component={pages.defaultStationDetailPage}
               />
-
-              <Route
+                 <Route
                 path="access/defaultstationDetailPage"
                 Component={pages.StationAccessPage}
               />
+            </Route>
+            
+            <Route
+              path=":stationId/:regionId/:networkId"
+              Component={pages.StationEmptyPage}>
+              <Route path="" Component={pages.StationDetailPage} />
+
+           
               <Route path="access" Component={pages.StationAccessPage} />
             </Route>
           </Route>

@@ -632,7 +632,7 @@ dispatch(chageLoading(false));
                                 <Items
                                   key={Number(regionsdata.id)}
                                   to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
-                                  createurl={`/stations/create/${regionsdata.id}_${networkdata.id}`}
+                                  createurl={`/stations/create/${regionsdata.id}/${networkdata.id}`}
                                   canDelete={false}
                                   canAdd={
                                     loggedInUser.role === UserRole.SUPER_USER ||
@@ -668,7 +668,7 @@ dispatch(chageLoading(false));
                                       ?.stations.map((stationsdata, index) => (
                                         <Items
                                           key={index + stationsdata.id}
-                                          to={`/stations/${stationsdata.id}_${regionsdata.id}_${networkdata.id}`}
+                                          to={`/stations/${stationsdata.id}/${regionsdata.id}/${networkdata.id}`}
                                           selected={false}
                                           canDelete={true}
                                           onDelete={() =>
@@ -886,7 +886,7 @@ dispatch(chageLoading(false));
                                   ?.stations.map((stationsdata, index) => (
                                     <Items
                                       key={stationsdata.id + stationsdata.id}
-                                      to={`/stations/${stationsdata.id}_${networkdata.id}/defaultstationDetailPage`}
+                                      to={`/stations/${stationsdata.id}/${networkdata.id}/defaultstationDetailPage`}
                                       canAdd={false}
                                       disabledcheckbox={
                                         loggedInUser.role !==

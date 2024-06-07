@@ -1139,7 +1139,7 @@ const networktreeslice = createSlice({
     },
     // -------------------------------------------------------------
     updatedefaultStationName: (state, action: updatedefaultStationtype) => {
-      console.log('🤑', action.payload.regionid);
+      console.log('🤑', action.payload);
       const regionstationsCopy = deepcopy(state.regionstations);
       let defaultregionstationsCopy = deepcopy(state.defaultregionstations);
       const findstationwithnetworkid = state.defaultregionstations.findIndex(
@@ -1147,10 +1147,10 @@ const networktreeslice = createSlice({
       );
       const findstationwithid = state.defaultregionstations[
         findstationwithnetworkid
-      ].stations.findIndex(data => data.id == action.payload.stationid);
+      ]?.stations?.findIndex(data => data.id == action.payload.stationid);
 
-      if (action?.payload?.regionid?.length! > 0) {
-        defaultregionstationsCopy[findstationwithnetworkid].stations.splice(
+      if (action?.payload?.regionid  != null) {
+        defaultregionstationsCopy[findstationwithnetworkid]?.stations?.splice(
           findstationwithid,
           1,
         );
@@ -1161,7 +1161,7 @@ const networktreeslice = createSlice({
             data.regionid == action.payload.regionid,
         );
         if (findregionstations > -1) {
-          regionstationsCopy[findregionstations].stations.push({
+          regionstationsCopy[findregionstations]?.stations?.push({
             name: action.payload.stationname,
             id: action.payload.stationid,
           });

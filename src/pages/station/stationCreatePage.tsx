@@ -17,9 +17,13 @@ const stationSchema = Yup.object().shape({
   longitude: Yup.string().required('Please enter longitude'),
   // region: Yup.string().required('Please select region'),
 });
+
+type Iprops={
+  regionId:string,networkId:string
+  }
 const StationDetailPage = () => {
   const dispatch = useDispatch();
-  const params = useParams();
+  const params = useParams<Iprops>();
   console.log(params, 'params');
 
   const navigate = useNavigate();
@@ -29,7 +33,7 @@ const StationDetailPage = () => {
     }),
     initialRequests: () => {
       request('regionList', {
-        params: {network_id: params.regionid?.split('_')[1]!},
+        params: {network_id: params.networkId!},
       });
     },
   });
@@ -50,17 +54,17 @@ const StationDetailPage = () => {
             description: values.description,
             longitude: values.longitude,
             latitude: values.latitude,
-            region_id: params.regionid?.split('_')[0],
+            region_id: params.regionId!,
             model: 'cables',
-            network_id: params.regionid?.split('_')[1],
+            network_id: params.networkId!,
           });
           const responsedata = await response?.json();
           if (response?.status == 200) {
             // we should update the network tree
             dispatch(
               createStation({
-                networkid: params.regionid?.split('_')[1]!,
-                regionid: params.regionid?.split('_')[0]!,
+                networkid: params.networkId!,
+                regionid: params.regionId!,
                 stationid: responsedata.station_id,
                 stationname: values.name,
               }),
@@ -68,9 +72,7 @@ const StationDetailPage = () => {
             // newregionid: string;
 
             navigate(
-              `/stations/${responsedata.station_id}_${params.regionid?.split(
-                '_',
-              )[0]!}_${params.regionid?.split('_')[1]!}`,
+              `/stations/${responsedata.station_id}/${params.regionId!}/${params.networkId!}`,
             );
           }
         } catch (error) {}
