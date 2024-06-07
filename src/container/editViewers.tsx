@@ -49,13 +49,14 @@ export type EditorRefType = {
   setAdminid: (values: string) => void;
   setAditablebycurrentuserList: (values: string[]) => void;
 };
-type Iprops={
-  regionId:string,networkId:string,stationId?:string,linkId?:string
-  }
+type Iprops = {
+  regionId: string;
+  networkId: string;
+  stationId?: string;
+  linkId?: string;
+};
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
   const params = useParams<Iprops>();
-console.log("🚆",params);
-
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
   );
@@ -103,8 +104,7 @@ console.log("🚆",params);
         await $Get(`auth/users/`),
         $Get(`otdr/network/${params.networkId!}/access`),
       ]);
-      // const listuser = await $Get(`auth/users/`);
-      //  const listacsessuser=await $Get(`otdr/network/${Object.entries(params)[0][1]}/access`)
+
       const listuserdata: any = await listuser?.json();
       const listacsessuserdata = await listacsessuser?.json();
 
@@ -129,7 +129,6 @@ console.log("🚆",params);
   useEffect(() => {
     getuserlist();
   }, [state.group]);
-
 
   const [mount, setmount] = useState(false);
   const [usertabselected, setUsertabselected] = useState('User');
@@ -186,8 +185,6 @@ console.log("🚆",params);
     [state.values, state.group, state.Adminid],
   );
 
-
-
   const changeSelect = (side: 'left' | 'right', id?: string) => (key?: any) => {
     const allvalues = [...state.values];
     const index = allvalues.indexOf(id!);
@@ -215,8 +212,6 @@ console.log("🚆",params);
     });
   };
 
-
-  
   const group1 = groups?.data;
 
   const groupList =
@@ -309,37 +304,11 @@ console.log("🚆",params);
 
   let type = window.location.href.split('/')[3];
   let isnetworkadmin = useMemo(() => {
-    if (type == 'networks') {
-      return networkidadmin.includes(Object.entries(params)[0][1]);
-    } else if (type == 'regions') {
-      return networkidadmin.includes(
-        Object.entries(params)[0][1]?.split('_')[1],
-      );
-    } else if (type == 'stations') {
-      return networkidadmin.includes(
-        Object.entries(params)[0][1]?.split('_')[2],
-      );
-    } else{
-      return networkidadmin.includes(
-        Object.entries(params)[0][1]?.split('_')[2],
-      );
-    }
+    return networkidadmin.includes(params.networkId!);
   }, []);
 
   let isregionadmin = useMemo(() => {
-    if (type == 'regions') {
-      return regionidadmin.includes(
-        Object.entries(params)[0][1]?.split('_')[0],
-      );
-    } else if(type == 'stations') {
-      return regionidadmin.includes(
-        Object.entries(params)[0][1]?.split('_')[1],
-      );
-    } else {
-      return regionidadmin.includes(
-        Object.entries(params)[0][1]?.split('_')[1],
-      );
-    }
+    return regionidadmin.includes(params.regionId!);
   }, []);
 
   let canadd = (id: string) => {
@@ -347,19 +316,9 @@ console.log("🚆",params);
       if (isnetworkadmin || loggedInUser.role == UserRole.SUPER_USER) {
         return true;
       } else {
-        return false
+        return false;
       }
     } else if (type == 'regions') {
-      if (
-        isnetworkadmin ||
-        loggedInUser.role == UserRole.SUPER_USER ||
-        isregionadmin
-      ) {
-        return true;
-      } else{
-        return false
-      }
-    } else if (type == 'stations'){
       if (
         isnetworkadmin ||
         loggedInUser.role == UserRole.SUPER_USER ||
@@ -369,7 +328,17 @@ console.log("🚆",params);
       } else {
         return false;
       }
-    } else{
+    } else if (type == 'stations') {
+      if (
+        isnetworkadmin ||
+        loggedInUser.role == UserRole.SUPER_USER ||
+        isregionadmin
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
       if (
         isnetworkadmin ||
         loggedInUser.role == UserRole.SUPER_USER ||
@@ -389,28 +358,39 @@ console.log("🚆",params);
         (isnetworkadmin && state.editablebycurrentuserList.includes(id))
       ) {
         return true;
-      }else { return false}
+      } else {
+        return false;
+      }
     } else if (type == 'regions') {
       if (
         loggedInUser.role == UserRole.SUPER_USER ||
-        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) || (isregionadmin && state.editablebycurrentuserList.includes(id))
+        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) ||
+        (isregionadmin && state.editablebycurrentuserList.includes(id))
       ) {
         return true;
-      }else { return false}
-    } else if(type == 'stations'){
+      } else {
+        return false;
+      }
+    } else if (type == 'stations') {
       if (
         loggedInUser.role == UserRole.SUPER_USER ||
-        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) || (isregionadmin && state.editablebycurrentuserList.includes(id))
+        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) ||
+        (isregionadmin && state.editablebycurrentuserList.includes(id))
       ) {
         return true;
-      }else { return false}
+      } else {
+        return false;
+      }
     } else {
       if (
         loggedInUser.role == UserRole.SUPER_USER ||
-        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) || (isregionadmin && state.editablebycurrentuserList.includes(id))
+        (isnetworkadmin && state.editablebycurrentuserList.includes(id)) ||
+        (isregionadmin && state.editablebycurrentuserList.includes(id))
       ) {
         return true;
-      }else { return false}
+      } else {
+        return false;
+      }
     }
   };
 
@@ -436,9 +416,6 @@ console.log("🚆",params);
     };
   };
 
-
-
-  
   // ****************************
   return (
     <div className="mb-4 flex  h-full w-full flex-row items-center justify-between">
@@ -455,7 +432,9 @@ console.log("🚆",params);
                 <GroupItem
                   items={value.items}
                   label={value.label}
-                  onSelect={(id:string | number,check:boolean)=>changeSelect('left',id.toString())(check)}
+                  onSelect={(id: string | number, check: boolean) =>
+                    changeSelect('left', id.toString())(check)
+                  }
                   selected={state.selectLeft}
                 />
               </div>

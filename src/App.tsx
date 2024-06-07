@@ -49,11 +49,11 @@ function App() {
             path="/regions"
             Component={selectElement(auth, pages.RegionsPage)}>
             <Route
-              path=":regionId/edit-stationlist"
+              path=":regionId/:networkId/edit-stationlist"
               Component={pages.RegionstationlisteditPage}
             />
             <Route
-              path=":regionId/edit-linklist"
+              path=":regionId/:networkId/edit-linklist"
               Component={pages.RegionlinklisteditPage}
             />
             <Route

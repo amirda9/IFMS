@@ -23,7 +23,9 @@ const columns = {
   latitude: {label: 'Latitude', size: 'w-[22.5%]'},
   longitude: {label: 'Longitude', size: 'w-[22.5%]'},
 };
-
+type Iprops={
+  regionId:string,networkId:string
+  }
 const RegionStationsPage = () => {
   const [loading, setLoading] = useState(false);
   const {newregionstationlist, newregionstationliststatus} = useSelector(
@@ -50,7 +52,7 @@ const RegionStationsPage = () => {
     }[]
   >([]);
 
-  const params = useParams<{regionId: string}>();
+  const params = useParams<Iprops>();
   const {state, request} = useHttpRequest({
     selector: state => ({
       list: state.http.regionStationList,
@@ -62,10 +64,10 @@ const RegionStationsPage = () => {
     }),
     initialRequests: request => {
       request('regionStationList', {
-        params: {region_id: params.regionId!.split('_')[0]},
+        params: {region_id: params.regionId!},
       });
       request('networklinks', {
-        params: {network_id: params.regionId!.split('_')[1]},
+        params: {network_id: params.networkId!},
       });
       request('allStations', undefined);
     },
@@ -77,7 +79,7 @@ const RegionStationsPage = () => {
           state.add!.httpRequestStatus === 'success')
       ) {
         request('regionStationList', {
-          params: {region_id: params.regionId!.split('_')[0]},
+          params: {region_id: params.regionId!},
         });
       }
     },
@@ -142,7 +144,7 @@ const RegionStationsPage = () => {
     setLoading(true);
     const defaultregionStationsCopy = deepcopy(defaultregionstations);
     const findefaultregionindex = defaultregionstations.findIndex(
-      data => data.networkid == params.regionId!.split('_')[1],
+      data => data.networkid == params.networkId!,
     );
 
     try {
@@ -187,7 +189,7 @@ const RegionStationsPage = () => {
       let regionstationsCopy: allregionstationstype[] =
         deepcopy(regionstations);
       const findregionindex = regionstations.findIndex(
-        data => data.regionid == params.regionId!.split('_')[0],
+        data => data.regionid == params.regionId!,
       );
 
       let first = state?.list?.data || [];
@@ -196,13 +198,13 @@ const RegionStationsPage = () => {
         const [append, remove] = await Promise.all([
           $Post(
             `otdr/region/${
-              params.regionId!.split('_')[0]
+              params.regionId!
             }/update_stations?action_type=append`,
             {stations_id: appenddata.map(data => data.id)},
           ),
           $Post(
             `otdr/region/${
-              params.regionId!.split('_')[0]
+              params.regionId!
             }/update_stations?action_type=remove`,
             {stations_id: removedata.map(data => data.id)},
           ),
@@ -221,8 +223,8 @@ const RegionStationsPage = () => {
           for (let k = 0; k < regionstationsCopy.length; k++) {
             if (
               regionstationsCopy[k].networkid ==
-                params.regionId!.split('_')[1] &&
-              regionstationsCopy[k].regionid != params.regionId!.split('_')[0]
+                params.networkId!  &&
+              regionstationsCopy[k].regionid != params.regionId!
             ) {
               for (let x = 0; x < appenddata.length; x++) {
                 let newlist = regionstationsCopy[k].stations.filter(
@@ -268,7 +270,7 @@ const RegionStationsPage = () => {
               });
             } else {
               defaultregionStationsCopy.push({
-                networkid: params.regionId!.split('_')[1],
+                networkid: params.networkId!,
                 stations: [
                   {
                     id: removedata[s].id,
@@ -285,7 +287,7 @@ const RegionStationsPage = () => {
         dispatch(setnewregionstationlist([]));
       dispatch(
         setdefaultRegionstations({
-          networkid: params.regionId!.split('_')[1],
+          networkid: params.networkId!,
           stations: defaultregionStationsCopy[findefaultregionindex]?.stations,
         }),
       );
@@ -315,13 +317,13 @@ const RegionStationsPage = () => {
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
         {loggedInUser.role === UserRole.SUPER_USER ||
-        networkidadmin.includes(params.regionId!.split('_')[1]) ? (
+        networkidadmin.includes(params.networkId!) ? (
           <SimpleBtn link to="../edit-stationlist">
             Edit Stations List
           </SimpleBtn>
         ) : null}
         {loggedInUser.role === UserRole.SUPER_USER ||
-        networkidadmin.includes(params.regionId!.split('_')[1]) ? (
+        networkidadmin.includes(params.networkId!) ? (
           <SimpleBtn onClick={save}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn

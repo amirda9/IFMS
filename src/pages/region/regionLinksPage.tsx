@@ -22,7 +22,9 @@ const columns = {
   source: {label: 'Source', size: 'w-[30%]'},
   destination: {label: 'Destination', size: 'w-[30%]'},
 };
-
+type Iprops={
+  regionId:string,networkId:string
+  }
 const RegionLinksPage = () => {
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const dispatch = useDispatch();
@@ -59,7 +61,7 @@ const RegionLinksPage = () => {
   useEffect(() => {
     getrole();
   }, []);
-  const params = useParams<{regionId: string}>();
+  const params = useParams<Iprops>();
 
   const {
     state: {list},
@@ -72,7 +74,7 @@ const RegionLinksPage = () => {
     }),
     initialRequests: request => {
       request('regionLinkList', {
-        params: {region_id: params.regionId!.split('_')[0]},
+        params: {region_id: params.regionId!},
       });
     },
     onUpdate: (lastState, state) => {
@@ -81,7 +83,7 @@ const RegionLinksPage = () => {
         state.add!.httpRequestStatus === 'success'
       ) {
         request('regionLinkList', {
-          params: {region_id: params.regionId!.split('_')[0]},
+          params: {region_id: params.regionId!},
         });
       }
     },
@@ -97,7 +99,7 @@ const RegionLinksPage = () => {
   const getregionlinklist = async () => {
     try {
       const response = await $Get(
-        `otdr/region/${params.regionId!.split('_')[0]}/links`,
+        `otdr/region/${params.regionId!}/links`,
       );
       const responsedata = await response?.json();
       const newresponsedata = responsedata.map((data: any) => ({
@@ -206,12 +208,12 @@ const RegionLinksPage = () => {
     }
 
     const findregionlinkindex = regionLinks.findIndex(
-      data => data.regionid == params.regionId!.split('_')[0],
+      data => data.regionid == params.regionId!,
     );
 
     const defaultregionLinksCopy = deepcopy(defaultregionLinks);
     const findefaultregionindex = defaultregionLinks.findIndex(
-      data => data.networkid == params.regionId!.split('_')[1],
+      data => data.networkid == params.networkId!,
     );
 
     let first = list?.data || [];
@@ -220,13 +222,13 @@ const RegionLinksPage = () => {
       const [addregionLinkList, removeregionLinkList] = await Promise.all([
         $Post(
           `otdr/region/${
-            params.regionId!.split('_')[0]
+            params.regionId!
           }/update_links?action_type=append`,
           {links_id: appenddata.map(data => data.id) || []},
         ),
         $Post(
           `otdr/region/${
-            params.regionId!.split('_')[0]
+            params.regionId!
           }/update_links?action_type=remove`,
           {links_id: removedata.map(data => data.id) || []},
         ),
@@ -250,8 +252,8 @@ const RegionLinksPage = () => {
           ];
         } else {
           regionLinksCopy.push({
-            networkid: params.regionId!.split('_')[1],
-            regionid: params.regionId!.split('_')[0],
+            networkid: params.networkId!,
+            regionid: params.regionId!,
             links: [
               ...appenddata.map(data => ({
                 id: data.id,
@@ -267,8 +269,8 @@ const RegionLinksPage = () => {
 
         for (let k = 0; k < regionLinksCopy.length; k++) {
           if (
-            regionLinksCopy[k].networkid == params.regionId!.split('_')[1] &&
-            regionLinksCopy[k].regionid != params.regionId!.split('_')[0]
+            regionLinksCopy[k].networkid == params.networkId! &&
+            regionLinksCopy[k].regionid != params.regionId!
           ) {
             for (let x = 0; x < appenddata.length; x++) {
               let newlist = regionLinksCopy[k]?.links?.filter(
@@ -321,7 +323,7 @@ const RegionLinksPage = () => {
             });
           } else {
             defaultregionLinksCopy.push({
-              networkid: params.regionId!.split('_')[1],
+              networkid: params.networkId!,
               links: [
                 {
                   id: removedata[s].id,
@@ -333,7 +335,7 @@ const RegionLinksPage = () => {
         }
         dispatch(
           setdefaultRegionLinks({
-            networkid: params.regionId!.split('_')[1],
+            networkid: params.networkId!,
             links: defaultregionLinksCopy[findefaultregionindex]?.links,
           }),
         );

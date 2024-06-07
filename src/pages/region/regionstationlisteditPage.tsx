@@ -29,9 +29,12 @@ const columns = {
   latitude: {label: 'latitude', size: 'w-[20%]', sort: true},
   longitude: {label: 'longitude', size: 'w-[20%]', sort: true},
 };
+type Iprops={
+  regionId:string,networkId:string
+  }
 // *****************************************************************************
 const RegionstationlisteditPage = () => {
-  const params = useParams<{regionId: string}>();
+  const params = useParams<Iprops>();
   const [leftloading, setLeftloading] = useState(false);
 
   const navigate = useNavigate();
@@ -48,10 +51,10 @@ const RegionstationlisteditPage = () => {
       setLeftloading(true);
       try {
         let networlstationurl = `otdr/station/network/${
-          params.regionId!.split('_')[1]
+          params.networkId!
         }`;
         let regionstationresurl = `otdr/region/${
-          params.regionId!.split('_')[0]
+          params.regionId!
         }/stations`;
 
         const [networkstations, regionstations] = await Promise.all([

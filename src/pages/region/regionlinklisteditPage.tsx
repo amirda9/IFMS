@@ -35,6 +35,10 @@ function removeCommon(arr1: any, arr2: any) {
     });
   });
 }
+
+type Iprops={
+  regionId:string,networkId:string
+  }
 const columns = {
   select: {label: '', size: 'w-[6%]'},
   index: {label: 'Index', size: 'w-[10%]'},
@@ -46,6 +50,7 @@ const columns = {
 const RegionlinklisteditPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const params = useParams<Iprops>();
   const {state} = useHttpRequest({
     selector: state => ({
       regionLinkList: state.http.regionLinkList,
@@ -53,10 +58,10 @@ const RegionlinklisteditPage = () => {
     }),
     initialRequests: request => {
       request('regionLinkList', {
-        params: {region_id: params.regionId!.split('_')[0]},
+        params: {region_id: params.regionId!},
       });
       request('networklinks', {
-        params: {network_id: params.regionId!.split('_')[1]},
+        params: {network_id: params.networkId!},
       });
     },
   });
@@ -67,7 +72,7 @@ const RegionlinklisteditPage = () => {
   const [lefttablesorte, setLefttablesort] = useState(false);
   const [reighttablesorte, setreighttablesort] = useState(false);
   const [loading, setloading] = useState(false);
-  const params = useParams<{regionId: string}>();
+ 
   const [mount, setmount] = useState(false);
   const [leftlinksorted, setLeftlinksorted] = useState<UserTableType[]>([]);
   const [reightlinksorted, setReightlinksorted] = useState<UserTableType[]>([]);
@@ -79,10 +84,10 @@ const RegionlinklisteditPage = () => {
       try {
         setloading(true);
         const networklisturl = `otdr/link/network/${
-          params.regionId!.split('_')[1]
+          params.networkId!
         }`;
         const regionlisturl = `otdr/region/${
-          params.regionId!.split('_')[0]
+          params.regionId!
         }/links`;
         const [networklist, regionlist] = await Promise.all([
           $Get(networklisturl),
