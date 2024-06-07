@@ -27,12 +27,16 @@ type networklisttype = {
   time_updated: string;
 };
 
+type regionId={
+regionId:string,networkId:string
+}
 const RegionDetailPage = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {networkidadmin} = useSelector((state: any) => state.networktree);
-  const params = useParams<{regionId: string}>();
+  const params = useParams<regionId>();
+
   const [regiondata, setregiondata] = useState<any>();
   const login = localStorage.getItem('login');
   const [selectenetwork, setSelectednetwork] = useState('');
@@ -66,8 +70,8 @@ const RegionDetailPage = () => {
     onSubmit: async values => {
       try {
         const response = await $Put(
-          `otdr/region/${params.regionId!.split('_')[0]}`,
-          {...values, network_id: params.regionId!.split('_')[1]},
+          `otdr/region/${params?.regionId}`,
+          {...values, network_id: params?.networkId},
         );
         console.log('response', response);
 
@@ -75,20 +79,23 @@ const RegionDetailPage = () => {
           toast('It was done successfully', {type: 'success', autoClose: 1000});
           dispatch(
             updateregionname({
-              newnetworkid:params.regionId!.split('_')[1],
-              networkid: regiondata?.network_id,
-              regionid: params.regionId!.split('_')[0],
+              newnetworkid:params!.networkId!,
+              networkid: regiondata!.network_id,
+              regionid: params?.regionId!,
               regionname: values.name!,
             }),
           );
           navigate(
-            `/regions/${params.regionId!.split('_')[0]}_${selectenetwork}`,
+            `/regions/${params?.regionId}/${params.networkId}`,
           );
         } else{
-          toast('Encountered an error', {type: 'error', autoClose: 1000});
+          toast('Encountered an e77777rror', {type: 'error', autoClose: 1000});
         }
       } catch (error) {
-        toast('Encountered an error', {type: 'error', autoClose: 1000});
+        console.log( `erorr is :${error}`);
+        
+       
+        toast('Encountered an er66ror', {type: 'error', autoClose: 1000});
       }
     },
     validationSchema: regionSchema,
@@ -99,7 +106,7 @@ const RegionDetailPage = () => {
       try {
         setLoading(true);
         const [getstationdetail] = await Promise.all([
-          $Get(`otdr/region/${params.regionId!.split('_')[0]}`),
+          $Get(`otdr/region/${params?.regionId}`),
           // $Get(`otdr/network`),
         ]);
 

@@ -17,7 +17,9 @@ const columns = {
   region: {label: 'Region', size: 'w-[30%]'},
   station: {label: 'Station', size: 'w-[30%]'},
 };
-
+type regionId={
+  regionId:string,networkId:string
+  }
 const RegionAccessPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,7 +38,7 @@ const RegionAccessPage = () => {
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const accesstoken = JSON.parse(login || '')?.data.access_token;
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-  const params = useParams<{regionId: string}>();
+  const params = useParams<regionId>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
     request,
@@ -49,7 +51,7 @@ const RegionAccessPage = () => {
     }),
     initialRequests: request => {
       request('regionAccessList', {
-        params: {region_id: params.regionId!.split('_')[0]},
+        params: {region_id: params!.regionId!},
       });
       request('userList', undefined);
     },
@@ -59,7 +61,7 @@ const RegionAccessPage = () => {
         update?.httpRequestStatus === 'success'
       ) {
         request('regionAccessList', {
-          params: {region_id: params.regionId!.split('_')[0]},
+          params: {region_id: params!.regionId!},
         });
         navigate('../access', {replace: true, relative: 'path'});
       }
@@ -84,11 +86,11 @@ const RegionAccessPage = () => {
       access_types: AccessEnum.admin,
     });
     request('regionAdminUpdate', {
-      params: {region_id: params.regionId!.split('_')[0]},
+      params: {region_id: params!.regionId!},
       data: {user_id: userAdmin || admin!.user.id!},
     });
     request('regionAccessUpdate', {
-      params: {region_id: params.regionId!.split('_')[0]},
+      params: {region_id: params!.regionId!},
       data: {users: network?.regionviewers},
     });
     dispatch(setregionviewersstatus(false)), dispatch(setregionviewers([]));
@@ -157,7 +159,7 @@ const RegionAccessPage = () => {
             Region Admin
           </span>
           <Select
-            disabled={loggedInUser.role !== UserRole.SUPER_USER && !networkidadmin.includes(params.regionId!.split('_')[1])}
+            disabled={loggedInUser.role !== UserRole.SUPER_USER && !networkidadmin.includes(params!.networkId!)}
             className="w-[70%]"
             value={userAdmin || admin?.user.id}
             onChange={event => {

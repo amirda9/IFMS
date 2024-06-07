@@ -57,7 +57,7 @@ function App() {
               Component={pages.RegionlinklisteditPage}
             />
             <Route
-              path=":regionId/edit-access"
+              path=":regionId/:networkId/edit-access"
               Component={pages.RegionAccessEditPage}
             />
             <Route
@@ -69,7 +69,7 @@ function App() {
               Component={pages.defaultregionemptypage}
             />
 
-            <Route path=":regionId" Component={pages.RegionEmptyPage}>
+            <Route path=":regionId/:networkId" Component={pages.RegionEmptyPage}>
               <Route path="" Component={pages.RegionDetailPage} />
               <Route path="access" Component={pages.RegionAccessPage} />
               <Route path="stations" Component={pages.RegionStationsPage} />

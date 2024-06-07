@@ -49,8 +49,12 @@ export type EditorRefType = {
   setAdminid: (values: string) => void;
   setAditablebycurrentuserList: (values: string[]) => void;
 };
+type Iprops={
+  regionId:string,networkId:string,stationId?:string,linkId?:string
+  }
 const EditViewers = forwardRef<EditorRefType>((_, ref) => {
-  const params = useParams();
+  const params = useParams<Iprops>();
+console.log("🚆",params);
 
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
@@ -97,7 +101,7 @@ const EditViewers = forwardRef<EditorRefType>((_, ref) => {
     try {
       const [listuser, listacsessuser] = await Promise.all([
         await $Get(`auth/users/`),
-        $Get(`otdr/network/${Object.entries(params)[0][1]}/access`),
+        $Get(`otdr/network/${params.networkId!}/access`),
       ]);
       // const listuser = await $Get(`auth/users/`);
       //  const listacsessuser=await $Get(`otdr/network/${Object.entries(params)[0][1]}/access`)

@@ -600,7 +600,7 @@ dispatch(chageLoading(false));
                           <div key={index} className="full">
                             <Items
                               key={regionsdata.id}
-                              to={`/regions/${regionsdata.id}_${networkdata.id}`}
+                              to={`/regions/${regionsdata.id}/${networkdata.id}`}
                               selected={false}
                               canAdd={false}
                               canDelete={

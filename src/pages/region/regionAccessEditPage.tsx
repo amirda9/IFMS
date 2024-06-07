@@ -8,12 +8,15 @@ import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 import {setregionviewers,setregionviewersstatus} from './../../store/slices/networkslice';
 import {useDispatch, useSelector} from 'react-redux';
+type Iprops={
+  regionId:string,networkId:string
+  }
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
   const {regionDetail} = useSelector((state: any) => state.http);
 
   const editor = useRef<EditorRefType>(null);
-  const params = useParams<{regionId: string}>();
+  const params = useParams<Iprops>();
   const navigate = useNavigate();
   const {
     request,
@@ -24,7 +27,7 @@ const RegionAccessPage = () => {
       update: state.http.regionAccessUpdate,
     }),
     initialRequests: request => {
-      request('regionAccessList', {params: {region_id: params.regionId!.split('_')[0]}});
+      request('regionAccessList', {params: {region_id: params!.regionId!}});
       editor.current?.setAdminid(
         viewers?.data!.users.find(data => data.access == 'ADMIN')?.user.id ||
           '',
