@@ -187,10 +187,11 @@ const RtuPortsPage: FC = () => {
     if (alldeletedports.length > 0) {
     
       try {
-        const promises = alldeletedports.map((data: string) =>
-          $Delete(`otdr/rtu/${data}`),
-        );
-        const results = await Promise.all(promises);
+        const deleteports=await $Delete(`otdr/rtu/${params.rtuId}/ports`,alldeletedports)
+        // const promises = alldeletedports.map((data: string) =>
+        //   $Delete(`otdr/rtu/${data}/ports`,[]),
+        // );
+        // const results = await Promise.all(promises);
       } catch (error) {
         console.log(error);
       }
@@ -401,8 +402,8 @@ const RtuPortsPage: FC = () => {
       });
     }
   };
-  console.log('allupdatesports', allupdatesports);
 
+  console.log('alldeletedports', alldeletedports);
   if (loading) {
     return <h1>Loading ...</h1>;
   }
