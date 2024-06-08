@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Outlet, useNavigate} from 'react-router-dom';
+import {Outlet, useLocation, useNavigate} from 'react-router-dom';
 import {SidebarItem} from '~/components';
 import {RootState} from '~/store';
 import {deepcopy} from '~/util';
@@ -37,7 +37,7 @@ import {BsPlusLg} from 'react-icons/bs';
 import Mainloading from '~/components/loading/mainloading';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {UserRole} from '~/constant/users';
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 
 type ItemspROPS = {
   to: string;
@@ -70,9 +70,14 @@ const swalsetting: any = {
   confirmButtonText: 'Yes, delete it!',
 };
 
-function NetworktreeLayout({ children}:Iprops) {
+function NetworktreeLayout({children}: Iprops) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const pathname = window.location.pathname;
+
+  console.log('🛑', location.pathname);
+
   // const [showAllnetworks, setShowallnetworks] = useState(false);
   // const [allselectedId, setAllselectedId] = useState<string[]>([]);
   const [networkId, setNetworkId] = useState('');
@@ -240,7 +245,6 @@ function NetworktreeLayout({ children}:Iprops) {
   };
 
   const onclicklinks = async (networkid: string, id: string) => {
-
     let old = deepcopy(regionLinks);
     const alllinksurl = `otdr/region/${id}/links`;
     // const  getnetworkstationsurl=`otdr/station/network/${networkid}`;
@@ -294,7 +298,7 @@ function NetworktreeLayout({ children}:Iprops) {
     dispatch(setAllselectedId(id));
   };
 
-  const deletegroupsationds = async (regionid: string,networkid:string) => {
+  const deletegroupsationds = async (regionid: string, networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
@@ -313,7 +317,7 @@ function NetworktreeLayout({ children}:Iprops) {
 
           dispatch(
             deletegroupstation({
-              networkid:networkid,
+              networkid: networkid,
               regionid: regionid,
               stationsid: deletestationlist?.stationsID || [],
             }),
@@ -426,26 +430,22 @@ function NetworktreeLayout({ children}:Iprops) {
           const response = await $Delete(`otdr/region/${regionid}`);
           if (response?.status == 200) {
             dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
-            
           } else {
-            toast('Encountered an error', {type: 'error', autoClose: 1000});          }
+            toast('Encountered an error', {type: 'error', autoClose: 1000});
+          }
         } catch (error) {
           console.log(`delete region Error is:${error}`);
-          
         } finally {
           dispatch(chageLoading(false));
         }
-       
       }
     });
   };
 
-
-
-  const onclikdefaultStations=async (networkid: string) => {
+  const onclikdefaultStations = async (networkid: string) => {
     let allStations = [];
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
-    if(responsestation?.status == 200){
+    if (responsestation?.status == 200) {
       const responsestationData = await responsestation?.json();
       for (let i = 0; i < responsestationData.length; i++) {
         if (responsestationData[i].region_id == null) {
@@ -455,16 +455,16 @@ function NetworktreeLayout({ children}:Iprops) {
           });
         }
       }
-    } 
+    }
     dispatch(
       setdefaultRegionstations({networkid: networkid, stations: allStations}),
     );
-  }
+  };
 
-  const onclickdefaultlinks=async (networkid: string) => {
+  const onclickdefaultlinks = async (networkid: string) => {
     let allLinks = [];
     const responselink = await $Get(`otdr/link/network/${networkid}`);
-    if(responselink?.status == 200){
+    if (responselink?.status == 200) {
       const responselinkData = await responselink?.json();
       for (let j = 0; j < responselinkData.length; j++) {
         if (responselinkData[j].region_id == null) {
@@ -478,8 +478,7 @@ function NetworktreeLayout({ children}:Iprops) {
       }
       dispatch(setdefaultRegionLinks({networkid: networkid, links: allLinks}));
     }
-  }
-
+  };
 
   const Deletenetwork = async (networkid: string) => {
     Swal.fire(swalsetting).then(async result => {
@@ -490,23 +489,26 @@ function NetworktreeLayout({ children}:Iprops) {
             `otdr/network/${networkid}`,
           );
           if (deletenetworkresponse?.status == 200) {
-            toast('It was done successfully', {type: 'success', autoClose: 1000});
+            toast('It was done successfully', {
+              type: 'success',
+              autoClose: 1000,
+            });
             dispatch(deletenetwork(networkid));
             navigate('./');
-          } else{
+          } else {
             toast('Encountered an error', {type: 'error', autoClose: 1000});
           }
         } catch (error) {
           toast('Encountered an error', {type: 'error', autoClose: 1000});
           console.log(`delete network error is:${error}`);
-          
-        } finally{
-dispatch(chageLoading(false));
+        } finally {
+          dispatch(chageLoading(false));
         }
-      
       }
     });
   };
+  console.log('🚋', pathname);
+
   return (
     <>
       {/* <div className="flex h-[calc(100vh-120px)] opacity-0 w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
@@ -577,7 +579,11 @@ dispatch(chageLoading(false));
                   canDelete={loggedInUser.role === UserRole.SUPER_USER}
                   onDelete={() => Deletenetwork(networkdata.id)}
                   onclick={() => {
-                    dispatch(changegetdatadetailStatus(false))
+                    if (
+                      !location.pathname.includes(`/networks/${networkdata.id}`)
+                    ) {
+                      dispatch(changegetdatadetailStatus(false));
+                    }
                     dispatch(setSelectedid(networkdata.id)),
                       onclikitems(networkdata.id),
                       onclicknetwork(networkdata.id),
@@ -615,7 +621,13 @@ dispatch(chageLoading(false));
                                 Deleteregion(regionsdata.id, networkdata.id)
                               }
                               onclick={() => {
-                                dispatch(changegetdatadetailStatus(false))
+                                if (
+                                  !location.pathname.includes(
+                                    `/regions/${regionsdata.id}/${networkdata.id}`,
+                                  )
+                                ) {
+                                  dispatch(changegetdatadetailStatus(false));
+                                }
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(regionsdata.id);
                                 // onclickstations(networkdata.id, regionsdata.id);
@@ -677,7 +689,10 @@ dispatch(chageLoading(false));
                                           selected={false}
                                           canDelete={true}
                                           onDelete={() =>
-                                            deletegroupsationds(regionsdata.id,networkdata.id)
+                                            deletegroupsationds(
+                                              regionsdata.id,
+                                              networkdata.id,
+                                            )
                                           }
                                           disabledcheckbox={
                                             loggedInUser.role !==
@@ -708,7 +723,17 @@ dispatch(chageLoading(false));
                                           pluse={false}
                                           createurl={`/stations/create`}
                                           onclick={() => {
-                                            dispatch(changegetdatadetailStatus(false))
+                                            if (
+                                              !location.pathname.includes(
+                                                `/stations/${stationsdata.id}/${regionsdata.id}/${networkdata.id}`,
+                                              )
+                                            ) {
+                                              dispatch(
+                                                changegetdatadetailStatus(
+                                                  false,
+                                                ),
+                                              );
+                                            }
                                             dispatch(
                                               setSelectedid(stationsdata.id),
                                             ),
@@ -799,7 +824,17 @@ dispatch(chageLoading(false));
                                             )
                                             ?.linkID.includes(linksdata.id)}
                                           onclick={() => {
-                                            dispatch(changegetdatadetailStatus(false))
+                                            if (
+                                              !location.pathname.includes(
+                                                `/links/${linksdata.id}/${regionsdata.id}/${networkdata.id}`,
+                                              )
+                                            ) {
+                                              dispatch(
+                                                changegetdatadetailStatus(
+                                                  false,
+                                                ),
+                                              );
+                                            }
                                             dispatch(
                                               setSelectedid(linksdata.id),
                                             ),
@@ -831,8 +866,8 @@ dispatch(chageLoading(false));
                             )
                           }
                           onclick={() => {
-                            onclikitems(`${networkdata.id}${networkdata.id}&`)
-                              // onclickdefaltregion(networkdata.id);
+                            onclikitems(`${networkdata.id}${networkdata.id}&`);
+                            // onclickdefaltregion(networkdata.id);
                           }}
                           id={'ikuiuiu'}
                           name="Default Region"
@@ -873,7 +908,7 @@ dispatch(chageLoading(false));
                                   onclikitems(
                                     `&${networkdata.id}${networkdata.id}&`,
                                   );
-                                  onclikdefaultStations(networkdata.id)
+                                onclikdefaultStations(networkdata.id);
                                 // onclickstations(networkdata.id);
                               }}
                               id={`&${networkdata.id}${networkdata.id}&`}
@@ -924,7 +959,15 @@ dispatch(chageLoading(false));
                                       pluse={false}
                                       createurl={`/stations/create`}
                                       onclick={() => {
-                                        dispatch(changegetdatadetailStatus(false))
+                                        if (
+                                          !location.pathname.includes(
+                                            `/stations/${stationsdata.id}/${networkdata.id}/defaultstationDetailPage`,
+                                          )
+                                        ) {
+                                          dispatch(
+                                            changegetdatadetailStatus(false),
+                                          );
+                                        }
                                         dispatch(
                                           setSelectedid(stationsdata.id),
                                         ),
@@ -948,8 +991,8 @@ dispatch(chageLoading(false));
                                   onclikitems(
                                     `&${networkdata.id}&${networkdata.id}_Linkss`,
                                   );
-                                  onclickdefaultlinks(networkdata.id)
-                            //  onclicklinks(networkdata.id);
+                                onclickdefaultlinks(networkdata.id);
+                                //  onclicklinks(networkdata.id);
                               }}
                               createurl={`/links/createdefaultregionlink/${networkdata.id}`}
                               id={`&${networkdata.id}&${networkdata.id}&`}
@@ -1005,7 +1048,15 @@ dispatch(chageLoading(false));
                                         )
                                         ?.linkID.includes(linksdata.id)}
                                       onclick={() => {
-                                        dispatch(changegetdatadetailStatus(false))
+                                        if (
+                                          !location.pathname.includes(
+                                            `/links/${linksdata.id}/${networkdata.id}/defaultregionlinkdetailpage`,
+                                          )
+                                        ) {
+                                          dispatch(
+                                            changegetdatadetailStatus(false),
+                                          );
+                                        }
                                         dispatch(setSelectedid(linksdata.id)),
                                           onclikitems(linksdata.id);
                                       }}

@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Description, SimpleBtn} from '~/components';
 import {Form, Formik} from 'formik';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import {InputFormik, TextareaFormik} from '~/container';
 import {useNavigate} from 'react-router-dom';
-import {createnetwork} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, createnetwork} from './../../store/slices/networktreeslice';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
 const networkSchema = Yup.object().shape({
@@ -26,6 +26,10 @@ const NetworkCreatePage = () => {
       }
     },
   });
+
+  useEffect(()=>{
+    dispatch(changegetdatadetailStatus(false))
+  },[])
   return (
     <div className="flex w-full flex-col gap-4">
       <h1 className="text-md mb-4 font-bold">Create Network</h1>

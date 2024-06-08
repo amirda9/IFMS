@@ -1,56 +1,95 @@
 import {Description, SimpleBtn} from '~/components';
-import {useAppSelector, useHttpRequest} from '~/hooks';
+import {useAppSelector} from '~/hooks';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import * as Yup from 'yup';
-import {Request} from '~/hooks/useHttpRequest';
+
 import {
   changeNetworkname,
+  changegetdatadetailStatus,
   setNetworkidadmin,
 } from './../../store/slices/networktreeslice';
 import {getPrettyDateTime} from '~/util/time';
-import {useEffect} from 'react';
-import {$Put} from '~/util/requestapi';
+import {useEffect, useState} from 'react';
+import {$Get, $Put} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
+
+type networkdetailtype = {
+  id: string;
+  name: string;
+  time_created: string;
+  time_updated: string;
+  current_version: {
+    id: string;
+    network_id: string;
+    time_created: string;
+    description: string;
+    owner: {
+      id: string;
+      username: string;
+    };
+  };
+  versions: [
+    {
+      id: string;
+      network_id: string;
+      time_created: string;
+      description: string;
+      owner: {
+        id: string;
+        username: string;
+      };
+    },
+  ];
+  access: {
+    role: string;
+    access: string;
+  };
+  admin: {
+    id: string;
+    username: string;
+  };
+};
 const NetworkDetailPage = () => {
   const dispatch = useDispatch();
-  const login = localStorage.getItem('login');
-  const {networkDetail} = useSelector((state: any) => state.http);
+  const [loading, setLoaading] = useState<boolean>(false);
+  // const {networkDetail} = useSelector((state: any) => state.http);
   const params = useParams<{networkId: string}>();
+  const [networkdetail, setNetworkdetail] = useState<networkdetailtype>();
   const navigate = useNavigate();
-  const initialRequests = (request: Request) => {
-    request('networkDetail', {params: {networkId: params.networkId!}});
-  };
-
-  const {
-    state: {detail, viewers},
-    request,
-  } = useHttpRequest({
-    selector: state => ({
-      detail: state.http.networkDetail,
-      viewers: state.http.networkAccessList,
-    }),
-    initialRequests,
-  });
 
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   useEffect(() => {
-    if (detail?.data?.access?.access == 'ADMIN') {
-      dispatch(setNetworkidadmin(detail?.data?.id!));
-    }
+    const getnetworkdetail = async () => {
+      try {
+        setLoaading(true);
+        const networkresponse = await $Get(`otdr/network/${params.networkId!}`);
+        if (networkresponse?.status == 200) {
+          dispatch(changegetdatadetailStatus(true))
+          const networkresponseData = await networkresponse.json();
+          console.log('networkresponseData', networkresponseData);
+          setNetworkdetail(networkresponseData);
+        }
+      } catch (error) {
+        console.log(`error is :${error}`);
+      } finally {
+        setLoaading(false);
+      }
+    };
+    getnetworkdetail();
+
   }, []);
 
-  console.log('detail', detail);
 
-  if (detail?.httpRequestStatus !== 'success') {
-    return <>loading</>;
+  if (loading) {
+    return <h1>Loading...</h1>;
   }
 
   return (
@@ -58,10 +97,10 @@ const NetworkDetailPage = () => {
       <Formik
         enableReinitialize
         initialValues={{
-          name: detail!.data!.name,
+          name: networkdetail?.name!,
           description:
-            detail!.data!.versions.find(
-              version => version.id === detail!.data!.current_version.id,
+            networkdetail?.versions.find(
+              version => version.id === networkdetail?.current_version.id,
             )?.description || '',
         }}
         onSubmit={async values => {
@@ -72,11 +111,14 @@ const NetworkDetailPage = () => {
             );
             //we should update the networktree
             if (response?.status == 200) {
-              toast('It was done successfully', {type: 'success', autoClose: 1000});
+              toast('It was done successfully', {
+                type: 'success',
+                autoClose: 1000,
+              });
               dispatch(
                 changeNetworkname({id: params.networkId!, name: values.name}),
               );
-            }else{
+            } else {
               toast('Encountered an error', {type: 'error', autoClose: 1000});
             }
           } catch (error) {
@@ -100,17 +142,17 @@ const NetworkDetailPage = () => {
             </Description>
 
             <Description label="Created">
-              {getPrettyDateTime(detail.data!.time_created)}
+              {getPrettyDateTime(networkdetail?.time_created)}
             </Description>
 
             <Description label="Last Modified">
-              {getPrettyDateTime(detail.data!.time_updated)}
+              {getPrettyDateTime(networkdetail?.time_updated)}
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
             {loggedInUser.role === UserRole.SUPER_USER ||
-            networkDetail?.data?.access?.access == 'ADMIN' ? (
+            networkdetail?.access?.access == 'ADMIN' ? (
               <SimpleBtn type="submit">Save</SimpleBtn>
             ) : null}
 
