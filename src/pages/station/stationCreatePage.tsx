@@ -5,10 +5,11 @@ import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import Cookies from 'js-cookie';
-import {createStation} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, createStation} from './../../store/slices/networktreeslice';
 import {networkExplored} from '~/constant';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
+import { useEffect } from 'react';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -38,6 +39,9 @@ const StationDetailPage = () => {
     },
   });
 
+  useEffect(()=>{
+    dispatch(changegetdatadetailStatus(false))
+  },[])
   return (
     <Formik
       initialValues={{

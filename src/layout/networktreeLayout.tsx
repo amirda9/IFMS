@@ -219,7 +219,6 @@ function NetworktreeLayout({ children}:Iprops) {
   };
 
   const onclickstations = async (networkid: string, id: string) => {
-    dispatch(changegetdatadetailStatus(false))
     let old = deepcopy(regionstations);
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if (allstation?.status === 200) {
@@ -241,7 +240,7 @@ function NetworktreeLayout({ children}:Iprops) {
   };
 
   const onclicklinks = async (networkid: string, id: string) => {
-    dispatch(changegetdatadetailStatus(false))
+
     let old = deepcopy(regionLinks);
     const alllinksurl = `otdr/region/${id}/links`;
     // const  getnetworkstationsurl=`otdr/station/network/${networkid}`;
@@ -444,7 +443,6 @@ function NetworktreeLayout({ children}:Iprops) {
 
 
   const onclikdefaultStations=async (networkid: string) => {
-    dispatch(changegetdatadetailStatus(false))
     let allStations = [];
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
     if(responsestation?.status == 200){
@@ -464,7 +462,6 @@ function NetworktreeLayout({ children}:Iprops) {
   }
 
   const onclickdefaultlinks=async (networkid: string) => {
-    dispatch(changegetdatadetailStatus(false))
     let allLinks = [];
     const responselink = await $Get(`otdr/link/network/${networkid}`);
     if(responselink?.status == 200){
@@ -711,6 +708,7 @@ dispatch(chageLoading(false));
                                           pluse={false}
                                           createurl={`/stations/create`}
                                           onclick={() => {
+                                            dispatch(changegetdatadetailStatus(false))
                                             dispatch(
                                               setSelectedid(stationsdata.id),
                                             ),
@@ -801,6 +799,7 @@ dispatch(chageLoading(false));
                                             )
                                             ?.linkID.includes(linksdata.id)}
                                           onclick={() => {
+                                            dispatch(changegetdatadetailStatus(false))
                                             dispatch(
                                               setSelectedid(linksdata.id),
                                             ),
@@ -925,6 +924,7 @@ dispatch(chageLoading(false));
                                       pluse={false}
                                       createurl={`/stations/create`}
                                       onclick={() => {
+                                        dispatch(changegetdatadetailStatus(false))
                                         dispatch(
                                           setSelectedid(stationsdata.id),
                                         ),
@@ -1005,6 +1005,7 @@ dispatch(chageLoading(false));
                                         )
                                         ?.linkID.includes(linksdata.id)}
                                       onclick={() => {
+                                        dispatch(changegetdatadetailStatus(false))
                                         dispatch(setSelectedid(linksdata.id)),
                                           onclikitems(linksdata.id);
                                       }}

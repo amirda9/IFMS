@@ -7,7 +7,7 @@ import Selectbox from '~/components/selectbox/selectbox';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
-import {updatedefaultStationName} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, updatedefaultStationName} from './../../store/slices/networktreeslice';
 import {useDispatch, useSelector} from 'react-redux';
 import {$Get, $Put} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
@@ -67,6 +67,9 @@ console.log("⌚",params);
       if (networkregionresponse?.status == 200) {
         const networkregionresponsedata = await networkregionresponse?.json();
         setRegionlist(networkregionresponsedata);
+      }
+      if(getstationdetail?.status == 200 && networkregionresponse?.status == 200){
+        dispatch(changegetdatadetailStatus(true))
       }
     } catch (error) {
       console.log(error);

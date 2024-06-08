@@ -10,6 +10,7 @@ import {setLinkdetail, settypestate} from './../../store/slices/networkslice';
 import {BASE_URL} from './../../constant';
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  changegetdatadetailStatus,
   updatedefaltlinkname,
   updatelinkname,
 } from './../../store/slices/networktreeslice';
@@ -143,6 +144,7 @@ const LinkDetailPage = () => {
         $Get(regionstationurl),
       ]);
       if (linkdetailresponse?.status == 200 && networkstation?.status == 200) {
+        dispatch(changegetdatadetailStatus(true))
         const linkdata: LinksType = await linkdetailresponse?.json();
         const findInlinkdata = linkdata?.versions?.find(
           version => version.id === linkdata?.current_version?.id,

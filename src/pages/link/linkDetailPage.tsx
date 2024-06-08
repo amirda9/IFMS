@@ -5,7 +5,7 @@ import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
 import {setLinkdetail, settypestate} from './../../store/slices/networkslice';
 import {useDispatch, useSelector} from 'react-redux';
-import {updatelinkname} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, updatelinkname} from './../../store/slices/networktreeslice';
 import {$Get, $Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import {LinksType} from '~/types/RegionType';
@@ -237,6 +237,7 @@ const LinkDetailPage = () => {
               )?.id}`,
             );
             if (networkregionresponse?.status == 200) {
+              dispatch(changegetdatadetailStatus(true))
               const networkregionresponsedata =
                 await networkregionresponse?.json();
               const Defaultegionname =

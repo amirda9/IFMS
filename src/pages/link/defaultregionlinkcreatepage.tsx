@@ -5,7 +5,7 @@ import {networkExplored} from '~/constant';
 import Selectbox from './../../components/selectbox/selectbox';
 import Cookies from 'js-cookie';
 import {useDispatch, useSelector} from 'react-redux';
-import {createdefaultRegionLinks} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, createdefaultRegionLinks} from './../../store/slices/networktreeslice';
 import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
 import {$Post} from '~/util/requestapi';
@@ -56,6 +56,10 @@ const LinkCreatePage = () => {
   const [source, setSource] = useState<string>('');
   const [destinationid, setDestinationid] = useState<string>('');
   const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(changegetdatadetailStatus(false))
+  },[])
 
   useEffect(() => {
     let data: any = [];

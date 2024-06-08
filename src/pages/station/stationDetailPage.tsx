@@ -8,7 +8,7 @@ import {useAppSelector, useHttpRequest} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {Request} from '~/hooks/useHttpRequest';
 import {useEffect, useMemo, useState} from 'react';
-import {updateStationName} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, updateStationName} from './../../store/slices/networktreeslice';
 import {useDispatch, useSelector} from 'react-redux';
 import {$Get, $Put} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
@@ -94,6 +94,9 @@ const StationDetailPage = () => {
               )?.name || 'select';
             setDefaultregionname(Defaultegionname);
             setRegionlist(networkregionresponsedata);
+          }
+          if (getstationdetail?.status == 200 && networkregionresponse?.status == 200){
+            dispatch(changegetdatadetailStatus(true))
           }
         } catch (error) {
           console.log(error);

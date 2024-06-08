@@ -3,7 +3,7 @@ import {SimpleBtn} from '~/components';
 import {useNavigate} from 'react-router-dom';
 import Selectbox from './../../components/selectbox/selectbox';
 import {useDispatch} from 'react-redux';
-import {createLinks} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, createLinks} from './../../store/slices/networktreeslice';
 import {useEffect, useState} from 'react';
 import {$Get, $Post} from '~/util/requestapi';
 import {deepcopy} from '~/util';
@@ -38,6 +38,7 @@ const LinkCreatePage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(changegetdatadetailStatus(false))
     const getregionstations = async () => {
       try {
         setLoading(true)

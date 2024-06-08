@@ -15,12 +15,15 @@ const LinkEmptyPage = () => {
 
   const params = useParams<mainprops>();
   const isinclude=useMemo(()=>path.pathname.includes(`defaultregionlinkdetailpage`),[path.pathname])
-  
+  const {datadetailStatus} = useSelector((state: any) => state.networktree);
   return (
     <div className="flex h-full w-full flex-col">
       <div className="mb-8 flex h-fit  [&_*]:mx-[0.5px]">
         <TabItem to={`${isinclude?"defaultregionlinkdetailpage":"."}`}  name="Detail" />
-        <TabItem to={`${isinclude?"access/defaultregionlinkdetailpage":"access"}`}  name="Access" />
+
+        {datadetailStatus?
+        <>
+          <TabItem to={`${isinclude?"access/defaultregionlinkdetailpage":"access"}`}  name="Access" />
         {findtaype?.type == 'cable' ? (
           <TabItem
           to={`${isinclude?"cables-segments/defaultregionlinkdetailpage":"cables-segments"}`} 
@@ -36,6 +39,10 @@ const LinkEmptyPage = () => {
         )}
 
         <TabItem  to={`${isinclude?"points/defaultregionlinkdetailpage":"points"}`}  name="Points" />
+        </>
+      :
+      null}
+      
       </div>
       <Outlet key={params.linkId!} />
     </div>
