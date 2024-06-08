@@ -4,9 +4,10 @@ import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import {FormLayout} from '~/layout';
-import {createRegion} from './../../store/slices/networktreeslice';
+import {changegetdatadetailStatus, createRegion} from './../../store/slices/networktreeslice';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
+import { useEffect } from 'react';
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
 });
@@ -27,6 +28,9 @@ const RegionDetailPage = () => {
       </SimpleBtn>
     </>
   );
+  useEffect(()=>{
+    dispatch(changegetdatadetailStatus(false))
+  },[])
   return (
     <FormLayout buttons={buttons}>
       <h1 className="text-md mb-4 font-bold">Create Region</h1>

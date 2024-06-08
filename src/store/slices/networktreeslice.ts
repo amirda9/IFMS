@@ -303,6 +303,7 @@ export type initialStatetype = {
   loading: boolean;
   networkidadmin: string[];
   regionidadmin: string[];
+  datadetailStatus:boolean
 };
 const initialState: initialStatetype = {
   networkidadmin: [],
@@ -325,6 +326,7 @@ const initialState: initialStatetype = {
   selecteddefaultstations: [],
   selectedefaultdlinks: [],
   loading: false,
+  datadetailStatus:false
 };
 
 const networktreeslice = createSlice({
@@ -1453,6 +1455,10 @@ const networktreeslice = createSlice({
     chageLoading: (state, action: {payload: boolean; type: string}) => {
       state.loading = action.payload;
     },
+ // ------------------------------------------------
+    changegetdatadetailStatus:(state, action: {payload: boolean; type: string}) => {
+    state.datadetailStatus=action.payload
+    }
   },
 });
 
@@ -1495,6 +1501,7 @@ export const {
   setNetworkidadmin,
   setRegionidadmin,
   chageLoading,
+  changegetdatadetailStatus
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

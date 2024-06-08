@@ -8,6 +8,7 @@ import {getPrettyDateTime} from '~/util/time';
 import {useDispatch, useSelector} from 'react-redux';
 import {useEffect, useState} from 'react';
 import {
+  changegetdatadetailStatus,
   setRegionidadmin,
   updateregionname,
 } from './../../store/slices/networktreeslice';
@@ -102,6 +103,7 @@ const RegionDetailPage = () => {
   });
 
   useEffect(() => {
+
     const getnetworks = async () => {
       try {
         setLoading(true);
@@ -111,6 +113,7 @@ const RegionDetailPage = () => {
         ]);
 
         if (getstationdetail?.status == 200) {
+          dispatch(changegetdatadetailStatus(true))
           const getstationdetaildata = await getstationdetail?.json();
           if (getstationdetaildata?.access?.access == 'ADMIN') {
             dispatch(setRegionidadmin(getstationdetaildata?.id!));

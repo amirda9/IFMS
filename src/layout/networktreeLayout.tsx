@@ -30,6 +30,7 @@ import {
   deletedefaultRegion,
   setRegionidadmin,
   chageLoading,
+  changegetdatadetailStatus,
 } from './../store/slices/networktreeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
@@ -218,6 +219,7 @@ function NetworktreeLayout({ children}:Iprops) {
   };
 
   const onclickstations = async (networkid: string, id: string) => {
+    dispatch(changegetdatadetailStatus(false))
     let old = deepcopy(regionstations);
     const allstation = await $Get(`otdr/region/${id}/stations`);
     if (allstation?.status === 200) {
@@ -239,6 +241,7 @@ function NetworktreeLayout({ children}:Iprops) {
   };
 
   const onclicklinks = async (networkid: string, id: string) => {
+    dispatch(changegetdatadetailStatus(false))
     let old = deepcopy(regionLinks);
     const alllinksurl = `otdr/region/${id}/links`;
     // const  getnetworkstationsurl=`otdr/station/network/${networkid}`;
@@ -441,6 +444,7 @@ function NetworktreeLayout({ children}:Iprops) {
 
 
   const onclikdefaultStations=async (networkid: string) => {
+    dispatch(changegetdatadetailStatus(false))
     let allStations = [];
     const responsestation = await $Get(`otdr/station/network/${networkid}`);
     if(responsestation?.status == 200){
@@ -460,6 +464,7 @@ function NetworktreeLayout({ children}:Iprops) {
   }
 
   const onclickdefaultlinks=async (networkid: string) => {
+    dispatch(changegetdatadetailStatus(false))
     let allLinks = [];
     const responselink = await $Get(`otdr/link/network/${networkid}`);
     if(responselink?.status == 200){
@@ -575,6 +580,7 @@ dispatch(chageLoading(false));
                   canDelete={loggedInUser.role === UserRole.SUPER_USER}
                   onDelete={() => Deletenetwork(networkdata.id)}
                   onclick={() => {
+                    dispatch(changegetdatadetailStatus(false))
                     dispatch(setSelectedid(networkdata.id)),
                       onclikitems(networkdata.id),
                       onclicknetwork(networkdata.id),
@@ -612,6 +618,7 @@ dispatch(chageLoading(false));
                                 Deleteregion(regionsdata.id, networkdata.id)
                               }
                               onclick={() => {
+                                dispatch(changegetdatadetailStatus(false))
                                 dispatch(setSelectedid(networkdata.id)),
                                   onclikitems(regionsdata.id);
                                 // onclickstations(networkdata.id, regionsdata.id);
