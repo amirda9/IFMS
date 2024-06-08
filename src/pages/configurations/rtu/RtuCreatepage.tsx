@@ -131,10 +131,10 @@ const RtuCreatePage: FC = () => {
   });
 
   return (
-    <div className="relative flex flex-col">
+    <div className="relative flex flex-col w-full">
       <span className="mb-6 mt-2 font-bold">Create rtu</span>
       <FormikProvider value={formik}>
-        <Form className="flex flex-grow flex-col gap-y-8">
+        <Form className="flex flex-grow flex-col gap-y-8 w-[calc(100%-10px)]">
           <div className="flex flex-grow flex-col gap-y-4">
             <Description
               labelClassName="text-[18px] font-light leading-[24.2px] mb-[4px]"
@@ -193,10 +193,10 @@ const RtuCreatePage: FC = () => {
             </Description>
 
             <div className="mb-[4px] flex w-full flex-row">
-              <div className="flex w-[50%] flex-row xl:w-[500px]">
+              <div className="flex w-[50%] flex-row xl:w-[500px] items-center">
                 <Description
                   className="W-[30%]"
-                  labelClassName="text-[18px] font-light leading-[24.2px]"
+                  labelClassName="text-[18px] mt-[-10px] font-light leading-[24.2px]"
                   label="OTDR IP & Port">
                   <InputFormik
                     name="OTDRFIRST"
@@ -213,7 +213,7 @@ const RtuCreatePage: FC = () => {
               <div className="flex w-[50%] flex-row xl:w-[500px]">
                 <Description
                   className="w-[70%]"
-                  labelClassName="text-[18px] font-light leading-[24.2px]"
+                  labelClassName="text-[18px] font-light mt-[-10px]  leading-[24.2px]"
                   label="Switch IP & Port">
                   <InputFormik
                     name="SWITCHFIRST"
@@ -294,8 +294,8 @@ const RtuCreatePage: FC = () => {
               <span className="text-[20px] text-[red]">{errortext}</span>
             ) : null}
 
-            <div className="flex gap-x-4 self-end">
-              <SimpleBtn type="submit">Save</SimpleBtn>
+            <div className="flex flex-row justify-end w-[calc(100%-10px)]">
+              <SimpleBtn className='mr-2' type="submit">Save</SimpleBtn>
               <SimpleBtn>Cancel</SimpleBtn>
             </div>
           </div>
