@@ -1,6 +1,6 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
-import {FC} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {
   ControlledSelect,
@@ -16,8 +16,10 @@ import {getPrettyDateTime} from '~/util/time';
 import {RootState} from '~/store';
 import {useDispatch, useSelector} from 'react-redux';
 import {UserRole} from '~/constant/users';
-import { deepcopy } from '~/util';
-import { setStationsrtu } from '~/store/slices/rtu';
+import {deepcopy} from '~/util';
+import {setStationsrtu, setrtugetdetailStatus} from '~/store/slices/rtu';
+import {$Get, $Put} from '~/util/requestapi';
+import { toast } from 'react-toastify';
 
 const rtuSchema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
@@ -32,12 +34,12 @@ type Rowtext = {
   value: string;
 };
 
-type Iprops={
-  rtuId:string
-  stationId:string
-  regionId:string
-  networkId:string
-}
+type Iprops = {
+  rtuId: string;
+  stationId: string;
+  regionId: string;
+  networkId: string;
+};
 const Rowtext = ({name, value}: Rowtext) => {
   return (
     <div className="mb-[4px] flex flex-row">
@@ -50,8 +52,10 @@ const Rowtext = ({name, value}: Rowtext) => {
 };
 
 const RtuDetailsPage: FC = () => {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const params = useParams<Iprops>();
+  const [loading, setLoading] = useState(false);
+  const [rtuDetail, setRtuDetail] = useState<any>([]);
   const {
     stationsrtu,
     regionstations,
@@ -62,62 +66,116 @@ const RtuDetailsPage: FC = () => {
   } = useSelector((state: RootState) => state.rtu);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
-    state: {rtuDetail, users},
+    state: {users},
     request,
   } = useHttpRequest({
     selector: state => ({
       rtuDetail: state.http.rtuDetail,
       users: state.http.userList,
-      update: state.http.rtuUpdate,
+      // update: state.http.rtuUpdate,
     }),
     initialRequests: request => {
-      request('rtuDetail', {
-        params: {rtu_Id: params?.rtuId! || ''},
-      });
+      // request('rtuDetail', {
+      //   params: {rtu_Id: params?.rtuId! || ''},
+      // });
 
       request('userList', undefined);
     },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.update?.httpRequestStatus === 'loading' &&
-        state.update?.httpRequestStatus === 'success'
-      ) {
-        request('rtuDetail', {
-          params: {rtu_Id: params?.rtuId! || ''},
-        });
-      }
-    },
+    // onUpdate: (lastState, state) => {
+    //   if (
+    //     lastState.update?.httpRequestStatus === 'loading' &&
+    //     state.update?.httpRequestStatus === 'success'
+    //   ) {
+    //     request('rtuDetail', {
+    //       params: {rtu_Id: params?.rtuId! || ''},
+    //     });
+    //   }
+    // },
   });
 
+  console.log('rtuDetail?.httpRequestStatus', rtuDetail?.httpRequestStatus);
+
+  const getrtudetail = async () => {
+    try {
+   
+      setLoading(true);
+      const getrturesponse = await $Get(`otdr/rtu/${params?.rtuId!}`);
+      if (getrturesponse?.status == 200) {
+        dispatch(setrtugetdetailStatus(true));
+        setLoading(false);
+        const responsedata = await getrturesponse.json();
+        setRtuDetail(responsedata);
+      }
+    } catch (error) {
+      console.log(`error is :${error}`);
+    }
+  };
+  useEffect(() => {
+    getrtudetail();
+    // if(rtuDetail?.httpRequestStatus == "success"){
+    //   dispatch( setrtugetdetailStatus(
+    //     false
+    //   ))
+    // }
+  }, []);
   const formik = useFormik({
     validationSchema: rtuSchema,
     enableReinitialize: true,
     initialValues: {
-      name: rtuDetail?.data?.name || '',
-      OTDRSECEND: rtuDetail?.data?.otdr_port || 0,
-      OTDRFIRST: rtuDetail?.data?.otdr_ip || '',
-      SWITCHSECEND: rtuDetail?.data?.switch_port || 0,
-      SWITCHFIRST: rtuDetail?.data?.switch_ip || '',
-      SubnetMask: rtuDetail?.data?.subnet_mask || '',
-      model: rtuDetail?.data?.model || '',
-      ContactPerson: rtuDetail?.data?.contact_person || '',
-      DefaultGateway: rtuDetail?.data?.default_gateway || '',
-      time_created: rtuDetail?.data?.time_created || '',
-      time_updated: rtuDetail?.data?.time_updated || '',
+      name: rtuDetail?.name || '',
+      OTDRSECEND: rtuDetail?.otdr_port || 0,
+      OTDRFIRST: rtuDetail?.otdr_ip || '',
+      SWITCHSECEND: rtuDetail?.switch_port || 0,
+      SWITCHFIRST: rtuDetail?.switch_ip || '',
+      SubnetMask: rtuDetail?.subnet_mask || '',
+      model: rtuDetail?.model || '',
+      ContactPerson: rtuDetail?.contact_person || '',
+      DefaultGateway: rtuDetail?.default_gateway || '',
+      time_created: rtuDetail?.time_created || '',
+      time_updated: rtuDetail?.time_updated || '',
       owner: {
-        id: rtuDetail?.data?.owner.id,
-        username: rtuDetail?.data?.owner.username,
+        id: rtuDetail?.owner?.id,
+        username: rtuDetail?.owner?.username,
       } || {id: '', username: ''},
     },
-    onSubmit: () => {
-    
+    onSubmit: async() => {
+      try {
+        setLoading(true)
+        const updatertuportsresponse=await $Put(`otdr/rtu/${params?.rtuId!}`,{
+          name: formik.values.name,
+          model: formik.values.model,
+          station_id: rtuDetail?.station_id || '',
+          contact_person_id: rtuDetail?.contact_person_id || '',
+          otdr_ip: formik.values.OTDRFIRST,
+          otdr_port: formik.values.OTDRSECEND,
+          switch_ip: formik.values.SWITCHFIRST,
+          switch_port: formik.values.SWITCHSECEND,
+          subnet_mask: formik.values.SubnetMask,
+          default_gateway: formik.values.DefaultGateway,
+        }
+        )
+        if(updatertuportsresponse?.status == 201){
+          toast('It was done successfully', {
+            type: 'success',
+            autoClose: 1000,
+          });
+          getrtudetail()
+        }else{
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
+      } catch (error) {
+        
+      } finally {
+        setLoading(false)
+      }
+   
       request('rtuUpdate', {
         params: {rtu_id: params?.rtuId! || ''},
         data: {
           name: formik.values.name,
           model: formik.values.model,
-          station_id: rtuDetail?.data?.station_id || '',
-          contact_person_id: rtuDetail?.data?.contact_person_id || '',
+          station_id: rtuDetail?.station_id || '',
+          contact_person_id: rtuDetail?.contact_person_id || '',
           otdr_ip: formik.values.OTDRFIRST,
           otdr_port: formik.values.OTDRSECEND,
           switch_ip: formik.values.SWITCHFIRST,
@@ -126,19 +184,24 @@ const RtuDetailsPage: FC = () => {
           default_gateway: formik.values.DefaultGateway,
         },
       });
-      const stationsrtuCopy=deepcopy(stationsrtu)
-      const findstationrtuindex=stationsrtu.findIndex(data => data.stationid == rtuDetail?.data?.station_id || "")
-       const findrtuid=stationsrtu[findstationrtuindex]?.rtues?.findIndex(data => data.id == params?.rtuId!)
-       stationsrtuCopy[findstationrtuindex].rtues[findrtuid].name=formik.values.name
-       dispatch(setStationsrtu(stationsrtuCopy))
-      },
+      const stationsrtuCopy = deepcopy(stationsrtu);
+      const findstationrtuindex = stationsrtu.findIndex(
+        data => data.stationid == rtuDetail?.station_id || '',
+      );
+      const findrtuid = stationsrtu[findstationrtuindex]?.rtues?.findIndex(
+        data => data.id == params?.rtuId!,
+      );
+      stationsrtuCopy[findstationrtuindex].rtues[findrtuid].name =
+        formik.values.name;
+      dispatch(setStationsrtu(stationsrtuCopy));
+    },
   });
 
-  if(rtuDetail?.httpRequestStatus == "loading"){
-    return <h1>Loading...</h1>
+  if (loading) {
+    return <h1>Loading...</h1>;
   }
   return (
-    <div className="flex flex-grow w-[calc(100%-10px)] overflow-x-hidden">
+    <div className="flex w-[calc(100%-10px)] flex-grow overflow-x-hidden">
       <FormikProvider value={formik}>
         <Form className="flex flex-grow flex-col gap-y-8">
           <div className="flex flex-grow flex-col gap-y-4">
@@ -158,10 +221,10 @@ const RtuDetailsPage: FC = () => {
                 onChange={e => formik.setFieldValue('model', e.target.value)}
                 className="w-[400px]">
                 <option value="" className="hidden">
-                  {rtuDetail?.data?.model || ''}
+                  {rtuDetail?.model || ''}
                 </option>
                 <option value={undefined} className="hidden">
-                  {rtuDetail?.data?.model || ''}
+                  {rtuDetail?.model || ''}
                 </option>
                 <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                   model1
@@ -180,10 +243,10 @@ const RtuDetailsPage: FC = () => {
                 }
                 className="w-[400px]">
                 <option value="" className="hidden">
-                  {rtuDetail?.data?.contact_person?.username || ''}
+                  {rtuDetail?.contact_person?.username || ''}
                 </option>
                 <option value={undefined} className="hidden">
-                  {rtuDetail?.data?.contact_person?.username || ''}
+                  {rtuDetail?.contact_person?.username || ''}
                 </option>
                 {users &&
                   users.data?.map((data, index) => (
@@ -311,7 +374,7 @@ const RtuDetailsPage: FC = () => {
             <Rowtext name="Owner" value={formik.values.owner.username || ''} />
             {/* --------------------------------------------------- */}
           </div>
-          <div className="flex gap-x-4 justify-end w-[calc(100%-60px)]">
+          <div className="flex w-[calc(100%-60px)] justify-end gap-x-4">
             {loggedInUser.role === UserRole.SUPER_USER ||
             rtunetworkidadmin.includes(params?.networkId!) ||
             rturegionidadmin.includes(params?.regionId!) ||

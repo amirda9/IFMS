@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType';
-import {object, string} from 'yup';
-import { deepcopy } from '~/util';
+import {boolean, object, string} from 'yup';
+import {deepcopy} from '~/util';
 export enum statustype {
   TRUE = 'true',
   FALSE = 'false',
@@ -107,6 +107,7 @@ export type initialStatetype = {
   rtunetworkidadmin: string[];
   rturegionidadmin: string[];
   rtustationidadmin: string[];
+  rtugetdetailStatus: boolean;
 };
 const initialState: initialStatetype = {
   leftbarStationcheckboxlist: [],
@@ -115,9 +116,10 @@ const initialState: initialStatetype = {
   stationsrtu: [],
   allrtues: [],
   allLeftbar: [],
-  rtunetworkidadmin:[],
-  rturegionidadmin:[],
-  rtustationidadmin:[]
+  rtunetworkidadmin: [],
+  rturegionidadmin: [],
+  rtustationidadmin: [],
+  rtugetdetailStatus: false,
 };
 
 const rtu = createSlice({
@@ -130,31 +132,37 @@ const rtu = createSlice({
     ) => {
       state.allLeftbar = action.payload;
     },
+    // ----------------------------------------------------------------
     setleftbarStationcheckboxlist: (
       state,
       action: {payload: leftbarStationcheckboxlist; type: string},
     ) => {
       state.leftbarStationcheckboxlist = action.payload;
     },
+    // ----------------------------------------------------------------
     setNetworkregions: (state, action: networkregionstype) => {
       state.networkregions = action.payload;
     },
+    // ----------------------------------------------------------------
     setRegionstations: (state, action: regionstationstype) => {
       state.regionstations = action.payload;
     },
+    // ----------------------------------------------------------------
     setStationsrtu: (state, action: stationsrtutype) => {
       state.stationsrtu = action.payload;
     },
+    // ----------------------------------------------------------------
     setRtuNetworkidadmin: (state, action: {type: string; payload: string}) => {
-      let networkidadminCopy=deepcopy(state.rtunetworkidadmin)
+      let networkidadminCopy = deepcopy(state.rtunetworkidadmin);
       const findinlist = state.rtunetworkidadmin.findIndex(
         data => data == action.payload,
       );
       if (findinlist < 0) {
         networkidadminCopy.push(action.payload);
       }
-      state.rtunetworkidadmin=networkidadminCopy
+      state.rtunetworkidadmin = networkidadminCopy;
     },
+    // ----------------------------------------------------------------
     setRtuRegionidadmin: (state, action: {type: string; payload: string}) => {
       const findinlist = state.rturegionidadmin.findIndex(
         data => data == action.payload,
@@ -163,6 +171,7 @@ const rtu = createSlice({
         state.rturegionidadmin.push(action.payload);
       }
     },
+    // ----------------------------------------------------------------
     setRtuStationidadmin: (state, action: {type: string; payload: string}) => {
       const findinlist = state.rtustationidadmin.findIndex(
         data => data == action.payload,
@@ -171,6 +180,13 @@ const rtu = createSlice({
         state.rtustationidadmin.push(action.payload);
       }
     },
+   // ----------------------------------------------------------------
+    setrtugetdetailStatus: (
+      state,
+      action: {type: string; payload: boolean},
+    ) => {
+      state.rtugetdetailStatus = action.payload;
+    }
   },
 });
 
@@ -182,7 +198,8 @@ export const {
   setallLeftbar,
   setRtuNetworkidadmin,
   setRtuRegionidadmin,
-  setRtuStationidadmin
+  setRtuStationidadmin,
+  setrtugetdetailStatus
 } = rtu.actions;
 
 export default rtu.reducer;

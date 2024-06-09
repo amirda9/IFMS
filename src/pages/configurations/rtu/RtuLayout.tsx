@@ -1,6 +1,6 @@
 import {FC, useEffect, useState} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {SidebarItem, TextInput} from '~/components';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {SidebarLayout} from '~/layout';
@@ -11,6 +11,7 @@ import {
   setRtuNetworkidadmin,
   setRtuRegionidadmin,
   setRtuStationidadmin,
+  setrtugetdetailStatus,
 } from './../../../store/slices/rtu';
 import {deepcopy} from './../../../util/deepcopy';
 
@@ -84,6 +85,7 @@ type networklisttype = {
 };
 const RtuLayout: FC = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [selectedtabId, setSelectedtabid] = useState('');
   const [list, setList] = useState<networklisttype[]>();
   const navigate = useNavigate();
@@ -425,7 +427,6 @@ const RtuLayout: FC = () => {
             {networkselectedlist.indexOf(id) > -1 ? (
               <BsPlusLg
                 onClick={() =>
-               
                   navigate(`create/${id}/${regionid}/${networkid}`)
                 }
                 color="#18C047"
@@ -775,11 +776,23 @@ const RtuLayout: FC = () => {
                                                               .....
                                                             </span>
                                                             <SidebarItem
-                                                              onclick={() =>
+                                                              onclick={() => {
+                                                                if (
+                                                                  !location.pathname.includes(
+                                                                    `${rtudata.id}/${satationdata.id}/${regionsdata.id}/${networkdata.id}`,
+                                                                  )
+                                                                ) {
+                                                                  dispatch(
+                                                                    setrtugetdetailStatus(
+                                                                      false
+                                                                    )
+                                                                  );
+                                                                }
+
                                                                 setSelectedtabid(
-                                                                  rtudata.id,
-                                                                )
-                                                              }
+                                                                  rtudata.id
+                                                                );
+                                                              }}
                                                               selected={
                                                                 selectedtabId ==
                                                                 rtudata.id
