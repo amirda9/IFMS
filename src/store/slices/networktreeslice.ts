@@ -426,7 +426,7 @@ const networktreeslice = createSlice({
     setdefaultRegionLinks: (state, action: defaultregionlinkstype) => {
       const defaultregionLinksCopy = deepcopy(state.defaultregionLinks);
       const finddataindex = state.defaultregionLinks.findIndex(
-        data => data.networkid == action.payload.networkid,
+        data => data.networkid == action.payload?.networkid,
       );
       if (finddataindex > -1) {
         defaultregionLinksCopy[finddataindex].links = action.payload.links;

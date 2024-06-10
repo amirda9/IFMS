@@ -76,7 +76,7 @@ function NetworktreeLayout({children}: Iprops) {
   const location = useLocation();
   const pathname = window.location.pathname;
 
-  console.log('🛑', location.pathname);
+  
 
   // const [showAllnetworks, setShowallnetworks] = useState(false);
   // const [allselectedId, setAllselectedId] = useState<string[]>([]);
@@ -313,7 +313,7 @@ function NetworktreeLayout({children}: Iprops) {
           );
 
           const results = await Promise.all(promises);
-          console.log('results', results);
+       
 
           dispatch(
             deletegroupstation({
@@ -507,7 +507,7 @@ function NetworktreeLayout({children}: Iprops) {
       }
     });
   };
-  console.log('🚋', pathname);
+
 
   return (
     <>
@@ -564,7 +564,7 @@ function NetworktreeLayout({children}: Iprops) {
             {networkslist?.map((networkdata, index) => (
               <div key={index} className="w-full">
                 <Items
-                  key={networkdata.id + index}
+                  // key={networkdata.id}
                   to={
                     loggedInUser.role === UserRole.SUPER_USER
                       ? `/networks/${networkdata.id}`
@@ -607,9 +607,9 @@ function NetworktreeLayout({children}: Iprops) {
                             networkregionsdata.networkid == networkdata.id,
                         )
                         ?.regions.map((regionsdata, index) => (
-                          <div key={index} className="full">
+                          <div key={regionsdata.id} className="full">
                             <Items
-                              key={regionsdata.id}
+                              // key={regionsdata.id}
                               to={`/regions/${regionsdata.id}/${networkdata.id}`}
                               selected={false}
                               canAdd={false}
@@ -647,7 +647,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       : 'bottom-[-3px]'
                                   } left-[-10px] z-10 h-[34px] w-[20px] bg-[#E7EFF7]`}></div>
                                 <Items
-                                  key={Number(regionsdata.id)}
+                                  key={`${regionsdata.id}${regionsdata.id}`}
                                   to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
                                   createurl={`/stations/create/${regionsdata.id}/${networkdata.id}`}
                                   canDelete={false}
@@ -684,7 +684,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       )
                                       ?.stations.map((stationsdata, index) => (
                                         <Items
-                                          key={index + stationsdata.id}
+                                          key={stationsdata.id}
                                           to={`/stations/${stationsdata.id}/${regionsdata.id}/${networkdata.id}`}
                                           selected={false}
                                           canDelete={true}
@@ -746,9 +746,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   </div>
                                 ) : null}
                                 <Items
-                                  key={Number(
-                                    `${regionsdata.id}${networkdata.id}`,
-                                  )}
+                                  key={`${regionsdata.id}${networkdata.id}`}
                                   to={`/regions/defaultregionemptypage/${networkdata.id}_Linkss`}
                                   selected={false}
                                   canDelete={false}
@@ -855,7 +853,7 @@ function NetworktreeLayout({children}: Iprops) {
                       {/* -----------------------------------------------------------------------------                    */}
                       <>
                         <Items
-                          key={Number(networkdata.id)}
+                          key={`${networkdata.id}&${networkdata.id}`}
                           to={`/regions/defaultregionemptypage/${networkdata.id}`}
                           canAdd={false}
                           canDelete={false}
@@ -893,7 +891,7 @@ function NetworktreeLayout({children}: Iprops) {
                             {/* // } */}
 
                             <Items
-                              key={Number(`${networkdata.id}`)}
+                              key={`${networkdata.id}$$${networkdata.id}`}
                               to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
                               createurl={`../stations/createdefault/${networkdata.id}`}
                               canDelete={false}
@@ -927,7 +925,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   )
                                   ?.stations.map((stationsdata, index) => (
                                     <Items
-                                      key={stationsdata.id + stationsdata.id}
+                                      key={`${stationsdata.id}${stationsdata.id}`}
                                       to={`/stations/${stationsdata.id}/${networkdata.id}/defaultstationDetailPage`}
                                       canAdd={false}
                                       disabledcheckbox={
@@ -981,7 +979,7 @@ function NetworktreeLayout({children}: Iprops) {
                             ) : null}
 
                             <Items
-                              key={Number(`${networkdata.id}${networkdata.id}`)}
+                              key={`${networkdata.id}&$${networkdata.id}`}
                               to={`/regions/defaultregionemptypage/_Links_${networkdata.id}`}
                               selected={false}
                               canDelete={false}
@@ -1017,7 +1015,7 @@ function NetworktreeLayout({children}: Iprops) {
                                   )
                                   ?.links.map((linksdata, index) => (
                                     <Items
-                                      key={linksdata.id + index}
+                                      key={`${linksdata.id}&${linksdata.id}`}
                                       to={`/links/${linksdata.id}/${networkdata.id}/defaultregionlinkdetailpage`}
                                       createurl={`/links/create`}
                                       canAdd={false}
