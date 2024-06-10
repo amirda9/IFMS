@@ -366,15 +366,13 @@ const RegionLinksPage = () => {
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
         {userrole == 'superuser' ||
-        networkDetail?.data?.access?.access == 'ADMIN' ||
-        regionDetail?.data?.access.access == 'ADMIN' ? (
+        networkDetail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-linklist">
             Edit Links List
           </SimpleBtn>
         ) : null}
         {userrole == 'superuser' ||
-        networkDetail?.data?.access?.access == 'ADMIN' ||
-        regionDetail?.data?.access.access == 'ADMIN' ? (
+        networkDetail?.data?.access?.access == 'ADMIN'  ? (
           <SimpleBtn onClick={newregionlinkliststatus ? save : () => {}}>
             Save
           </SimpleBtn>
