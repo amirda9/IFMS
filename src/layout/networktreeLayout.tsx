@@ -38,6 +38,7 @@ import Mainloading from '~/components/loading/mainloading';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {UserRole} from '~/constant/users';
 import {toast} from 'react-toastify';
+import { setopticalroutenetworkadmin } from '~/store/slices/opticalroutslice';
 
 type ItemspROPS = {
   to: string;
@@ -130,8 +131,15 @@ function NetworktreeLayout({children}: Iprops) {
     const getnetworklist = async () => {
       try {
         const getnetworks = await $Get(`otdr/network`);
-        const networksdata = await getnetworks?.json();
         if (getnetworks?.status == 200) {
+          const networksdata = await getnetworks?.json();
+          let admindata=[]
+          for (let i=0;i<networksdata.length;i++){
+            if(networksdata[i].access.access == "ADMIN"){
+              admindata.push(networksdata[i].id)
+            }
+          }
+          dispatch(setopticalroutenetworkadmin(admindata))
           dispatch(setNetworklist(networksdata));
         }
       } catch (error) {}

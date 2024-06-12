@@ -17,6 +17,8 @@ import {
 } from './../../../store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
+import { useAppSelector } from '~/hooks';
+import { UserRole } from '~/constant/users';
 type networklisttype = {
   id: string;
   name: string;
@@ -27,6 +29,8 @@ type Itembtntype = {
   name: string;
   id: string;
   classname?: string;
+  canAdd:boolean;
+  canDelete:boolean;
   onclickcheck?: (e: boolean) => void;
 };
 
@@ -46,7 +50,8 @@ const OpticalRouteLayout: FC = () => {
   const navigte = useNavigate();
   const [selectedId, setSelectedId] = useState('');
   const [list, setList] = useState<networklisttype[]>([]);
-  const {networkselectedlist, networkoptical, alldeleteopticalroute} =
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+  const {networkselectedlist, networkoptical, alldeleteopticalroute,opticalroutenetworkadmin} =
     useSelector((state: RootState) => state.opticalroute);
 
   useEffect(() => {
@@ -70,7 +75,7 @@ const OpticalRouteLayout: FC = () => {
 
   const [openall, setOpenall] = useState(false);
 
-  const Itembtn = ({name, id, classname}: Itembtntype) => {
+  const Itembtn = ({name, id, classname,canAdd,canDelete}: Itembtntype) => {
     return (
       <div
         className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
@@ -90,12 +95,12 @@ const OpticalRouteLayout: FC = () => {
           }`}>
           {name}
         </button>
-        {networkselectedlist.indexOf(id) > -1 ? (
+        {networkselectedlist.indexOf(id) > -1  && canAdd ? (
           <NavLink to={`create/${id}`} end>
             <BsPlusLg color="#18C047" className="ml-[10px]" />
           </NavLink>
         ) : null}
-        {selectedId == id ? (
+        {selectedId == id && canDelete? (
           <IoTrashOutline
             onClick={() => deletenetworkoptical(id)}
             color="#FF0000"
@@ -256,6 +261,8 @@ const OpticalRouteLayout: FC = () => {
     return (list && list[list.length - 1]?.id) || '';
   }, [list]);
 
+  console.log("opticalroutenetworkadmin",opticalroutenetworkadmin);
+  
   return (
     <SidebarLayout createTitle="" canAdd>
       <div className="flex flex-row items-center ">
@@ -317,6 +324,8 @@ const OpticalRouteLayout: FC = () => {
                       classname="mb-[-10px]"
                       name={networkdata.name}
                       id={networkdata.id}
+                      canAdd={loggedInUser.role === UserRole.SUPER_USER || opticalroutenetworkadmin.includes(networkdata.id)}
+                      canDelete={loggedInUser.role === UserRole.SUPER_USER || opticalroutenetworkadmin.includes(networkdata.id)}
                     />
 
                     {networkselectedlist.indexOf(networkdata.id) > -1 ? (

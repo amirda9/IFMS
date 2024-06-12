@@ -36,7 +36,8 @@ type initialStatetype={
   alldeleteopticalroute:alldeleteopticalroutetype
   opticalroutenetworkidadmin:string[]
   gettestsetupdetaildata:boolean,
-  modalloading:boolean
+  modalloading:boolean,
+  opticalroutenetworkadmin:string[]
 }
 const initialState:initialStatetype = {
   opticalroutUpdateTestsetupDetail:{    name: "",
@@ -113,7 +114,8 @@ const initialState:initialStatetype = {
     alldeleteopticalroute:[],
     opticalroutenetworkidadmin:[],
     gettestsetupdetaildata:false,
-    modalloading:false
+    modalloading:false,
+    opticalroutenetworkadmin:[]
 };
 
 const opticalroute = createSlice({
@@ -159,6 +161,10 @@ const opticalroute = createSlice({
     },
     setmodalloading:(state, action: {type: string; payload: boolean}) => {
       state.modalloading=action.payload
+    },
+
+    setopticalroutenetworkadmin:(state, action: {type: string; payload: string[]}) => {
+      state.opticalroutenetworkadmin=action.payload
     }
   },
 });
@@ -171,7 +177,8 @@ export const {
   setOpticalrouteNetworkidadmin,
   changeOpticalroutename,
   setgettestsetupdetaildata,
-  setmodalloading
+  setmodalloading,
+  setopticalroutenetworkadmin
 } = opticalroute.actions;
 
 export default opticalroute.reducer;
