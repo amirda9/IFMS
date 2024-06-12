@@ -1,7 +1,7 @@
 import {FC, useEffect, useState} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   Link,
   Outlet,
@@ -10,7 +10,10 @@ import {
   useLocation,
 } from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {UserRole} from '~/constant/users';
+import {useAppSelector, useHttpRequest} from '~/hooks';
+import ErrorPage403 from '~/pages/errors/403';
+import {RootState} from '~/store';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {$Get} from '~/util/requestapi';
@@ -54,15 +57,19 @@ const items = [
     delete: '33333',
   },
 ];
-type Iprops={
-  opticalRouteId:string
-  networkId:string
-}
+type Iprops = {
+  opticalRouteId: string;
+  networkId: string;
+};
 const OpticalRouteTestSetupPage: FC = () => {
   const params = useParams<Iprops>();
   const {pathname} = useLocation();
   const [loading, setLoading] = useState(false);
   const [alldelets, setAlldelets] = useState<string[]>([]);
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+  const {opticalroutenetworkadmin} = useSelector(
+    (state: RootState) => state.opticalroute,
+  );
   const [allitems, setAllitems] = useState<
     {
       name: string;
@@ -85,9 +92,7 @@ const OpticalRouteTestSetupPage: FC = () => {
     try {
       setLoading(true);
       const getalldata = await $Get(
-        `otdr/optical-route/${
-          params.opticalRouteId!
-        }/test-setups`,
+        `otdr/optical-route/${params.opticalRouteId!}/test-setups`,
       );
       const getdata = await getalldata?.json();
       if (getalldata?.status == 200) {
@@ -226,6 +231,13 @@ const OpticalRouteTestSetupPage: FC = () => {
     );
     navigate('create');
   };
+
+  if(loggedInUser.role !== UserRole.SUPER_USER &&
+    !opticalroutenetworkadmin.includes(params?.networkId!)){
+      return <ErrorPage403 />
+    }
+
+
   return (
     <div className="flex flex-grow flex-col">
       <div className="relative flex  flex-grow flex-col gap-y-4 pr-16">
@@ -270,7 +282,11 @@ const OpticalRouteTestSetupPage: FC = () => {
         />
       </div>
       <div className="mt-[20px] flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={save}>Save</SimpleBtn>
+        {loggedInUser.role === UserRole.SUPER_USER ||
+        opticalroutenetworkadmin.includes(params?.networkId!) ? (
+          <SimpleBtn onClick={save}>Save</SimpleBtn>
+        ) : null}
+
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
 

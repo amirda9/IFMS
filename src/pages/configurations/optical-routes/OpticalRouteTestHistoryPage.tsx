@@ -1,9 +1,14 @@
 import dayjs from 'dayjs';
 import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
+import {useSelector} from 'react-redux';
 import {useParams, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
+import {UserRole} from '~/constant/users';
+import {useAppSelector} from '~/hooks';
+import ErrorPage403 from '~/pages/errors/403';
+import {RootState} from '~/store';
 import {deepcopy} from '~/util';
 import {$Delete, $Get} from '~/util/requestapi';
 
@@ -30,10 +35,10 @@ type historydatatype = {
   delete: string;
 }[];
 
-type Iprops={
-  opticalRouteId:string
-  networkId:string
-}
+type Iprops = {
+  opticalRouteId: string;
+  networkId: string;
+};
 const items = [
   {
     index: 1,
@@ -79,14 +84,15 @@ const OpticalRouteTestHistoryPage: FC = () => {
   const [veiwertablesorte, setVeiwertablesort] = useState(false);
   const [historydata, setHistorydata] = useState<historydatatype>([]);
   const [deletelist, setDeletelist] = useState<string[]>([]);
-
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+  const {opticalroutenetworkadmin} = useSelector(
+    (state: RootState) => state.opticalroute,
+  );
   const gethistory = async () => {
     try {
       setLoading(true);
       const getdata = await $Get(
-        `otdr/optical-route/${
-          params.opticalRouteId!
-        }/test-setups/history`,
+        `otdr/optical-route/${params.opticalRouteId!}/test-setups/history`,
       );
 
       const data: {
@@ -159,17 +165,13 @@ const OpticalRouteTestHistoryPage: FC = () => {
     try {
       setLoading(true);
       const deleteonehistory = await $Delete(
-        `otdr/optical-route/${
-          params.opticalRouteId!
-        }/measurements`,
+        `otdr/optical-route/${params.opticalRouteId!}/measurements`,
         deletelist,
       );
       const data = await deleteonehistory?.json();
       if (deleteonehistory?.status == 201) {
         const getdata = await $Get(
-          `otdr/optical-route/${
-            params.opticalRouteId!
-          }/test-setups/history`,
+          `otdr/optical-route/${params.opticalRouteId!}/test-setups/history`,
         );
         const data: {
           measurement_id: string;
@@ -201,6 +203,12 @@ const OpticalRouteTestHistoryPage: FC = () => {
       setDeletelist(prev => [...prev, id]);
     }
   };
+
+  if(loggedInUser.role !== UserRole.SUPER_USER &&
+    !opticalroutenetworkadmin.includes(params?.networkId!)){
+      return <ErrorPage403 />
+    }
+
 
   return (
     <div className="flex flex-grow flex-col">
@@ -245,7 +253,11 @@ const OpticalRouteTestHistoryPage: FC = () => {
         />
       </div>
       <div className="mt-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={deletehistory}>Save</SimpleBtn>
+        {loggedInUser.role === UserRole.SUPER_USER ||
+        opticalroutenetworkadmin.includes(params?.networkId!) ? (
+          <SimpleBtn onClick={deletehistory}>Save</SimpleBtn>
+        ) : null}
+
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>

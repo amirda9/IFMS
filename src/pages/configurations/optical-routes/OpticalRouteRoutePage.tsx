@@ -1,6 +1,6 @@
 import {FC, useEffect, useState} from 'react';
 import {Select, SimpleBtn} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {useNavigate, useParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
 import Cookies from 'js-cookie';
@@ -8,6 +8,10 @@ import {networkExplored} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
 import {$Delete, $Get, $Post, $Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
+import {useSelector} from 'react-redux';
+import {RootState} from '~/store';
+import {UserRole} from '~/constant/users';
+import ErrorPage403 from '~/pages/errors/403';
 // ----------- type ------------------------------- type ---------------------------- type ---------
 type Iprops = {
   classname: string;
@@ -79,10 +83,10 @@ type allupdatedroutestype = {
   cable: string;
   core: number;
 };
-type mainprops={
-  opticalRouteId:string
-  networkId:string
-}
+type mainprops = {
+  opticalRouteId: string;
+  networkId: string;
+};
 // ---- component ------ component -----------------component-------------------------------
 const Addbox = ({classname, onclick}: Iprops) => {
   return (
@@ -101,12 +105,15 @@ const Addbox = ({classname, onclick}: Iprops) => {
 // ------------main ---------------main -------------------main ------------main -----------
 const OpticalRouteRoutePage: FC = () => {
   const params = useParams<mainprops>();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const networkId = params.networkId!;
   const [loading, setLoading] = useState(false);
   const [allroutes, setAllroutes] = useState<allroutestype[]>([]);
   const [alldeleteroutes, setAllDeleteroutes] = useState<string[]>([]);
-
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+  const {opticalroutenetworkadmin} = useSelector(
+    (state: RootState) => state.opticalroute,
+  );
   const [allselectedsource, setAllselectedsource] = useState<
     allselectedsourcetype[]
   >([]);
@@ -661,11 +668,9 @@ const OpticalRouteRoutePage: FC = () => {
     try {
       setLoading(true);
       const allroutesrespone = await $Get(
-        `otdr/optical-route/${
-          params.opticalRouteId! || ''
-        }/routes`,
+        `otdr/optical-route/${params.opticalRouteId! || ''}/routes`,
       );
-      if(allroutesrespone?.status == 200){
+      if (allroutesrespone?.status == 200) {
         const allroutes = await allroutesrespone?.json();
         setAllroutes(
           allroutes.map((data: any, index: any) => ({
@@ -691,7 +696,6 @@ const OpticalRouteRoutePage: FC = () => {
           ]);
         }
       }
-     
     } catch (error) {
     } finally {
       setLoading(false);
@@ -702,11 +706,14 @@ const OpticalRouteRoutePage: FC = () => {
     getallroute();
   }, []);
 
-  const save = async() => {
+  const save = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       if (alldeleteroutes.length > 0) {
-        const deleteroute=await $Delete(`otdr/optical-route/${params.opticalRouteId!}/routes`,alldeleteroutes)
+        const deleteroute = await $Delete(
+          `otdr/optical-route/${params.opticalRouteId!}/routes`,
+          alldeleteroutes,
+        );
         // request('opticalrouteDeleteRoute', {
         //   params: {
         //     optical_route_id: params.opticalRouteId! || '',
@@ -715,13 +722,16 @@ const OpticalRouteRoutePage: FC = () => {
         // });
       }
       if (allcreatedroutes.length > 0) {
-       const newdata= allcreatedroutes.map((data, index) => ({
+        const newdata = allcreatedroutes.map((data, index) => ({
           link_id: data.link_id,
           cable: data.cable,
           core: data.core,
           route_number: index,
-        }))
-        const createroute=await $Post(`otdr/optical-route/${params.opticalRouteId!}/routes`,newdata)
+        }));
+        const createroute = await $Post(
+          `otdr/optical-route/${params.opticalRouteId!}/routes`,
+          newdata,
+        );
         // request('opticalrouteCreateRoute', {
         //   params: {
         //     optical_route_id: params.opticalRouteId!|| '',
@@ -736,37 +746,43 @@ const OpticalRouteRoutePage: FC = () => {
       }
 
       if (allupdatedroutes.length > 0) {
-        const updatedata= allupdatedroutes.map((data, index) => ({
+        const updatedata = allupdatedroutes.map((data, index) => ({
           link_id: data.link_id,
           cable: data.cable,
           core: data.core,
           id: data.id,
-        }))
-        const updaterote=$Put(`otdr/optical-route/${params.opticalRouteId!}/routes`,updatedata)
+        }));
+        const updaterote = $Put(
+          `otdr/optical-route/${params.opticalRouteId!}/routes`,
+          updatedata,
+        );
         // request('opticalrouteUpdateRoute', {
         //   params: {
         //     optical_route_id: params.opticalRouteId! || '',
         //   },
-          // data: allupdatedroutes.map((data, index) => ({
-          //   link_id: data.link_id,
-          //   cable: data.cable,
-          //   core: data.core,
-          //   id: data.id,
-          // })),
+        // data: allupdatedroutes.map((data, index) => ({
+        //   link_id: data.link_id,
+        //   cable: data.cable,
+        //   core: data.core,
+        //   id: data.id,
+        // })),
         // });
       }
-     
     } catch (error) {
     } finally {
-      setAllroutes([])
+      setAllroutes([]);
       setAllCreatedroutes([]);
       setAllUpdatedroutes([]);
       setAllDeleteroutes([]);
       getallroute();
-    //  navigate(`/config/optical-routes/${params.opticalRouteId!}/${params.networkId!}/route`)
+      //  navigate(`/config/optical-routes/${params.opticalRouteId!}/${params.networkId!}/route`)
     }
   };
   // ###################################################################################################
+ if(loggedInUser.role !== UserRole.SUPER_USER &&
+  !opticalroutenetworkadmin.includes(params?.networkId!)){
+    return <ErrorPage403 />
+  }
   if (loading) {
     return <h1 className="mt-6 font-bold">Loading..</h1>;
   }
@@ -933,7 +949,11 @@ const OpticalRouteRoutePage: FC = () => {
         />
       </div>
       <div className="flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={save}>Save</SimpleBtn>
+        {loggedInUser.role === UserRole.SUPER_USER ||
+        opticalroutenetworkadmin.includes(params?.networkId!) ? (
+          <SimpleBtn onClick={save}>Save</SimpleBtn>
+        ) : null}
+
         <SimpleBtn>Cancel</SimpleBtn>
       </div>
     </div>
