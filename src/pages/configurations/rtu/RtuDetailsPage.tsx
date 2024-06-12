@@ -65,6 +65,7 @@ const RtuDetailsPage: FC = () => {
     rtustationidadmin,
   } = useSelector((state: RootState) => state.rtu);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
+
   const {
     state: {users},
     request,
@@ -72,28 +73,12 @@ const RtuDetailsPage: FC = () => {
     selector: state => ({
       rtuDetail: state.http.rtuDetail,
       users: state.http.userList,
-      // update: state.http.rtuUpdate,
     }),
     initialRequests: request => {
-      // request('rtuDetail', {
-      //   params: {rtu_Id: params?.rtuId! || ''},
-      // });
-
       request('userList', undefined);
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.update?.httpRequestStatus === 'loading' &&
-    //     state.update?.httpRequestStatus === 'success'
-    //   ) {
-    //     request('rtuDetail', {
-    //       params: {rtu_Id: params?.rtuId! || ''},
-    //     });
-    //   }
-    // },
   });
 
-  console.log('rtuDetail?.httpRequestStatus', rtuDetail?.httpRequestStatus);
 
   const getrtudetail = async () => {
     try {
@@ -110,13 +95,9 @@ const RtuDetailsPage: FC = () => {
       console.log(`error is :${error}`);
     }
   };
+  
   useEffect(() => {
     getrtudetail();
-    // if(rtuDetail?.httpRequestStatus == "success"){
-    //   dispatch( setrtugetdetailStatus(
-    //     false
-    //   ))
-    // }
   }, []);
   const formik = useFormik({
     validationSchema: rtuSchema,
