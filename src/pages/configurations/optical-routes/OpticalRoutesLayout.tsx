@@ -30,7 +30,6 @@ type Itembtntype = {
   id: string;
   classname?: string;
   canAdd:boolean;
-  canDelete:boolean;
   onclickcheck?: (e: boolean) => void;
 };
 
@@ -75,7 +74,7 @@ const OpticalRouteLayout: FC = () => {
 
   const [openall, setOpenall] = useState(false);
 
-  const Itembtn = ({name, id, classname,canAdd,canDelete}: Itembtntype) => {
+  const Itembtn = ({name, id, classname,canAdd}: Itembtntype) => {
     return (
       <div
         className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
@@ -100,7 +99,7 @@ const OpticalRouteLayout: FC = () => {
             <BsPlusLg color="#18C047" className="ml-[10px]" />
           </NavLink>
         ) : null}
-        {selectedId == id && canDelete? (
+        {selectedId == id ? (
           <IoTrashOutline
             onClick={() => deletenetworkoptical(id)}
             color="#FF0000"
@@ -325,7 +324,6 @@ const OpticalRouteLayout: FC = () => {
                       name={networkdata.name}
                       id={networkdata.id}
                       canAdd={loggedInUser.role === UserRole.SUPER_USER || opticalroutenetworkadmin.includes(networkdata.id)}
-                      canDelete={loggedInUser.role === UserRole.SUPER_USER || opticalroutenetworkadmin.includes(networkdata.id)}
                     />
 
                     {networkselectedlist.indexOf(networkdata.id) > -1 ? (
@@ -351,6 +349,7 @@ const OpticalRouteLayout: FC = () => {
                                     networkdata.id,
                                   )
                                 }
+                                disabledcheckbox={loggedInUser.role !== UserRole.SUPER_USER && !opticalroutenetworkadmin.includes(networkdata.id)}
                                 checkstatus={findoptical(
                                   networkdata.id,
                                   data.id,
@@ -359,6 +358,7 @@ const OpticalRouteLayout: FC = () => {
                                   deleteoneopticalroute(data.id, networkdata.id)
                                 }
                                 enabelcheck={true}
+                              
                                 className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
                                 name={data.name}
                                 to={`${data.id}/${networkdata.id}`}
