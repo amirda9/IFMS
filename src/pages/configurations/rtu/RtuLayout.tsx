@@ -784,13 +784,13 @@ const RtuLayout: FC = () => {
                                                                 ) {
                                                                   dispatch(
                                                                     setrtugetdetailStatus(
-                                                                      false
-                                                                    )
+                                                                      false,
+                                                                    ),
                                                                   );
                                                                 }
 
                                                                 setSelectedtabid(
-                                                                  rtudata.id
+                                                                  rtudata.id,
                                                                 );
                                                               }}
                                                               selected={
@@ -809,20 +809,21 @@ const RtuLayout: FC = () => {
                                                                   satationdata.id,
                                                                 )
                                                               }
-                                                              canDelete={
-                                                                loggedInUser.role ===
-                                                                  UserRole.SUPER_USER ||
-                                                                rtunetworkidadmin.includes(
-                                                                  networkdata.id,
-                                                                ) ||
-                                                                rturegionidadmin.includes(
-                                                                  networkdata.id,
-                                                                )
-                                                              }
+                                                              canDelete={true}
                                                               onDelete={() =>
                                                                 ondeletesinglertu(
                                                                   rtudata.id,
                                                                   satationdata.id,
+                                                                )
+                                                              }
+                                                              disabledcheckbox={
+                                                                loggedInUser.role !==
+                                                                  UserRole.SUPER_USER &&
+                                                                !rtunetworkidadmin.includes(
+                                                                  networkdata.id,
+                                                                ) &&
+                                                                !rturegionidadmin.includes(
+                                                                  networkdata.id,
                                                                 )
                                                               }
                                                               enabelcheck={true}
