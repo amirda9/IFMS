@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Outlet, useLocation, useNavigate} from 'react-router-dom';
-import {SidebarItem} from '~/components';
+import {SidebarItem, SimpleBtn} from '~/components';
 import {RootState} from '~/store';
 import {deepcopy} from '~/util';
 import Swal from 'sweetalert2';
@@ -75,7 +75,8 @@ function NetworktreeLayout({children}: Iprops) {
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = window.location.pathname;
-
+  const [networkloading,setNetworkloading]=useState(false)
+  const [skip,setSkip]=useState(0)
   
 
   // const [showAllnetworks, setShowallnetworks] = useState(false);
@@ -126,18 +127,25 @@ function NetworktreeLayout({children}: Iprops) {
       element.scrollIntoView();
     }
   }, []);
+
+
+
   useEffect(() => {
     const getnetworklist = async () => {
+      setNetworkloading(true)
       try {
-        const getnetworks = await $Get(`otdr/network`);
+        const getnetworks = await $Get(`otdr/network?limit=10&skip=${skip}`);
         const networksdata = await getnetworks?.json();
         if (getnetworks?.status == 200) {
-          dispatch(setNetworklist(networksdata));
+          const newnetworklist=[...networkslist,...networksdata]
+          dispatch(setNetworklist(newnetworklist));
         }
-      } catch (error) {}
+      } catch (error) {} finally{
+        setNetworkloading(false)
+      }
     };
     getnetworklist();
-  }, []);
+  }, [skip]);
   useEffect(() => {
     if (mount) {
       const finddata = networkregions.filter(
@@ -1079,6 +1087,12 @@ function NetworktreeLayout({children}: Iprops) {
         {/* <div className="ml-[5px] mt-[-6px] border-l-[1px]  border-dashed border-black  pt-[20px]">
                {children}
             </div> */}
+            {networkslist.length >= 10 && showAllnetworks?
+            <SimpleBtn loading={networkloading} className='mx-auto mt-4' onClick={()=> setSkip(skip+10)}>
+            more
+          </SimpleBtn>
+          :null}
+            
       </div>
       <div className="flex w-full pb-10 pl-[32%] pr-8 pt-[70px] ">
         <Outlet />
