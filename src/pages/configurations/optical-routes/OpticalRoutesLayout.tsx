@@ -2,7 +2,7 @@ import {useEffect, useMemo, useState} from 'react';
 import {FC} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {NavLink, useNavigate} from 'react-router-dom';
-import {SidebarItem, TextInput} from '~/components';
+import {SidebarItem, SimpleBtn, TextInput} from '~/components';
 import {SidebarLayout} from '~/layout';
 import Swal from 'sweetalert2';
 import {$Delete, $Get} from '~/util/requestapi';
@@ -14,6 +14,7 @@ import {
   setAlldeleteopticalroute,
   alldeleteopticalroutetype,
   networkopticaltype,
+  setopenall
 } from './../../../store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
@@ -46,17 +47,31 @@ const OpticalRouteLayout: FC = () => {
   const navigte = useNavigate();
   const [selectedId, setSelectedId] = useState('');
   const [list, setList] = useState<networklisttype[]>([]);
-  const {networkselectedlist, networkoptical, alldeleteopticalroute} =
+  const [skip, setSkip] = useState(0);
+ const [networkloading,setNetworkloading]=useState(false)
+  const {networkselectedlist, networkoptical, alldeleteopticalroute,openall} =
     useSelector((state: RootState) => state.opticalroute);
 
   useEffect(() => {
     const getnetworklist = async () => {
-      const response = await $Get(`otdr/network`);
-      const responsedata = await response?.json();
-      setList(responsedata);
+      try {
+        setNetworkloading(true)
+        const response = await $Get(`otdr/network?limit=10&skip=${skip}`);
+        if (response?.status == 200) {
+          const responsedata = await response?.json();
+          const listCopy = deepcopy(list);
+          const newlist = [...listCopy, ...responsedata];
+          setList(newlist);
+        }
+      } catch (error) {
+        
+      } finally {
+        setNetworkloading(false)
+      }
+   
     };
     getnetworklist();
-  }, []);
+  }, [skip]);
   const findoptical = (networkId: string, opticalId: string) => {
     const findopt = alldeleteopticalroute
       ?.find(data => data.networkid == networkId)
@@ -68,7 +83,7 @@ const OpticalRouteLayout: FC = () => {
     }
   };
 
-  const [openall, setOpenall] = useState(false);
+  // const [openall, setOpenall] = useState(false);
 
   const Itembtn = ({name, id, classname}: Itembtntype) => {
     return (
@@ -286,7 +301,7 @@ const OpticalRouteLayout: FC = () => {
             <span className="mb-[5px] ml-[3px] mr-[5px] font-light">+</span>
           )}
 
-          <button onClick={() => setOpenall(!openall)}>
+          <button onClick={() => dispatch(setopenall(!openall))}>
             <span>Optical Routes</span>
           </button>
         </div>
@@ -363,6 +378,11 @@ const OpticalRouteLayout: FC = () => {
               ))}
           </>
         ) : null}
+
+        {openall && list.length >= 10 ? (
+          <SimpleBtn loading={networkloading} onClick={()=> setSkip(skip+10)} className="mx-auto mt-4">more</SimpleBtn>
+        ) : null}
+
       </div>
       {/* </div> */}
     </SidebarLayout>
