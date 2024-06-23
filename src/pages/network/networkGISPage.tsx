@@ -258,7 +258,7 @@ const NetworkGisPage = () => {
                     <SimpleBtn
                       onClick={() =>
                         downloadShapefile(
-                          `http://37.32.27.143:8080/${data.path}`,
+                          `http://${import.meta.env.VITE_API_IP}:8080/${data.path}`,
                         )
                       }>
                       Download

@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://37.32.27.143:8080/api';
+export const BASE_URL = `http://${import.meta.env.VITE_API_IP}:8080/api`;
 // export const BASE_URL = 'http://188.213.198.19:8080/api';
 
 export const URLS = {
