@@ -31,6 +31,7 @@ import {
   setRegionidadmin,
   chageLoading,
   changegetdatadetailStatus,
+  setMount,
 } from './../store/slices/networktreeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import {BsPlusLg} from 'react-icons/bs';
@@ -75,14 +76,13 @@ function NetworktreeLayout({children}: Iprops) {
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = window.location.pathname;
-  const [networkloading,setNetworkloading]=useState(false)
-  const [skip,setSkip]=useState(0)
-  
+  const [networkloading, setNetworkloading] = useState(false);
+  const [skip, setSkip] = useState(0);
 
   // const [showAllnetworks, setShowallnetworks] = useState(false);
   // const [allselectedId, setAllselectedId] = useState<string[]>([]);
   const [networkId, setNetworkId] = useState('');
-  const [mount, setMount] = useState(false);
+  // const [mount, setMount] = useState(false);
   const {
     networkslist,
     stationsrtu,
@@ -99,9 +99,11 @@ function NetworktreeLayout({children}: Iprops) {
     selecteddefaultstations,
     selectedefaultdlinks,
     loading,
+    mount,
   } = useSelector((state: RootState) => state.networktree);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {networkidadmin} = useSelector((state: any) => state.networktree);
+
   const {
     request,
     state: {list, regions},
@@ -116,6 +118,7 @@ function NetworktreeLayout({children}: Iprops) {
       }
     },
   });
+
   const onclicknetwork = async (id: string) => {
     request('regionList', {params: {network_id: id}});
   };
@@ -128,24 +131,31 @@ function NetworktreeLayout({children}: Iprops) {
     }
   }, []);
 
-
+  const getnetworklist = async (data:number) => {
+    setNetworkloading(true);
+    try {
+      const getnetworks = await $Get(`otdr/network?limit=10&skip=${data}`);
+      const networksdata = await getnetworks?.json();
+      console.log('networksdata',networksdata);
+      
+      if (getnetworks?.status == 200) {
+        const newnetworklist = [...networkslist, ...networksdata];
+        dispatch(setNetworklist(newnetworklist));
+      }
+    } catch (error) {
+    } finally {
+      setNetworkloading(false);
+    }
+  };
 
   useEffect(() => {
-    const getnetworklist = async () => {
-      setNetworkloading(true)
-      try {
-        const getnetworks = await $Get(`otdr/network?limit=10&skip=${skip}`);
-        const networksdata = await getnetworks?.json();
-        if (getnetworks?.status == 200) {
-          const newnetworklist=[...networkslist,...networksdata]
-          dispatch(setNetworklist(newnetworklist));
-        }
-      } catch (error) {} finally{
-        setNetworkloading(false)
-      }
-    };
-    getnetworklist();
-  }, [skip]);
+    if (mount) {
+    } else {
+      getnetworklist(0);
+      dispatch(setMount(true));
+    }
+  }, []);
+
   useEffect(() => {
     if (mount) {
       const finddata = networkregions.filter(
@@ -166,7 +176,7 @@ function NetworktreeLayout({children}: Iprops) {
         dispatch(setNetworkregions(old));
       }
     } else {
-      setMount(true);
+      dispatch(setMount(true));
     }
   }, [regions]);
 
@@ -321,7 +331,6 @@ function NetworktreeLayout({children}: Iprops) {
           );
 
           const results = await Promise.all(promises);
-       
 
           dispatch(
             deletegroupstation({
@@ -515,7 +524,6 @@ function NetworktreeLayout({children}: Iprops) {
       }
     });
   };
-
 
   return (
     <>
@@ -1087,12 +1095,14 @@ function NetworktreeLayout({children}: Iprops) {
         {/* <div className="ml-[5px] mt-[-6px] border-l-[1px]  border-dashed border-black  pt-[20px]">
                {children}
             </div> */}
-            {networkslist.length >= 10 && showAllnetworks?
-            <SimpleBtn loading={networkloading} className='mx-auto mt-4' onClick={()=> setSkip(skip+10)}>
+        {networkslist.length >= 10 && showAllnetworks ? (
+          <SimpleBtn
+            loading={networkloading}
+            className="mx-auto mt-4"
+            onClick={() => {getnetworklist(skip + 10),setSkip(skip + 10)}}>
             more
           </SimpleBtn>
-          :null}
-            
+        ) : null}
       </div>
       <div className="flex w-full pb-10 pl-[32%] pr-8 pt-[70px] ">
         <Outlet />

@@ -303,7 +303,8 @@ export type initialStatetype = {
   loading: boolean;
   networkidadmin: string[];
   regionidadmin: string[];
-  datadetailStatus:boolean
+  datadetailStatus: boolean;
+  mount: boolean;
 };
 const initialState: initialStatetype = {
   networkidadmin: [],
@@ -326,13 +327,17 @@ const initialState: initialStatetype = {
   selecteddefaultstations: [],
   selectedefaultdlinks: [],
   loading: false,
-  datadetailStatus:false
+  datadetailStatus: false,
+  mount: false,
 };
 
 const networktreeslice = createSlice({
   name: 'type',
   initialState,
   reducers: {
+    setMount: (state, action: {type: string; payload: boolean}) => {
+      state.mount = action.payload;
+    },
     setNetworklist: (state, action: networklisttype) => {
       state.networkslist = action.payload;
     },
@@ -1455,10 +1460,13 @@ const networktreeslice = createSlice({
     chageLoading: (state, action: {payload: boolean; type: string}) => {
       state.loading = action.payload;
     },
- // ------------------------------------------------
-    changegetdatadetailStatus:(state, action: {payload: boolean; type: string}) => {
-    state.datadetailStatus=action.payload
-    }
+    // ------------------------------------------------
+    changegetdatadetailStatus: (
+      state,
+      action: {payload: boolean; type: string},
+    ) => {
+      state.datadetailStatus = action.payload;
+    },
   },
 });
 
@@ -1501,7 +1509,8 @@ export const {
   setNetworkidadmin,
   setRegionidadmin,
   chageLoading,
-  changegetdatadetailStatus
+  changegetdatadetailStatus,
+  setMount
 } = networktreeslice.actions;
 
 export default networktreeslice.reducer;

@@ -158,7 +158,7 @@ const MapPage = () => {
   useEffect(() => {
     const getallnetwork = async () => {
       try {
-        const response = await $Get(`otdr/network`);
+        const response = await $Get(`otdr/network/?limit=100&skip=0`);
         const responseData = await response?.json();
         const newdata = responseData.map((data: any) => ({
           name: data.name,
@@ -201,6 +201,7 @@ const MapPage = () => {
           );
         }
 
+ 
         for (let d = 0; d < responsedata[i].stations.length; d++) {
           const findstationdata = stationdata.findIndex(
             data => data.id == responsedata[i].stations[d].id,
@@ -219,7 +220,9 @@ const MapPage = () => {
           }
         }
       }
-
+      console.log("stationdata",stationdata);
+      console.log("linksdata",linksdata);
+      console.log("regiondata",regiondata);
       setRegions(regiondata);
       setStaations(stationdata);
       setLinks(linksdata);
@@ -687,6 +690,7 @@ const MapPage = () => {
                 ))}
               </>
             ) : (
+          
               <>
                 {Regions?.map((data, index) => {
                   let sumlatitude = 0;
@@ -698,7 +702,7 @@ const MapPage = () => {
                     }
                   }
 
-                  if (data.stations.length > 0) {
+                  if (data?.stations?.length > 0) {
                     return (
                       <Marker
                         key={data.id}
@@ -742,7 +746,7 @@ const MapPage = () => {
               </>
             )}
           </>
-          {/* // )} */}
+      
 
           {yellowalarms ? (
             <>
