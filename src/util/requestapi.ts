@@ -73,6 +73,9 @@ export const $Delete = async (url: string, data: any = null) => {
   });
 };
 
+
+
+
 export const $PUT = async (url: string, data: any) => {
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'post',

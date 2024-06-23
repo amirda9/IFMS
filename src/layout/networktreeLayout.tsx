@@ -440,13 +440,17 @@ function NetworktreeLayout({children}: Iprops) {
   };
 
   const Deleteregion = async (regionid: string, networkid: string) => {
+    console.log("regionid",regionid);
+    console.log("networkid",networkid);
+    
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         try {
           dispatch(chageLoading(true));
           const response = await $Delete(`otdr/region/${regionid}`);
-          if (response?.status == 200) {
+          if (response.status == 200) {
             dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
+            navigate(`/networks/${networkid}`)
           } else {
             toast('Encountered an error', {type: 'error', autoClose: 1000});
           }
@@ -505,6 +509,7 @@ function NetworktreeLayout({children}: Iprops) {
           const deletenetworkresponse = await $Delete(
             `otdr/network/${networkid}`,
           );
+      
           if (deletenetworkresponse?.status == 200) {
             toast('It was done successfully', {
               type: 'success',
@@ -580,7 +585,7 @@ function NetworktreeLayout({children}: Iprops) {
             {networkslist?.map((networkdata, index) => (
               <div key={index} className="w-full">
                 <Items
-                  // key={networkdata.id}
+                   key={`${index}${networkdata.id}`}
                   to={
                     loggedInUser.role === UserRole.SUPER_USER
                       ? `/networks/${networkdata.id}`
@@ -625,7 +630,7 @@ function NetworktreeLayout({children}: Iprops) {
                         ?.regions.map((regionsdata, index) => (
                           <div key={regionsdata.id} className="full">
                             <Items
-                              // key={regionsdata.id}
+                               key={`${regionsdata.id}${index}`}
                               to={`/regions/${regionsdata.id}/${networkdata.id}`}
                               selected={false}
                               canAdd={false}
@@ -634,7 +639,7 @@ function NetworktreeLayout({children}: Iprops) {
                                 networkidadmin.includes(networkdata.id)
                               }
                               onDelete={() =>
-                                Deleteregion(regionsdata.id, networkdata.id)
+                                Deleteregion(regionsdata?.id, networkdata?.id)
                               }
                               onclick={() => {
                                 if (
@@ -937,7 +942,7 @@ function NetworktreeLayout({children}: Iprops) {
 
                                 {defaultregionstations
                                   .find(
-                                    dataa => dataa.networkid == networkdata.id,
+                                    dataa => dataa?.networkid == networkdata?.id,
                                   )
                                   ?.stations.map((stationsdata, index) => (
                                     <Items
@@ -1038,7 +1043,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       selected={false}
                                       onDelete={() =>
                                         ondeletedefaultlinksgroup(
-                                          networkdata.id,
+                                          networkdata?.id,
                                         )
                                       }
                                       disabledcheckbox={
