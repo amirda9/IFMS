@@ -6,10 +6,11 @@ import {httpClear} from '~/store/slices';
 import {useAppDispatch, useHttpRequest} from '~/hooks';
 import {Outlet} from 'react-router-dom';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
+import { $Get } from '~/util/requestapi';
+import { toast } from 'react-toastify';
 
 const MainLayout: FC = () => {
   const dispatch = useAppDispatch();
-
   const {state} = useHttpRequest({
     selector: state => state.http.verifyToken,
     initialRequests: request => {
@@ -17,10 +18,19 @@ const MainLayout: FC = () => {
     },
   });
 
-  const handleLogout = () => {
-    localStorage.removeItem('refresh');
-    localStorage.removeItem('login');
-    dispatch(httpClear(['login', 'refresh']));
+  const handleLogout = async() => {
+    try {
+      const logoutapi=await $Get(`auth/users/auth/logout`)
+      if(logoutapi?.status == 200){
+        localStorage.removeItem('refresh');
+        localStorage.removeItem('login');
+        dispatch(httpClear(['login', 'refresh']));
+      } else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      console.log(`logout error is:${error}`);
+    }
   };
 
   if (state?.httpRequestStatus === 'error') {
