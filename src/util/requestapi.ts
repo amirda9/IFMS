@@ -1,8 +1,9 @@
-import {useEffect, useState} from 'react';
+
 import {BASE_URL} from '~/constant';
-const login = localStorage.getItem('login');
-const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
 export const $GET = async (url: string) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'GET',
     headers: {
@@ -14,6 +15,8 @@ export const $GET = async (url: string) => {
 };
 
 export const $Get = async (url: string) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
   if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'GET',
@@ -26,6 +29,9 @@ export const $Get = async (url: string) => {
 };
 
 export const $POST = async (url: string, data: any) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'post',
     body: data,
@@ -38,6 +44,9 @@ export const $POST = async (url: string, data: any) => {
 };
 
 export const $Post = async (url: string, data: any) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'post',
     body: JSON.stringify(data),
@@ -50,6 +59,9 @@ export const $Post = async (url: string, data: any) => {
 };
 
 export const $DELETE = async (url: string, data = null) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'delete',
     body: data,
@@ -62,6 +74,9 @@ export const $DELETE = async (url: string, data = null) => {
 };
 
 export const $Delete = async (url: string, data: any = null) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'delete',
     body: JSON.stringify(data),
@@ -73,10 +88,10 @@ export const $Delete = async (url: string, data: any = null) => {
   });
 };
 
-
-
-
 export const $PUT = async (url: string, data: any) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'post',
     body: data,
@@ -89,6 +104,9 @@ export const $PUT = async (url: string, data: any) => {
 };
 
 export const $Put = async (url: string, data: any) => {
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  if (!accesstoken) return;
   return await fetch(`${BASE_URL}/${url}`, {
     method: 'put',
     body: JSON.stringify(data),
