@@ -448,7 +448,7 @@ function NetworktreeLayout({children}: Iprops) {
         try {
           dispatch(chageLoading(true));
           const response = await $Delete(`otdr/region/${regionid}`);
-          if (response.status == 200) {
+          if (response?.status == 200) {
             dispatch(deleteRegion({regionid: regionid, networkid: networkid}));
             navigate(`/networks/${networkid}`)
           } else {
