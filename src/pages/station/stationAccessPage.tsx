@@ -131,7 +131,7 @@ const StationAccessPage = () => {
           user_id: userAdmin || admin!.user.id!,
         }),
       ]);
-      if (updateacsecc?.status == 200 && updateadmin?.status == 201) {
+      if (updateacsecc?.status == 201 && updateadmin?.status == 201) {
         request('stationAccessList', {
           params: {station_id: params.stationId!},
         });
