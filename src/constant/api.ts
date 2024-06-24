@@ -6,6 +6,7 @@ export const URLS = {
     users: {
       all: '/auth/users',
       single: '/auth/users/{user_id}',
+      session:'/auth/users/{user_id}/sessions',
       login: '/auth/users/login',
       changePassword: '/auth/users/{user_id}/change_password',
       groups: '/auth/users/{user_id}/groups',
@@ -19,7 +20,9 @@ export const URLS = {
         stations: '/auth/users/{user_id}/accesses/stations',
         links: '/auth/users/{user_id}/accesses/links',
       },
-      singleSession: '/auth/users/sessions/{session_id}',
+      
+
+      singleSession: '/auth/users/{user_id}/sessions/{session_id}',
     },
     groups: {
       all: '/auth/groups',

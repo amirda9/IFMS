@@ -27,6 +27,7 @@ type RequestKeys =
   | 'userList'
   | 'userRegister'
   | 'userDetail'
+  | 'userSession'
   | 'userDetailUpdate'
   | 'deleteUserSession'
   | 'userGroupsList'
@@ -148,6 +149,12 @@ export const RequestList: Record<RequestKeys, T.ActionRequestType> = {
   userDetailUpdate: {
     url: api.BASE_URL + api.URLS.auth.users.single,
     method: 'put',
+    auth: true,
+  },
+
+  userSession:{
+    url: api.BASE_URL + api.URLS.auth.users.session,
+    method: 'get',
     auth: true,
   },
   deleteUserSession: {
@@ -634,6 +641,12 @@ export type RequestListTypes = {
       user_id: string;
     };
   };
+  userSession: {
+    params: {
+      user_id: string;
+    };
+  };
+
   userDetailUpdate: {
     params: {
       user_id: string;
@@ -641,7 +654,7 @@ export type RequestListTypes = {
     data: T.UserDetailFormType;
   };
   deleteUserSession: {
-    params: {session_id: string};
+    params: {session_id: string,user_id:string};
   };
   userGroupsList: {
     params: {
@@ -1235,6 +1248,7 @@ export type ResponseListType = {
   userList: T.UserListType[];
   userRegister: T.UserDetailType[];
   userDetail: T.UserDetailType;
+  userSession: T.SessionType[];
   userDetailUpdate: {id: string; username: string; role: string; email: string};
   deleteUserSession: string | null;
   userGroupsList: {id: string; name: string}[];

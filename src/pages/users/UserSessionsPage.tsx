@@ -1,5 +1,4 @@
 import {FC, useRef, useState} from 'react';
-
 import {useParams} from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
 import {useAppSelector, useHttpRequest} from '~/hooks';
@@ -41,19 +40,21 @@ const UserSessionsPage: FC = () => {
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const {
-    state: {deleteUserSession, userDetails},
+    state: {deleteUserSession, userDetails, userSession},
     request,
   } = useHttpRequest({
     selector: state => ({
       userDetails: state.http.userDetail,
+      userSession: state.http.userSession,
       deleteUserSession: state.http.deleteUserSession,
     }),
     initialRequests: request => {
-      request('userDetail', {params: {user_id: userId!}});
+      // request('userDetail', {params: {user_id: userId!}});
+      request('userSession', {params: {user_id: userId!}});
     },
     onUpdate: (lastState, state) => {
-      if (state.userDetails?.httpRequestStatus === 'success') {
-        const sessions = state.userDetails.data?.sessions || [];
+      if (state.userSession?.httpRequestStatus === 'success') {
+        const sessions = state.userSession?.data || [];
         setTableSessions(
           sessions.map((ses, i) => ({
             id: ses.id,
@@ -79,7 +80,8 @@ const UserSessionsPage: FC = () => {
       if (lastState.deleteUserSession?.httpRequestStatus === 'loading') {
         if (state.deleteUserSession?.httpRequestStatus === 'success') {
           toast('Session was successfully terminated.', {type: 'success'});
-          request('userDetail', {params: {user_id: userId!}});
+          // request('userDetail', {params: {user_id: userId!}});
+          request('userSession', {params: {user_id: userId!}});
         } else if (state.deleteUserSession?.httpRequestStatus === 'error') {
           toast(
             (state.deleteUserSession.error?.data?.detail as string) ||
@@ -93,14 +95,18 @@ const UserSessionsPage: FC = () => {
 
   const terminateAllSessions = () => {
     tableSessions.map(ses => {
-      request('deleteUserSession', {params: {session_id: ses.id}});
+      request('deleteUserSession', {
+        params: {session_id: ses.id, user_id: loggedInUser?.id},
+      });
     });
 
     setDeleteModalOpen(false);
   };
 
   const handleSessionTerminate = (id: string) => {
-    request('deleteUserSession', {params: {session_id: id}});
+    request('deleteUserSession', {
+      params: {session_id: id, user_id: loggedInUser?.id},
+    });
 
     setDeleteModalOpen(false);
   };

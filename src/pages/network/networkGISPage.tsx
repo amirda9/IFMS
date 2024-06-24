@@ -10,7 +10,7 @@ import {UserRole} from '~/constant/users';
 import ErrorPage403 from '../errors/403';
 import {toast} from 'react-toastify';
 import Swal from 'sweetalert2';
-const login = localStorage.getItem('login');
+
 import axios from 'axios';
 import {$Delete, $Get} from '~/util/requestapi';
 import {deepcopy} from '~/util';
@@ -32,7 +32,9 @@ type shapetype = {
 const NetworkGisPage = () => {
   const inputref: any = useRef(null);
   const [modal, setModal] = useState(false);
+  const login = localStorage.getItem('login');
   const accesstoken = (login && JSON.parse(login)?.data?.access_token) || '';
+
   const params = useParams<{networkId: string}>();
   const {networkDetail} = useSelector((state: any) => state.http);
   const {networkidadmin} = useSelector((state: any) => state.networktree);

@@ -14,6 +14,8 @@ export type UserListType = {
   };
 };
 
+
+
 export type UserDetailType = {
   id: string;
   username: string;
