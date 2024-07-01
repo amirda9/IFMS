@@ -47,6 +47,8 @@ const MainLayout: FC = () => {
     );
   }
 
+  const randomdata=Math.floor(Math.random()* 100) 
+  const randomdata2=Math.floor(Math.random()* 10) 
   return (
     <div style={{minHeight:"100vh"}} className="flex h-full flex-col bg-[#E7EFF7]">
       <nav className="flex h-20 z-[10000] flex-row items-center fixed top-0 left-0 right-0 bg-p px-4 ">
@@ -75,7 +77,14 @@ const MainLayout: FC = () => {
       <div  className="flex min-h-[100vh] pt-[20px] pb-[20px] flex-row bg-[#E7EFF7]">
         <Outlet />
       </div>
-      <div className="h-[25px] z-[1000] fixed bottom-0 right-0 left-0 bg-[red]">footer</div>
+      <div className="h-[25px] z-[1000] fixed bottom-0 right-0 left-0 flex flex-row bg-[#006BBC]">
+      <span className='text-white text-[16px] ml-6'>Total Alarms: {randomdata+25}</span>
+      <span className='text-white text-[16px] ml-6'>High Severity Alarms: {randomdata}</span>
+      <span className='text-white text-[16px] ml-6'>Medium Severity Alarms: {randomdata+7}</span>
+      <span className='text-white text-[16px] ml-6'>Low Severity Alarms: {randomdata+7}</span>
+      <span className='text-white text-[16px] ml-6'>Effected Stations: {randomdata2}</span>
+      <span className='text-white text-[16px] ml-6'>Effected Links: {randomdata2+4}</span>
+      </div>
     </div>
   );
 };
