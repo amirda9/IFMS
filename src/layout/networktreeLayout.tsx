@@ -541,7 +541,7 @@ function NetworktreeLayout({children}: Iprops) {
           classname={`fixed left-0 top-0 z-[200000] flex h-screen w-[30%] items-center justify-center bg-neutral-400 opacity-60`}
         />
       ) : null}
-      <div className="no-scrollbar fixed bottom-[0px] left-0  top-20 flex h-[calc(100vh-120px)] w-[30%]  flex-col overflow-scroll  border-r-2 border-g bg-[#E7EFF7] p-4 ">
+      <div className="no-scrollbar fixed bottom-[0px] left-0  top-20 flex h-[calc(100vh-90px)] w-[327px]  flex-col overflow-scroll  border-r-2 border-g bg-[#E7EFF7] p-4 ">
         <div className="flex w-full flex-row items-center">
           <>
             {showAllnetworks ? (
@@ -1109,7 +1109,7 @@ function NetworktreeLayout({children}: Iprops) {
           </SimpleBtn>
         ) : null}
       </div>
-      <div className="flex w-full pb-10 pl-[32%] pr-8 pt-[70px] ">
+      <div className="flex w-full pb-10 pl-[357px] pr-8 pt-[70px] ">
         <Outlet />
       </div>
     </>
