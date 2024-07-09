@@ -33,7 +33,10 @@ const MainLayout: FC = () => {
     }
   };
 
-  if (state?.httpRequestStatus === 'error') {
+console.log("state?.httpRequestStatus",state?.httpRequestStatus);
+
+
+  if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
     handleLogout();
     return <></>;
   }
