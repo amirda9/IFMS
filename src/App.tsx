@@ -204,6 +204,7 @@ function App() {
             <Route path="alarms" Component={pages.alarms} />
             <Route path="alarms/:alarmId" Component={pages.AlarmEmpty}>
               <Route path="" Component={pages.AlarmDetailPage} />
+              <Route path="alarms" Component={pages.AlarmAlarmsPage} />
               
               {/* <Route path="Access" Component={pages.NetworkAccessPage} />
               <Route path="gis" Component={pages.NetworkGISPage} /> */}
