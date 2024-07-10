@@ -20,9 +20,11 @@ type PropsType = {
   canAdd?: boolean;
   createurl?:string;
   canDelete?:boolean;
-  id?:string,
+  id?:string;
   disabledcheckbox?:boolean
   isLink?:boolean
+  navclassname?:string
+  buttonclickname?:string
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -41,7 +43,9 @@ const SidebarItem: FC<PropsType> = ({
   canDelete=true,
   id,
   disabledcheckbox=false,
-  isLink=true
+  isLink=true,
+  navclassname="text-[20px]",
+  buttonclickname="text-[20px]"
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -60,9 +64,9 @@ const SidebarItem: FC<PropsType> = ({
               }}
               to={to}
               className={({isActive}) =>
-                ` flex h-10 flex-grow items-center rounded-lg ${
+                ` flex h-10 flex-grow  items-center rounded-lg ${
                   enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
-                } ${isActive ? 'bg-[#C0E7F2]' : ''}`
+                } ${isActive ? 'bg-[#C0E7F2] font-bold' : 'font-normal'} ${navclassname}`
               }>
               {name}
             </NavLink>
@@ -74,9 +78,9 @@ const SidebarItem: FC<PropsType> = ({
         onclick();
       }} 
       className={
-        ` flex h-10 flex-grow items-center rounded-lg ${
+        ` flex h-10  text-[20px] flex-grow items-center rounded-lg ${
           enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
-        } ${selected ? 'bg-[#C0E7F2]' : ''}`
+        } ${selected ? 'bg-[#C0E7F2] font-bold' : 'font-normal'} ${buttonclickname}`
       }>
       {name}
     </button>
