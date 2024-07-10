@@ -33,9 +33,10 @@ const MainLayout: FC = () => {
     }
   };
 
+
   if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
     handleLogout();
-    return <></>;
+    return <>dd</>;
   }
 
   if (!state || state.httpRequestStatus === 'loading') {
