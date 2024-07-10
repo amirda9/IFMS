@@ -128,6 +128,7 @@ const MapPage = () => {
   const [selectboxregions, setSelectboxregions] = useState<
     {value: string; label: string}[]
   >([]);
+console.log("Regions",Regions);
 
   // const Stations = state?.detail?.data?.stations;
   // const Regions = state?.detail?.data?.regions || [];
@@ -216,7 +217,7 @@ const MapPage = () => {
             data => data.id == responsedata[i].links[d].id,
           );
           if (findstationdata < 0) {
-            stationdata.push(responsedata[i].links[d]);
+            linksdata.push(responsedata[i].links[d]);
           }
         }
       }
@@ -264,7 +265,7 @@ const MapPage = () => {
           Destination:{data?.destination?.name}
         </div>
         <div className="mb-[6px] ml-[8px] text-[18px] font-light leading-[25.2px] text-[black]">
-          Region: Region1
+          Region: {data.regionName}
         </div>
 
         <div className="ml-[8px] mt-[12px] text-[20px] font-light leading-[25.2px] text-[black]">
@@ -331,6 +332,11 @@ const MapPage = () => {
     }
   };
 
+
+  console.log("💪",Stations);
+  console.log("selectedLink",selectedLink);
+  
+  
   // ******************** return ****************** return ************************** return *******************************
   return (
     <div className="relative mt-[60px]  flex h-[calc(100vh-105px)] w-full flex-row  overflow-x-hidden overflow-y-hidden bg-[red]">
@@ -347,7 +353,7 @@ const MapPage = () => {
           <div
             className={` to-0 absolute left-0 z-[500] h-[100vh] bg-[#E7EFF7] ${
               leftbarstate ? 'w-[330px]' : 'w-12'
-            } box-border flex flex-col overflow-hidden px-[10px]`}>
+            } box-border flex flex-col overflow-x-hidden overflow-y-auto pb-[120px] px-[10px]`}>
             {leftbarstate ? (
               <div className="mb-[40px] mt-[10px] flex w-full flex-row items-center justify-between">
                 <span className="text-[24px] font-bold leading-[29.05px] text-[#636363]">
