@@ -48,6 +48,7 @@ const rtuSchema = Yup.object().shape({
 const RtuCreatePage: FC = () => {
   const params = useParams<Iprops>();
   const [errortext, setErrortext] = useState('');
+  const [loading,setLoading]=useState(false)
   const {stationsrtu} = useSelector((state: RootState) => state.rtu);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,6 +80,7 @@ const RtuCreatePage: FC = () => {
     onSubmit: async values => {
       //create an rtu for station
       try {
+        setLoading(true)
         const creatertu = await $Post(`otdr/rtu/`, {
           name: values.name,
           model: values.model,
@@ -115,8 +117,8 @@ const RtuCreatePage: FC = () => {
               deletertues: [],
             });
           }
+          setLoading(false)
           dispatch(setStationsrtu(stationsrtuCopy));
-
           navigate(
             `../../remote-test-units/${getdata.id}/${
               params!.stationId!}/${params!.regionId}/${params!.networkId!}`,
@@ -295,7 +297,7 @@ const RtuCreatePage: FC = () => {
             ) : null}
 
             <div className="flex flex-row justify-end w-[calc(100%-10px)]">
-              <SimpleBtn className='mr-2' type="submit">Save</SimpleBtn>
+              <SimpleBtn loading={loading} className='mr-2' type="submit">Save</SimpleBtn>
               <SimpleBtn>Cancel</SimpleBtn>
             </div>
           </div>
