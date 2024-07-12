@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import {Form, FormikProvider, useFormik} from 'formik';
-import {FC} from 'react';
+import {FC, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import {ControlledSelect, Description, SimpleBtn} from '~/components';
 import {InputFormik, SelectFormik, TextareaFormik} from '~/container';
@@ -17,6 +17,7 @@ const OpticalRouteCreatePage: FC = () => {
   const params = useParams();
   let navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading,setLoading]=useState(false)
   const {networkselectedlist, networkoptical} = useSelector(
     (state: any) => state.opticalroute,
   );
@@ -33,6 +34,7 @@ const OpticalRouteCreatePage: FC = () => {
     },
     onSubmit: async values => {
       try {
+        setLoading(true)
         const createoptical = await $Post(`otdr/optical-route/`, {
           name: values.name,
           comment: values.comment,
@@ -65,13 +67,17 @@ const OpticalRouteCreatePage: FC = () => {
               });
               dispatch(setNetworkoptical(networkopticalCopy));
             }
+            setLoading(false)
             navigate(
               `/config/optical-routes/${createopticaldata.id}/${params.id}`,
             );
             //  navigate(`../${createopticaldata.id}`)
           }
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log();
+        
+      } 
     },
   });
 
@@ -133,7 +139,7 @@ const OpticalRouteCreatePage: FC = () => {
             </Description>
           </div>
           <div className="flex flex-row gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
+            <SimpleBtn loading={loading} type="submit">Save</SimpleBtn>
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>
