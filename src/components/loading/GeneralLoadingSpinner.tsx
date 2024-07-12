@@ -10,7 +10,7 @@ type Props = {
 
 const GeneralLoadingSpinner: FC<Props> = ({
   color = 'primary',
-  size="'h-8 w-8'",
+  size="h-8 w-8",
   className,
   spinnerClassName,
 }) => {

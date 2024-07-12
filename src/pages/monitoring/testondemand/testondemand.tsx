@@ -30,6 +30,7 @@ import {BsPlusLg} from 'react-icons/bs';
 import {NetworkType} from '~/types/NetworkType';
 import {getPrettyDateTime} from '~/util/time';
 import {toast} from 'react-toastify';
+import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 type Itembtntype = {
   name: string;
   id: string;
@@ -91,11 +92,14 @@ function Testondemand() {
   useEffect(() => {
     const getnetworklist = async () => {
       try {
+        setLoadingdata(true);
         const networkListResponse = await $Get(`otdr/network/`);
         const networkListResponseDate = await networkListResponse?.json();
         setNetworklist(networkListResponseDate);
       } catch (error) {
         toast('An error was encountered', {type: 'error', autoClose: 1000});
+      } finally {
+        setLoadingdata(false);
       }
     };
     getnetworklist();
@@ -162,7 +166,7 @@ function Testondemand() {
 
         <button
           onClick={() => {
-            opennetworkopticallist(id), dispatch(setSelectedId(id));
+            opennetworkopticallist(id), dispatch(setSelectedId(id)),setLoadingid(id);
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -273,39 +277,50 @@ function Testondemand() {
   };
 
   const opennetworkopticallist = async (id: string) => {
-    const findnetwork = networkselectedlist.findIndex(data => data == id);
-    //We first check whether network has been clicked before or not.
-    if (findnetwork > -1) {
-      let old = [...networkselectedlist];
-      old.splice(findnetwork, 1);
-      dispatch(setNetworkselectedlist(old));
-    } else {
-      let old = [...networkselectedlist];
-      old.push(id);
-      dispatch(setNetworkselectedlist(old));
-    }
-    // -------------------
-    const findopt = networkoptical.findIndex(data => data.networkid == id);
-    const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
-    if (opticals?.status == 200) {
-      const opticalslist = await opticals?.json();
 
-      //Here we add or remove the opticalroutes related to this network to the list.
-      if (findopt > -1) {
-        let old = [...networkoptical];
-        let newdata = old.filter(data => data.networkid != id);
-        newdata.push({networkid: id, opticalrouts: opticalslist});
-        dispatch(setNetworkoptical(newdata));
+    try {
+      setLoadingdata(true)
+      const findnetwork = networkselectedlist.findIndex(data => data == id);
+      //We first check whether network has been clicked before or not.
+      if (findnetwork > -1) {
+        let old = [...networkselectedlist];
+        old.splice(findnetwork, 1);
+        dispatch(setNetworkselectedlist(old));
       } else {
-        let old = [...networkoptical];
-        old.push({networkid: id, opticalrouts: opticalslist});
-        dispatch(setNetworkoptical(old));
+        let old = [...networkselectedlist];
+        old.push(id);
+        dispatch(setNetworkselectedlist(old));
       }
+      // -------------------
+      const findopt = networkoptical.findIndex(data => data.networkid == id);
+      const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
+      if (opticals?.status == 200) {
+        const opticalslist = await opticals?.json();
+  
+        //Here we add or remove the opticalroutes related to this network to the list.
+        if (findopt > -1) {
+          let old = [...networkoptical];
+          let newdata = old.filter(data => data.networkid != id);
+          newdata.push({networkid: id, opticalrouts: opticalslist});
+          dispatch(setNetworkoptical(newdata));
+        } else {
+          let old = [...networkoptical];
+          old.push({networkid: id, opticalrouts: opticalslist});
+          dispatch(setNetworkoptical(old));
+        }
+      }
+    } catch (error) {
+      
+    } finally {
+      setLoadingdata(false)
     }
+
   };
   const navigate = useNavigate();
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
+  const [loadingid, setLoadingid] = useState('');
+  const [loadingdata, setLoadingdata] = useState(false);
   const Thirdref: any = useRef(null);
   const topcolumns = {
     index: {label: 'Index', size: 'w-[2%]'},
@@ -601,43 +616,63 @@ function Testondemand() {
                   </span>
                 )}
 
-                <button onClick={() => dispatch(setOpenall(!openall))}>
+                <button
+                  onClick={() => {
+                    dispatch(setOpenall(!openall)), setLoadingid('all');
+                  }}>
                   <span>Networks</span>
                 </button>
               </div>
 
               {openall ? (
                 <>
-                  {networklist.map((networkdata, index) => (
-                    <div
-                      key={index}
-                      className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
-                        index == networklist.length - 1
-                          ? 'border-none'
-                          : 'border-[#000000]'
-                      }  `}>
-                      {index == networklist.length - 1 ? (
-                        <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
-                      ) : null}
-                      <div
-                        className={`absolute z-10 ${
-                          networkselectedlist.indexOf(networkdata.id) > -1
-                            ? 'bottom-[-2px]'
-                            : 'bottom-[-7px]'
-                        }  left-[15px] h-[25px] w-[5px] bg-[#FFFFFF]`}></div>
+                  {loadingid == 'all' && loadingdata ? (
+                    <GeneralLoadingSpinner
+                      size="w-8 h-8"
+                      className="ml-8"
+                    />
+                  ) : (
+                    <>
+                      {networklist.map((networkdata, index) => (
+                        <div
+                          key={index}
+                          className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
+                            index == networklist.length - 1
+                              ? 'border-none'
+                              : 'border-[#000000]'
+                          }  `}>
+                          {index == networklist.length - 1 ? (
+                            <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
+                          ) : null}
+                          <div
+                            className={`absolute z-10 ${
+                              networkselectedlist.indexOf(networkdata.id) > -1
+                                ? 'bottom-[-2px]'
+                                : 'bottom-[-7px]'
+                            }  left-[15px] h-[25px] w-[5px] bg-[#FFFFFF]`}></div>
 
-                      <div className="relative flex flex-col">
-                        <Itembtn
-                          classname="mb-[-10px]"
-                          name={networkdata.name}
-                          id={networkdata.id}
-                        />
+                          <div className="relative flex flex-col">
+                            <Itembtn
+                              classname="mb-[-10px]"
+                              name={networkdata.name}
+                              id={networkdata.id}
+                            />
 
-                        {networkselectedlist.indexOf(networkdata.id) > -1 ? (
-                          <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                            {networkselectedlist.indexOf(networkdata.id) >
+                            -1 ? (
+                              <>
+                              {loadingid == networkdata.id && loadingdata?
+                               <GeneralLoadingSpinner
+                               size="w-8 h-8"
+                               className="ml-8 mt-2"
+                             />
+                            :
+                            <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
                             <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
                             {networkoptical
-                              ?.find(dataa => dataa.networkid == networkdata.id)
+                              ?.find(
+                                dataa => dataa.networkid == networkdata.id,
+                              )
                               ?.opticalrouts.map((data, index: number) => (
                                 <div
                                   key={index}
@@ -653,7 +688,10 @@ function Testondemand() {
                                     enabelcheck={false}
                                     isLink={false}
                                     onclick={() =>
-                                      onclickoptical(data.id, networkdata.id)
+                                      onclickoptical(
+                                        data.id,
+                                        networkdata.id,
+                                      )
                                     }
                                     onclickcheckbox={e =>
                                       onclickopticalchecbox(
@@ -679,10 +717,15 @@ function Testondemand() {
                                 </div>
                               ))}
                           </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  ))}
+                            }
+                              </>
+                           
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
                 </>
               ) : null}
             </div>
