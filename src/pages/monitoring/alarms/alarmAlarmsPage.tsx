@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {SimpleBtn, TextInput} from '~/components';
+import { $Get } from '~/util/requestapi';
 const AlarmRow = ({
   title,
   data,
@@ -20,6 +21,13 @@ const AlarmRow = ({
   );
 };
 function AlarmAlarmsPage() {
+  // const [limit,setLimit]=useState()
+  // const getallAlarms=async()=>{
+  //   const response=await $Get(`otdr/alarm/events/?limit=2`)
+  // }
+  // useEffect(()=>{
+
+  // },[])
   return (
     <div className="w-full px-6 pt-4 pb-8">
       <div className="flex w-full flex-row justify-between rounded-[10px]  bg-[#C0E7F2] p-8 pt-[0px]">
