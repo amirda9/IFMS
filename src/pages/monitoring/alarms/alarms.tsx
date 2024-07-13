@@ -11,7 +11,6 @@ import {$Delete, $Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import {deepcopy} from '~/util';
 import {Link} from 'react-router-dom';
-import {string} from 'yup';
 // *********************** type ***************************
 enum severityamount {
   HIGHT = 'High',
@@ -24,6 +23,16 @@ enum statusamounts {
   INPROGRESS = 'In progress',
   RESOLVED = 'Resolved',
 }
+
+
+function truncateString(str:string) {
+  if (str.length <= 20) {
+  return str;
+  }
+  return str.slice(0, 20) + '...';
+  }
+
+
 type alarmtype = {
   id: string;
   alarm_type: string;
@@ -37,7 +46,23 @@ type alarmtype = {
   tabbodybg?: {name: string; bg: string}[];
 };
 type allalarmsdatatype = alarmtype[];
-
+type alarmlist={
+  source_name: string,
+  severity: severityamount,
+  status: statusamounts,
+  measurement_fk: string,
+  rtu_fk: string,
+  link_fk: string,
+  network_id: string,
+  region_id: string,
+  alarm_type_list: [],
+  id_list: [],
+  acting_user: string,
+  network_name: string,
+  alarm_number: number,
+  time_created:string,
+  time_modified:string
+}
 // -------------------------------------------------------------
 const userList = [
   {
@@ -114,16 +139,16 @@ type topcolumnsType = {
   Detail: string;
   delete: string;
 };
-const topcolumns = {
-  source_name: {label: 'Primary Source', size: 'w-[16%]'},
-  alarm_type: {label: 'Alarm Type', size: 'w-[16%]'},
-  time_created: {label: 'Alarm Time', size: 'w-[16%]'},
-  severity: {label: 'Severity', size: 'w-[5%]'},
-  status: {label: 'State', size: 'w-[10%]'},
-  time_modified: {label: 'Last Modified', size: 'w-[16%]'},
-  acting_user: {label: 'Acting User', size: 'w-[16%]'},
-  chekbox: {label: '', size: 'w-[5%]'},
-};
+// const topcolumns = {
+//   source_name: {label: 'Primary Source', size: 'w-[16%]'},
+//   alarm_type: {label: 'Alarm Type', size: 'w-[16%]'},
+//   time_created: {label: 'Alarm Time', size: 'w-[16%]'},
+//   severity: {label: 'Severity', size: 'w-[5%]'},
+//   status: {label: 'State', size: 'w-[10%]'},
+//   time_modified: {label: 'Last Modified', size: 'w-[16%]'},
+//   acting_user: {label: 'Acting User', size: 'w-[16%]'},
+//   chekbox: {label: '', size: 'w-[5%]'},
+// };
 
 const bottomItems = [
   {
@@ -190,39 +215,39 @@ function Alarms() {
         `otdr/alarm/events/?page=${pagevalue}&limit=${limitvalue}&sort_key=${sortkey}&sort_order=desc`,
       );
       let allalarmresponsedata: {
-        alarm_events: allalarmsdatatype;
-        page_number: number;
+        alarm_events: [
+          alarmlist
+        ],
+        page_number: number,
+        total_count: number
       } = await allalarmresponse?.json();
       console.log('allalarmresponsedata', allalarmresponsedata);
       setAllpagecount(allalarmresponsedata.page_number);
       let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
-        AlarmType: data.alarm_type,
+        AlarmType:truncateString(data.alarm_type_list.join(",")),
         SourceType: data.source_name,
         Network: 'network1',
         Alarms: 2,
         Severity: data.severity,
         State: data.status,
-        AlarmTime: data.time_created,
-        LastModified: data.time_modified,
+        AlarmTime:getPrettyDateTime(data.time_created),
+        LastModified:getPrettyDateTime(data.time_modified),
         Detail: '',
         delete: '',
-        // ...data,
-        // time_created: getPrettyDateTime(data.time_created),
-        // time_modified: getPrettyDateTime(data.time_modified),
-        // tabbodybg: [
-        //   {
-        //     name: 'severity',
-        //     bg:
-        //       data.severity == severityamount.LOW
-        //         ? '#FFE600'
-        //         : data.severity == severityamount.MEDIUM
-        //         ? '#FF8A00'
-        //         : '#FF0000',
-        //   },
-        //   ...(data?.status === statusamounts.RESOLVED
-        //     ? [{name: 'status', bg: '#18C047'}]
-        //     : []),
-        // ],
+        tabbodybg: [
+          {
+            name: 'Severity',
+            bg:
+              data.severity == severityamount.LOW
+                ? '#FFE600'
+                : data.severity == severityamount.MEDIUM
+                ? '#FF8A00'
+                : '#FF0000',
+          },
+          ...(data?.status === statusamounts.RESOLVED
+            ? [{name: 'State', bg: '#18C047'}]
+            : []),
+        ],
       }));
       setAllalarmdata(newallalarmre);
     } catch (error) {
@@ -371,10 +396,11 @@ function Alarms() {
   return (
     <div className="flex w-full h-[calc(100vh-45px)] flex-col items-center p-[10px] pr-[20px] pt-[60px] pb-[30px]">
       <Table
+      loading={loading}
         bordered={true}
         cols={topcolumns}
         tabicon={'Name'}
-        items={topitems}
+        items={allalarmsdata}
         thclassname="pl-2 text-left"
         tdclassname="pl-2 text-left"
         containerClassName="w-full text-left min-h-[72px] max-h-[calc(100vh-200px)]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
@@ -415,7 +441,15 @@ function Alarms() {
             className="ml-2  h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
 
-          <SimpleBtn className="ml-10 px-[2px] py-[5px]" type="button">
+          <SimpleBtn  onClick={
+                page == 1
+                  ? () => {}
+                  : () => {
+                      getallalarms(limit, page == 2?page-1:page - 2),
+                        setPage(page == 2?page-1:page - 2),
+                        setSelectedrow(undefined);
+                    }
+              } className="ml-10 px-[2px] py-[5px]" type="button">
             <BiChevronsLeft color={'red'} size={20} />
           </SimpleBtn>
           <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
@@ -455,7 +489,15 @@ function Alarms() {
               size={20}
             />
           </SimpleBtn>
-          <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
+          <SimpleBtn  onClick={
+                page == 6
+                  ? () => {}
+                  : () => {
+                      getallalarms(limit, page + 2),
+                        setPage(page + 2),
+                        setSelectedrow(undefined);
+                    }
+              } className="ml-2 px-[2px] py-[5px]" type="button">
             <BiChevronsRight size={20} />
           </SimpleBtn>
 
