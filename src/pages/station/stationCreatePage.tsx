@@ -4,19 +4,15 @@ import {Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
-import Cookies from 'js-cookie';
 import {changegetdatadetailStatus, createStation} from './../../store/slices/networktreeslice';
-import {networkExplored} from '~/constant';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
 import { useEffect, useState } from 'react';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
-  // description: Yup.string().required('Please enter station comment'),
   latitude: Yup.string().required('Please enter latitude'),
   longitude: Yup.string().required('Please enter longitude'),
-  // region: Yup.string().required('Please select region'),
 });
 
 type Iprops={
@@ -75,7 +71,7 @@ const StationDetailPage = () => {
                 stationname: values.name,
               }),
             );
-            // newregionid: string;
+
 
             navigate(
               `/stations/${responsedata.station_id}/${params.regionId!}/${params.networkId!}`,
@@ -120,14 +116,7 @@ const StationDetailPage = () => {
             </Description>
           </div>
           <div className="absolute bottom-[0px]  right-0 flex flex-row gap-x-4 self-end">
-            {/* <SimpleBtn
-              onClick={() => {}}>
-              Explore
-            </SimpleBtn>
-            <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
-            {/* {stationDetail?.data?.access == 'ADMIN' ? */}
             <SimpleBtn loading={loading} type="submit">Save</SimpleBtn>
-            {/* :null} */}
             <SimpleBtn link to="../">
               Cancel
             </SimpleBtn>

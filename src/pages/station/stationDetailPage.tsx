@@ -4,10 +4,9 @@ import {Field, Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import Selectbox from '~/components/selectbox/selectbox';
-import {useAppSelector, useHttpRequest} from '~/hooks';
+import {useAppSelector} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
-import {Request} from '~/hooks/useHttpRequest';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {changegetdatadetailStatus, updateStationName} from './../../store/slices/networktreeslice';
 import {useDispatch, useSelector} from 'react-redux';
 import {$Get, $Put} from '~/util/requestapi';
@@ -39,7 +38,6 @@ type Iprops={
 const StationDetailPage = () => {
   const params = useParams<Iprops>();
   const dispatch = useDispatch();
-  const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [loading, setLoading] = useState(false);
   const [detaildata, setDetaildata] = useState<any>([]);
@@ -47,7 +45,7 @@ const StationDetailPage = () => {
   const [selectedregion, setSelectedregion] = useState(
     params.regionId!
   );
-  const [defaultnetworkname, setDefaultnetworkname] = useState('');
+
   const [defaultregionkname, setDefaultregionname] = useState('');
   const [selectenetwork, setSelectednetwork] = useState(
     params.networkId!
@@ -195,20 +193,6 @@ const StationDetailPage = () => {
               />
             </Description>
 
-            {/* <Description label="RTU Placement" items="start">
-              <Selectbox
-                defaultvalue={'yes'}
-                onclickItem={(e: {value: string; label: string}) =>
-                  setRtuPlacement(e.value)
-                }
-                options={[
-                  {value: 'yes', label: 'yes'},
-                  {value: 'no', label: 'no'},
-                ]}
-                borderColor={'black'}
-                classname="w-[21%] h-[32px] rounded-[5px]"
-              />
-            </Description> */}
 
             <Description label="Latitude" items="start">
               <InputFormik

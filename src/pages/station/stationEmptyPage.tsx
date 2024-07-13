@@ -1,12 +1,10 @@
-import React from 'react';
+
 import {TabItem} from '~/components';
 import {Outlet, useLocation, useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
-
 const StationEmptyPage = () => {
   const params = useParams<{stationId: string}>();
   const path = useLocation();
-  console.log('path', path);
   const {datadetailStatus} = useSelector((state: any) => state.networktree);
 
   return (

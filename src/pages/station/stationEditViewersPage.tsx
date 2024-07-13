@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import {SimpleBtn, Switch} from '~/components';
 import {FormLayout} from '~/layout';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -7,10 +7,15 @@ import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 import {useDispatch} from 'react-redux';
-import {setstationviewers,setstationviewersstatus} from './../../store/slices/networkslice';
-type Iprops={
-  regionId:string,networkId:string,stationId:string
-  }
+import {
+  setstationviewers,
+  setstationviewersstatus,
+} from './../../store/slices/networkslice';
+type Iprops = {
+  regionId: string;
+  networkId: string;
+  stationId: string;
+};
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
   const editor = useRef<EditorRefType>(null);
@@ -36,7 +41,9 @@ const RegionAccessPage = () => {
           '',
       );
       editor.current?.setAditablebycurrentuserList(
-        viewers?.data!.users.filter(data => data.editable_by_current_user === true).map(viewer => viewer.user.id) || [],
+        viewers
+          ?.data!.users.filter(data => data.editable_by_current_user === true)
+          .map(viewer => viewer.user.id) || [],
       );
     },
     onUpdate: lastState => {
@@ -57,9 +64,6 @@ const RegionAccessPage = () => {
       }
     },
   });
-
-console.log("viewers",viewers);
-
 
   const buttons = (
     <>
@@ -82,10 +86,6 @@ console.log("viewers",viewers);
           dispatch(setstationviewers(users));
           dispatch(setstationviewersstatus(true));
           navigate(-1);
-          // request('stationAccessUpdate', {
-          //   params: {station_id: params.stationId!},
-          //   data: {users},
-          // });
         }}>
         OK
       </SimpleBtn>
