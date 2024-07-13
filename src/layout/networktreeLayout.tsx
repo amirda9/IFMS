@@ -127,10 +127,12 @@ function NetworktreeLayout({children}: Iprops) {
     try {
       setLoadingdata(true);
       const response = await $Get(`otdr/region/network/${id}`);
+      console.log();
+      
       if (response?.status == 200) {
         const responsedata = await response.json();
         const finddata = networkregions.filter(
-          data => data.networkid == networkId,
+          data => data.networkid == id,
         );
         const maindata = responsedata || [];
 
@@ -141,7 +143,7 @@ function NetworktreeLayout({children}: Iprops) {
           }
           const old = deepcopy(networkregions);
           old.push({
-            networkid: (regions?.data && regions?.data[0]?.network_id) || '',
+            networkid: (responsedata && responsedata[0]?.network_id) || '',
             regions: allregionsid,
           });
           dispatch(setNetworkregions(old));
@@ -574,6 +576,8 @@ function NetworktreeLayout({children}: Iprops) {
     });
   };
 
+  console.log("networkregions",networkregions);
+  
   return (
     <>
       {/* <div className="flex h-[calc(100vh-120px)] opacity-0 w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
@@ -666,10 +670,10 @@ function NetworktreeLayout({children}: Iprops) {
                         ) {
                           dispatch(changegetdatadetailStatus(false));
                         }
-                        dispatch(setSelectedid(networkdata.id)),
-                          onclikitems(networkdata.id),
-                          onclicknetwork(networkdata.id),
-                          () => setNetworkId(networkdata.id);
+                        dispatch(setSelectedid(networkdata.id))
+                          onclikitems(networkdata.id)
+                          onclicknetwork(networkdata.id)
+                           setNetworkId(networkdata.id)
                       }}
                       // onclick={() => onclikitems(data.id)}
                       id={networkdata.id}

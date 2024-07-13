@@ -9,7 +9,7 @@ import {changegetdatadetailStatus, createStation} from './../../store/slices/net
 import {networkExplored} from '~/constant';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -25,6 +25,7 @@ type Iprops={
 const StationDetailPage = () => {
   const dispatch = useDispatch();
   const params = useParams<Iprops>();
+  const [loading,setLoading]=useState(false)
   console.log(params, 'params');
 
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ const StationDetailPage = () => {
       }}
       onSubmit={async values => {
         try {
+          setLoading(true)
           const response = await $Post(`otdr/station`, {
             name: values.name,
             description: values.description,
@@ -79,7 +81,12 @@ const StationDetailPage = () => {
               `/stations/${responsedata.station_id}/${params.regionId!}/${params.networkId!}`,
             );
           }
-        } catch (error) {}
+        } catch (error) {
+         console.log(`create station error is:${error}`);
+         
+        } finally{
+          setLoading(false)
+        }
       }}
       validationSchema={stationSchema}>
       <Form className="w-full">
@@ -119,7 +126,7 @@ const StationDetailPage = () => {
             </SimpleBtn>
             <SimpleBtn onClick={() => {}}>History</SimpleBtn> */}
             {/* {stationDetail?.data?.access == 'ADMIN' ? */}
-            <SimpleBtn type="submit">Save</SimpleBtn>
+            <SimpleBtn loading={loading} type="submit">Save</SimpleBtn>
             {/* :null} */}
             <SimpleBtn link to="../">
               Cancel
