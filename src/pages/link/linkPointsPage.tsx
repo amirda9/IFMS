@@ -1,8 +1,8 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SimpleBtn, TextInput} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
 import {BsPlusLg} from 'react-icons/bs';
-import {useAppSelector, useHttpRequest} from '~/hooks';
+import {useAppSelector} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {deepcopy} from '~/util';
 import {useSelector} from 'react-redux';
@@ -38,7 +38,6 @@ const Addbox = ({classname, onclick}: Iprops) => {
 };
 const LinkPointsPage = () => {
   const params = useParams<mainprops>();
-  const networkId = params.networkId!;
   const [linkdata, setLinkdata] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const {networkidadmin, regionidadmin} = useSelector(
@@ -59,10 +58,6 @@ const LinkPointsPage = () => {
       window.removeEventListener('mousemove', updateMousePosition);
     };
   }, []);
-
-  const {state} = useHttpRequest({
-    selector: state => ({}),
-  });
 
   const getlinkDetail = async () => {
     setLoading(true);

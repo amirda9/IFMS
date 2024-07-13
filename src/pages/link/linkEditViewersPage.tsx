@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import {useRef} from 'react';
 import {SimpleBtn, Switch} from '~/components';
 import {FormLayout} from '~/layout';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -6,7 +6,7 @@ import {useHttpRequest} from '~/hooks';
 import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {setlinkviewers,setlinkviewersstatus} from './../../store/slices/networkslice'
 type mainprops={
   regionId:string,networkId:string,linkId:string
