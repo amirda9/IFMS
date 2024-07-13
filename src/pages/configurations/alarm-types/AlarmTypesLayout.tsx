@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from 'react';
+import {FC, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {SidebarItem} from '~/components';
@@ -9,7 +9,6 @@ import {$Delete, $Get} from '~/util/requestapi';
 import Swal from 'sweetalert2';
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
-  // text: "You won't be able to revert this!",
   icon: 'warning',
   showCancelButton: true,
   confirmButtonColor: '#3085d6',

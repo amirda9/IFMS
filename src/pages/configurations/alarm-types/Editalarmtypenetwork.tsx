@@ -1,6 +1,6 @@
 import {SimpleBtn, Table} from '~/components';
 import {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {deepcopy} from '~/util';
 import {$Get} from '~/util/requestapi';
@@ -31,8 +31,7 @@ const Editalarmtypenetwork = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const params = useParams();
-  const {alarmtypedetail, alarmtypelist} = useSelector(
+  const {alarmtypedetail} = useSelector(
     (state: RootState) => state.alarmtypes,
   );
   const [oldalarmtypedetail, setOldAlarmtypedetail] = useState<any[]>([]);
@@ -44,8 +43,6 @@ const Editalarmtypenetwork = () => {
   const [allnetwork, setAllnetwork] = useState<{id: string; name: string}[]>(
     [],
   );
-
-  console.log('allnetwork', allnetwork);
 
   const renderDynamicColumn = (side: 'left' | 'right') => {
     return ({value, key, index}: RenderDynamicColumnType) => {
@@ -62,14 +59,6 @@ const Editalarmtypenetwork = () => {
             }
             onclick={() => {
               dispatch(setAlarmNetworks({id: value.id, name: value.name}));
-              // if (allnetwork.findIndex(data => data.id == value.id) > -1) {
-              //   const newAllnetwork = allnetwork.filter(
-              //     data => data.id != value.id,
-              //   );
-              //   setAllnetwork(newAllnetwork);
-              // } else {
-              //   setAllnetwork(prev => [...prev, {id:value.id,name:value.name}]);
-              // }
             }}
             iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
             classname={

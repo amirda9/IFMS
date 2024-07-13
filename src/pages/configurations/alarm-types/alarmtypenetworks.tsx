@@ -24,8 +24,7 @@ const Alarmtypenetworks = () => {
   const {alarmtypedetail, getalarmtype, alarmtypeloading} = useSelector(
     (state: RootState) => state.alarmtypes,
   );
-  const [loading, setLoading] = useState(false);
-
+  
   const getalarmdetail = async () => {
     try {
       dispatch(setAlarmtypeloading(true));

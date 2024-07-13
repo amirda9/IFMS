@@ -601,7 +601,6 @@ const AlarmTypeEventPage: FC = () => {
             name="delete_timeout_after"
             label="Delete Timed Out Alarms after"
           />
-          {/* <ScheduleSelector label="Delete Obsolete Alarms after" /> */}
         </div>
       </div>
 

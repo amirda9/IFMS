@@ -11,16 +11,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 type Props = {
   title?: string;
-  // conditions: any;
-
-  // {
-  //       parameter: string;
-  //       operator: '=' | '!=';
-  //       value: string;
-  //       andOr: 'AND' | 'OR';
-  //       disabled?: boolean;
-  //       coef: number;
-  //     }[] | undefined;
 };
 [];
 const parameteroptins = [
@@ -50,12 +40,7 @@ const parameteroptins = [
   {label: 'Optical Route Reference'},
 ];
 
-const Operatoroptions = [
-  {label: '='},
-  {label: '!='},
-  {label: '>'},
-  {label: '<'},
-];
+
 
 const andoroptions = [
   {label: 'AND', value: 'AND'},
@@ -83,14 +68,8 @@ const alloperatorOptions = [
 const twoOptions = [{label: '='}, {label: '!='}];
 // **************************************************************
 const ConditionGroup: FC<Props> = ({title}) => {
-  const [allconditions,setAllconditions]=useState([])
   const dispatch = useDispatch();
   const params = useParams();
-  const [titlesecurity, setTitlesecurity] = useState('');
-  useEffect(() => {
-    setTitlesecurity(title!);
-    // setAllconditions(conditions)
-  }, []);
   const {alarmtypedetail} = useSelector((state: RootState) => state.alarmtypes);
   useEffect(() => {}, []);
 
