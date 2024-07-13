@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import {useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
@@ -24,12 +24,10 @@ type Iprops = {
   stationId: string;
 };
 const StationAccessPage = () => {
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const {regionidadmin, networkidadmin} = useSelector(
     (state: any) => state.networktree,
   );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-  const login = localStorage.getItem('login');
   const [loading,setLoading]=useState(false)
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
@@ -44,11 +42,11 @@ const StationAccessPage = () => {
 
   const params = useParams<Iprops>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
-  const {http, network} = useSelector((state: any) => state);
+  const {network} = useSelector((state: any) => state);
 
   const {
     request,
-    state: {viewers, users, update},
+    state: {viewers, users},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.stationAccessList,
@@ -61,25 +59,10 @@ const StationAccessPage = () => {
       });
       request('userList', undefined);
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.update?.httpRequestStatus === 'loading' &&
-    //     state.update!.httpRequestStatus === 'success'
-    //   ) {
-    //     request('stationAccessList', {
-    //       params: {station_id: params.stationId!},
-    //     });
-    //   }
-    // },
+
   });
 
   const changeAdmin = async () => {
-    // const viewerWithoutAdmin =viewers?.data?.users
-    //     .filter(viewer => viewer.access !== AccessEnum.admin)
-    //     .map(viewer => ({
-    //       user_id: viewer.user.id,
-    //       access_types: AccessEnum.viewer,
-    //     })) || [];
     try {
       const admin = viewers?.data?.users.find(
         viewer => viewer.access === AccessEnum.admin,
@@ -99,11 +82,6 @@ const StationAccessPage = () => {
     } catch (error) {
       console.log(`update admin error is :${error}`);
     }
-
-    //   request('stationAddadmin', {
-    //     params: {station_id: params.stationId!},
-    //     data: {user_id: userAdmin || admin!.user.id!},
-    //   });
   };
 
   const saveAdmin = async () => {
@@ -150,14 +128,6 @@ const StationAccessPage = () => {
       setLoading(false)
     }
 
-    // request('stationAddadmin', {
-    //   params: {station_id: params.stationId!},
-    //   data: {user_id: userAdmin || admin!.user.id!},
-    // });
-    // request('stationAccessUpdate', {
-    //   params: {station_id: params.stationId!},
-    //   data: {users: network?.stationviewers},
-    // });
     dispatch(setstationviewers([]));
     dispatch(setstationviewersstatus(false));
   };
@@ -188,10 +158,6 @@ const StationAccessPage = () => {
             station: value.user.station?.name || '-',
             region: value.user.region?.name || '-',
           }));
-
-    // for (let j = 0; j < dataa.length; j++) {
-    //   items.push(dataa[j]);
-    // }
 
     items.sort((a: any, b: any) => a.user.localeCompare(b.user, 'en-US'));
 

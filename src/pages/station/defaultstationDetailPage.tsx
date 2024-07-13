@@ -4,7 +4,7 @@ import {Field, Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
 import * as Yup from 'yup';
 import Selectbox from '~/components/selectbox/selectbox';
-import {useAppSelector, useHttpRequest} from '~/hooks';
+import {useAppSelector} from '~/hooks';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
 import {changegetdatadetailStatus, updatedefaultStationName} from './../../store/slices/networktreeslice';
@@ -36,15 +36,10 @@ const StationDetailPage = () => {
   const [detaildata, setDetaildata] = useState<any>([]);
   const [stationdetail, setStationdetail] = useState<any>([]);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-  const {networkidadmin, regionidadmin} = useSelector(
+  const {networkidadmin} = useSelector(
     (state: any) => state.networktree,
   );
   const navigate = useNavigate();
-
-  const {state, request} = useHttpRequest({
-    selector: state => ({}),
-  });
-console.log("⌚",params);
 
   const getnetworks = async () => {
     setLoading(true);
