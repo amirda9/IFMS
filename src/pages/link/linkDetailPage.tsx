@@ -38,14 +38,11 @@ type Iprops={
 }
 // *********************************************************************
 const LinkDetailPage = () => {
-  const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const [defaultregionkname, setDefaultregionname] = useState('');
   const {type} = useSelector((state: any) => state.network);
   const [loading, setLoading] = useState(false);
-  const login = localStorage.getItem('login');
   const dispatch = useDispatch();
   const params = useParams<Iprops>();
-  const [networklist, setNetworklist] = useState<networklisttype[]>([]);
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [selectedregion, setSelectedregion] = useState('');
   const [name, setName] = useState('');
@@ -195,7 +192,6 @@ const LinkDetailPage = () => {
           toast('It was done successfully', {type: 'success', autoClose: 1000});
           dispatch(
             updatelinkname({
-              // state!.detail!.data!.region_id!
               networkid: params.networkId!,
               newregionid: selectedregion,
               regionid: params.regionId!,
@@ -226,11 +222,6 @@ const LinkDetailPage = () => {
           const response = await $Get(`otdr/network`);
           if (response?.status == 200) {
             const responsedata = await response?.json();
-            const Defaultnetworkname = responsedata.find(
-              (data: any) => data.id == getstationdetaildata.network_id,
-            )?.name;
-            setDefaultnetworkname(Defaultnetworkname || 'select');
-            setNetworklist(responsedata);
             const networkregionresponse = await $Get(
               `otdr/region/network/${responsedata.find(
                 (data: any) => data.id == getstationdetaildata.network_id,
@@ -267,7 +258,6 @@ const LinkDetailPage = () => {
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
-          // defaultValue={state?.detail?.data?.name || ''}
           value={name}
           onChange={(e: any) => {
             setName(e.target.value), setNameerror('');

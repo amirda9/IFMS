@@ -1,9 +1,8 @@
 import React, {Fragment, useEffect, useMemo, useState} from 'react';
 import {Description, Select, SimpleBtn, TextInput} from '~/components';
 import {IoChevronDown, IoChevronUp, IoTrashOutline} from 'react-icons/io5';
-import {BASE_URL} from '~/constant';
 import {BsPlusLg} from 'react-icons/bs';
-import useHttpRequest, {Request} from '~/hooks/useHttpRequest';
+import useHttpRequest from '~/hooks/useHttpRequest';
 import {useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import {deepcopy} from '~/util';
@@ -15,9 +14,11 @@ type Iprops = {
   onclick: Function;
 };
 
-type mainprops={
-  regionId:string,networkId:string,linkId:string
-  }
+type mainprops = {
+  regionId: string;
+  networkId: string;
+  linkId: string;
+};
 const Addbox = ({classname, onclick}: Iprops) => {
   return (
     <div
@@ -34,13 +35,10 @@ const Addbox = ({classname, onclick}: Iprops) => {
 // *******************************
 const LinkCablesAndSegmentsPage = () => {
   const params = useParams<mainprops>();
-  const login = localStorage.getItem('login');
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,
   );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const networkId = params.networkId!;
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
@@ -110,12 +108,6 @@ const LinkCablesAndSegmentsPage = () => {
       }
     },
   });
-
-
-  // const findlinkdetail=state.detail?.data?.versions?.find(
-  //   (version: any) =>
-  //     version.id === state.detail?.data?.current_version?.id,
-  // )
 
   const findlinkdetail = useMemo(
     () =>
@@ -448,15 +440,13 @@ const LinkCablesAndSegmentsPage = () => {
     2,
   );
   let mainlength = Math.sqrt(lengthlatitude + lengthlongitude);
-  if(state?.update?.httpRequestStatus === 'loading' || state?.detail?.httpRequestStatus == "loading"){
-    return <h1 className='text-left'>Loading</h1>
+  if (
+    state?.update?.httpRequestStatus === 'loading' ||
+    state?.detail?.httpRequestStatus == 'loading'
+  ) {
+    return <h1 className="text-left">Loading</h1>;
   }
-  
 
-  console.log("😃",parentcabl);
-  console.log("state?.detail",state?.detail);
-  
-  
   return (
     <div className="relative  min-h-[calc(100vh-220px)] w-full">
       {(parentcabl?.cables && parentcabl?.cables?.length > 0) ||
@@ -580,8 +570,6 @@ const LinkCablesAndSegmentsPage = () => {
                       </div>
                     </div>
                     {data?.segments?.map((dataa: any, index: number) => {
-                      let finddata = finddataindex(data.cableId);
-
                       return (
                         <div
                           className="relative mb-[15px] w-full rounded-[10px] bg-[#ACD3DE] p-4"
@@ -614,9 +602,7 @@ const LinkCablesAndSegmentsPage = () => {
                                       index,
                                     )
                                   }
-                                  className="w-[80%]"
-                                  // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
-                                >
+                                  className="w-[80%]">
                                   <option value="" className="hidden">
                                     {dataa.connection_type}
                                   </option>
@@ -628,24 +614,6 @@ const LinkCablesAndSegmentsPage = () => {
                                     fusion_splice
                                   </option>
                                 </Select>
-                                {/* <TextInput
-                              
-                                  value={dataa.connection_type}
-
-                                  onChange={
-                                    e =>
-                                          setcableslicecabsegment(
-                                            data.id,
-                                            dataa.id,
-                                            e.target.value,
-                                            'connection_type',
-                                            index
-                                          )
-                                  }
-
-                                  className="w-[80%]"
-                                  type="number"
-                                /> */}
                               </div>
                               <div className="box-border flex   w-[30%] flex-row justify-between ">
                                 <span className="mr-[5px] w-[100px]  text-left">
@@ -673,7 +641,6 @@ const LinkCablesAndSegmentsPage = () => {
                                   Start (km)
                                 </span>
                                 <TextInput
-                                  // defaultValue={10}
                                   value={
                                     index == 0
                                       ? 0
@@ -715,19 +682,6 @@ const LinkCablesAndSegmentsPage = () => {
                                 <TextInput
                                   value={dataa.length}
                                   onChange={() => {}}
-                                  // onChange={
-                                  //   data?.segments?.length > 1
-                                  //     ? () => {}
-                                  //     : e =>
-                                  //         setcableslicecabsegment(
-                                  //           data.id,
-                                  //           dataa.id,
-                                  //           e.target.value,
-                                  //           'length',
-                                  //           index,
-
-                                  //         )
-                                  // }
                                   className="w-[60%]"
                                   type="number"
                                 />
@@ -768,9 +722,7 @@ const LinkCablesAndSegmentsPage = () => {
                                       index,
                                     )
                                   }
-                                  className="w-[60%]"
-                                  // placeholder={dataa?.fiber_type?.length>0?dataa.fiber_type:"select"}
-                                >
+                                  className="w-[60%]">
                                   <option value="" className="hidden">
                                     {dataa?.fiber_type?.length > 0
                                       ? dataa.fiber_type
@@ -845,7 +797,8 @@ const LinkCablesAndSegmentsPage = () => {
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
         {loggedInUser.role === UserRole.SUPER_USER ||
         networkidadmin.includes(params.networkId!) ||
-        regionidadmin.includes(params.regionId!) || state?.detail?.data?.access?.access == "ADMIN" ? (
+        regionidadmin.includes(params.regionId!) ||
+        state?.detail?.data?.access?.access == 'ADMIN' ? (
           <SimpleBtn onClick={() => savecables()}>Save</SimpleBtn>
         ) : null}
 
