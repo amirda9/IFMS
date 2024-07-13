@@ -3,8 +3,7 @@ import {SimpleBtn} from '~/components';
 import {IoTrashOutline} from 'react-icons/io5';
 import {FormLayout} from '~/layout';
 import {useSelector} from 'react-redux';
-import {useAppSelector, useHttpRequest} from '~/hooks';
-import {Request} from '~/hooks/useHttpRequest';
+import {useAppSelector} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {UserRole} from '~/constant/users';
 import ErrorPage403 from '../errors/403';
@@ -34,9 +33,7 @@ const NetworkGisPage = () => {
   const [modal, setModal] = useState(false);
   const login = localStorage.getItem('login');
   const accesstoken = (login && JSON.parse(login)?.data?.access_token) || '';
-
   const params = useParams<{networkId: string}>();
-  const {networkDetail} = useSelector((state: any) => state.http);
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const [title, setTitle] = useState('');
   const [shapefile, setShapefile] = useState<any>();

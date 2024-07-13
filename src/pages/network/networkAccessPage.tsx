@@ -1,11 +1,11 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import  {useMemo, useState} from 'react';
 import { Select, SimpleBtn, Table} from '~/components';
 import {useAppSelector, useHttpRequest} from '~/hooks';
 import {AccessEnum} from '~/types';
 import {useParams} from 'react-router-dom';
 import {FormLayout} from '~/layout';
 import {useDispatch} from 'react-redux';
-import networkslice, {
+import {
   setnetworkviewers,
   setnetworkviewersstatus,
 } from './../../store/slices/networkslice';
@@ -19,9 +19,6 @@ const columns = {
 };
 
 const NetworkAccessPage = () => {
-  const login = localStorage.getItem('login');
-
-
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
   const {networkDetail} = useSelector((state: any) => state.http);
@@ -76,24 +73,6 @@ const NetworkAccessPage = () => {
 
     dispatch(setnetworkviewersstatus(false));
   };
-
-  // var dataa: any = [];
-  // useEffect(() => {
-  //   for (let i = 0; i < network?.networkviewers.length; i++) {
-  //     const findd = users!.data!.findIndex(
-  //       data => data.id == network?.networkviewers[i],
-  //     );
-  //     if (findd > -1) {
-  //       dataa.push({
-  //         index: (i + 1).toString(),
-  //         user: users?.data && users?.data[findd]?.username,
-  //         station: (users?.data && users?.data[findd]?.station?.name) || '-',
-  //         region: (users?.data && users?.data[findd]?.region?.name) || '-',
-  //       });
-  //     }
-  //   }
-  // }, []);
-
 
   const body = useMemo(() => {
     var dataa: any = [];
@@ -218,12 +197,6 @@ const NetworkAccessPage = () => {
         </SimpleBtn>
       {/* ) : null} */}
 
-      {/* <SimpleBtn
-        onClick={() => {
-          Cookies.set(networkExplored, params.networkId!);
-        }}>
-        Explore
-      </SimpleBtn> */}
       <SimpleBtn link to="../history">
         History
       </SimpleBtn>

@@ -46,9 +46,6 @@ const NetworkAccessPage = () => {
         editor.current?.setValues(
           viewers?.data!.users.map(viewer => viewer.user.id),
         );
-        // editor.current?.setAditablebycurrentuserList(
-        //   viewers?.data!.users.filter(data => data.editable_by_current_user == true).map(viewer => viewer.user.id),
-        // );
       }
       if (
         lastState.update?.httpRequestStatus === 'loading' &&

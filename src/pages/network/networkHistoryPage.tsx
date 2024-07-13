@@ -1,4 +1,4 @@
-import {IoClose, IoReturnUpBack} from 'react-icons/io5';
+import {IoClose} from 'react-icons/io5';
 import {useNavigate} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {useHttpRequest} from '~/hooks';
