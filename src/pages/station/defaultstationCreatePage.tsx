@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import {createdefaultStation} from './../../store/slices/networktreeslice';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
+import { useState } from 'react';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -16,7 +17,7 @@ const defaultStationDetailPage = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
-
+  const [loading,setLoading]=useState(false)
   return (
     <Formik
       initialValues={{
@@ -28,6 +29,7 @@ const defaultStationDetailPage = () => {
       }}
       onSubmit={async values => {
         try {
+          setLoading(true)
           const response = await $Post(`otdr/station`, {
             name: values.name,
             description: values.description,
@@ -53,7 +55,12 @@ const defaultStationDetailPage = () => {
               }/${params.networkid!}/defaultstationDetailPage`,
             );
           }
-        } catch (error) {}
+        } catch (error) {
+          console.log(`create defaultstation error is:${error}`);
+          
+        } finally {
+          setLoading(false)
+        }
       }}
       validationSchema={stationSchema}>
       <Form className="w-full">
@@ -85,7 +92,7 @@ const defaultStationDetailPage = () => {
             </Description>
           </div>
           <div className="absolute bottom-[0px]  right-0 flex flex-row gap-x-4 self-end">
-            <SimpleBtn type="submit">Save</SimpleBtn>
+            <SimpleBtn loading={loading} type="submit">Save</SimpleBtn>
 
             <SimpleBtn link to="../">
               Cancel
