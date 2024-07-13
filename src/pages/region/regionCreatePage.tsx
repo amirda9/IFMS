@@ -7,17 +7,19 @@ import {FormLayout} from '~/layout';
 import {changegetdatadetailStatus, createRegion} from './../../store/slices/networktreeslice';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
 });
 const RegionDetailPage = () => {
   const dispatch = useDispatch();
   const params = useParams();
+  const [loading,setLoading]=useState(false)
   const navigate = useNavigate();
   const buttons = (
     <>
       <SimpleBtn
+      loading={loading}
         onClick={() => {
           document.getElementById('formSubmit')?.click();
         }}>
@@ -41,6 +43,7 @@ const RegionDetailPage = () => {
         }}
         onSubmit={async values => {
           try {
+            setLoading(true)
             const createregion = await $Post(
               `otdr/region/network/${params.networkid}`,
               {name: values.name, description: values.description},
@@ -58,7 +61,12 @@ const RegionDetailPage = () => {
                 `/regions/${responsedata.region_id}/${params.networkid}`,
               );
             }
-          } catch (error) {}
+          } catch (error) {
+            console.log(`create error is:${error}`);
+            
+          } finally{
+            setLoading(false)
+          }
         }}
         validationSchema={regionSchema}>
         <Form className="flex h-full flex-col justify-between">
