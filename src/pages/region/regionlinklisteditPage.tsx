@@ -1,4 +1,4 @@
-import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
+
 import {SimpleBtn, Table} from '~/components';
 import {useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
@@ -25,16 +25,7 @@ type RenderDynamicColumnType = {
   value: UserTableType;
   key: 'index' | 'select';
 };
-function isEqual(obj1: any, obj2: any) {
-  return obj1.id === obj2.id;
-}
-function removeCommon(arr1: any, arr2: any) {
-  return arr1?.filter(function (item: any) {
-    return !arr2.some(function (other: any) {
-      return isEqual(item, other);
-    });
-  });
-}
+
 
 type Iprops={
   regionId:string,networkId:string
@@ -137,7 +128,7 @@ const RegionlinklisteditPage = () => {
     networklinklist();
   }, []);
 
-  const [selectreight, setSelectreight] = useState<UserTableType[]>([]);
+
   const [selectleft, setSelectleft] = useState<UserTableType[]>([]);
 
   const changeSelect =
@@ -174,8 +165,7 @@ const RegionlinklisteditPage = () => {
   };
 
   const savestations = () => {
-    let dataa = reightlinksorted
-      .map((data: any) => ({
+    let dataa = reightlinksorted.map((data: any) => ({
         name: data?.name,
         id: data.id,
         source: data?.source,
@@ -276,9 +266,6 @@ const RegionlinklisteditPage = () => {
             dispatch(setnewregionlinklist(selectleft));
             dispatch(
               setnewregionlinkliststatus(false),
-              // setnewregionlinklist(
-              //   state?.regionLinkList?.data?.map((data: any) => data?.id) || [],
-              // ),
             );
             navigate(-1);
           }}>

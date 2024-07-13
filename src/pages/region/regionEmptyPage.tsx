@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {TabItem} from '~/components';
 import {Outlet, useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';

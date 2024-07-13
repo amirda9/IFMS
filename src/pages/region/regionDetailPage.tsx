@@ -13,20 +13,12 @@ import {
   updateregionname,
 } from './../../store/slices/networktreeslice';
 import {$Get, $Put} from '~/util/requestapi';
-import Selectbox from '~/components/selectbox/selectbox';
 import {useAppSelector} from '~/hooks';
 import {UserRole} from '~/constant/users';
 import { toast } from 'react-toastify';
 const regionSchema = Yup.object().shape({
   name: Yup.string().required('Please enter region name'),
 });
-
-type networklisttype = {
-  id: string;
-  name: string;
-  time_created: string;
-  time_updated: string;
-};
 
 type regionId={
 regionId:string,networkId:string
@@ -37,17 +29,8 @@ const RegionDetailPage = () => {
   const navigate = useNavigate();
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const params = useParams<regionId>();
-
   const [regiondata, setregiondata] = useState<any>();
-  const login = localStorage.getItem('login');
-  const [selectenetwork, setSelectednetwork] = useState('');
-  const [networklist, setNetworklist] = useState<networklisttype[]>([]);
-  const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-
-  const onclicknetwork = async (id: string) => {
-    setSelectednetwork(id);
-  };
 
   const buttons = (
     <>
@@ -109,7 +92,6 @@ const RegionDetailPage = () => {
         setLoading(true);
         const [getstationdetail] = await Promise.all([
           $Get(`otdr/region/${params?.regionId}`),
-          // $Get(`otdr/network`),
         ]);
 
         if (getstationdetail?.status == 200) {
@@ -120,24 +102,12 @@ const RegionDetailPage = () => {
           }
 
           setregiondata(getstationdetaildata);
-          // const response = await $Get(`otdr/network`);
-
           formik.setValues({
             ...formik.values,
             name: getstationdetaildata?.name,
             description: getstationdetaildata?.current_version?.description,
           });
         }
-
-        // if (response?.status == 200) {
-        //   const responsedata = await response?.json();
-        //   const Defaultnetworkname = responsedata.find(
-        //     (data: any) => data.id == params.regionId!.split('_')[1],
-        //   );
-        //   setSelectednetwork(Defaultnetworkname?.id);
-        //   setDefaultnetworkname(Defaultnetworkname?.name || 'select');
-        //   setNetworklist(responsedata);
-        // }
       } catch (error) {
         console.log(error);
       } finally {
@@ -174,22 +144,6 @@ const RegionDetailPage = () => {
                 className="w-2/3 text-sm"
               />
             </Description>
-            {/* <Description label="Network" items="start">
-              <Selectbox
-                defaultvalue={defaultnetworkname}
-                placeholder={defaultnetworkname}
-                disabled={loggedInUser.role !== UserRole.SUPER_USER}
-                onclickItem={(e: {value: string; label: string}) =>
-                  onclicknetwork(e.value)
-                }
-                options={networklist.map(data => ({
-                  value: data.id,
-                  label: data.name,
-                }))}
-                borderColor={'black'}
-                classname="w-[21%] h-[32px] rounded-[5px]"
-              />
-            </Description> */}
             <Description label="Owner" items="start">
               {regiondata?.current_version?.owner?.username}
             </Description>
