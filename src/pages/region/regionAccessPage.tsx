@@ -31,12 +31,10 @@ const RegionAccessPage = () => {
       region: string;
     }[]
   >([]);
-  const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
+
   const {network} = useSelector((state: any) => state);
   const [tabname, setTabname] = useState('User');
-  const login = localStorage.getItem('login');
   const {networkidadmin} = useSelector((state: any) => state.networktree);
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const params = useParams<regionId>();
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
@@ -193,27 +191,6 @@ const RegionAccessPage = () => {
             containerClassName="w-full mt-[-6px]"
           />
         </div>
-
-        {/* <Description label="Region Viewer(s)" items="start" className="h-full">
-          <Table
-               dynamicColumns={['index']}
-               renderDynamicColumn={data => data.index + 1}
-               tabicon={tabname}
-         
-               onclicktitle={(tabname: string, sortalfabet: boolean) => {
-                setTabname(tabname);
-                sortddata(tabname, sortalfabet);
-              }}
-            items={
-              itemssorted.length > 0
-                ? itemssorted
-                : items
-            }
-            loading={viewers?.httpRequestStatus === 'loading'}
-            cols={columns}
-            containerClassName="w-3/5 mt-[-6px]"
-          />
-        </Description> */}
       </>
     );
   }, [

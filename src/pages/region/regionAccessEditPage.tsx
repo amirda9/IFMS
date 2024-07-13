@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import  {useRef} from 'react';
 import {SimpleBtn, Switch} from '~/components';
 import {FormLayout} from '~/layout';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -7,13 +7,12 @@ import {EditViewer} from '~/container';
 import {EditorRefType} from '~/container/editViewers';
 import {AccessEnum} from '~/types';
 import {setregionviewers,setregionviewersstatus} from './../../store/slices/networkslice';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 type Iprops={
   regionId:string,networkId:string
   }
 const RegionAccessPage = () => {
   const dispatch = useDispatch();
-  const {regionDetail} = useSelector((state: any) => state.http);
 
   const editor = useRef<EditorRefType>(null);
   const params = useParams<Iprops>();
