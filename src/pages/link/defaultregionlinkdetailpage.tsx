@@ -3,18 +3,14 @@ import {Description, SimpleBtn} from '~/components';
 import Selectbox from './../../components/selectbox/selectbox';
 import {getPrettyDateTime} from '~/util/time';
 import {useAppSelector, useHttpRequest} from '~/hooks';
-import Cookies from 'js-cookie';
-import {networkExplored} from '~/constant';
 import {useEffect, useState} from 'react';
 import {setLinkdetail, settypestate} from './../../store/slices/networkslice';
-import {BASE_URL} from './../../constant';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   changegetdatadetailStatus,
   updatedefaltlinkname,
-  updatelinkname,
 } from './../../store/slices/networktreeslice';
-import {$Get, $Post, $Put} from '~/util/requestapi';
+import {$Get,$Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import {LinksType} from '~/types';
 import {UserRole} from '~/constant/users';
@@ -22,12 +18,7 @@ const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
 ];
-type networklisttype = {
-  id: string;
-  name: string;
-  time_created: string;
-  time_updated: string;
-};
+
 
 type regionlisttype = {
   id: string;
@@ -41,10 +32,8 @@ networkId:string,linkId:string
   }
 // *********************************************************************
 const LinkDetailPage = () => {
-  const {networkDetail} = useSelector((state: any) => state.http);
-  const [defaultnetworkname, setDefaultnetworkname] = useState('');
   const [defaultregionkname, setDefaultregionname] = useState('');
-  const {networkidadmin, regionidadmin} = useSelector(
+  const {networkidadmin} = useSelector(
     (state: any) => state.networktree,
   );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
@@ -58,13 +47,9 @@ const LinkDetailPage = () => {
     }),
     initialRequests: request => {
       request('linkDetail', {params: {link_id: params.linkId!}});
-      // if (networkId) {
-      //   request('allStations', undefined);
-      // }
     },
   });
-  const [selectenetwork, setSelectednetwork] = useState('');
-  const [networklist, setNetworklist] = useState<networklisttype[]>([]);
+
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [selectedregion, setSelectedregion] = useState('');
   const [name, setName] = useState(state!.detail?.data?.name || '');
@@ -75,7 +60,6 @@ const LinkDetailPage = () => {
   const [commenerror, setCommmenerror] = useState('');
   const [defaultdestinationname, setDefaultdestinationname] = useState('');
   const [defaultsource, setdefaultsource] = useState('');
-  const [defauttype, setdefaulttype] = useState('');
   const [selectedstations, setSelectedstations] = useState([]);
   const [allsource, setAllsource] = useState<{value: string; label: string}[]>(
     [],
@@ -86,54 +70,9 @@ const LinkDetailPage = () => {
   const [alldestinaton, setAlldestination] = useState([]);
   const [source, setSource] = useState<string>('');
   const [destinationid, setDestinationid] = useState<string>('');
-  const [linkDetaildata, setLinkdetailData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    // const getrole = async () => {
-    //   const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-    //     headers: {
-    //       Authorization: `Bearer ${accesstoken}`,
-    //       Accept: 'application?.json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //   }).then(res => res?.json());
-    //   setuserrole(role.role);
-    // };
-    // getrole();
-    // const getnetworks = async () => {
-    //   const getstationdetail = await $Get(`otdr/link/${params.linkId!}`);
-    //   if (getstationdetail?.status == 200) {
-    // const getstationdetaildata = await getstationdetail?.json();
-    // const response = await $Get(`otdr/network`);
-    // if (response?.status == 200) {
-    //   const responsedata = await response?.json();
-    //   const Defaultnetworkname = responsedata.find(
-    //     (data: any) => data.id == getstationdetaildata.network_id,
-    //   )?.name;
-    //   setDefaultnetworkname(Defaultnetworkname || 'select');
-    //   setNetworklist(responsedata);
-    //   const networkregionresponse = await $Get(
-    //     `otdr/region/network/${responsedata.find(
-    //       (data: any) => data.id == getstationdetaildata.network_id,
-    //     )?.id}`,
-    //   );
-    //   if (networkregionresponse?.status == 200) {
-    //     const networkregionresponsedata =
-    //       await networkregionresponse?.json();
-    //     const Defaultegionname =
-    //       networkregionresponsedata.find(
-    //         (data: any) => data.id == getstationdetaildata.region_id,
-    //       )?.name || 'select';
-    //     setDefaultregionname(Defaultegionname);
-    //     setRegionlist(networkregionresponsedata);
-    //   }
-    // }
-    // }
-    // };
-    // getnetworks();
-  }, []);
+
   const getlinkdetail = async () => {
-    // const linkdetailresponse=await $Get(`otdr/link/${params.linkId!}`)
     try {
       setLoading(true);
       let linkdetailurl = `otdr/link/${params?.linkId!}`;
@@ -151,7 +90,6 @@ const LinkDetailPage = () => {
         );
         const networkstationdata = await networkstation?.json();
         dispatch(setLinkdetail(linkdata));
-        setLinkdetailData(linkdata);
         setName(linkdata.name);
         setComment(findInlinkdata?.description || '');
         setDestinationid(findInlinkdata?.destination.id || '');
@@ -187,8 +125,6 @@ const LinkDetailPage = () => {
           const Defaultnetworkname = responsedata.find(
             (data: any) => data.id == linkdata.network_id,
           )?.name;
-          setDefaultnetworkname(Defaultnetworkname || 'select');
-          setNetworklist(responsedata);
           const networkregionresponse = await $Get(
             `otdr/region/network/${responsedata.find(
               (data: any) => data.id == linkdata.network_id,
@@ -282,14 +218,7 @@ const LinkDetailPage = () => {
     }
   };
 
-  const onclicknetwork = async (id: string) => {
-    setSelectednetwork(id);
-    const networkregionresponse = await $Get(`otdr/region/network/${id}`);
-    if (networkregionresponse?.status == 200) {
-      const networkregionresponsedata = await networkregionresponse?.json();
-      setRegionlist(networkregionresponsedata);
-    }
-  };
+
   if (loading) {
     return <h1>Loading...</h1>;
   }
@@ -329,22 +258,6 @@ const LinkDetailPage = () => {
           </div>
         ) : null}
       </div>
-
-      {/* <Description className="mt-[21px]" label="Network" items="center">
-        <Selectbox
-          defaultvalue={defaultnetworkname}
-          placeholder={defaultnetworkname}
-          onclickItem={(e: {value: string; label: string}) =>
-            onclicknetwork(e.value)
-          }
-          options={networklist.map(data => ({
-            value: data.id,
-            label: data.name,
-          }))}
-          borderColor={'black'}
-          classname="w-[28%] h-[32px] rounded-[5px]"
-        />
-      </Description> */}
 
       <Description className="mt-[21px]" label="Region" items="center">
         <Selectbox

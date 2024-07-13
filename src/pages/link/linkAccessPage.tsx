@@ -20,7 +20,6 @@ type Iprops={
   regionId:string,networkId:string,linkId:string
   }
 const LinkAccessPage = () => {
-  const {networkDetail} = useSelector((state: any) => state.http);
   const params = useParams<Iprops>();
   const {network} = useSelector((state: any) => state);
   const [tabname, setTabname] = useState('User');
@@ -35,12 +34,12 @@ const LinkAccessPage = () => {
       region: string;
     }[]
   >([]);
-  const login = localStorage.getItem('login');
+
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
  
   const {
     request,
-    state: {viewers, users, update},
+    state: {viewers, users},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.linkAccessList,
@@ -99,7 +98,7 @@ const LinkAccessPage = () => {
     userList.push({...admin.user});
   }
 
-  const {linkDetail} = useSelector((state: any) => state.http);
+
   const saveAdmin = () => {
     const viewerWithoutAdmin =
       viewers?.data?.users

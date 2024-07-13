@@ -16,14 +16,11 @@ const typeoptions = [
   {value: 'duct', label: 'duct'},
 ];
 
-type mainprops={
-networkId:string
-  }
+  type mainprops={
+     networkId:string
+    }
 const LinkCreatePage = () => {
   const params = useParams<mainprops>();
-  console.log(params, 'params');
-
-  const networkId = Cookies.get(networkExplored);
   const navigate = useNavigate();
   const {
     state: {stations},
@@ -33,9 +30,7 @@ const LinkCreatePage = () => {
       stations: state.http.allStations,
     }),
     initialRequests: request => {
-      // if (networkId) {
         request('allStations', undefined);
-      // }
     },
   });
 
@@ -141,7 +136,6 @@ const LinkCreatePage = () => {
           );
           navigate(
             `/links/${responsedata.link_id}/${params.networkId!}/defaultregionlinkdetailpage`
-            // `../../links/${responsedata.link_id}/defaultregionlinkdetailpage`,
           );
         }
       } catch (error) {
