@@ -1,5 +1,5 @@
 import {FC, useEffect} from 'react';
-import {ControlledSelect, Description, Select, SimpleBtn} from '~/components';
+import {Select, SimpleBtn} from '~/components';
 import AlarmCheckboxList from './AlarmCheckboxList';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
@@ -346,7 +346,6 @@ const AlarmTypeAlertPage: FC = () => {
             alarmtypedetailCopy.alert_sending.about = e.target.value;
             dispatch(setalarmsdetail(alarmtypedetailCopy));
           }}
-          // value={cond.parameter}
           className="w-1/4 disabled:text-gray-400 disabled:opacity-100">
           {aboutoptions.map(data => (
             <option>{data.label}</option>

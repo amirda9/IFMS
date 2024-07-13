@@ -24,16 +24,6 @@ const AlarmCheckboxList: FC<Props> = ({title, titleCheckbox, items, type}) => {
     return (
       <>
         <div className="pb-2">
-          {/* <span className="mr-2">
-            <input
-              onChange={() => {
-                if (type == 'Primary') {
-                }
-              }}
-              type="checkbox"
-            />
-          </span>
-          <span>{item.label}</span> */}
         </div>
         {item?.items?.map(item => (
           <div className="pl-4">

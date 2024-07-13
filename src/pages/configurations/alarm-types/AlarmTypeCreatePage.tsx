@@ -3,7 +3,7 @@ import {FC} from 'react';
 import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {ControlledSelect, Description, SimpleBtn} from '~/components';
+import {Description, SimpleBtn} from '~/components';
 import {InputFormik, TextareaFormik} from '~/container';
 import {cretealarmtype} from '~/store/slices/alarmstypeslice';
 import {$Post} from '~/util/requestapi';
@@ -11,7 +11,6 @@ import {$Post} from '~/util/requestapi';
 type FormType = {
   name: string;
   comment: string;
-  // sourceDataSet: string;
 };
 
 const AlarmTypeCreatePage: FC = () => {
@@ -21,7 +20,6 @@ const AlarmTypeCreatePage: FC = () => {
     initialValues: {
       name: '',
       comment: '',
-      // sourceDataSet: 'Fiber Result',
     },
     onSubmit: async values => {
       try {
@@ -56,14 +54,6 @@ const AlarmTypeCreatePage: FC = () => {
               <TextareaFormik name="comment" />
             </Description>
 
-            {/* <Description label="Source Data Set">
-              <ControlledSelect
-                options={[{label: 'Fiber Result'}]}
-                value={formik.values.sourceDataSet || ''}
-                onChange={() => {}}
-                className="min-w-[19rem]"
-              />
-            </Description> */}
           </div>
           <div className="flex flex-row gap-x-4 self-end">
             <SimpleBtn type="submit">Save</SimpleBtn>

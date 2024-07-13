@@ -1,6 +1,5 @@
 import {FC} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import Checkbox from '~/components/checkbox/checkbox';
 import {RootState} from '~/store';
 import {setalarmsdetail} from '~/store/slices/alarmstypeslice';
 import {deepcopy} from '~/util';
@@ -340,26 +339,26 @@ const AlarmDetailCheckboxList: FC<Props> = ({title, titleCheckbox}) => {
       <>
         <div className="pb-2">
           <span className="mr-2">
-            <input 
-                 checked={
-                  alarmtypedetail.alarm_content.alarm_details.network
-                    .length == networkitems[0].items.length
-                }
-                onChange={() => {
-                  const alarmtypedetailCopy = deepcopy(alarmtypedetail);
-                  if (
-                    alarmtypedetail.alarm_content.alarm_details.network
-                      .length == networkitems[0].items.length
-                  ) {
-                    alarmtypedetailCopy.alarm_content.alarm_details.network =
-                      [];
-                  } else {
-                    alarmtypedetailCopy.alarm_content.alarm_details.network =
+            <input
+              checked={
+                alarmtypedetail.alarm_content.alarm_details.network.length ==
+                networkitems[0].items.length
+              }
+              onChange={() => {
+                const alarmtypedetailCopy = deepcopy(alarmtypedetail);
+                if (
+                  alarmtypedetail.alarm_content.alarm_details.network.length ==
+                  networkitems[0].items.length
+                ) {
+                  alarmtypedetailCopy.alarm_content.alarm_details.network = [];
+                } else {
+                  alarmtypedetailCopy.alarm_content.alarm_details.network =
                     networkitems[0].items.map(data => data.label);
-                  }
-                  dispatch(setalarmsdetail(alarmtypedetailCopy));
-                }}
-            type="checkbox" />
+                }
+                dispatch(setalarmsdetail(alarmtypedetailCopy));
+              }}
+              type="checkbox"
+            />
           </span>
           <span>{item.label}</span>
         </div>
@@ -407,26 +406,26 @@ const AlarmDetailCheckboxList: FC<Props> = ({title, titleCheckbox}) => {
       <>
         <div className="pb-2">
           <span className="mr-2">
-            <input 
-                  checked={
-                    alarmtypedetail.alarm_content.alarm_details.rtu
-                      .length == rtuitems[0].items.length
-                  }
-                  onChange={() => {
-                    const alarmtypedetailCopy = deepcopy(alarmtypedetail);
-                    if (
-                      alarmtypedetail.alarm_content.alarm_details.rtu
-                        .length == rtuitems[0].items.length
-                    ) {
-                      alarmtypedetailCopy.alarm_content.alarm_details.rtu =
-                        [];
-                    } else {
-                      alarmtypedetailCopy.alarm_content.alarm_details.rtu =
-                      rtuitems[0].items.map(data => data.label);
-                    }
-                    dispatch(setalarmsdetail(alarmtypedetailCopy));
-                  }}
-            type="checkbox" />
+            <input
+              checked={
+                alarmtypedetail.alarm_content.alarm_details.rtu.length ==
+                rtuitems[0].items.length
+              }
+              onChange={() => {
+                const alarmtypedetailCopy = deepcopy(alarmtypedetail);
+                if (
+                  alarmtypedetail.alarm_content.alarm_details.rtu.length ==
+                  rtuitems[0].items.length
+                ) {
+                  alarmtypedetailCopy.alarm_content.alarm_details.rtu = [];
+                } else {
+                  alarmtypedetailCopy.alarm_content.alarm_details.rtu =
+                    rtuitems[0].items.map(data => data.label);
+                }
+                dispatch(setalarmsdetail(alarmtypedetailCopy));
+              }}
+              type="checkbox"
+            />
           </span>
           <span>{item.label}</span>
         </div>
@@ -473,27 +472,27 @@ const AlarmDetailCheckboxList: FC<Props> = ({title, titleCheckbox}) => {
       <>
         <div className="pb-2">
           <span className="mr-2">
-            <input 
-                   checked={
-                    alarmtypedetail.alarm_content.alarm_details.optical_route
-                      .length == opticalrouteitems[0].items.length
-                  }
-                  onChange={() => {
-                    const alarmtypedetailCopy = deepcopy(alarmtypedetail);
-                    if (
-                      alarmtypedetail.alarm_content.alarm_details.optical_route
-                        .length == opticalrouteitems[0].items.length
-                    ) {
-                      alarmtypedetailCopy.alarm_content.alarm_details.optical_route =
-                        [];
-                    } else {
-                      alarmtypedetailCopy.alarm_content.alarm_details.optical_route =
-                      opticalrouteitems[0].items.map(data => data.label);
-                    }
-                    dispatch(setalarmsdetail(alarmtypedetailCopy));
-                  }}
-            
-            type="checkbox" />
+            <input
+              checked={
+                alarmtypedetail.alarm_content.alarm_details.optical_route
+                  .length == opticalrouteitems[0].items.length
+              }
+              onChange={() => {
+                const alarmtypedetailCopy = deepcopy(alarmtypedetail);
+                if (
+                  alarmtypedetail.alarm_content.alarm_details.optical_route
+                    .length == opticalrouteitems[0].items.length
+                ) {
+                  alarmtypedetailCopy.alarm_content.alarm_details.optical_route =
+                    [];
+                } else {
+                  alarmtypedetailCopy.alarm_content.alarm_details.optical_route =
+                    opticalrouteitems[0].items.map(data => data.label);
+                }
+                dispatch(setalarmsdetail(alarmtypedetailCopy));
+              }}
+              type="checkbox"
+            />
           </span>
           <span>{item.label}</span>
         </div>
@@ -541,10 +540,10 @@ const AlarmDetailCheckboxList: FC<Props> = ({title, titleCheckbox}) => {
       <>
         <div className="pb-2">
           <span className="mr-2">
-            <input 
+            <input
               checked={
-                alarmtypedetail.alarm_content.alarm_details.test_setup
-                  .length == testsetupitems[0].items.length
+                alarmtypedetail.alarm_content.alarm_details.test_setup.length ==
+                testsetupitems[0].items.length
               }
               onChange={() => {
                 const alarmtypedetailCopy = deepcopy(alarmtypedetail);
@@ -556,11 +555,12 @@ const AlarmDetailCheckboxList: FC<Props> = ({title, titleCheckbox}) => {
                     [];
                 } else {
                   alarmtypedetailCopy.alarm_content.alarm_details.test_setup =
-                  testsetupitems[0].items.map(data => data.label);
+                    testsetupitems[0].items.map(data => data.label);
                 }
                 dispatch(setalarmsdetail(alarmtypedetailCopy));
               }}
-            type="checkbox" />
+              type="checkbox"
+            />
           </span>
           <span>{item.label}</span>
         </div>
@@ -609,25 +609,26 @@ const AlarmDetailCheckboxList: FC<Props> = ({title, titleCheckbox}) => {
         <div className="pb-2">
           <span className="mr-2">
             <input
-                checked={
+              checked={
+                alarmtypedetail.alarm_content.alarm_details.test_result
+                  .length == testresultitems[0].items.length
+              }
+              onChange={() => {
+                const alarmtypedetailCopy = deepcopy(alarmtypedetail);
+                if (
                   alarmtypedetail.alarm_content.alarm_details.test_result
                     .length == testresultitems[0].items.length
-                }
-                onChange={() => {
-                  const alarmtypedetailCopy = deepcopy(alarmtypedetail);
-                  if (
-                    alarmtypedetail.alarm_content.alarm_details.test_result
-                      .length == testresultitems[0].items.length
-                  ) {
-                    alarmtypedetailCopy.alarm_content.alarm_details.test_result =
-                      [];
-                  } else {
-                    alarmtypedetailCopy.alarm_content.alarm_details.test_result =
+                ) {
+                  alarmtypedetailCopy.alarm_content.alarm_details.test_result =
+                    [];
+                } else {
+                  alarmtypedetailCopy.alarm_content.alarm_details.test_result =
                     testresultitems[0].items.map(data => data.label);
-                  }
-                  dispatch(setalarmsdetail(alarmtypedetailCopy));
-                }}
-            type="checkbox" />
+                }
+                dispatch(setalarmsdetail(alarmtypedetailCopy));
+              }}
+              type="checkbox"
+            />
           </span>
           <span>{item.label}</span>
         </div>
