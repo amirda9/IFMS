@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Description, SimpleBtn} from '~/components';
 import {Form, Formik} from 'formik';
 import * as Yup from 'yup';
@@ -14,6 +14,7 @@ const networkSchema = Yup.object().shape({
 const NetworkCreatePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading,setLoading]=useState(false)
   const {state, request} = useHttpRequest({
     selector: state => state.http.networkCreate,
     onUpdate: (lastState, state) => {
@@ -38,6 +39,7 @@ const NetworkCreatePage = () => {
         initialValues={{name: '', description: ''}}
         onSubmit={async values => {
           try {
+            setLoading(true)
             const response = await $Post(`otdr/network`, values);
             const responsedata = await response?.json();
             if (response?.status == 200) {
@@ -46,7 +48,12 @@ const NetworkCreatePage = () => {
               );
               navigate(`/networks/${responsedata.network_id}`);
             }
-          } catch (error) {}
+          } catch (error) {
+            console.log(`create error is:${error}`);
+            
+          } finally {
+            setLoading(false)
+          }
         }}>
         <Form className="flex h-full flex-col justify-between">
           <div className="flex flex-col gap-y-4">
@@ -61,7 +68,7 @@ const NetworkCreatePage = () => {
             <SimpleBtn
               className="mr-4"
               type="submit"
-              disabled={state?.httpRequestStatus === 'loading'}>
+              loading={loading}>
               Save
             </SimpleBtn>
             <SimpleBtn
