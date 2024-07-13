@@ -33,9 +33,9 @@ const LinkCreatePage = () => {
       stations: state.http.allStations,
     }),
     initialRequests: request => {
-      if (networkId) {
+      // if (networkId) {
         request('allStations', undefined);
-      }
+      // }
     },
   });
 
@@ -44,6 +44,7 @@ const LinkCreatePage = () => {
   const [comment, setComment] = useState('');
   const [types, setType] = useState('');
   const [typeerror, setTypeerror] = useState('');
+  const [createloading,setCreateloading]=useState(false)
   const [nameerror, setNameerror] = useState('');
   const [commenerror, setCommmenerror] = useState('');
   const [selectedstations, setSelectedstations] = useState([]);
@@ -114,6 +115,7 @@ const LinkCreatePage = () => {
       setSourcerror('');
       setDestinationerror('');
       try {
+        setCreateloading(true)
         const response = await $Post(`otdr/link/`, {
           name: name,
           network_id: params.networkId!,
@@ -142,9 +144,11 @@ const LinkCreatePage = () => {
             // `../../links/${responsedata.link_id}/defaultregionlinkdetailpage`,
           );
         }
-
-   
-      } catch (error) {}
+      } catch (error) {
+        console.log(`create error is :${error}`);
+      } finally {
+        setCreateloading(false)
+      }
     }
   };
 
@@ -250,7 +254,7 @@ const LinkCreatePage = () => {
         ) : null}
       </div>
       <div className="absolute bottom-0 right-0 mr-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={createlink} type="button">
+        <SimpleBtn loading={createloading} onClick={createlink} type="button">
           Save
         </SimpleBtn>
 
