@@ -34,14 +34,11 @@ const RegionStationsPage = () => {
   const {network} = useSelector((state: any) => state);
   const {
     regionstations,
-    regionLinks,
-    defaultregionLinks,
     defaultregionstations,
     networkidadmin,
   } = useSelector((state: RootState) => state.networktree);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const dispatch = useDispatch();
-  const login = localStorage.getItem('login');
   const [tabname, setTabname] = useState('Name');
 
   const [itemssorted, setItemssorted] = useState<

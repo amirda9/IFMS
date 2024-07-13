@@ -1,4 +1,4 @@
-import DoubleSideButtonGroup from '~/components/buttons/DoubleSideButtonGroup';
+
 import {SimpleBtn, Table} from '~/components';
 import {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';

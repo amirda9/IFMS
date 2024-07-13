@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {SimpleBtn, Table} from '~/components';
-import {useHttpRequest} from '~/hooks';
+import {useAppSelector, useHttpRequest} from '~/hooks';
 import {useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
-import {BASE_URL} from '~/constant';
 import {
   setnewregionlinklist,
   setnewregionlinkliststatus,
@@ -16,6 +15,7 @@ import {
   setRegionLinks,
   setdefaultRegionLinks,
 } from '~/store/slices/networktreeslice';
+import { UserRole } from '~/constant/users';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   name: {label: 'Name', size: 'w-[30%]', sort: true},
@@ -31,13 +31,11 @@ const RegionLinksPage = () => {
   const {newregionlinklist, newregionlinkliststatus} = useSelector(
     (state: any) => state.network,
   );
-
+  const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {regionLinks, defaultregionLinks} = useSelector(
     (state: RootState) => state.networktree,
   );
-  const login = localStorage.getItem('login');
-  const accesstoken = JSON.parse(login || '')?.data.access_token;
-  const [userrole, setuserrole] = useState<any>('');
+
   const [tabname, setTabname] = useState('Name');
   const [itemssorted, setItemssorted] = useState<
     {
@@ -46,23 +44,7 @@ const RegionLinksPage = () => {
       destination: string;
     }[]
   >([]);
-
-  const getrole = async () => {
-    const role = await fetch(`${BASE_URL}/auth/users/token/verify_token`, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
-        Accept: 'application?.json',
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res?.json());
-    setuserrole(role.role);
-  };
-
-  useEffect(() => {
-    getrole();
-  }, []);
   const params = useParams<Iprops>();
-
   const {
     state: {list},
     request,
@@ -365,14 +347,14 @@ const RegionLinksPage = () => {
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-        {userrole == 'superuser' ||
+        {loggedInUser.role === UserRole.SUPER_USER ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
           <SimpleBtn link to="../edit-linklist">
             Edit Links List
           </SimpleBtn>
         ) : null}
-        {userrole == 'superuser' ||
+        {loggedInUser.role === UserRole.SUPER_USER ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
           <SimpleBtn onClick={newregionlinkliststatus ? save : () => {}}>
