@@ -707,12 +707,7 @@ const OpticalRouteRoutePage: FC = () => {
       setLoading(true)
       if (alldeleteroutes.length > 0) {
         const deleteroute=await $Delete(`otdr/optical-route/${params.opticalRouteId!}/routes`,alldeleteroutes)
-        // request('opticalrouteDeleteRoute', {
-        //   params: {
-        //     optical_route_id: params.opticalRouteId! || '',
-        //   },
-        //   data: alldeleteroutes,
-        // });
+
       }
       if (allcreatedroutes.length > 0) {
        const newdata= allcreatedroutes.map((data, index) => ({
@@ -722,17 +717,6 @@ const OpticalRouteRoutePage: FC = () => {
           route_number: index,
         }))
         const createroute=await $Post(`otdr/optical-route/${params.opticalRouteId!}/routes`,newdata)
-        // request('opticalrouteCreateRoute', {
-        //   params: {
-        //     optical_route_id: params.opticalRouteId!|| '',
-        //   },
-        //   data: allcreatedroutes.map((data, index) => ({
-        //     link_id: data.link_id,
-        //     cable: data.cable,
-        //     core: data.core,
-        //     route_number: index,
-        //   })),
-        // });
       }
 
       if (allupdatedroutes.length > 0) {
@@ -743,17 +727,6 @@ const OpticalRouteRoutePage: FC = () => {
           id: data.id,
         }))
         const updaterote=$Put(`otdr/optical-route/${params.opticalRouteId!}/routes`,updatedata)
-        // request('opticalrouteUpdateRoute', {
-        //   params: {
-        //     optical_route_id: params.opticalRouteId! || '',
-        //   },
-          // data: allupdatedroutes.map((data, index) => ({
-          //   link_id: data.link_id,
-          //   cable: data.cable,
-          //   core: data.core,
-          //   id: data.id,
-          // })),
-        // });
       }
      
     } catch (error) {
@@ -763,7 +736,6 @@ const OpticalRouteRoutePage: FC = () => {
       setAllUpdatedroutes([]);
       setAllDeleteroutes([]);
       getallroute();
-    //  navigate(`/config/optical-routes/${params.opticalRouteId!}/${params.networkId!}/route`)
     }
   };
   // ###################################################################################################

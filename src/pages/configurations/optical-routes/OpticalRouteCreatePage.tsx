@@ -18,7 +18,7 @@ const OpticalRouteCreatePage: FC = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading,setLoading]=useState(false)
-  const {networkselectedlist, networkoptical} = useSelector(
+  const {networkoptical} = useSelector(
     (state: any) => state.opticalroute,
   );
 
@@ -71,7 +71,6 @@ const OpticalRouteCreatePage: FC = () => {
             navigate(
               `/config/optical-routes/${createopticaldata.id}/${params.id}`,
             );
-            //  navigate(`../${createopticaldata.id}`)
           }
         }
       } catch (error) {

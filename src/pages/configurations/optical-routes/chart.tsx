@@ -23,7 +23,6 @@ import {MdOutlineArrowBackIos} from 'react-icons/md';
 import {deepcopy} from '~/util';
 import {BiPlus} from 'react-icons/bi';
 import {JSX} from 'react/jsx-runtime';
-import {useParams} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
 import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
@@ -517,12 +516,7 @@ function Chart() {
           const results = await Promise.all(
             alllinksdata.map(response => response?.json()),
           );
-          // type linklengthtype = {
-          //   id: string;
-          //   length: Number;
-          //   cabledata:{cableid:string,
-          //   segments: {length: number; offset: number; position: number}[];
-          // }[]
+
           let allLinkdata: linklengthtype = [];
           let alloffset = 0;
           for (let i = 0; i < results.length; i++) {
@@ -912,7 +906,6 @@ function Chart() {
   };
 
   const Measure = () => {
-    // setSelectedEvents(null);
     if (selectedevents != null) {
       if (fakeevents.length >= 3) {
         setLeftverticaltab('Measure');
@@ -924,13 +917,7 @@ function Chart() {
     setLeftverticaltab('LinkView');
   };
 
-  //  const takeScreenshot = () => {
-  //     const plotComponent = plotref.current;
-  //     Plotly.toImage(plotComponent, {format: 'png'}).then(function(dataUrl) {
-  //     // اینجا میتوانید dataUrl را به عنوان منبع برای یک تصویر در HTML قرار دهید
-  //     // یا از آن برای ذخیره تصویر استفاده کنید
-  //     });
-  //     }
+
 
   const showcurveline = (name: string) => {
     const find = allcurve.findIndex(data => data.id == name);
@@ -958,7 +945,6 @@ function Chart() {
   };
 
   const movebigline = (name: string, direction: string) => {
-    // if (isDraggingname == name) {
     const verticalLinesCopy = deepcopy(verticalLines);
     const findverticalindex = verticalLines.findIndex(
       data => data.name && data.name == name,
@@ -967,10 +953,8 @@ function Chart() {
       direction == 'right'
         ? verticalLines[findverticalindex].x + 10
         : verticalLines[findverticalindex].x - 10;
-    // x / ((rect.width - rect.x) / (maxx - xScale.min)) + xScale.min;
-
     setVerticalLines(verticalLinesCopy);
-    // }
+
   };
 
   // ------ component --------- component ------------ component --------------- component ------------------
@@ -1046,7 +1030,6 @@ function Chart() {
 
   const finddata = (linename: string) => {
     var X = fakeevents.find((data: any) => data.text[0] == linename)?.x[0];
-    // let X = verticalLines!.find(data => data.name == linename)?.x!;
     let findequal = chartdata?.datapoints?.data_points?.find(
       (data: [number, number]) => data[0] == X,
     );
@@ -1120,7 +1103,6 @@ function Chart() {
 
     if (finddataindex > -1) {
       if (fakeevents[finddataindex].name) {
-        // setSelectedEvents(fakeevents[finddataindex]);
         const finevent = chartdata.key_events.events.find(
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -1328,7 +1310,6 @@ function Chart() {
         textfont: {color: ['#A80000']},
         line: {width: 6, zindex: 10, color: '#A80000'},
         marker: {color: '#A80000', zIndex: 10},
-        // event_number: data?.key_events?.events[0]?.event_number,
       });
     } else {
       setSelectedEvents({
@@ -1336,8 +1317,7 @@ function Chart() {
         y: [...Array(41).keys()].map(
           (dat, index) => e[`shapes[0].y0`] + index / 2,
         ),
-        //   data?.key_events?.events[0]?.event_location?.y - 10,
-        // ],
+
         type: 'line',
         mode: 'lines+markers',
         line: {width: 6, zindex: 10, color: '#A80000'},
@@ -1397,12 +1377,10 @@ function Chart() {
                 className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
               />
               <GoZoomIn
-                //  onClick={() => zoom(true, basescale + 100)}
                 size={30}
                 className="mt-[20px] cursor-pointer"
               />
               <GoZoomOut
-                // onClick={() => zoom(false, basescale - 1)}
                 size={30}
                 className="mt-[20px] cursor-pointer"
               />
@@ -1415,7 +1393,6 @@ function Chart() {
               />
               <img
                 onClick={() => {
-                  // zoom(false, 1), setbasescale(2), setRectangelzoom(false);
                 }}
                 src={Vector1}
                 className="mt-[15px] h-[25.5px] w-[30px] cursor-pointer"
@@ -1457,7 +1434,6 @@ function Chart() {
                   })
                 }
                 onClick={e => onclickshap()}
-                // onclickshap(e.points[0].x)
                 data={[
                   {
                     showlegend: false,
@@ -1473,11 +1449,6 @@ function Chart() {
                 ]}
                 config={{
                   displayModeBar: true,
-                  // modeBarButtonsRemove: [
-                  //   'zoom2d', // this will remove the zoom button
-                  //   'zoomIn2d', // this will remove the zoom in button
-                  //   'zoomOut2d' // this will remove the zoom out button
-                  //   ],
                 }}
                 layout={{
                   margin: {
@@ -1491,11 +1462,8 @@ function Chart() {
                   // @ts-ignore
                   dragmode: dragmode,
                   uirevision: 'constant',
-                  // title: 'A Fancy Plot',
                   shapes: allshapes,
-                  // leggend: false,
                   yaxis: {
-                    // this is the key property to fix the y axis
                     fixedrange: false,
                   },
                   xaxis: {
@@ -1524,9 +1492,7 @@ function Chart() {
                     );
                   })}
 
-                  {/* <div className="absolute right-0  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
-            <div className="absolute right-[100px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div>
-            <div className="absolute right-[150px]  top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]"></div> */}
+       
                 </div>
               );
             })}
