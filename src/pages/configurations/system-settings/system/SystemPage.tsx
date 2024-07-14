@@ -1,8 +1,8 @@
-import {Description, Select} from '~/components';
+import {Select} from '~/components';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {ReactNode, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
-import {$GET, $Get} from '~/util/requestapi';
+import {$Get} from '~/util/requestapi';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -22,10 +22,7 @@ const Rowinput = ({name, children}: Rowinputtype) => {
 // -------------------- main --------------------------- main ---------------------- main --------------------- main --------
 
 const SystemPage = () => {
-  const {
-    request,
-    state: {SettingsGet, SettingsUpdatesystem},
-  } = useHttpRequest({
+  const {request, state} = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
       SettingsUpdatesystem: state.http.SettingsUpdatesystem,
@@ -49,12 +46,7 @@ const SystemPage = () => {
     data_save_policy: string;
     test_type: string;
   }>();
-  // {
-  //   break_strategy: 'skip',
-  //   fiber_test_setup_definition_strategy: 'both',
-  //   data_save_policy: 'do_not_save',
-  //   test_type: 'monitoring',
-  // }
+
   const onSaveButtonClick = () => {
     request('SettingsUpdatesystem', {data: {system: system!}});
   };

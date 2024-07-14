@@ -1,6 +1,6 @@
-import {Description, Select, TextInput} from '~/components';
+import {Select, TextInput} from '~/components';
 import SystemSettingsMain from '../SystemSettingsMain';
-import {ReactNode, useEffect, useState} from 'react';
+import {ReactNode, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 
 type Rowinputtype = {
@@ -23,7 +23,7 @@ const OpticalRoutePage = () => {
   const [errortext, setErrortext] = useState('');
   const {
     request,
-    state: {SettingsGet, SettingsUpdateopticalroute},
+    state: {SettingsGet},
   } = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,

@@ -1,6 +1,6 @@
 import {FC, Fragment, ReactNode, useEffect, useState} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
-import {Description, Select, TextInput} from '~/components';
+import {Select, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {$Get} from '~/util/requestapi';
 import {deepcopy} from '~/util';
@@ -90,21 +90,6 @@ function ProactiveMaintenanceTestPage() {
   const [maintenance_test_setting, setmaintenance_test_setting] =
     useState<maintenance_test_settingtype>();
 
-  // SettingsGet?.data?.maintenance_test_setting || {
-  //   IOR: 0,
-  //   RBS: 0,
-  //   distance_mode: '',
-  //   event_loss_threshold: 0,
-  //   event_reflection_threshold: 0,
-  //   fiber_end_threshold: 0,
-  //   pulse_width: 0,
-  //   pulse_width_mode: '',
-  //   range: 0,
-  //   run_mode: '',
-  //   sampling_duration: 4,
-  //   sampling_mode: '',
-  //   test_mode: '',
-  // },
 
   const getAppsettingsdata = async () => {
     const getappsettings = await $Get(`otdr/settings/app-settings`);

@@ -1,8 +1,8 @@
 import {FC, Fragment, ReactNode, useEffect, useState} from 'react';
 import SystemSettingsMain from '../SystemSettingsMain';
-import {Description, Select, TextInput} from '~/components';
+import {Select, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import {$GET, $Get} from '~/util/requestapi';
+import {$Get} from '~/util/requestapi';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -62,7 +62,7 @@ const Rowinput = ({name, children, display}: Rowinputtype) => {
 const MonitoringTestPage: FC = () => {
   const {
     request,
-    state: {SettingsGet, SettingsUpdatemonitoring_test_setting},
+    state,
   } = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
@@ -89,24 +89,6 @@ const MonitoringTestPage: FC = () => {
   );
   const [monitoring_test_setting, setMonitoring_test_setting] =
     useState<monitoring_test_settingtype>();
-
-  // {
-  //   IOR: 0,
-  //   RBS: 0,
-  //   distance_mode: '',
-  //   event_loss_threshold: 0,
-  //   event_reflection_threshold: 0,
-  //   fiber_end_threshold: 0,
-  //   pulse_width: 0,
-  //   pulse_width_mode: '',
-  //   range: 0,
-  //   run_mode: '',
-  //   sampling_duration: 0,
-  //   sampling_mode: '',
-  //   test_mode: '',
-  // }
-
-  console.log('🐜', monitoring_test_setting);
 
   const getdate = async () => {
     const getappsettings = await $Get(`otdr/settings/app-settings`);
