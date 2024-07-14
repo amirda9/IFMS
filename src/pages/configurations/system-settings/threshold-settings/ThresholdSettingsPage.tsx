@@ -1,6 +1,6 @@
-import React, {ReactNode, useState} from 'react';
+import {ReactNode, useState} from 'react';
 import {FormLayout} from '~/layout';
-import {Description, Select, SimpleBtn, TextInput} from '~/components';
+import {Select, SimpleBtn, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 
 type Rowinputtype = {
@@ -27,7 +27,7 @@ const Rowinput = ({name, children}: Rowinputtype) => {
 const ThresholdSettingsPage = () => {
   const {
     request,
-    state: {SettingsGet, SettingsUpdatethreshold_setting},
+    state: {SettingsGet},
   } = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
@@ -123,7 +123,6 @@ const ThresholdSettingsPage = () => {
             }}
             type="number"
             className="w-full"
-            // defaultValue={1}
           />
         </Rowinput>
 
@@ -140,7 +139,6 @@ const ThresholdSettingsPage = () => {
             }}
             type="number"
             className="w-full"
-            // defaultValue={0.1}
           />
         </Rowinput>
         <Rowinput name="Event Loss (dB)">

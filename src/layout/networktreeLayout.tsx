@@ -78,15 +78,9 @@ function NetworktreeLayout({children}: Iprops) {
   const location = useLocation();
   const [loadingid, setLoadingid] = useState('');
   const [loadingdata, setLoadingdata] = useState(false);
-  const pathname = window.location.pathname;
   const [networkloading, setNetworkloading] = useState(false);
   const [skip, setSkip] = useState(0);
-  console.log('location.pathname', location.pathname);
 
-  // const [showAllnetworks, setShowallnetworks] = useState(false);
-  // const [allselectedId, setAllselectedId] = useState<string[]>([]);
-  const [networkId, setNetworkId] = useState('');
-  // const [mount, setMount] = useState(false);
   const {
     networkslist,
     stationsrtu,
@@ -580,9 +574,7 @@ function NetworktreeLayout({children}: Iprops) {
   
   return (
     <>
-      {/* <div className="flex h-[calc(100vh-120px)] opacity-0 w-[30%] flex-col  border-r-2 overflow-scroll  no-scrollbar border-g p-4">
 
-    </div> */}
       {loading ? (
         <Mainloading
           spinerclassname={`fixed left-[calc(15%-50px)] top-[35%] z-[300000] h-[100px] w-[100px]`}
@@ -673,7 +665,7 @@ function NetworktreeLayout({children}: Iprops) {
                         dispatch(setSelectedid(networkdata.id))
                           onclikitems(networkdata.id)
                           onclicknetwork(networkdata.id)
-                           setNetworkId(networkdata.id)
+
                       }}
                       // onclick={() => onclikitems(data.id)}
                       id={networkdata.id}
