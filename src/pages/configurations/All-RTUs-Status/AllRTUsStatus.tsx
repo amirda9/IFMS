@@ -1,7 +1,6 @@
-import React from 'react';
+
 import {Table} from '~/components';
 const columns = {
-  //  index: {label: 'Index', size: 'w-[9%]'},
   name: {label: 'Name', size: 'w-[9%]', sort: true},
   Network: {label: 'Network', size: 'w-[9%]'},
   Station: {label: 'Station', size: 'w-[9%]'},
@@ -42,8 +41,6 @@ function AllRTUsStatus() {
         cols={columns}
         items={dataa}
         bordered={true}
-        // dynamicColumns={['index']}
-        // renderDynamicColumn={data => data.index+1}
         containerClassName="w-full"
       />
     </div>
