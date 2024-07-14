@@ -188,10 +188,6 @@ const RtuPortsPage: FC = () => {
     
       try {
         const deleteports=await $Delete(`otdr/rtu/${params.rtuId}/ports`,alldeletedports)
-        // const promises = alldeletedports.map((data: string) =>
-        //   $Delete(`otdr/rtu/${data}/ports`,[]),
-        // );
-        // const results = await Promise.all(promises);
       } catch (error) {
         console.log(error);
       }
@@ -331,17 +327,8 @@ const RtuPortsPage: FC = () => {
         data => data.optical_route_id == opticalroutid,
       );
 
-      // if(findcreateports>-1){
+
       allcreateportCopy[findcreateports].state = state;
-      // }else{
-      //   setAllcreateport(prev => [
-      //     ...prev,
-      //     {
-      //       optical_route_id: opticalroutid,
-      //       state:state,
-      //     },
-      //   ]);
-      // }
       setAllcreateport(allcreateportCopy);
     }
   };
@@ -403,7 +390,7 @@ const RtuPortsPage: FC = () => {
     }
   };
 
-  console.log('alldeletedports', alldeletedports);
+
   if (loading) {
     return <h1>Loading ...</h1>;
   }
@@ -485,11 +472,7 @@ const RtuPortsPage: FC = () => {
                     <span className="basis-32">{data.length}</span>
 
                     <div className="basis-40">
-                      {/* {data.state != 'deactivate' && ( */}
                       <Select
-                        // value={
-                        //   data.state == 'activate' ? 'Activate' : 'Deactivate'
-                        // }
                         onChange={e =>
                           changestate(
                             index,
@@ -515,10 +498,9 @@ const RtuPortsPage: FC = () => {
                           ),
                         )}
                       </Select>
-                      {/* // )} */}
+
                     </div>
                     <div className="flex basis-40 flex-row justify-around gap-x-4">
-                      {/* {data.state != 'deactivate' && ( */}
                       <>
                         <IoOpenOutline size={30} />
                         <IoTrashOutline
@@ -537,10 +519,6 @@ const RtuPortsPage: FC = () => {
             ))}
         </div>
         <div className="flex flex-col ">
-          {/* {errortext.length > 0 ? (
-              <span className="my-[4px] text-[20px] text-[red]">{errortext}</span>
-            ) : null} */}
-
           <div className="flex gap-x-4 self-end">
             {loggedInUser.role === UserRole.SUPER_USER ||
             rtunetworkidadmin.includes(params?.networkId!) ||

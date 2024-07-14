@@ -71,7 +71,6 @@ type getallrtuestype = {
 // -------------------- main ------------------------ main ------------------- main -----------------
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
-  // text: "You won't be able to revert this!",
   icon: 'warning',
   showCancelButton: true,
   confirmButtonColor: '#3085d6',
@@ -101,11 +100,9 @@ const RtuLayout: FC = () => {
   } = useSelector((state: RootState) => state.rtu);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
-    request,
     state: {regions},
   } = useHttpRequest({
     selector: state => ({
-      // list: state.http.networkList,
       regions: state.http.regionList,
     }),
   });
@@ -145,8 +142,6 @@ const RtuLayout: FC = () => {
     regionid: string,
     networkid: string,
   ) => {
-    // const stationrtues = await $Get(`otdr/station/${id}/rtus`);
-
     try {
       setLoadingdata(true);
       const [stationrtuesresponse, stationdetailresponse] = await Promise.all([

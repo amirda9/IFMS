@@ -1,9 +1,7 @@
 import {FC} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {ControlledSelect} from '~/components';
-import {empty} from '~/util';
 import classNames from '~/util/classNames';
-
 export type RtuItemProps = {
   index: number;
   opticalRouteOptions: {label: string}[]; // Might need modification on the type

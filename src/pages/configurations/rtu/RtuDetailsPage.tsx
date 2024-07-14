@@ -3,11 +3,9 @@ import * as Yup from 'yup';
 import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {
-  ControlledSelect,
   Description,
   Select,
   SimpleBtn,
-  TextInput,
 } from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
 import {InputFormik} from '~/container';
@@ -58,8 +56,6 @@ const RtuDetailsPage: FC = () => {
   const [rtuDetail, setRtuDetail] = useState<any>([]);
   const {
     stationsrtu,
-    regionstations,
-    networkregions,
     rtunetworkidadmin,
     rturegionidadmin,
     rtustationidadmin,
@@ -72,25 +68,10 @@ const RtuDetailsPage: FC = () => {
     selector: state => ({
       rtuDetail: state.http.rtuDetail,
       users: state.http.userList,
-      // update: state.http.rtuUpdate,
     }),
     initialRequests: request => {
-      // request('rtuDetail', {
-      //   params: {rtu_Id: params?.rtuId! || ''},
-      // });
-
       request('userList', undefined);
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.update?.httpRequestStatus === 'loading' &&
-    //     state.update?.httpRequestStatus === 'success'
-    //   ) {
-    //     request('rtuDetail', {
-    //       params: {rtu_Id: params?.rtuId! || ''},
-    //     });
-    //   }
-    // },
   });
 
   console.log('rtuDetail?.httpRequestStatus', rtuDetail?.httpRequestStatus);
@@ -112,11 +93,6 @@ const RtuDetailsPage: FC = () => {
   };
   useEffect(() => {
     getrtudetail();
-    // if(rtuDetail?.httpRequestStatus == "success"){
-    //   dispatch( setrtugetdetailStatus(
-    //     false
-    //   ))
-    // }
   }, []);
   const formik = useFormik({
     validationSchema: rtuSchema,
