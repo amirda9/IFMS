@@ -47,20 +47,6 @@ const TestDetailsTestProgram: FC = () => {
     }
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
     let a = opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time.toString() || 'hourly';
-    console.log("💆‍♀️",opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time);
-    
-    // let result;
-    // if(a == "month"){
-    //   result="Monthly"
-    // }else if(a == "year"){
-    //   result ="Yearly"
-    // }else if (a == "day"){
-    //   result="Daily"
-    // }else if (a == "hour"){
-    //   result="Hourly"
-    // }else{
-    //   result="Every"
-    // }
     setSelectedradio2(a);
 
   }, []);
@@ -136,17 +122,7 @@ const TestDetailsTestProgram: FC = () => {
                 name,
               );
               let newName=name
-        
-              // let newName;
-              // if(Name == "every"){
-              //   newName ="every"
-              // }else if(Name == "daily"){
-              //   newName ="day"
-              // }else {
-              //   newName=Name.slice(0,-2)
-              // }
-          
-              
+           
             dataa.test_program.period_time.period_time = newName;
 
             dispatch(setopticalroutUpdateTestsetupDetail(dataa));
@@ -177,7 +153,6 @@ const TestDetailsTestProgram: FC = () => {
           <input
             onChange={e => {
               let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
-              console.log("🥰🥰",e.target.value);
               formik.setFieldValue('startingdateStart', e.target.value);
               dataa.startdatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));

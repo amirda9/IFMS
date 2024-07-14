@@ -1,10 +1,7 @@
 import dayjs from 'dayjs';
 import {FC} from 'react';
-import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import { useDispatch, useSelector } from 'react-redux';
-import {Description, SimpleBtn} from '~/components';
+import {IoOpenOutline} from 'react-icons/io5';
 import Selectbox from '~/components/selectbox/selectbox';
-import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 type Rowtext = {
   name: string;
   value: string;
@@ -23,11 +20,6 @@ const Rowtext = ({name, value}: Rowtext) => {
 };
 
 const TestDetailsStatus: FC = () => {
-  const dispatch = useDispatch();
-  const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
-  const {opticalroutUpdateTestsetupDetail} = useSelector(
-    (state: any) => state.opticalroute,
-  );
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">

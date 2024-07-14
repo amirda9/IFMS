@@ -3,7 +3,6 @@ import {Description, Select, TextInput} from '~/components';
 import dateicon from '~/assets/images/dateicon.png';
 import './index.css';
 import {useDispatch, useSelector} from 'react-redux';
-import {InputFormik} from '~/container';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
@@ -17,7 +16,6 @@ const TestDetailsLearning: FC = () => {
     return result;
   };
   const dispatch = useDispatch();
-  const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
   const {opticalroutUpdateTestsetupDetail,modalloading} = useSelector(
     (state: any) => state.opticalroute,
   );

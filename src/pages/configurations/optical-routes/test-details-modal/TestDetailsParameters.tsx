@@ -35,10 +35,8 @@ const seperatedate = (time: string) => {
 };
 
 const TestDetailsParameters: FC = () => {
-  const [mount, setMount] = useState(false);
   const [rtulist, setRtulist] = useState<{name: string; id: string}[]>([]);
   const params = useParams();
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const {
     opticalroutUpdateTestsetupDetail,
@@ -56,30 +54,10 @@ const TestDetailsParameters: FC = () => {
       opticalrouteTestSetupDetail: state.http.opticalrouteTestSetupDetail,
     }),
     initialRequests: request => {
-      // request('opticalrouteTestSetupDetail', {
-      //   params: {
-      //     optical_route_id: params.opticalRouteId || '',
-      //     test_setup_id: params.testId || '',
-      //   },
-      // });
       request('allStations', undefined);
     },
-    // onUpdate: (lastState, state) => {
-    //   if (
-    //     lastState.opticalrouteDeletTestsetup?.httpRequestStatus === 'loading' &&
-    //     state.opticalrouteDeletTestsetup!.httpRequestStatus === 'success'
-    //   ) {
-    //     request('opticalrouteTestSetup', {
-    //       params: {optical_route_id: params.opticalRouteId || ''},
-    //     });
-    //   }
-    // },
   });
-console.log("params",params);
 
-  console.log("params.opticalRouteId",params.opticalRouteId);
-  console.log("params.testId",params.testId);
-  
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
     if (params.testId == 'create') {
