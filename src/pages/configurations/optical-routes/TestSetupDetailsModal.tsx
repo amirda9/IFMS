@@ -52,11 +52,6 @@ const TestSetupDetailsModal: FC = () => {
           'loading' &&
         state.opticalrouteCreateTestSetup!.httpRequestStatus === 'success'
       ) {
-        // request('opticalrouteTestSetup', {
-        //   params: {
-        //     optical_route_id: params.opticalRouteId!.split('_')[0] || '',
-        //   },
-        // });
         request('opticalrouteTestSetup', {
           params: {
             optical_route_id: params.opticalRouteId! || '',
@@ -109,7 +104,6 @@ const TestSetupDetailsModal: FC = () => {
         newdata.station_id == '' ||
         newdata.station_name == '' ||
         !newdata.learning_data.increase_count_options.count ||
-        // newdata.learning_data.increase_count_options.timing.time == '' ||
         newdata.learning_data.increase_count_options.timing.type == '' ||
         newdata.learning_data.increase_count_options.timing.periodic_options
           .period_time == '' ||
@@ -200,11 +194,6 @@ const TestSetupDetailsModal: FC = () => {
                     }
               }
               type="button"
-              // to={
-              //   location.pathname.indexOf('monitoring') > -1
-              //     ? '/monitoring/test-on-demand'
-              //     : '..'
-              // }
             >
               Cancel
             </SimpleBtn>
