@@ -3,7 +3,7 @@ import {SidebarItem, SimpleBtn, Table} from '~/components';
 import dateicon from '~/assets/images/dateicon.png';
 import Checkbox from '~/components/checkbox/checkbox';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import {Link, NavLink, useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import Swal from 'sweetalert2';
 import {RootState} from '~/store';
@@ -26,7 +26,6 @@ import {
 } from './../../../store/slices/testondemand';
 import {$Delete, $Get, $Post} from '~/util/requestapi';
 import {deepcopy} from '~/util';
-import {BsPlusLg} from 'react-icons/bs';
 import {NetworkType} from '~/types/NetworkType';
 import {getPrettyDateTime} from '~/util/time';
 import {toast} from 'react-toastify';
@@ -68,10 +67,7 @@ function Testondemand() {
   const dispatch = useDispatch();
   const [setuploading, setSetuploading] = useState(false);
   const [networklist, setNetworklist] = useState<NetworkType[]>([]);
-  const [testsetupdetail, setTestsetupdetail] = useState<any>([]);
   const [alltestondemand, setAlltestondemand] = useState<tabelrow[]>([]);
-  const [deletelist, setDeletelist] = useState<string[]>([]);
-  const [measurement_type, setMeasurement_type] = useState('on_demand');
   const [getmeasurmentloading, setGetmeasurmentloading] = useState(false);
   const {
     networkselectedlist,
@@ -134,7 +130,6 @@ function Testondemand() {
 
   const swalsetting: any = {
     title: 'Are you sure you want to delete these components?',
-    // text: "You won't be able to revert this!",
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
@@ -173,19 +168,6 @@ function Testondemand() {
           }`}>
           {name}
         </button>
-        {/* {networkselectedlist.indexOf(id) > -1 ? (
-          <NavLink to={`create/${id}`} end>
-            <BsPlusLg color="#18C047" className="ml-[10px]" />
-          </NavLink>
-        ) : null} */}
-        {/* {selectedId == id ? (
-          <IoTrashOutline
-            onClick={() => deletenetworkoptical(id)}
-            color="#FF0000"
-            size={24}
-            className="ml-[20px] cursor-pointer"
-          />
-        ) : null} */}
       </div>
     );
   };
@@ -333,109 +315,6 @@ function Testondemand() {
     delete: {label: 'Delete', size: 'w-[2%]'},
   };
 
-  const topitems = [
-    {
-      index: 0,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      station: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 1,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 2,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 3,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 4,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 5,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      tabbodybg: [{name: 'status', bg: '#FFE600'}],
-      index: 6,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 7,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 8,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-    {
-      index: 7,
-      date: '2022-10-29 22:59:59',
-      opticalroute: 'Optical Route 1',
-      testsetup: 'Test Setup 1',
-      user: 'Station1',
-      status: 'Pending',
-      detail: '',
-      delete: '',
-    },
-  ];
 
   const onclickoptical = async (id: string, networkid: string) => {
     dispatch(setSelectedId(id));
@@ -529,7 +408,6 @@ function Testondemand() {
         );
         if (testsetupresponse?.status == 200) {
           const testsetupresponseData = await testsetupresponse?.json();
-          setTestsetupdetail(testsetupresponseData);
           const createondemandmeasurmentresponse = await $Post(
             `otdr/optical-route/${selectedId}/on-demand-measurements`,
             {
@@ -847,9 +725,6 @@ function Testondemand() {
         dynamicColumns={['detail', 'delete']}
         renderDynamicColumn={({key, value}) => {
           if (key === 'detail')
-            // navigate(`../../../chart`, {
-
-            // })
             return (
               <IoOpenOutline
                 onClick={() =>
@@ -870,29 +745,7 @@ function Testondemand() {
                 onClick={
                   async () => {
                     deletehistory(value.measurmenttestid);
-                    // const findidindex = deletelist.findIndex(
-                    //   data => data == value.measurmenttestid,
-                    // );
-                    // if (findidindex < 0) {
-                    //   setDeletelist(prev => [...prev, value.measurmenttestid]);
-                    // }
                   }
-                  // Swal.fire(swalsetting).then(async result => {
-                  //   if (result.isConfirmed) {
-                  //     try {
-                  //       const deletetest = await $Delete(
-                  //         `otdr/optical-route/${value.opticalrouteid}/measurements`,
-                  //         [value.measurmenttestid],
-                  //       );
-                  //       if (deletetest?.status == 201) {
-                  //         getmeasurments();
-                  //       }
-                  //     } catch (error) {
-                  //       toast('An error was encountered', {type: 'error', autoClose: 1000});
-                  //       `delete testondemand error:${error}`;
-                  //     }
-                  //   }
-                  // })
                 }
                 className="mx-auto cursor-pointer text-red-500"
                 size={22}
