@@ -1018,7 +1018,7 @@ function NetworktreeLayout({children}: Iprops) {
 
                                   <Items
                                     key={`${networkdata.id}$$${networkdata.id}`}
-                                    to={`/regions/defaultregionemptypage/${networkdata.id}_Stations`}
+                                    to={`/regions/defaultregionemptypage/${networkdata.id}_Stations_${networkdata.id}`}
                                     createurl={`../stations/createdefault/${networkdata.id}`}
                                     canDelete={false}
                                     selected={false}
