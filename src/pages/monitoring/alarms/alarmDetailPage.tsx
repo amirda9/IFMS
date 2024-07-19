@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useSearchParams} from 'react-router-dom';
 import {TextInput} from '~/components';
 import {RootState} from '~/store';
-import {setAllalarmdata} from '~/store/slices/alarmsslice';
+import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarmsslice';
 import {$Post} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 
@@ -12,25 +12,27 @@ const AlarmRow = ({title, data}: {title: string; data: string | number}) => {
     <div className="mb-5 flex flex-row items-center justify-between">
       <span className="text-[20px]  font-normal leading-[24.2px]">{title}</span>
       <TextInput
+      onChange={()=>{}}
         defaultValue={data}
+        value={data}
         className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
       />
     </div>
   );
 };
 
-
 function AlarmDetailPage() {
-  const {allalarmdata} = useSelector((state: RootState) => state.alarmsslice);
+  const {allalarmdata, alarmstatus} = useSelector(
+    (state: RootState) => state.alarmsslice,
+  );
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [searchparams] = useSearchParams();
   const idLisString = searchparams.get('id_lis');
   const idLisArray = idLisString && idLisString.split(',');
 
-
   useEffect(() => {
-    if (!allalarmdata) {
+    if (!alarmstatus) {
       const geralarmsdetail = async () => {
         try {
           setLoading(true);
@@ -38,7 +40,7 @@ function AlarmDetailPage() {
 
           if (response?.status == 200) {
             const responsedata = await response?.json();
-
+            dispatch(changealarmstatus(true));
             dispatch(setAllalarmdata(responsedata));
           }
         } catch (error) {
