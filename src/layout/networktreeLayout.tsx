@@ -752,7 +752,7 @@ function NetworktreeLayout({children}: Iprops) {
                                             />
                                           ) : (
                                             <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
-                                              <div className="absolute bottom-[-4px] left-[-10px] z-10 h-[35px] w-[20px] bg-[#E7EFF7]"></div>
+                                              <div className="absolute bottom-[-4px] left-[-5px] z-10 h-[35px] w-[10px] bg-[#E7EFF7]"></div>
 
                                               {regionstations
                                                 .find(
@@ -867,7 +867,7 @@ function NetworktreeLayout({children}: Iprops) {
                                           // onclicklinks(regionsdata.id);
                                         }}
                                         createurl={`/links/create/${regionsdata.id}/${networkdata.id}`}
-                                        id={`${regionsdata.id}&${regionsdata.id}`}
+                                        id={`${regionsdata.id}&${regionsdata.id}_Linkss`}
                                         name="Links"
                                       />
                                       {allselectedId.indexOf(
@@ -882,7 +882,7 @@ function NetworktreeLayout({children}: Iprops) {
                                               className="mx-auto "
                                             />
                                           ) : (
-                                            <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
+                                            <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[25px]">
                                               <div
                                                 className={`absolute ${
                                                   allselectedId.indexOf(
@@ -992,13 +992,13 @@ function NetworktreeLayout({children}: Iprops) {
                                   )
                                 }
                                 onclick={() => {
-                         
+                            
                                   onclikitems(
-                                    `${networkdata.id}${networkdata.id}&`,
+                                    `${networkdata.id}${networkdata.id}&`
                                   );
                                   // onclickdefaltregion(networkdata.id);
                                 }}
-                                id={'ikuiuiu'}
+                                id={`${networkdata.id}${networkdata.id}&`}
                                 name="Default Region"
                               />
                               {allselectedId.indexOf(
@@ -1047,7 +1047,7 @@ function NetworktreeLayout({children}: Iprops) {
                                              <GeneralLoadingSpinner size="w-8 h-8" className="mx-auto " />
                                   :
                                   <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
-                                  <div className="absolute bottom-[-4px] left-[-10px] z-10 h-[35px] w-[20px] bg-[#E7EFF7]"></div>
+                                  <div className="absolute bottom-[-4px] left-[-5px] z-10 h-[35px] w-[10px] bg-[#E7EFF7]"></div>
 
                                   {defaultregionstations
                                     .find(
@@ -1141,7 +1141,7 @@ function NetworktreeLayout({children}: Iprops) {
                                       onclickdefaultlinks(networkdata.id);
                                     }}
                                     createurl={`/links/createdefaultregionlink/${networkdata.id}`}
-                                    id={`&${networkdata.id}&${networkdata.id}&`}
+                                    id={`&${networkdata.id}&${networkdata.id}_Linkss`}
                                     name="Links"
                                   />
                                   {allselectedId.indexOf(
@@ -1151,15 +1151,15 @@ function NetworktreeLayout({children}: Iprops) {
                                     {(loadingid == `${networkdata.id}&$${networkdata.id}` && loadingdata)?
                                              <GeneralLoadingSpinner size="w-8 h-8" className="mx-auto " />
                                   :
-                                  <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[20px]">
+                                  <div className="relative ml-[32px] mt-[-25px] flex flex-col border-l-[1px] border-dotted border-black pt-[25px]">
                                   <div
                                     className={`absolute ${
                                       allselectedId.indexOf(
-                                        `&${networkdata.id}&${networkdata.id}`,
+                                        `&${networkdata.id}&${networkdata.id}_Linkss`,
                                       ) > -1
                                         ? 'bottom-[-4px]'
-                                        : 'bottom-[-8px]'
-                                    } left-[-10px] z-10 h-[35px] w-[20px] bg-[#E7EFF7]`}></div>
+                                        : 'bottom-[-15px]'
+                                    } left-[-5px] z-10 h-[35px] w-[10px] bg-[#E7EFF7]`}></div>
                                   <div className="absolute bottom-[5px] left-[-40px] z-10 h-full w-[20px] bg-[#E7EFF7]"></div>
                                   {defaultregionLinks
                                     .find(

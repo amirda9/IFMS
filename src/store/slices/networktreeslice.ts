@@ -500,6 +500,8 @@ const networktreeslice = createSlice({
       const findId = state.allselectedId.findIndex(
         data => data == action.payload,
       );
+      console.log("🤶",findId);
+      
       let allselectedIdCopy: string[] = deepcopy(state.allselectedId);
       if (findId > -1) {
         const newlist = allselectedIdCopy.filter(
