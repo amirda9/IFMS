@@ -6,7 +6,8 @@ import opticalroute from './slices/opticalroutslice'
 import rtu from './slices/rtu'
 import networktreeslice from './slices/networktreeslice'
 import testondemandSlice from './slices/testondemand'
-import createSagaMiddleware from 'redux-saga';
+import createSagaMiddleware from 'redux-saga'; 
+import alarmsslice from './slices/alarmsslice'
 import {AppSaga} from './saga';
 
 const middlewares: Middleware[] = [];
@@ -22,7 +23,8 @@ export const store = configureStore({
     rtu:rtu,
     networktree:networktreeslice,
     alarmtypes:alarmstype,
-    testondemandSlice:testondemandSlice
+    testondemandSlice:testondemandSlice,
+    alarmsslice:alarmsslice
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),
