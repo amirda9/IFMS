@@ -11,6 +11,7 @@ import {
 } from './../../store/slices/networkslice';
 import {useSelector} from 'react-redux';
 import { UserRole } from '~/constant/users';
+import { toast } from 'react-toastify';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -36,12 +37,13 @@ const NetworkAccessPage = () => {
 
   const {
     request,
-    state: {viewers, users, update},
+    state: {viewers, users, update,networkAccessUpdate},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.networkAccessList,
       users: state.http.userList,
       update: state.http.networkUpdateAdmin,
+      networkAccessUpdate:state.http.networkAccessUpdate
     }),
 
     initialRequests: request => {
@@ -53,10 +55,22 @@ const NetworkAccessPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('networkAccessList', {params: {network_id: params.networkId!}});
+        toast('It was done successfully', {
+          type: 'success',
+          autoClose: 1000,
+        });
+       request('networkAccessList', {params: {network_id: params.networkId!}});
       }
+
+       if(update?.error){
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+       }
+      // if()
     },
   });
+  
+  console.log("update",update);
+  
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const saveAdmin = () => {
     const admin = viewers?.data?.users.find(
@@ -71,6 +85,7 @@ const NetworkAccessPage = () => {
       data: {users: network?.networkviewers},
     });
 
+    
     dispatch(setnetworkviewersstatus(false));
   };
 
@@ -151,7 +166,7 @@ const NetworkAccessPage = () => {
             }}>
             <option value="" className="hidden" />
             <option value={undefined} className="hidden" />
-            {userList.map(user => (
+            {userList.sort((a, b) => a.username.localeCompare(b.username)).map(user => (
               <option value={user.id} key={user.id}>
                 {user.username}
               </option>
@@ -203,6 +218,7 @@ const NetworkAccessPage = () => {
       {/* {loggedInUser.role == UserRole.SUPER_USER ||
       networkDetail?.data?.access?.access == 'ADMIN' ? ( */}
         <SimpleBtn
+        loading={update?.httpRequestStatus === 'loading' || networkAccessUpdate?.httpRequestStatus === 'loading' || viewers?.httpRequestStatus === 'loading'}
           onClick={saveAdmin}
           disabled={update?.httpRequestStatus === 'loading'}>
           Save

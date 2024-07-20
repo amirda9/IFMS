@@ -61,6 +61,7 @@ const NetworkDetailPage = () => {
   const [loading, setLoaading] = useState<boolean>(false);
   // const {networkDetail} = useSelector((state: any) => state.http);
   const params = useParams<{networkId: string}>();
+  const [updateloading,setUpdateloading]=useState(false)
   const [networkdetail, setNetworkdetail] = useState<networkdetailtype>();
   const navigate = useNavigate();
 
@@ -105,6 +106,7 @@ const NetworkDetailPage = () => {
         }}
         onSubmit={async values => {
           try {
+            setUpdateloading(true)
             const response = await $Put(
               `otdr/network/${params.networkId!}`,
               values,
@@ -123,6 +125,8 @@ const NetworkDetailPage = () => {
             }
           } catch (error) {
             toast('Encountered an error', {type: 'error', autoClose: 1000});
+          } finally {
+            setUpdateloading(false)
           }
         }}
         validationSchema={networkSchema}>
@@ -153,7 +157,7 @@ const NetworkDetailPage = () => {
             <SimpleBtn onClick={() => navigate('history')}>History</SimpleBtn>
             {loggedInUser.role === UserRole.SUPER_USER ||
             networkdetail?.access?.access == 'ADMIN' ? (
-              <SimpleBtn type="submit">Save</SimpleBtn>
+              <SimpleBtn loading={updateloading} type="submit">Save</SimpleBtn>
             ) : null}
 
             <SimpleBtn link to="../">
