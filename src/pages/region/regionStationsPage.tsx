@@ -17,26 +17,27 @@ import {
 } from '~/store/slices/networktreeslice';
 import {RootState} from '~/store';
 import {UserRole} from '~/constant/users';
+import {toast} from 'react-toastify';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   name: {label: 'Name', size: 'w-[45%]', sort: true},
   latitude: {label: 'Latitude', size: 'w-[22.5%]'},
   longitude: {label: 'Longitude', size: 'w-[22.5%]'},
 };
-type Iprops={
-  regionId:string,networkId:string
-  }
+type Iprops = {
+  regionId: string;
+  networkId: string;
+};
 const RegionStationsPage = () => {
   const [loading, setLoading] = useState(false);
+  const [updateloading,setUpdateloading]=useState(false)
   const {newregionstationlist, newregionstationliststatus} = useSelector(
     (state: RootState) => state.network,
   );
   const {network} = useSelector((state: any) => state);
-  const {
-    regionstations,
-    defaultregionstations,
-    networkidadmin,
-  } = useSelector((state: RootState) => state.networktree);
+  const {regionstations, defaultregionstations, networkidadmin} = useSelector(
+    (state: RootState) => state.networktree,
+  );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const dispatch = useDispatch();
   const [tabname, setTabname] = useState('Name');
@@ -138,7 +139,8 @@ const RegionStationsPage = () => {
   };
 
   const save = async () => {
-    setLoading(true);
+    setUpdateloading(true);
+    setLoading(true)
     const defaultregionStationsCopy = deepcopy(defaultregionstations);
     const findefaultregionindex = defaultregionstations.findIndex(
       data => data.networkid == params.networkId!,
@@ -194,21 +196,18 @@ const RegionStationsPage = () => {
       } else {
         const [append, remove] = await Promise.all([
           $Post(
-            `otdr/region/${
-              params.regionId!
-            }/update_stations?action_type=append`,
+            `otdr/region/${params.regionId!}/update_stations?action_type=append`,
             {stations_id: appenddata.map(data => data.id)},
           ),
           $Post(
-            `otdr/region/${
-              params.regionId!
-            }/update_stations?action_type=remove`,
+            `otdr/region/${params.regionId!}/update_stations?action_type=remove`,
             {stations_id: removedata.map(data => data.id)},
           ),
         ]);
 
         // // we should update regionstations in networktree
         if (append?.status == 201 && remove?.status == 201) {
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
           // add stations to some regionstations in networktree
           regionstationsCopy[findregionindex].stations = [
             ...regionstations[findregionindex].stations,
@@ -219,8 +218,7 @@ const RegionStationsPage = () => {
 
           for (let k = 0; k < regionstationsCopy.length; k++) {
             if (
-              regionstationsCopy[k].networkid ==
-                params.networkId!  &&
+              regionstationsCopy[k].networkid == params.networkId! &&
               regionstationsCopy[k].regionid != params.regionId!
             ) {
               for (let x = 0; x < appenddata.length; x++) {
@@ -245,6 +243,8 @@ const RegionStationsPage = () => {
               ]?.stations?.splice(findindefault, 1);
             }
           }
+        } else {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
 
         // //remove stations from some regionstations in networktree
@@ -291,7 +291,8 @@ const RegionStationsPage = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      setUpdateloading(false);
+      setLoading(false)
     }
   };
 
@@ -321,7 +322,7 @@ const RegionStationsPage = () => {
         ) : null}
         {loggedInUser.role === UserRole.SUPER_USER ||
         networkidadmin.includes(params.networkId!) ? (
-          <SimpleBtn onClick={save}>Save</SimpleBtn>
+          <SimpleBtn loading={updateloading} onClick={save}>Save</SimpleBtn>
         ) : null}
         <SimpleBtn
           onClick={() => {
