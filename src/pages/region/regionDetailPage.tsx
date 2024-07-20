@@ -29,12 +29,14 @@ const RegionDetailPage = () => {
   const navigate = useNavigate();
   const {networkidadmin} = useSelector((state: any) => state.networktree);
   const params = useParams<regionId>();
+  const [updateloding,setUpdateloading]=useState(false)
   const [regiondata, setregiondata] = useState<any>();
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const buttons = (
     <>
       <SimpleBtn
+       loading={updateloding}
         type="submit"
         onClick={() => {
           document.getElementById('formSubmit')?.click();
@@ -53,6 +55,7 @@ const RegionDetailPage = () => {
     },
     onSubmit: async values => {
       try {
+        setUpdateloading(true)
         const response = await $Put(
           `otdr/region/${params?.regionId}`,
           {...values, network_id: params?.networkId},
@@ -73,13 +76,15 @@ const RegionDetailPage = () => {
             `/regions/${params?.regionId}/${params.networkId}`,
           );
         } else{
-          toast('Encountered an e77777rror', {type: 'error', autoClose: 1000});
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
       } catch (error) {
         console.log( `erorr is :${error}`);
         
        
         toast('Encountered an er66ror', {type: 'error', autoClose: 1000});
+      } finally {
+        setUpdateloading(false)
       }
     },
     validationSchema: regionSchema,

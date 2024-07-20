@@ -11,6 +11,7 @@ import {
   setregionviewers,
 } from './../../store/slices/networkslice';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
@@ -40,12 +41,14 @@ const RegionAccessPage = () => {
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
   const {
     request,
-    state: {viewers, users, update},
+    state: {viewers, users, update,regionAccessUpdate},
   } = useHttpRequest({
     selector: state => ({
       viewers: state.http.regionAccessList,
       users: state.http.userList,
       update: state.http.regionAdminUpdate,
+      regionAccessUpdate:state.http.regionAccessUpdate
+
     }),
     initialRequests: request => {
       request('regionAccessList', {
@@ -54,6 +57,12 @@ const RegionAccessPage = () => {
       request('userList', undefined);
     },
     onUpdate: lastState => {
+      if(lastState.update?.httpRequestStatus === 'loading' && update?.httpRequestStatus === 'success' && regionAccessUpdate?.httpRequestStatus === 'success'){
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
+      }
+      if(lastState.update?.httpRequestStatus === 'loading' && (update?.error || regionAccessUpdate?.error)){
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
         update?.httpRequestStatus === 'success'
@@ -61,7 +70,7 @@ const RegionAccessPage = () => {
         request('regionAccessList', {
           params: {region_id: params!.regionId!},
         });
-        navigate('../access', {replace: true, relative: 'path'});
+        // navigate('../access', {replace: true, relative: 'path'});
       }
     },
   });
@@ -165,7 +174,7 @@ const RegionAccessPage = () => {
             }}>
             <option value="" className="hidden" />
             <option value={undefined} className="hidden" />
-            {userList.map(user => (
+            {userList.sort((a, b) => a.username.localeCompare(b.username)).map(user => (
               <option value={user.id} key={user.id}>
                 {user.username}
               </option>
@@ -208,7 +217,7 @@ const RegionAccessPage = () => {
 
       <SimpleBtn
         onClick={saveAdmin}
-        disabled={update?.httpRequestStatus === 'loading'}>
+        loading={update?.httpRequestStatus === 'loading' || regionAccessUpdate?.httpRequestStatus === 'loading'}>
         Save
       </SimpleBtn>
 
