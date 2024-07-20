@@ -16,6 +16,7 @@ import {
   setdefaultRegionLinks,
 } from '~/store/slices/networktreeslice';
 import { UserRole } from '~/constant/users';
+import { toast } from 'react-toastify';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   name: {label: 'Name', size: 'w-[30%]', sort: true},
@@ -26,6 +27,7 @@ type Iprops={
   regionId:string,networkId:string
   }
 const RegionLinksPage = () => {
+  const [updateloading,setUpdateloading]=useState(false)
   const {regionDetail, networkDetail} = useSelector((state: any) => state.http);
   const dispatch = useDispatch();
   const {newregionlinklist, newregionlinkliststatus} = useSelector(
@@ -64,10 +66,11 @@ const RegionLinksPage = () => {
         lastState.add?.httpRequestStatus === 'loading' &&
         state.add!.httpRequestStatus === 'success'
       ) {
+       
         request('regionLinkList', {
           params: {region_id: params.regionId!},
         });
-      }
+      }  
     },
   });
 
@@ -145,6 +148,8 @@ const RegionLinksPage = () => {
   };
 
   const save = async () => {
+    try {
+      setUpdateloading(true)
     const appenddata: {
       id: string;
       name: string;
@@ -221,6 +226,7 @@ const RegionLinksPage = () => {
         addregionLinkList?.status == 201 &&
         removeregionLinkList?.status == 201
       ) {
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
         // add links to some regionlinks in networktree
         if (findregionlinkindex > -1) {
           regionLinksCopy[findregionlinkindex].links = [
@@ -277,6 +283,8 @@ const RegionLinksPage = () => {
             );
           }
         }
+      } else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
 
       // //remove links from some regionlinks in networktree
@@ -326,7 +334,13 @@ const RegionLinksPage = () => {
     dispatch(setRegionLinks(regionLinksCopy));
     dispatch(setnewregionlinkliststatus(false));
     dispatch(setnewregionlinklist([]));
-    getregionlinklist();
+    getregionlinklist(); 
+    } catch (error) {
+      console.log(`update error is:${error}`);
+    } finally {
+      setUpdateloading(false)
+    }
+   
   };
 
   return (
@@ -343,7 +357,7 @@ const RegionLinksPage = () => {
           dynamicColumns={['index']}
           renderDynamicColumn={data => data.index + 1}
           containerClassName="w-full"
-          loading={list?.httpRequestStatus === 'loading'}
+          loading={list?.httpRequestStatus === 'loading' || updateloading}
         />
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
@@ -357,7 +371,7 @@ const RegionLinksPage = () => {
         {loggedInUser.role === UserRole.SUPER_USER ||
         networkDetail?.data?.access?.access == 'ADMIN' ||
         regionDetail?.data?.access.access == 'ADMIN' ? (
-          <SimpleBtn onClick={newregionlinkliststatus ? save : () => {}}>
+          <SimpleBtn loading={updateloading} onClick={newregionlinkliststatus ? save : () => {}}>
             Save
           </SimpleBtn>
         ) : null}

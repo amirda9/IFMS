@@ -130,9 +130,9 @@ const RegionlinklisteditPage = () => {
 
 
   const [selectleft, setSelectleft] = useState<UserTableType[]>([]);
-
+  // => (key?: any)
   const changeSelect =
-    (side: 'left' | 'right', value: UserTableType) => (key?: any) => {
+    (side: 'left' | 'right', value: UserTableType)  => {
       let selectleftCopy = deepcopy(selectleft);
       const findataindex = selectleft.findIndex(data => data.id == value.id);
       if (findataindex > -1) {
@@ -154,10 +154,10 @@ const RegionlinklisteditPage = () => {
                 ? true
                 : false
             }
-            onclick={changeSelect(side, value)}
+            onclick={()=>changeSelect(side, value)}
             iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
             classname={
-              ' border-[1px] ml-[10px] text-[#18C047] border-[#000000]'
+              ' border-[1px]  ml-[10px] text-[#18C047] border-[#000000]'
             }
           />
         );
