@@ -28,7 +28,8 @@ const StationAccessPage = () => {
     (state: any) => state.networktree,
   );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
+  const [updateloading, setUpdateloading] = useState(false);
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
   const [itemssorted, setItemssorted] = useState<
@@ -59,11 +60,11 @@ const StationAccessPage = () => {
       });
       request('userList', undefined);
     },
-
   });
 
   const changeAdmin = async () => {
     try {
+      setUpdateloading(true)
       const admin = viewers?.data?.users.find(
         viewer => viewer.access === AccessEnum.admin,
       );
@@ -81,11 +82,14 @@ const StationAccessPage = () => {
       }
     } catch (error) {
       console.log(`update admin error is :${error}`);
+    } finally {
+      setUpdateloading(false)
     }
   };
 
   const saveAdmin = async () => {
     try {
+      setUpdateloading(true)
       setLoading(true)
       const viewerWithoutAdmin =
         viewers?.data?.users
@@ -120,12 +124,11 @@ const StationAccessPage = () => {
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
-
     } catch (error) {
       console.log(`error is:${error}`);
-      
     } finally {
-      setLoading(false)
+      setLoading(false);
+      setUpdateloading(false);
     }
 
     dispatch(setstationviewers([]));
@@ -210,11 +213,13 @@ const StationAccessPage = () => {
                 }
                 onChange={e => setUserAdmin(e.target.value)}
                 className="w-[70%]">
-                {userList.map(user => (
-                  <option value={user.id} key={user.id}>
-                    {user.username}
-                  </option>
-                ))}
+                {userList
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map(user => (
+                    <option value={user.id} key={user.id}>
+                      {user.username}
+                    </option>
+                  ))}
               </Select>
             </div>
 
@@ -223,7 +228,7 @@ const StationAccessPage = () => {
                 Link Viewer(s)
               </span>
               <Table
-              loading={loading}
+                loading={loading}
                 dynamicColumns={['index']}
                 renderDynamicColumn={data => data.index + 1}
                 tabicon={tabname}
@@ -243,6 +248,8 @@ const StationAccessPage = () => {
             </SimpleBtn>
 
             <SimpleBtn
+            type="button"
+              loading={updateloading}
               onClick={network.stationviewersstatus ? saveAdmin : changeAdmin}>
               Save
             </SimpleBtn>

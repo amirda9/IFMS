@@ -40,6 +40,7 @@ const StationDetailPage = () => {
   const dispatch = useDispatch();
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [loading, setLoading] = useState(false);
+  const [updateloading,setUpdatedloading]=useState(false)
   const [detaildata, setDetaildata] = useState<any>([]);
   const [stationdetail, setStationdetail] = useState<any>([]);
   const [selectedregion, setSelectedregion] = useState(
@@ -124,6 +125,7 @@ const StationDetailPage = () => {
       }}
       onSubmit={async values => {
         try {
+          setUpdatedloading(true)
           const response = await $Put(
             `otdr/station/${params.stationId!}`,
             {
@@ -159,6 +161,8 @@ const StationDetailPage = () => {
           }
         } catch (error) {
           toast('Encountered an error', {type: 'error', autoClose: 1000});
+        } finally {
+          setUpdatedloading(false)
         }
       }}
       validationSchema={stationSchema}>
@@ -247,7 +251,7 @@ const StationDetailPage = () => {
             {loggedInUser.role === UserRole.SUPER_USER ||
             networkidadmin.includes(params.networkId!) ||
             regionidadmin.includes(params.regionId!) ? (
-              <SimpleBtn type="submit">Save</SimpleBtn>
+              <SimpleBtn loading={updateloading} type="submit">Save</SimpleBtn>
             ) : null}
 
             <SimpleBtn link to="../">
