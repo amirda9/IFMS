@@ -206,6 +206,13 @@ function App() {
             <Route path="status" Component={pages?.status} />
             <Route path="test-on-demand" Component={pages.testondemand} />
             <Route path="alarms" Component={pages.alarms} />
+            <Route path="alarms/alarmdetail" Component={pages.AlarmEmpty}>
+              <Route path="" Component={pages.AlarmDetailPage} />
+              <Route path="alarms" Component={pages.AlarmAlarmsPage} />
+              
+              {/* <Route path="Access" Component={pages.NetworkAccessPage} />
+              <Route path="gis" Component={pages.NetworkGISPage} /> */}
+            </Route>
             <Route
               path="status/:statusId"
               Component={pages.monitoringstatusDetail}

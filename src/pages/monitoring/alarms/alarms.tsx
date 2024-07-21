@@ -2,14 +2,11 @@ import {useEffect, useState} from 'react';
 import {SimpleBtn, Table} from '~/components';
 import {BiChevronRight, BiChevronsLeft, BiChevronsRight} from 'react-icons/bi';
 import {BiChevronLeft} from 'react-icons/bi';
-import {AiOutlinePlus} from 'react-icons/ai';
-import {IoTrashOutline} from 'react-icons/io5';
-import {Select} from '~/components';
-import Rectangle from '~/assets/icons/Rectangle 112.png';
-import Checkbox from '~/components/checkbox/checkbox';
+import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {$Delete, $Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import {deepcopy} from '~/util';
+import {Link} from 'react-router-dom';
 // *********************** type ***************************
 enum severityamount {
   HIGHT = 'High',
@@ -22,6 +19,14 @@ enum statusamounts {
   INPROGRESS = 'In progress',
   RESOLVED = 'Resolved',
 }
+
+function truncateString(str: string) {
+  if (str.length <= 20) {
+    return str;
+  }
+  return str.slice(0, 20) + '...';
+}
+
 type alarmtype = {
   id: string;
   alarm_type: string;
@@ -35,117 +40,65 @@ type alarmtype = {
   tabbodybg?: {name: string; bg: string}[];
 };
 type allalarmsdatatype = alarmtype[];
-
+type alarmlist = {
+  source_name: string;
+  severity: severityamount;
+  status: statusamounts;
+  measurement_fk: string;
+  rtu_fk: string;
+  link_fk: string;
+  network_id: string;
+  region_id: string;
+  alarm_type_list: [];
+  id_list: [];
+  acting_user: string;
+  network_name: string;
+  alarm_number: number;
+  time_created: string;
+  time_modified: string;
+};
 // -------------------------------------------------------------
-const userList = [
-  {
-    id: 'mkjkj27',
-    username: 'ahmad',
-    name: 'ahmad',
-    email: 'ahmad',
-    role: 'ahmad',
-    station: {
-      name: 'ahmad',
-    },
-    region: {
-      name: 'ahmad',
-    },
-  },
-  {
-    id: 'mkjkjuu27',
-    username: 'hasan',
-    name: 'hasan',
-    email: 'hasan',
-    role: 'hasan',
-    station: {
-      name: 'hasan',
-    },
-    region: {
-      name: 'hasan',
-    },
-  },
-];
 
-const usertabelcolumn = {
-  user: {label: 'User', size: 'w-[60%]'},
-  status: {label: 'Status', size: 'w-[40%]', sort: true},
+
+type topcolumnsType = {
+  AlarmType: string;
+  SourceType: string;
+  Network: string;
+  Alarms: number;
+  Severity: severityamount;
+  State: statusamounts;
+  AlarmTime: string;
+  LastModified: string;
+  Detail: string;
+  delete: string;
+  id_list: string[];
 };
 
-const usertabelitems = [
-  {
-    user: (
-      <Select
-        className="w-[242px] bg-[#636363]"
-        value={''}
-        onChange={event => {
-          console.log('hghjg');
-        }}>
-        <option value="" className="hidden" />
-        <option value={undefined} className="hidden" />
-        {userList.map(user => (
-          <option value={user.id} key={user.id}>
-            {user.username}
-          </option>
-        ))}
-      </Select>
-    ),
-    status: 'RTU230P10',
-  },
-];
 
-const bottomcolumns = {
-  secondarysource: {label: 'Secondary Source', size: 'w-[22.5%]'},
-  alarmsime: {label: 'Alarm Time', size: 'w-[22.5%]'},
-  linksource: {label: 'Link Source', size: 'w-[22.5%]'},
-  linksestination: {label: 'Link Destination', size: 'w-[22.5%]'},
-  cablesuct: {label: 'Cable / Duct', size: 'w-[10%]'},
-};
 
-const topcolumns = {
-  source_name: {label: 'Primary Source', size: 'w-[16%]'},
-  alarm_type: {label: 'Alarm Type', size: 'w-[16%]'},
-  time_created: {label: 'Alarm Time', size: 'w-[16%]'},
-  severity: {label: 'Severity', size: 'w-[5%]'},
-  status: {label: 'State', size: 'w-[10%]'},
-  time_modified: {label: 'Last Modified', size: 'w-[16%]'},
-  acting_user: {label: 'Acting User', size: 'w-[16%]'},
-  chekbox: {label: '', size: 'w-[5%]'},
-};
-
-const bottomItems = [
-  {
-    secondarysource: 'Connector Reflection',
-    alarmsime: '2023-05-10 19:41:36',
-    linksource: 'Station 1',
-    linksestination: 'Station 2',
-    cablesuct: '1',
-  },
-  {
-    secondarysource: 'Connector Reflection',
-    alarmsime: '2023-05-10 19:41:36',
-    linksource: 'Station 1',
-    linksestination: 'Station 2',
-    cablesuct: '1',
-  },
-];
 
 function Alarms() {
+
   const [loading, setLoading] = useState(false);
-  const [allalarmsdata, setAllalarmdata] = useState<allalarmsdatatype>([]);
-  const [selectedrow, setSelectedrow] = useState<alarmtype>();
+  const [allalarmsdata, setAllalarmdata] = useState<topcolumnsType[]>([]);
   const [selectedid, setSelectedid] = useState<string[]>([]);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
   const [sortkey, setSortkey] = useState('time_created');
   const [allpagecount, setAllpagecount] = useState<number>(1);
+ const [totalalarms,setTotalalarms]=useState(0)
+
+
 
   const SetSourcKey = (name: string) => {
-    if (name == 'Primary Source') {
+    if (name == 'Source Type') {
       setSortkey('source_name');
+    } else if (name == 'Network') {
+      setSortkey('Network');
+    } else if (name == '# Alarms') {
+      setSortkey('Alarms');
     } else if (name == 'Alarm Type') {
       setSortkey('alarm_type');
-    } else if (name == 'Alarm Time') {
-      setSortkey('time_created');
     } else if (name == 'Severity') {
       setSortkey('severity');
     } else if (name == 'Last Modified') {
@@ -153,7 +106,7 @@ function Alarms() {
     } else if (name == 'State') {
       setSortkey('status');
     } else {
-      setSortkey('acting_user');
+      setSortkey('time_created');
     }
   };
 
@@ -177,18 +130,28 @@ function Alarms() {
         `otdr/alarm/events/?page=${pagevalue}&limit=${limitvalue}&sort_key=${sortkey}&sort_order=desc`,
       );
       let allalarmresponsedata: {
-        alarm_events: allalarmsdatatype;
+        alarm_events: [alarmlist];
         page_number: number;
+        total_count: number;
       } = await allalarmresponse?.json();
       console.log('allalarmresponsedata', allalarmresponsedata);
+      setTotalalarms(allalarmresponsedata.total_count)
       setAllpagecount(allalarmresponsedata.page_number);
       let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
-        ...data,
-        time_created: getPrettyDateTime(data.time_created),
-        time_modified: getPrettyDateTime(data.time_modified),
+        AlarmType: truncateString(data.alarm_type_list.join(',')),
+        SourceType: data.source_name,
+        Network: 'network1',
+        Alarms: 2,
+        Severity: data.severity,
+        State: data.status,
+        AlarmTime: getPrettyDateTime(data.time_created),
+        LastModified: getPrettyDateTime(data.time_modified),
+        Detail: '',
+        delete: '',
+        id_list: data.id_list,
         tabbodybg: [
           {
-            name: 'severity',
+            name: 'Severity',
             bg:
               data.severity == severityamount.LOW
                 ? '#FFE600'
@@ -197,7 +160,7 @@ function Alarms() {
                 : '#FF0000',
           },
           ...(data?.status === statusamounts.RESOLVED
-            ? [{name: 'status', bg: '#18C047'}]
+            ? [{name: 'State', bg: '#18C047'}]
             : []),
         ],
       }));
@@ -232,15 +195,15 @@ function Alarms() {
     const findalarmindex = allalarmsdataCopy.findIndex(data => data.id == id);
     if (allalarmsdataCopy[findalarmindex].tabrowbg) {
       delete allalarmsdataCopy[findalarmindex].tabrowbg;
-      setSelectedrow(undefined);
+    
     } else {
       allalarmsdataCopy[findalarmindex] = {
         ...allalarmsdataCopy[findalarmindex],
         tabrowbg: '#C0E7F2',
       };
-      setSelectedrow(allalarmsdataCopy[findalarmindex]);
+      
     }
-    setAllalarmdata(allalarmsdataCopy);
+    // setAllalarmdata(allalarmsdataCopy);
   };
 
   const deletealarms = async () => {
@@ -256,320 +219,155 @@ function Alarms() {
       setLoading(false);
     }
   };
+  // ********************************************************************************
+  const topcolumns = {
+    AlarmType: {label: 'Alarm Type', size: 'w-[18%]'},
+    SourceType: {label: 'Source Type', size: 'w-[10%]'},
+    Network: {label: 'Network', size: 'w-[18%]'},
+    Alarms: {label: '# Alarms', size: 'w-[6%]'},
+    Severity: {label: 'Severity', size: 'w-[10%]'},
+    State: {label: 'State', size: 'w-[10%]'},
+    AlarmTime: {label: 'Alarm Time', size: 'w-[14%]'},
+    LastModified: {label: 'Last Modified', size: 'w-[14%]'},
+    Detail: {label: 'Detail', size: 'w-[2%]'},
+    delete: {label: 'Delete', size: 'w-[2%]'},
+  };
+
+ 
 
   return (
-    <div className="flex w-full flex-col p-[10px] pt-[80px]">
-      <div className="flex w-full flex-row justify-between border-b-[1px] border-[#D9D9D9]">
-        {/* ***************** top ********************* top *****************************top *************** */}
-        <div className="w-[calc(100%-400px)]  pr-[10px] pt-[7px]">
-          <div className="flex w-full flex-row items-center">
-            <span className="text-[18px] font-normal leading-6">
-              Total Alarm(s)
-            </span>
-            <input
-              type="number"
-              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-            />
-            <SimpleBtn className="ml-2 py-[6px]" type="button">
-              New/Updated Alarm(s)
-            </SimpleBtn>
-            <input
-              type="number"
-              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-            />
-
-            <SimpleBtn className="ml-4 px-[2px] py-[5px]" type="button">
-              <BiChevronsLeft color={'red'} size={20} />
-            </SimpleBtn>
-            <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
-              <BiChevronLeft
-                onClick={
-                  page == 1
-                    ? () => {}
-                    : () => {
-                        getallalarms(limit, page - 1),
-                          setPage(page - 1),
-                          setSelectedrow(undefined);
-                      }
-                }
-                size={20}
+    <div className="flex h-[calc(100vh-45px)] w-full flex-col items-center p-[10px] pb-[30px] pr-[20px] pt-[60px]">
+      <Table
+        loading={loading}
+        bordered={true}
+        cols={topcolumns}
+        tabicon={'Name'}
+        items={allalarmsdata}
+        onclicktitle={(e: string) => SetSourcKey(e)}
+        thclassname="pl-2 text-left"
+        tdclassname="pl-2 text-left"
+        containerClassName="w-full text-left min-h-[72px] max-h-[calc(100vh-200px)]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
+        dynamicColumns={['Detail', 'delete']}
+        renderDynamicColumn={({key, value}) => {
+          if (key === 'Detail')
+            return (
+              <Link to={`alarmdetail?id_lis=${value.id_list}`}>
+                <IoOpenOutline 
+            
+                 size={22} className="mx-auto" />
+           </Link> 
+            );
+          else if (key === 'delete')
+            return (
+              <IoTrashOutline
+                onClick={() => {}}
+                className="mx-auto cursor-pointer text-red-500"
+                size={22}
               />
-            </SimpleBtn>
-            <span className="text-18px] ml-[2px] font-normal leading-6">
-              page
-            </span>
-            <input
-              value={page}
-              type="text"
-              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-            />
-            <span className="ml-2">/{allpagecount}</span>
-            <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
-              <BiChevronRight
-                onClick={
-                  page == 6
-                    ? () => {}
-                    : () => {
-                        getallalarms(limit, page + 1),
-                          setPage(page + 1),
-                          setSelectedrow(undefined);
-                      }
-                }
-                size={20}
-              />
-            </SimpleBtn>
-            <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
-              <BiChevronsRight size={20} />
-            </SimpleBtn>
+            );
+          else return <></>;
+        }}
+      />
 
-            <span className="ml-[2px] text-[18px] font-normal leading-6">
-              Rows Per Page
-            </span>
-            <input
-              value={limit}
-              onChange={e => {
-                setLimit(Number(e.target.value)),
-                  changelimit(Number(e.target.value));
-              }}
-              type="text"
-              className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-            />
-          </div>
-          {/* ***************** top tabel ********************* top tabel *****************************top tabel *************** */}
-          <Table
-            loading={loading}
-            // onclicktitle={(tabname: string, sortalfabet: boolean) => {
-            //   const dataa = [...reightstationsorted];
-            //   if (sortalfabet) {
-            //     dataa.sort((a, b) => -a.name.localeCompare(b.name, 'en-US'));
-            //   } else {
-            //     dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
-            //   }
-            //   setReightstationssorted(dataa);
-            // }}
 
-            bordered={true}
-            cols={topcolumns}
-            tabicon={'Name'}
-            onclicktitle={(e: string) => SetSourcKey(e)}
-            items={allalarmsdata}
-            onclickrow={(e: any) => onclicktabelrow(e.id)}
-            thclassname="pl-[4px] bg-[red]"
-            tdclassname="pl-[4px] text-left"
-            containerClassName="w-full min-h-[72px] max-h-[700px] text-left ml-[5px]  overflow-y-auto mt-[20px]"
-            dynamicColumns={['chekbox']}
-            renderDynamicColumn={({key, value}) => {
-              if (key === 'chekbox') {
-                return (
-                  <Checkbox
-                    checkstatus={selectedid.includes(value.id)}
-                    onclick={e => onclickcheckbox(value.id)}
-                    iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
-                    classname={' border-[1px] text-[#18C047] border-[#000000]'}
-                  />
-                );
-              } else return <></>;
+      <div className=" absolute bottom-10 left-[30px] mt-6 pr-[10px] pt-[7px]">
+        <div className="flex w-full flex-row items-center">
+          <span className="text-[18px] font-normal leading-6">
+            Total Alarm(s)
+          </span>
+          <input
+            value={totalalarms}
+            type="number"
+            className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+          />
+          {/* <SimpleBtn className="ml-10 py-[6px]" type="button">
+          View New/Updated Alarm(s)
+          </SimpleBtn>
+          <input
+            type="number"
+            className="ml-2  h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+          /> */}
+
+          <SimpleBtn
+            onClick={
+              page == 1
+                ? () => {}
+                : () => {
+                    getallalarms(limit, page == 2 ? page - 1 : page - 2)
+                      setPage(page == 2 ? page - 1 : page - 2)
+                    
+                  }
+            }
+            className="ml-10 px-[2px] py-[5px]"
+            type="button">
+            <BiChevronsLeft color={'red'} size={20} />
+          </SimpleBtn>
+          <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
+            <BiChevronLeft
+              onClick={
+                page == 1
+                  ? () => {}
+                  : () => {
+                      getallalarms(limit, page - 1)
+                        setPage(page - 1)
+                      
+                    }
+              }
+              size={20}
+            />
+          </SimpleBtn>
+          <span className="text-18px] ml-[8px] font-normal leading-6">
+            page
+          </span>
+          <input
+            value={page}
+            type="text"
+            className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+          />
+          <span className="ml-2 mr-2">/{allpagecount}</span>
+          <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
+            <BiChevronRight
+              onClick={
+                page == allpagecount
+                  ? () => {}
+                  : () => {
+                      getallalarms(limit, page + 1)
+                        setPage(page + 1)
+                    
+                    }
+              }
+              size={20}
+            />
+          </SimpleBtn>
+          <SimpleBtn
+            onClick={
+              page == allpagecount
+                ? () => {}
+                : () => {
+                    getallalarms(limit, page + 2)
+                      setPage(page + 2)
+                      
+                  }
+            }
+            className="ml-2 px-[2px] py-[5px]"
+            type="button">
+            <BiChevronsRight size={20} />
+          </SimpleBtn>
+
+          <span className="ml-8 text-[18px] font-normal leading-6">
+            Rows Per Page
+          </span>
+          <input
+            value={limit}
+            onChange={e => {
+              setLimit(Number(e.target.value)),
+                changelimit(Number(e.target.value));
             }}
-            // dynamicColumns={'index'}
-            // renderDynamicColumn={renderDynamicColumn('right')}
+            type="text"
+            className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
-        </div>
-        {/* ***************** right ********************* right *****************************right *************** */}
-        <div className="box-border flex h-[765px] w-[400px] flex-col border-l-[1px] border-[#D9D9D9] pb-[10px] pl-[20px]">
-          <div className="flex flex-row pt-[13px]">
-            <AiOutlinePlus color="#18C047" size={25} />
-            <IoTrashOutline size={24} className={'ml-2 text-red-500'} />
-          </div>
-          <Table
-            // loading={state.regionstationlist?.httpRequestStatus !== 'success'}
-            // onclicktitle={(tabname: string, sortalfabet: boolean) => {
-            //   const dataa = [...reightstationsorted];
-            //   if (sortalfabet) {
-            //     dataa.sort((a, b) => -a.name.localeCompare(b.name, 'en-US'));
-            //   } else {
-            //     dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
-            //   }
-            //   setReightstationssorted(dataa);
-            // }}
-            cols={usertabelcolumn}
-            tabicon={'Name'}
-            items={usertabelitems}
-            thclassname="pl-2"
-            containerClassName="w-full min-h-[72px] text-left ml-[5px]  overflow-y-auto mt-[30px]"
-            // dynamicColumns={['index']}
-            // renderDynamicColumn={renderDynamicColumn('right')}
-          />
-          <div className="mt-[20px] flex flex-row items-center justify-between">
-            <span className="text-[20px] font-normal leading-6">User</span>
-
-            <Select
-              // disabled={
-              //   userrole == 'superuser' ||
-              //   networkDetail?.data?.access?.role == 'superuser'
-              //     ? false
-              //     : true
-              // }
-              className="w-[242px] bg-[#636363]"
-              value={''}
-              onChange={event => {
-                console.log('hghjg');
-
-                // setUserAdmin(event.target.value);
-              }}>
-              <option value="" className="hidden" />
-              <option value={undefined} className="hidden" />
-              {userList.map(user => (
-                <option value={user.id} key={user.id}>
-                  {user.username}
-                </option>
-              ))}
-            </Select>
-          </div>
-
-          <div className="mt-[20px] flex flex-row items-center justify-between">
-            <span className="text-[20px] font-normal leading-6">State</span>
-
-            <Select
-              // disabled={
-              //   userrole == 'superuser' ||
-              //   networkDetail?.data?.access?.role == 'superuser'
-              //     ? false
-              //     : true
-              // }
-              className="w-[242px]"
-              value={''}
-              onChange={event => {
-                console.log('hghjg');
-
-                // setUserAdmin(event.target.value);
-              }}>
-              <option value="" className="hidden" />
-              <option value={undefined} className="hidden" />
-              {userList.map(user => (
-                <option value={user.id} key={user.id}>
-                  {user.username}
-                </option>
-              ))}
-            </Select>
-          </div>
-
-          <span className="mt-[15px] text-[20px] font-normal leading-6">
-            Assignment Time
-          </span>
-          <span className="mt-[15px] text-[20px] font-normal leading-6">
-            Assigned By
-          </span>
-          <span className="mt-[15px] text-[20px] font-normal leading-6">
-            Last Modified
-          </span>
-
-          <div className="mt-[20px] flex flex-row items-center justify-between">
-            <div className="flex flex-col">
-              <span className="mt-[0px] text-[20px] font-normal leading-6">
-                Escalate after
-              </span>
-              <span className="mt-[5px] text-[20px] font-normal leading-6">
-                (Day:Hr:Min)
-              </span>
-            </div>
-            <div className="flex flex-row items-center">
-              <input
-                type="number"
-                className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-              />
-              <input
-                type="number"
-                className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-              />
-              <input
-                type="number"
-                className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-              />
-            </div>
-          </div>
-
-          <div className="mt-[20px] flex flex-row items-center justify-between">
-            <div className="flex flex-col">
-              <span className="mt-[0px] text-[20px] font-normal leading-6">
-                Timeout after
-              </span>
-              <span className="mt-[5px] text-[20px] font-normal leading-6">
-                (Day:Hr:Min)
-              </span>
-            </div>
-            <div className="flex flex-row items-center">
-              <input
-                type="number"
-                className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-              />
-              <input
-                type="number"
-                className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-              />
-              <input
-                type="number"
-                className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-              />
-            </div>
-          </div>
-
-          <span className="mt-[20px] text-[20px] font-normal leading-6">
-            Description
-          </span>
-          <textarea className="mt-[3px] h-[76px] w-full rounded-[10px] bg-white" />
-
-          <div className="mt-[10px] flex flex-row">
-            <img src={Rectangle} className="mt-[0px] h-[25px] w-[25px]" />
-            <img
-              src={Rectangle}
-              className="ml-[10px] mt-[0px] h-[25px] w-[25px]"
-            />
-          </div>
-
-          <div className="mt-[20px] flex flex-row items-center justify-between">
-            <button className="w-[180px] rounded-md  bg-[#636363] py-[6px] text-sm">
-              Acknowledge
-            </button>
-
-            <button className="w-[180px] rounded-md  bg-[#636363] py-[6px] text-sm">
-              ignore
-            </button>
-          </div>
-
-          <div className="mt-[20px] flex flex-row items-center justify-between">
-            <button className="w-[180px] rounded-md  bg-[#BAC2EDB0] py-[6px] text-sm">
-              Select All
-            </button>
-
-            <button className="w-[180px] rounded-md  bg-[#BAC2EDB0] py-[6px] text-sm">
-              Delete Selected
-            </button>
-          </div>
         </div>
       </div>
-      {/* *********** bottom tabel   ********** bottom tabel ************* bottom tabel *********************** */}
-      {selectedrow ? (
-        <Table
-          // loading={state.regionstationlist?.httpRequestStatus !== 'success'}
-          // onclicktitle={(tabname: string, sortalfabet: boolean) => {
-          //   const dataa = [...reightstationsorted];
-          //   if (sortalfabet) {
-          //     dataa.sort((a, b) => -a.name.localeCompare(b.name, 'en-US'));
-          //   } else {
-          //     dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
-          //   }
-          //   setReightstationssorted(dataa);
-          // }}
-          bordered={true}
-          cols={bottomcolumns}
-          tabicon={'Name'}
-          items={bottomItems}
-          thclassname="pl-2"
-          containerClassName="w-[calc(100%-500px)] min-h-[72px] text-left ml-[5px]  overflow-y-auto mt-[20px]"
-          // dynamicColumns={'index'}
-          // renderDynamicColumn={renderDynamicColumn('right')}
-        />
-      ) : null}
     </div>
   );
 }
