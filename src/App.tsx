@@ -10,7 +10,11 @@ import ErrorPage404 from './pages/errors/404';
 import ErrorPage403 from './pages/errors/403';
 import {UserRole} from './constant/users';
 import NetworktreeLayout from './layout/networktreeLayout';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { usePathname } from 'next/navigation';
 function App() {
+
   const auth = useAppSelector(
     state =>
       state.http.refresh?.httpRequestStatus === 'success' ||

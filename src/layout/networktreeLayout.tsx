@@ -155,11 +155,12 @@ function NetworktreeLayout({children}: Iprops) {
 
   const getnetworklist = async (data: number) => {
     setLoadingdata(true);
-    setNetworkloading(true);
     try {
+      setLoadingdata(true);
       const getnetworks = await $Get(`otdr/network?limit=10&skip=${data}`);
-      const networksdata = await getnetworks?.json();
+    
       if (getnetworks?.status == 200) {
+        const networksdata = await getnetworks?.json();
         const newnetworklist = [...networkslist, ...networksdata];
         dispatch(setNetworklist(newnetworklist));
       }
@@ -535,6 +536,9 @@ function NetworktreeLayout({children}: Iprops) {
       }
     });
   };
+console.log("loadingdata",loadingdata);
+console.log("loadingid",loadingid);
+console.log("showAllnetworks",showAllnetworks);
 
   return (
     <>

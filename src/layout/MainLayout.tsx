@@ -1,4 +1,4 @@
-import {FC} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {navbarItems} from '~/constant';
 import {NavItem} from '~/components';
 import {IoPersonOutline} from 'react-icons/io5';
@@ -10,6 +10,24 @@ import { $Get } from '~/util/requestapi';
 import { toast } from 'react-toastify';
 
 const MainLayout: FC = () => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const login = localStorage.getItem('login');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+ 
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+    window.removeEventListener('online', handleOnline);
+    window.removeEventListener('offline', handleOffline);
+    };
+    }, []);
+
+    console.log("isOnline",isOnline);
   const dispatch = useAppDispatch();
   const {state} = useHttpRequest({
     selector: state => state.http.verifyToken,
@@ -19,25 +37,53 @@ const MainLayout: FC = () => {
   });
 
   const handleLogout = async() => {
-    try {
-      // const logoutapi=await $Get(`auth/users/auth/logout`)
-      // if(logoutapi?.status == 200){
+    if(isOnline){
+      if (accesstoken && accesstoken.length>0){
+        try {
+          const logoutapi=await $Get(`auth/users/auth/logout`)
+          if(logoutapi?.status == 200){
+            localStorage.removeItem('refresh');
+            localStorage.removeItem('login');
+            dispatch(httpClear(['login', 'refresh']));
+          } else{
+            toast('Encountered an error', {type: 'error', autoClose: 1000});
+          }
+        } catch (error) {
+          console.log(`logout error is:${error}`);
+        }
+      } else{
         localStorage.removeItem('refresh');
         localStorage.removeItem('login');
-        dispatch(httpClear(['login', 'refresh']));
-      // } else{
-      //   toast('Encountered an error', {type: 'error', autoClose: 1000});
-      // }
-    } catch (error) {
-      console.log(`logout error is:${error}`);
+        dispatch(httpClear(['login', 'refresh'])); 
+      }
     }
+
+   
   };
 
 
-  if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
+    if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
     handleLogout();
-    return <></>;
-  }
+    return <></>
+    }
+
+
+  // useEffect(() => {
+  //   if (isOnline) {
+  //   if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
+  //   handleLogout();
+  //   }
+  //   } else {
+  //   toast('network error', { type: 'error', autoClose: 1000 });
+  //   }
+  //   }, [isOnline])
+  
+
+  useEffect(()=>{
+   if (!isOnline) {
+    toast('network error', {type: 'error', autoClose: 1000});
+   }
+  },[isOnline])
 
   if (!state || state.httpRequestStatus === 'loading') {
     return (
@@ -48,6 +94,8 @@ const MainLayout: FC = () => {
     );
   }
 
+ 
+  
   const randomdata=Math.floor(Math.random()* 100) 
   const randomdata2=Math.floor(Math.random()* 10) 
   return (
@@ -76,7 +124,11 @@ const MainLayout: FC = () => {
         />
       </nav>
       <div  className="flex min-h-[100vh] pt-[20px] pb-[20px] flex-row bg-[#E7EFF7]">
-        <Outlet />
+
+   
+   <Outlet />
+ 
+        
       </div>
       <div className="h-[25px] z-[1000] fixed bottom-0 right-0 left-0 flex flex-row bg-[#006BBC]">
       <span className='text-white text-[16px] ml-6'>Total Alarms: {randomdata+25}</span>

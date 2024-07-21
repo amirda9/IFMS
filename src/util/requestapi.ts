@@ -1,4 +1,6 @@
 
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {BASE_URL} from '~/constant';
 export const $GET = async (url: string) => {
   const login = localStorage.getItem('login');
@@ -15,17 +17,18 @@ export const $GET = async (url: string) => {
 };
 
 export const $Get = async (url: string) => {
-  const login = localStorage.getItem('login');
-  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
-  if (!accesstoken) return;
-  return await fetch(`${BASE_URL}/${url}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accesstoken}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  });
+      const login = localStorage.getItem('login');
+      const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+      if (!accesstoken) return;
+      return await fetch(`${BASE_URL}/${url}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+  
 };
 
 export const $POST = async (url: string, data: any) => {
