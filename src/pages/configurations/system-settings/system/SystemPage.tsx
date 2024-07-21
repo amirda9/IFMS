@@ -3,6 +3,7 @@ import SystemSettingsMain from '../SystemSettingsMain';
 import {ReactNode, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {$Get} from '~/util/requestapi';
+import { toast } from 'react-toastify';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -22,20 +23,29 @@ const Rowinput = ({name, children}: Rowinputtype) => {
 // -------------------- main --------------------------- main ---------------------- main --------------------- main --------
 
 const SystemPage = () => {
+  const [loading,setLoading]=useState(false)
   const {request, state} = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
       SettingsUpdatesystem: state.http.SettingsUpdatesystem,
     }),
     initialRequests: request => {
-      request('SettingsGet', undefined);
+      // request('SettingsGet', undefined);
     },
     onUpdate: (lastState, state) => {
       if (
         lastState.SettingsUpdatesystem?.httpRequestStatus === 'loading' &&
         state.SettingsUpdatesystem!.httpRequestStatus === 'success'
       ) {
+        toast('It was done successfully', {
+          type: 'success',
+          autoClose: 1000,
+        });
         request('SettingsGet', undefined);
+      }
+
+      if(state?.SettingsUpdatesystem?.error){
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     },
   });
@@ -51,11 +61,19 @@ const SystemPage = () => {
     request('SettingsUpdatesystem', {data: {system: system!}});
   };
   const getAppsettingsdata = async () => {
+    try {
+      setLoading(true)
     const appsettings = await $Get(`otdr/settings/app-settings`);
     if (appsettings?.status == 200) {
       let appsettingsdata = await appsettings?.json();
       setSystem(appsettingsdata?.system);
     }
+    } catch (error) {
+      
+    } finally {
+      setLoading(false)
+    }
+    
   };
 
   useEffect(() => {
@@ -69,6 +87,10 @@ const SystemPage = () => {
       test_type: 'monitoring',
     });
   };
+  
+  if(state?.SettingsUpdatesystem?.httpRequestStatus === 'loading' || loading){
+    return <h1>loading ...</h1>
+  }
   return (
     <SystemSettingsMain
       onResetButtonClick={onResetButtonClick}

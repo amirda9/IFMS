@@ -2,6 +2,7 @@ import {Select, TextInput} from '~/components';
 import SystemSettingsMain from '../SystemSettingsMain';
 import {ReactNode, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
+import { toast } from 'react-toastify';
 
 type Rowinputtype = {
   name: string;
@@ -23,7 +24,7 @@ const OpticalRoutePage = () => {
   const [errortext, setErrortext] = useState('');
   const {
     request,
-    state: {SettingsGet},
+    state: {SettingsGet,SettingsUpdateopticalroute},
   } = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
@@ -37,7 +38,15 @@ const OpticalRoutePage = () => {
         lastState.SettingsUpdateopticalroute?.httpRequestStatus === 'loading' &&
         state.SettingsUpdateopticalroute?.httpRequestStatus === 'success'
       ) {
+        toast('It was done successfully', {
+          type: 'success',
+          autoClose: 1000,
+        });
         request('SettingsGet', undefined);
+      }
+
+      if(state.SettingsUpdateopticalroute?.error){
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     },
   });
@@ -105,12 +114,17 @@ const OpticalRoutePage = () => {
   };
 
 
+
   const onResetButtonClick = () => {
     setHelixfactor(1.02);
     setFiberType('G.656');
     setIor({1310: 1.4678, 1490: 1.4679, 1550: 1.468, 1625: 1.4681});
     setRbs({1310: -79.01, 1490: -79.02, 1550: -79.03, 1625: -79.04});
   };
+
+  if(SettingsGet?.httpRequestStatus == "loading" || SettingsUpdateopticalroute?.httpRequestStatus == "loading"){
+    return <h1>loading...</h1>
+  }
   return (
     <SystemSettingsMain
       onResetButtonClick={onResetButtonClick}

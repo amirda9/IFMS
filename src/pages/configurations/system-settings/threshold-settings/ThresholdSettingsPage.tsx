@@ -2,6 +2,7 @@ import {ReactNode, useState} from 'react';
 import {FormLayout} from '~/layout';
 import {Select, SimpleBtn, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
+import { toast } from 'react-toastify';
 
 type Rowinputtype = {
   name: string;
@@ -27,7 +28,7 @@ const Rowinput = ({name, children}: Rowinputtype) => {
 const ThresholdSettingsPage = () => {
   const {
     request,
-    state: {SettingsGet},
+    state: {SettingsGet,SettingsUpdatethreshold_setting},
   } = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
@@ -43,6 +44,10 @@ const ThresholdSettingsPage = () => {
           'loading' &&
         state.SettingsUpdatethreshold_setting!.httpRequestStatus === 'success'
       ) {
+        toast('It was done successfully', {
+          type: 'success',
+          autoClose: 1000,
+        });
         request('SettingsGet', undefined);
       }
     },
@@ -86,6 +91,9 @@ const ThresholdSettingsPage = () => {
     </>
   );
 
+  if(SettingsUpdatethreshold_setting?.httpRequestStatus == "loading" || SettingsGet?.httpRequestStatus == "loading"){
+    return <h1>loading ...</h1>
+  }
   return (
     <FormLayout buttons={buttons}>
       <div className="flex flex-col gap-y-4">

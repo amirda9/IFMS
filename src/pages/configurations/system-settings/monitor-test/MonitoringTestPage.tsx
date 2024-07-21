@@ -3,6 +3,7 @@ import SystemSettingsMain from '../SystemSettingsMain';
 import {Select, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import {$Get} from '~/util/requestapi';
+import { toast } from 'react-toastify';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -79,7 +80,14 @@ const MonitoringTestPage: FC = () => {
         state.SettingsUpdatemonitoring_test_setting!.httpRequestStatus ===
           'success'
       ) {
+        toast('It was done successfully', {
+          type: 'success',
+          autoClose: 1000,
+        });
         request('SettingsGet', undefined);
+      }
+      if(state?.SettingsUpdatemonitoring_test_setting?.error){
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     },
   });
@@ -263,6 +271,9 @@ const MonitoringTestPage: FC = () => {
     });
   };
 
+  if(state?.SettingsUpdatemonitoring_test_setting?.httpRequestStatus == "loading" || state?.SettingsGet?.httpRequestStatus == "loading"){
+    return <h1>loading ...</h1>
+  }
   return (
     <SystemSettingsMain
       onResetButtonClick={onResetButtonClick}
