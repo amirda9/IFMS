@@ -300,7 +300,7 @@ function Alarms() {
             }
             className="ml-10 px-[2px] py-[5px]"
             type="button">
-            <BiChevronsLeft color={'red'} size={20} />
+            <BiChevronsLeft size={20} />
           </SimpleBtn>
           <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
             <BiChevronLeft
