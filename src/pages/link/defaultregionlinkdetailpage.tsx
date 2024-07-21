@@ -14,6 +14,7 @@ import {$Get,$Put} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import {LinksType} from '~/types';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
@@ -202,6 +203,10 @@ const LinkDetailPage = () => {
           },
         );
         if (response?.status == 200) {
+          toast('It was done successfully', {
+            type: 'success',
+            autoClose: 1000,
+          });
           dispatch(
             updatedefaltlinkname({
               regionid: selectedregion.length > 0 ? selectedregion : null,
@@ -212,9 +217,13 @@ const LinkDetailPage = () => {
               destination_id: destinationid,
             }),
           );
+        }else{
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
         getlinkdetail();
-      } catch (error) {}
+      } catch (error) {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
     }
   };
 
@@ -364,7 +373,7 @@ const LinkDetailPage = () => {
       <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
         {loggedInUser.role === UserRole.SUPER_USER ||
         networkidadmin.includes(params.networkId!) ? (
-          <SimpleBtn onClick={updatelink} type="button">
+          <SimpleBtn loading={loading} onClick={updatelink} type="button">
             Save
           </SimpleBtn>
         ) : null}

@@ -10,6 +10,7 @@ import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
 import {$Post} from '~/util/requestapi';
 import {deepcopy} from '~/util';
+import { toast } from 'react-toastify';
 
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
@@ -123,6 +124,10 @@ const LinkCreatePage = () => {
         const responsedata = await response?.json();
         //we should update the networktree
         if (response?.status == 200) {
+          toast('It was done successfully', {
+            type: 'success',
+            autoClose: 1000,
+          });
           dispatch(
             createdefaultRegionLinks({
               networkid: params.networkId!,
@@ -137,8 +142,11 @@ const LinkCreatePage = () => {
           navigate(
             `/links/${responsedata.link_id}/${params.networkId!}/defaultregionlinkdetailpage`
           );
+        } else {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
       } catch (error) {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
         console.log(`create error is :${error}`);
       } finally {
         setCreateloading(false)
