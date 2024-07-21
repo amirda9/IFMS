@@ -20,14 +20,14 @@ const MainLayout: FC = () => {
 
   const handleLogout = async() => {
     try {
-      const logoutapi=await $Get(`auth/users/auth/logout`)
-      if(logoutapi?.status == 200){
+      // const logoutapi=await $Get(`auth/users/auth/logout`)
+      // if(logoutapi?.status == 200){
         localStorage.removeItem('refresh');
         localStorage.removeItem('login');
         dispatch(httpClear(['login', 'refresh']));
-      } else{
-        toast('Encountered an error', {type: 'error', autoClose: 1000});
-      }
+      // } else{
+      //   toast('Encountered an error', {type: 'error', autoClose: 1000});
+      // }
     } catch (error) {
       console.log(`logout error is:${error}`);
     }

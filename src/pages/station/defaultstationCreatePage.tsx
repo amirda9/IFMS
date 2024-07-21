@@ -7,6 +7,7 @@ import {createdefaultStation} from './../../store/slices/networktreeslice';
 import {useDispatch} from 'react-redux';
 import {$Post} from '~/util/requestapi';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
@@ -41,6 +42,10 @@ const defaultStationDetailPage = () => {
           const responsedata = await response?.json();
           if (response?.status == 200) {
             // we should update the network tree
+            toast('It was done successfully', {
+              type: 'success',
+              autoClose: 1000,
+            });
             dispatch(
               createdefaultStation({
                 networkid: params.networkid!,

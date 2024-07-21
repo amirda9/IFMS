@@ -11,6 +11,7 @@ import {changegetdatadetailStatus, updatedefaultStationName} from './../../store
 import {useDispatch, useSelector} from 'react-redux';
 import {$Get, $Put} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
+import { toast } from 'react-toastify';
 const stationSchema = Yup.object().shape({
   name: Yup.string().required('Please enter station name'),
   latitude: Yup.string().required('Please enter latitude'),
@@ -30,6 +31,7 @@ type Iprops={
 const StationDetailPage = () => {
   const params = useParams<Iprops>();
   const dispatch = useDispatch();
+  const [updateloading,setUpdateloading]=useState(false)
   const [regionlist, setRegionlist] = useState<regionlisttype[]>([]);
   const [selectedregion, setSelectedregion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -92,6 +94,7 @@ const StationDetailPage = () => {
         created: detaildata?.time_created || '',
       }}
       onSubmit={async values => {
+        setUpdateloading(true)
         try {
           const response = await $Put(
             `otdr/station/${params.stationId!}`,
@@ -105,6 +108,10 @@ const StationDetailPage = () => {
           );
 
           if (response?.status == 200) {
+            toast('It was done successfully', {
+              type: 'success',
+              autoClose: 1000,
+            });
             dispatch(
               updatedefaultStationName({
                 networkid: params.networkId!,
@@ -122,7 +129,9 @@ const StationDetailPage = () => {
           }
         } catch (error) {
           console.log(`error is :${error}`);
-          
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        } finally {
+          setUpdateloading(false)
         }
       }}
       validationSchema={stationSchema}>
@@ -200,7 +209,7 @@ const StationDetailPage = () => {
           <div className="mt-6 flex flex-row gap-x-4 self-end">
             {loggedInUser.role === UserRole.SUPER_USER ||
             networkidadmin.includes(params.networkId!) ? (
-              <SimpleBtn type="submit">Save</SimpleBtn>
+              <SimpleBtn loading={updateloading} type="submit">Save</SimpleBtn>
             ) : null}
             <SimpleBtn link to="../">
               Cancel
