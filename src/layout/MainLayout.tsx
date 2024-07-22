@@ -6,28 +6,28 @@ import {httpClear} from '~/store/slices';
 import {useAppDispatch, useHttpRequest} from '~/hooks';
 import {Outlet} from 'react-router-dom';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-import { $Get } from '~/util/requestapi';
-import { toast } from 'react-toastify';
+import {$Get} from '~/util/requestapi';
+import {toast} from 'react-toastify';
 
 const MainLayout: FC = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const login = localStorage.getItem('login');
   const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
- 
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    
-    return () => {
-    window.removeEventListener('online', handleOnline);
-    window.removeEventListener('offline', handleOffline);
-    };
-    }, []);
 
-    console.log("isOnline",isOnline);
+  // useEffect(() => {
+  //   const handleOnline = () => setIsOnline(true);
+  //   const handleOffline = () => setIsOnline(false);
+
+  //   window.addEventListener('online', handleOnline);
+  //   window.addEventListener('offline', handleOffline);
+
+  //   return () => {
+  //   window.removeEventListener('online', handleOnline);
+  //   window.removeEventListener('offline', handleOffline);
+  //   };
+  //   }, []);
+
+  console.log('isOnline', isOnline);
   const dispatch = useAppDispatch();
   const {state} = useHttpRequest({
     selector: state => state.http.verifyToken,
@@ -36,37 +36,35 @@ const MainLayout: FC = () => {
     },
   });
 
-  const handleLogout = async() => {
-    if(isOnline){
-      if (accesstoken && accesstoken.length>0){
-        try {
-          const logoutapi=await $Get(`auth/users/auth/logout`)
-          if(logoutapi?.status == 200){
-            localStorage.removeItem('refresh');
-            localStorage.removeItem('login');
-            dispatch(httpClear(['login', 'refresh']));
-          } else{
-            toast('Encountered an error', {type: 'error', autoClose: 1000});
-          }
-        } catch (error) {
-          console.log(`logout error is:${error}`);
-        }
-      } else{
+  const handleLogout = async () => {
+    // if(isOnline){
+    //   if (accesstoken && accesstoken.length>0){
+    try {
+      const logoutapi = await $Get(`auth/users/auth/logout`);
+      if (logoutapi?.status == 200) {
         localStorage.removeItem('refresh');
         localStorage.removeItem('login');
-        dispatch(httpClear(['login', 'refresh'])); 
+        dispatch(httpClear(['login', 'refresh']));
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
+    } catch (error) {
+      console.log(`logout error is:${error}`);
     }
-
-   
+    // } else{
+    //   localStorage.removeItem('refresh');
+    //   localStorage.removeItem('login');
+    //   dispatch(httpClear(['login', 'refresh']));
+    // }
+    // }
   };
 
-
-    if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
-    handleLogout();
-    return <></>
-    }
-
+  if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
+    localStorage.removeItem('refresh');
+    localStorage.removeItem('login');
+    dispatch(httpClear(['login', 'refresh']));
+    return <></>;
+  }
 
   // useEffect(() => {
   //   if (isOnline) {
@@ -77,13 +75,12 @@ const MainLayout: FC = () => {
   //   toast('network error', { type: 'error', autoClose: 1000 });
   //   }
   //   }, [isOnline])
-  
 
-  useEffect(()=>{
-   if (!isOnline) {
-    toast('network error', {type: 'error', autoClose: 1000});
-   }
-  },[isOnline])
+  // useEffect(() => {
+  //   if (!isOnline) {
+  //     toast('network error', {type: 'error', autoClose: 1000});
+  //   }
+  // }, [isOnline]);
 
   if (!state || state.httpRequestStatus === 'loading') {
     return (
@@ -94,13 +91,13 @@ const MainLayout: FC = () => {
     );
   }
 
- 
-  
-  const randomdata=Math.floor(Math.random()* 100) 
-  const randomdata2=Math.floor(Math.random()* 10) 
+  const randomdata = Math.floor(Math.random() * 100);
+  const randomdata2 = Math.floor(Math.random() * 10);
   return (
-    <div style={{minHeight:"100vh"}} className="flex h-full flex-col bg-[#E7EFF7]">
-      <nav className="flex h-20 z-[10000] flex-row items-center fixed top-0 left-0 right-0 bg-p px-4 ">
+    <div
+      style={{minHeight: '100vh'}}
+      className="flex h-full flex-col bg-[#E7EFF7]">
+      <nav className="fixed left-0 right-0 top-0 z-[10000] flex h-20 flex-row items-center bg-p px-4 ">
         <h2 className="mr-16 font-s text-2xl text-white">ARIO-IFMS</h2>
         {navbarItems.map(item => (
           <NavItem
@@ -123,20 +120,28 @@ const MainLayout: FC = () => {
           onClick={handleLogout}
         />
       </nav>
-      <div  className="flex min-h-[100vh] pt-[20px] pb-[20px] flex-row bg-[#E7EFF7]">
-
-   
-   <Outlet />
- 
-        
+      <div className="flex min-h-[100vh] flex-row bg-[#E7EFF7] pb-[20px] pt-[20px]">
+        <Outlet />
       </div>
-      <div className="h-[25px] z-[1000] fixed bottom-0 right-0 left-0 flex flex-row bg-[#006BBC]">
-      <span className='text-white text-[16px] ml-6'>Total Alarms: {randomdata+25}</span>
-      <span className='text-white text-[16px] ml-6'>High Severity Alarms: {randomdata}</span>
-      <span className='text-white text-[16px] ml-6'>Medium Severity Alarms: {randomdata+7}</span>
-      <span className='text-white text-[16px] ml-6'>Low Severity Alarms: {randomdata+7}</span>
-      <span className='text-white text-[16px] ml-6'>Effected Stations: {randomdata2}</span>
-      <span className='text-white text-[16px] ml-6'>Effected Links: {randomdata2+4}</span>
+      <div className="fixed bottom-0 left-0 right-0 z-[1000] flex h-[25px] flex-row bg-[#006BBC]">
+        <span className="ml-6 text-[16px] text-white">
+          Total Alarms: {randomdata + 25}
+        </span>
+        <span className="ml-6 text-[16px] text-white">
+          High Severity Alarms: {randomdata}
+        </span>
+        <span className="ml-6 text-[16px] text-white">
+          Medium Severity Alarms: {randomdata + 7}
+        </span>
+        <span className="ml-6 text-[16px] text-white">
+          Low Severity Alarms: {randomdata + 7}
+        </span>
+        <span className="ml-6 text-[16px] text-white">
+          Effected Stations: {randomdata2}
+        </span>
+        <span className="ml-6 text-[16px] text-white">
+          Effected Links: {randomdata2 + 4}
+        </span>
       </div>
     </div>
   );
