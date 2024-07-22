@@ -42,12 +42,13 @@ const MainLayout: FC = () => {
     try {
       const logoutapi = await $Get(`auth/users/auth/logout`);
       if (logoutapi?.status == 200) {
-        localStorage.removeItem('refresh');
-        localStorage.removeItem('login');
-        dispatch(httpClear(['login', 'refresh']));
+      
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
+      localStorage.removeItem('refresh');
+      localStorage.removeItem('login');
+      dispatch(httpClear(['login', 'refresh']));
     } catch (error) {
       console.log(`logout error is:${error}`);
     }

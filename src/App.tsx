@@ -9,12 +9,8 @@ import {MainLayout} from '~/layout';
 import ErrorPage404 from './pages/errors/404';
 import ErrorPage403 from './pages/errors/403';
 import {UserRole} from './constant/users';
-import NetworktreeLayout from './layout/networktreeLayout';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { usePathname } from 'next/navigation';
-function App() {
 
+function App() {
   const auth = useAppSelector(
     state =>
       state.http.refresh?.httpRequestStatus === 'success' ||
@@ -157,7 +153,7 @@ function App() {
                 path="cables-segments"
                 Component={pages.LinkCablesAndSegmentsPage}
               />
-                <Route
+              <Route
                 path="ducts-segments/defaultregionlinkdetailpage"
                 Component={pages.LinkDuctsAndSegmentsPage}
               />
@@ -209,7 +205,7 @@ function App() {
             <Route path="alarms/alarmdetail" Component={pages.AlarmEmpty}>
               <Route path="" Component={pages.AlarmDetailPage} />
               <Route path="alarms" Component={pages.AlarmAlarmsPage} />
-              
+
               {/* <Route path="Access" Component={pages.NetworkAccessPage} />
               <Route path="gis" Component={pages.NetworkGISPage} /> */}
             </Route>
@@ -363,11 +359,16 @@ function App() {
             <Route path="chart" Component={pages.Chart} />
 
             <Route path="remote-test-units" Component={pages.RtuLayout}>
-              <Route path=":rtuId/:stationId/:regionId/:networkId" Component={pages.SingleRtuLayout}>
+              <Route
+                path=":rtuId/:stationId/:regionId/:networkId"
+                Component={pages.SingleRtuLayout}>
                 <Route index Component={pages.RtuDetailsPage} />
                 <Route path="ports" Component={pages.RtuPortsPage} />
               </Route>
-              <Route path="create/:stationId/:regionId/:networkId" Component={pages.RtuCreatepage} />
+              <Route
+                path="create/:stationId/:regionId/:networkId"
+                Component={pages.RtuCreatepage}
+              />
             </Route>
           </Route>
 
