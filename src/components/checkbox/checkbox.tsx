@@ -3,14 +3,14 @@ import checkimage from '~/assets/images/check.svg';
 import {HiMiniCheck} from 'react-icons/hi2';
 type Iprops = {
   onclick: (e: boolean) => void;
-  classname: string;
+  classname?: string;
   iconclassnam?: string;
   checkstatus?: boolean;
   disabledcheckbox?: boolean;
 };
 function Checkbox({
   onclick,
-  classname,
+  classname="",
   iconclassnam = 'w-[20px] h-[19.5px]',
   checkstatus = false,
   disabledcheckbox = false,

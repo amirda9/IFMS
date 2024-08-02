@@ -13,10 +13,26 @@ type linktype={
     regionId:string
     regionName:string
     source:{id:string, name:string}
+  } 
   }
+
+  type Iprops={
+    data:{
+      alarms:any[]
+      destination:{id:string, name: string}
+      id:string
+      length:string
+      name:string
+      regionId:string
+      regionName:string
+      source:{id:string, name:string}
+    },
+    Hightalaems:number,
+    Mediumalarms:number,
+    Lowalarms:number
   }
-function RightbarLink({data}:linktype) {
-  return (
+  function RightbarLink({data,Hightalaems,Mediumalarms,Lowalarms}:Iprops) {
+    return (
     <div
       className={` to-0 absolute right-0 z-[500] box-border flex h-[100vh]
     w-[330px] flex-col overflow-hidden bg-[#E7EFF7] px-[20px]`}>
@@ -51,7 +67,7 @@ function RightbarLink({data}:linktype) {
           <img src={noRed} alt="" className="h-[40px] w-[40px]" />
         </span>
         <span className="ml-[80px] text-[20px] font-light leading-[25.2px] text-[black]">
-          1
+        {Hightalaems}
         </span>
       </div>
 
@@ -60,7 +76,7 @@ function RightbarLink({data}:linktype) {
           <img src={noOrange} alt="" className="h-[40px] w-[40px]" />
         </span>
         <span className="ml-[80px] text-[20px] font-light leading-[25.2px] text-[black]">
-          1
+          {Lowalarms}
         </span>
       </div>
 
@@ -69,7 +85,7 @@ function RightbarLink({data}:linktype) {
           <img src={noYellow} alt="" className="h-[40px] w-[40px]" />
         </span>
         <span className="ml-[80px] text-[20px] font-light leading-[25.2px] text-[black]">
-          0
+        {Mediumalarms}
         </span>
       </div>
       <button className="absolute  z-[510] bottom-[110px] 2xl:bottom-[120px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black] mx-auto">

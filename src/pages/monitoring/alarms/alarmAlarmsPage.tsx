@@ -109,110 +109,116 @@ function AlarmAlarmsPage() {
     return <h1>Loading...</h1>;
   }
 
+ console.log("allalarmdata?.alarms",allalarmdata?.alarms);
  
 
   return (
     <div className="w-full px-6 pb-8 pt-4">
       {allalarmdata?.alarms &&
-        allalarmdata?.alarms.map(data => (
-          <div className="mt-4 flex w-full flex-row justify-between  rounded-[10px] bg-[#C0E7F2] p-8 pt-[0px]">
-            <div className="w-[46%]">
-              <AlarmRow title="Secondary Source" data={data.secondary_source} />
-              <div className="mt-8 w-full text-center text-[20px] font-normal leading-[24.2px]">
-                Alarm Detail
-              </div>
-              <AlarmRow title="Region Name" data={data.region_name} />
-              <AlarmRow title="Region Admin" data={data.region_admin} />
-              <AlarmRow title="Station Name" data={data.station_name} />
-              <AlarmRow
-                title="To Escalation"
-                data={`${data?.to_escalation?.days || 0} Day - ${
-                  data?.to_escalation?.hours || 0
-                } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
-              />
-              <AlarmRow
-                title="To Time Out"
-                data={`${data?.to_escalation?.days || 0} Day - ${
-                  data?.to_escalation?.hours || 0
-                } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
-              />
-            </div>
+        allalarmdata?.alarms.map(data => {
+          let checkescalation=(data?.to_escalation?.days == 0 && data?.to_escalation?.minutes == 0 && data?.to_escalation?.hours == 0)?false:true
+          let checketimeout=(data?.to_time_out?.days == 0 && data?.to_time_out?.minutes == 0 && data?.to_time_out?.hours == 0)?false:true
 
-            <div className="flex w-[46%]  flex-col">
-              <div className="mt-8 flex flex-row items-center justify-between">
-                <span className="text-[20px]  font-normal leading-[24.2px]">
-                  State
-                </span>
-                <Selectbox
-                  defaultvalue={data.status}
-                  onclickItem={(e: {value: string; label: string}) => {
-                    setAllupdateallarms(prev => [
-                      ...prev,
-                      {alarm_id: data.id, new_status: e.value},
-                    ]);
-                    dispatch(changestate({id: data.id, value: e.value}));
-                    dispatch(changealarmstatus(false));
-                  }}
-                  options={options}
-                  classname={
-                    'h-[40px] w-[calc(100%-150px)] rounded-[10px] bg-white'
-                  }
-                />
-                {/* <TextInput
-                  onChange={e => changestate(data.id, e.target.value)}
-                  defaultValue={data.status}
-                  className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
-                /> */}
-              </div>
-              <div className="ml-[80px]  w-[calc(100%-80px)]">
-                <div className="mt-8 flex w-full flex-row justify-between">
-                  <div className="w-[40%] text-center text-[20px] font-normal leading-[24.2px]">
-                    Parameter
-                  </div>
-                  <div className="w-[50%] text-center text-[20px] font-normal leading-[24.2px]">
-                    Value
-                  </div>
+          return(
+            <div className={`mt-4 flex w-full flex-row justify-between  rounded-[10px] ${!checketimeout?"bg-[#F48F8F]":!checkescalation?"bg-[#FCC483]":"bg-[#C0E7F2]"}  p-8 pt-[0px]`}>
+              <div className="w-[46%]">
+                <AlarmRow title="Secondary Source" data={data.secondary_source} />
+                <div className="mt-8 w-full text-center text-[20px] font-normal leading-[24.2px]">
+                  Alarm Detail
                 </div>
-
-                {data.contributing_conditions.map(data => (
-                  <>
-                    {data.coef ? (
-                      <div className="mt-8 flex w-full flex-row items-center justify-between">
-                        <TextInput
-                          value={data.parameter}
-                          className="h-[40px] w-[40%]"
-                        />
-                        <div className="flex w-[50%] flex-row justify-between">
+                <AlarmRow title="Region Name" data={data.region_name} />
+                <AlarmRow title="Region Admin" data={data.region_admin} />
+                <AlarmRow title="Station Name" data={data.station_name} />
+                <AlarmRow
+                  title="To Escalation"
+                  data={`${data?.to_escalation?.days || 0} Day - ${
+                    data?.to_escalation?.hours || 0
+                  } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
+                />
+                <AlarmRow
+                  title="To Time Out"
+                  data={`${data?.to_escalation?.days || 0} Day - ${
+                    data?.to_escalation?.hours || 0
+                  } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
+                />
+              </div>
+  
+              <div className="flex w-[46%]  flex-col">
+                <div className="mt-8 flex flex-row items-center justify-between">
+                  <span className="text-[20px]  font-normal leading-[24.2px]">
+                    State
+                  </span>
+                  <Selectbox
+                    defaultvalue={data.status}
+                    onclickItem={(e: {value: string; label: string}) => {
+                      setAllupdateallarms(prev => [
+                        ...prev,
+                        {alarm_id: data.id, new_status: e.value},
+                      ]);
+                      dispatch(changestate({id: data.id, value: e.value}));
+                      dispatch(changealarmstatus(false));
+                    }}
+                    options={options}
+                    classname={
+                      'h-[40px] w-[calc(100%-150px)] rounded-[10px] bg-white'
+                    }
+                  />
+                  {/* <TextInput
+                    onChange={e => changestate(data.id, e.target.value)}
+                    defaultValue={data.status}
+                    className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
+                  /> */}
+                </div>
+                <div className="ml-[80px]  w-[calc(100%-80px)]">
+                  <div className="mt-8 flex w-full flex-row justify-between">
+                    <div className="w-[40%] text-center text-[20px] font-normal leading-[24.2px]">
+                      Parameter
+                    </div>
+                    <div className="w-[50%] text-center text-[20px] font-normal leading-[24.2px]">
+                      Value
+                    </div>
+                  </div>
+  
+                  {data.contributing_conditions.map(data => (
+                    <>
+                      {data.coef ? (
+                        <div className="mt-8 flex w-full flex-row items-center justify-between">
                           <TextInput
-                            value={data.coef}
-                            className="h-[40px] w-[20%]"
+                            value={data.parameter}
+                            className="h-[40px] w-[40%]"
                           />
-                          <span className="mt-2">x</span>
-
+                          <div className="flex w-[50%] flex-row justify-between">
+                            <TextInput
+                              value={data.coef}
+                              className="h-[40px] w-[20%]"
+                            />
+                            <span className="mt-2">x</span>
+  
+                            <TextInput
+                              value={data.value}
+                              className="h-[40px] w-[70%]"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-8 flex w-full flex-row justify-between">
+                          <TextInput
+                            value={data.parameter}
+                            className="h-[40px] w-[40%]"
+                          />
                           <TextInput
                             value={data.value}
-                            className="h-[40px] w-[70%]"
+                            className="h-[40px] w-[50%]"
                           />
                         </div>
-                      </div>
-                    ) : (
-                      <div className="mt-8 flex w-full flex-row justify-between">
-                        <TextInput
-                          value={data.parameter}
-                          className="h-[40px] w-[40%]"
-                        />
-                        <TextInput
-                          value={data.value}
-                          className="h-[40px] w-[50%]"
-                        />
-                      </div>
-                    )}
-                  </>
-                ))}
+                      )}
+                    </>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        } )}
 
       <div className="mt-8 flex flex-row justify-end gap-x-4">
         <SimpleBtn loading={updateloading} onClick={updatealarms} type="submit">

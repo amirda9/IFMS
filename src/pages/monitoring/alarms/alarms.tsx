@@ -56,6 +56,16 @@ type alarmlist = {
   alarm_number: number;
   time_created: string;
   time_modified: string;
+  to_escalation: {
+    days:number,
+    hours: number,
+    minutes: number
+  },
+  to_timeout: {
+    days: number,
+    hours: number,
+    minutes: number
+  }
 };
 // -------------------------------------------------------------
 
@@ -134,7 +144,7 @@ function Alarms() {
         page_number: number;
         total_count: number;
       } = await allalarmresponse?.json();
-      console.log('allalarmresponsedata', allalarmresponsedata);
+
       setTotalalarms(allalarmresponsedata.total_count)
       setAllpagecount(allalarmresponsedata.page_number);
       let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
@@ -163,6 +173,8 @@ function Alarms() {
             ? [{name: 'State', bg: '#18C047'}]
             : []),
         ],
+         tabrowbg:(data?.to_timeout?.days == 0 && data?.to_timeout?.hours == 0 && data?.to_timeout?.minutes == 0 )?"#F48F8F":(data?.to_escalation?.days == 0 && data?.to_escalation?.hours == 0 && data?.to_escalation?.minutes == 0)?"#FCC483":"#ffffff"
+          // "#F48F8F":data.status == "Pending"
       }));
       setAllalarmdata(newallalarmre);
     } catch (error) {

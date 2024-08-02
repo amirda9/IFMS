@@ -22,7 +22,7 @@ function RightbarStation({data}:Stationtype) {
   return (
     <div
       className={` to-0 absolute right-0 z-[500] box-border flex h-[100vh]
-    w-[330px] flex-col overflow-hidden bg-[#E7EFF7] px-[20px]`}>
+    w-[330px] flex-col overflow-x-hidden overflow-y-auto bg-[#E7EFF7] px-[20px]`}>
       <div className='w-full h-full relative'>
       <div className="mb-[15px] mt-[10px] text-[20px] font-bold leading-[29.05px] text-[#636363]">
        {data.name}
@@ -55,7 +55,7 @@ function RightbarStation({data}:Stationtype) {
       <div className="mb-[10px] mt-[15px] text-[18px] font-light leading-[25.2px] text-[black]">
         RTU List
       </div>
-      <div className="mx-auto ml-[5px] flex h-[145px] 2xl:h-[250px] w-[290px] flex-col overflow-y-auto bg-[#ffffff] px-4">
+      <div className="mx-auto ml-[5px] flex h-[120px] 2xl:h-[240px] w-[290px] flex-col overflow-y-auto bg-[#ffffff] px-4">
         {data?.rtus?.map(rtuedata=>
            <span className="mb-[10px] mt-[15px] text-[18px] font-light leading-[25.2px] text-[black]">
            {rtuedata.name}
@@ -93,7 +93,7 @@ function RightbarStation({data}:Stationtype) {
           0
         </span>
       </div>
-      <button className="absolute  z-[510] xl:bottom-[85px] 2xl:bottom-[120px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[18px] font-light leading-[25.2px] text-[black]">
+      <button className="absolute  z-[510] lg:bottom-[110px]  h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[18px] font-light leading-[25.2px] text-[black]">
         Edit Station
       </button>
       </div>

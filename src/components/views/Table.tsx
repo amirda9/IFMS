@@ -104,7 +104,7 @@ const Table = <
         className={classNames(
           '[&_td]:py-1',
           bordered && 'border-b border-gray96 last:border-b-0',
-          'bg-[red]'
+          ''
         )}
         key={keyExtractor ? keyExtractor(row) : Object.values(row).join('')}>
         {headerItems.map(([key]) => {
