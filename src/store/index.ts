@@ -8,6 +8,7 @@ import networktreeslice from './slices/networktreeslice'
 import testondemandSlice from './slices/testondemand'
 import createSagaMiddleware from 'redux-saga'; 
 import alarmsslice from './slices/alarmsslice'
+import report from './slices/reportslice'
 import {AppSaga} from './saga';
 
 const middlewares: Middleware[] = [];
@@ -24,7 +25,8 @@ export const store = configureStore({
     networktree:networktreeslice,
     alarmtypes:alarmstype,
     testondemandSlice:testondemandSlice,
-    alarmsslice:alarmsslice
+    alarmsslice:alarmsslice,
+    reportslice:report
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),

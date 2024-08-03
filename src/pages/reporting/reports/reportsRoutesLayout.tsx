@@ -10,12 +10,12 @@ import {$DELETE, $Delete, $GET, $Get} from '~/util/requestapi';
 import {IoTrashOutline} from 'react-icons/io5';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  setNetworkselectedlist,
-  setNetworkoptical,
-  setAlldeleteopticalroute,
-  alldeleteopticalroutetype,
-  networkopticaltype,
-} from './../../../store/slices/opticalroutslice';
+  setReportselectedlist,
+  setReportserReport,
+  setAlldeletereports,
+  alldeletereporttype,
+  ReportsetReporttype,
+} from './../../../store/slices/reportslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
 
@@ -41,8 +41,8 @@ const ReportsRouteLayout: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState('');
-  const {networkselectedlist, networkoptical, alldeleteopticalroute} =
-    useSelector((state: RootState) => state.opticalroute);
+  const {reportselectedlist, ReportsetReport, alldeletereports} =
+    useSelector((state: RootState) => state.reportslice);
   const {
     request,
     state: {list, deleteRequest},
@@ -67,9 +67,9 @@ const ReportsRouteLayout: FC = () => {
   });
 
   const findoptical = (networkId: string, opticalId: string) => {
-    const findopt = alldeleteopticalroute
-      ?.find(data => data.networkid == networkId)
-      ?.opticalrouts?.findIndex((data2: string) => data2 == opticalId);
+    const findopt = alldeletereports
+      ?.find(data => data.Reportsetid == networkId)
+      ?.reports?.findIndex((data2: string) => data2 == opticalId);
     if (findopt != undefined && findopt > -1) {
       return true;
     } else {
@@ -83,7 +83,7 @@ const ReportsRouteLayout: FC = () => {
       <div
         className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
         <span className="mt-[-6px] text-[12px] ">.....</span>
-        {networkselectedlist.indexOf(id) > -1 ? (
+        {reportselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
         ) : (
           <span className="mx-[3px] mt-[-2px] font-light">+</span>
@@ -95,11 +95,11 @@ const ReportsRouteLayout: FC = () => {
             navigate('4646');
           }}
           className={`${
-            networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
+            reportselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
         </button>
-        {networkselectedlist.indexOf(id) > -1 ? (
+        {reportselectedlist.indexOf(id) > -1 ? (
           <NavLink to={`create/${id}`} end>
             <BsPlusLg color="#18C047" className="ml-[10px]" />
           </NavLink>
@@ -117,32 +117,32 @@ const ReportsRouteLayout: FC = () => {
   };
 
   const opennetworkopticallist = async (id: string) => {
-    const findnetwork = networkselectedlist.findIndex(data => data == id);
+    const findnetwork = reportselectedlist.findIndex(data => data == id);
     //We first check whether network has been clicked before or not.
     if (findnetwork > -1) {
-      let old = [...networkselectedlist];
+      let old = [...reportselectedlist];
       old.splice(findnetwork, 1);
-      dispatch(setNetworkselectedlist(old));
+      dispatch(setReportselectedlist(old));
     } else {
-      let old = [...networkselectedlist];
+      let old = [...reportselectedlist];
       old.push(id);
-      dispatch(setNetworkselectedlist(old));
+      dispatch(setReportselectedlist(old));
     }
     // -------------------
-    const findopt = networkoptical.findIndex(data => data.networkid == id);
+    const findopt = ReportsetReport.findIndex(data => data.Reportsetid == id);
     const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
     if (opticals?.status == 200) {
       const opticalslist = await opticals?.json();
       //Here we add or remove the opticalroutes related to this network to the list.
       if (findopt > -1) {
-        let old = [...networkoptical];
-        let newdata = old.filter(data => data.networkid != id);
-        newdata.push({networkid: id, opticalrouts: opticalslist});
-        dispatch(setNetworkoptical(newdata));
+        let old = [...ReportsetReport];
+        let newdata = old.filter(data => data.Reportsetid != id);
+        newdata.push({Reportsetid: id, reports: opticalslist});
+        dispatch(setReportserReport(newdata));
       } else {
-        let old = [...networkoptical];
-        old.push({networkid: id, opticalrouts: opticalslist});
-        dispatch(setNetworkoptical(old));
+        let old = [...ReportsetReport];
+        old.push({Reportsetid: id, reports: opticalslist});
+        dispatch(setReportserReport(old));
       }
     }
   };
@@ -152,27 +152,27 @@ const ReportsRouteLayout: FC = () => {
     opticalid: string,
     networkid: string,
   ) => {
-    let oldoptical: alldeleteopticalroutetype = deepcopy(alldeleteopticalroute);
+    let oldoptical: alldeletereporttype = deepcopy(alldeletereports);
 
-    let finddataindex = alldeleteopticalroute.findIndex(
-      data => data.networkid == networkid,
+    let finddataindex = alldeletereports.findIndex(
+      data => data.Reportsetid == networkid,
     );
     if (finddataindex > -1) {
       if (e) {
-        const newdata = deepcopy(oldoptical[finddataindex].opticalrouts);
+        const newdata = deepcopy(oldoptical[finddataindex].reports);
         newdata.push(opticalid);
-        oldoptical[finddataindex].opticalrouts = newdata;
-        dispatch(setAlldeleteopticalroute(oldoptical));
+        oldoptical[finddataindex].reports = newdata;
+        dispatch(setAlldeletereports(oldoptical));
       } else {
-        const newdata = oldoptical[finddataindex].opticalrouts.filter(
+        const newdata = oldoptical[finddataindex].reports.filter(
           data => data != opticalid,
         );
-        oldoptical[finddataindex].opticalrouts = newdata;
-        dispatch(setAlldeleteopticalroute(oldoptical));
+        oldoptical[finddataindex].reports = newdata;
+        dispatch(setAlldeletereports(oldoptical));
       }
     } else {
-      oldoptical.push({networkid: networkid, opticalrouts: [opticalid]});
-      dispatch(setAlldeleteopticalroute(oldoptical));
+      oldoptical.push({Reportsetid: networkid, reports: [opticalid]});
+      dispatch(setAlldeletereports(oldoptical));
     }
   };
 
@@ -183,47 +183,47 @@ const ReportsRouteLayout: FC = () => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         //First, we find the list of optical routes of this network that have their checkboxes checked.
-        const findopticalroute = alldeleteopticalroute.findIndex(
-          data => data.networkid == networkid,
+        const findopticalroute = alldeletereports.findIndex(
+          data => data.Reportsetid == networkid,
         );
-        const alldeleteopticalrouteCopy = deepcopy(alldeleteopticalroute);
+        const alldeleteopticalrouteCopy = deepcopy(alldeletereports);
         try {
           const deleteOticalroute = await $Delete(
             `otdr/optical-route/batch_delete`,
-            alldeleteopticalroute[findopticalroute]!.opticalrouts,
+            alldeletereports[findopticalroute]!.reports,
           );
           if (deleteOticalroute?.status == 201) {
-            let networkopticalCopy = deepcopy(networkoptical);
-            const finddataindex = networkoptical.findIndex(
-              data => data.networkid == networkid,
+            let networkopticalCopy = deepcopy(ReportsetReport);
+            const finddataindex = ReportsetReport.findIndex(
+              (data:any) => data.Reportsetid == networkid,
             );
             //we update the networks uptical route
             let newnetworkopticalroute = [];
             for (
               let i = 0;
-              i < networkoptical[finddataindex].opticalrouts.length;
+              i < ReportsetReport[finddataindex].reports.length;
               i++
             ) {
               if (
-                alldeleteopticalroute[
+                alldeletereports[
                   findopticalroute
-                ]!.opticalrouts!.findIndex(
+                ]!.reports!.findIndex(
                   data =>
-                    data == networkoptical[finddataindex].opticalrouts[i].id,
+                    data == ReportsetReport[finddataindex].reports[i].id,
                 ) < 0
               ) {
                 newnetworkopticalroute.push({
-                  id: networkoptical[finddataindex].opticalrouts[i].id,
-                  name: networkoptical[finddataindex].opticalrouts[i].name,
+                  id: ReportsetReport[finddataindex].reports[i].id,
+                  name: ReportsetReport[finddataindex].reports[i].name,
                 });
               }
             }
             networkopticalCopy[finddataindex].opticalrouts =
               newnetworkopticalroute;
-            dispatch(setNetworkoptical(networkopticalCopy));
+            dispatch(setReportserReport(networkopticalCopy));
             //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
             alldeleteopticalrouteCopy[findopticalroute].opticalrouts = [];
-            dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
+            dispatch(setAlldeletereports(alldeleteopticalrouteCopy));
           }
         } catch (error) {
           console.log(error);
@@ -235,27 +235,27 @@ const ReportsRouteLayout: FC = () => {
   const deletenetworkoptical = async (id: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        let networkopticalCopy: networkopticaltype = deepcopy(networkoptical);
-        const finddata = networkoptical.findIndex(data => data.networkid == id);
+        let networkopticalCopy: ReportsetReporttype = deepcopy(ReportsetReport);
+        const finddata = ReportsetReport.findIndex(data => data.Reportsetid == id);
         //delete all rtues related to this netwok
         const deleteOticalroute = await $Delete(
           `otdr/optical-route/batch_delete`,
-          networkopticalCopy[finddata].opticalrouts.map(data => data.id),
+          networkopticalCopy[finddata].reports.map(data => data.id),
         );
         if (deleteOticalroute?.status == 201) {
-          networkopticalCopy[finddata].opticalrouts = [];
+          networkopticalCopy[finddata].reports = [];
         }
-        dispatch(setNetworkoptical(networkopticalCopy));
+        dispatch(setReportserReport(networkopticalCopy));
         // -------------------------------
         //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
-        const alldeleteopticalrouteCopy: alldeleteopticalroutetype = deepcopy(
-          alldeleteopticalroute,
+        const alldeleteopticalrouteCopy: alldeletereporttype = deepcopy(
+          alldeletereports,
         );
         const finddeleteopticalrout = alldeleteopticalrouteCopy.findIndex(
-          data => data.networkid == id,
+          data => data.Reportsetid == id,
         );
-        alldeleteopticalrouteCopy[finddeleteopticalrout].opticalrouts = [];
-        dispatch(setAlldeleteopticalroute(alldeleteopticalrouteCopy));
+        alldeleteopticalrouteCopy[finddeleteopticalrout].reports = [];
+        dispatch(setAlldeletereports(alldeleteopticalrouteCopy));
       }
     });
   };
@@ -284,7 +284,7 @@ const ReportsRouteLayout: FC = () => {
       <div className={`relative mt-[30px] flex w-full flex-col`}>
         <div
           className={`absolute h-[40px] w-[10px] ${
-            networkselectedlist.indexOf(lastnetwork) > -1
+            reportselectedlist.indexOf(lastnetwork) > -1
               ? 'bottom-[-20px]'
               : 'bottom-[-15.5px]'
           }  left-[-5px] bg-[#E7EFF7]`}></div>
@@ -315,7 +315,7 @@ const ReportsRouteLayout: FC = () => {
                 ) : null}
                 <div
                   className={`absolute z-10 ${
-                    networkselectedlist.indexOf(dataaa.id) > -1
+                    reportselectedlist.indexOf(dataaa.id) > -1
                       ? 'bottom-[-2px]'
                       : 'bottom-[-7px]'
                   }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
@@ -327,12 +327,12 @@ const ReportsRouteLayout: FC = () => {
                     id={dataaa.id}
                   />
 
-                  {networkselectedlist.indexOf(dataaa.id) > -1 ? (
+                  {reportselectedlist.indexOf(dataaa.id) > -1 ? (
                     <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
                       <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
-                      {networkoptical
-                        ?.find(dataa => dataa.networkid == dataaa.id)
-                        ?.opticalrouts.map((data, index: number) => (
+                      {ReportsetReport
+                        ?.find(dataa => dataa.Reportsetid == dataaa.id)
+                        ?.reports.map((data, index: number) => (
                           <div
                             key={index}
                             className="flex w-full flex-row items-center">
