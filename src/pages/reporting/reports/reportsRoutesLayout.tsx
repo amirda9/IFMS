@@ -82,7 +82,7 @@ const ReportsRouteLayout: FC = () => {
     return (
       <div
         className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
-        <span className="mt-[-6px] text-[12px] ">...</span>
+        <span className="mt-[-6px] text-[12px] ">.....</span>
         {networkselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
         ) : (
