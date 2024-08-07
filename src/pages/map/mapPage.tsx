@@ -100,6 +100,27 @@ type alarmtype = {
           ];
         },
       ];
+      stations: [
+        {
+          station_id: string;
+          alarm_events: [
+            {
+              source_name: string;
+              severity: string;
+              status: string;
+              measurement_fk: string;
+              rtu_fk: string;
+              link_fk: string;
+              route_fk: string;
+              network_id: string;
+              region_id: string;
+              latitude: number;
+              longitude: number;
+              alarm_type:string
+            },
+          ];
+        },
+      ];
     },
   ];
 };
@@ -179,7 +200,27 @@ const MapPage = () => {
     {value: string; label: string}[]
   >([]);
 
-  function countHighSeverityAlarms(
+  function countSeverityAlarmsInArray(dataArray:alarmtype[], targetRegionId:string,status:string) {
+    let highSeverityCount = 0;
+    
+    dataArray.forEach(data => {
+    const region = data.regions.find(region => region.region_id === targetRegionId);
+    
+    if (region) {
+    region.links.forEach(link => {
+    link.alarm_events.forEach(event => {
+    if (event.severity === status) {
+    highSeverityCount++;
+    }
+    });
+    });
+    }
+    });
+    
+    return highSeverityCount;
+    }
+
+  function countLinkSeverityAlarms(
     dataArray: alarmtype[],
     targetLinkId: string,
     status: string,
@@ -191,6 +232,30 @@ const MapPage = () => {
         region?.links?.forEach(link => {
           if (link?.link_id === targetLinkId) {
             link.alarm_events.forEach(event => {
+              if (event.severity === status) {
+                count++;
+              }
+            });
+          }
+        });
+      });
+    });
+
+    return count;
+  }
+
+
+  function countStationSeverityAlarms(
+    dataArray: alarmtype[],
+    targetLinkId: string,
+    status: string,
+  ) {
+    let count = 0;
+    Array.isArray(dataArray) &&   dataArray.forEach(data => {
+      data?.regions?.forEach(region => {
+        region?.stations?.forEach(stationdata => {
+          if (stationdata?.station_id === targetLinkId) {
+            stationdata.alarm_events.forEach(event => {
               if (event.severity === status) {
                 count++;
               }
@@ -461,19 +526,19 @@ if(!mount){
         <div className="ml-[8px] mt-[12px] flex flex-row items-center justify-between text-[20px] font-light leading-[25.2px] text-[black]">
           <img src={redicon} className="h-[35px] w-[35px]" />
           <span className="mr-2">
-            {countHighSeverityAlarms(alarms, data.id, 'High')}
+            {countLinkSeverityAlarms(alarms, data.id, 'High')}
           </span>
         </div>
         <div className="ml-[8px] mt-[12px] flex flex-row items-center justify-between text-[20px] font-light leading-[25.2px] text-[black]">
           <img src={orangeicon} className="h-[35px] w-[35px]" />
           <span className="mr-2">
-            {countHighSeverityAlarms(alarms, data.id, 'Medium')}
+            {countLinkSeverityAlarms(alarms, data.id, 'Medium')}
           </span>
         </div>
         <div className="ml-[8px] mt-[12px] flex flex-row items-center justify-between text-[20px] font-light leading-[25.2px] text-[black]">
           <img src={yellowicon} className="h-[35px] w-[35px]" />
           <span className="mr-2">
-            {countHighSeverityAlarms(alarms, data.id, 'Low')}
+            {countLinkSeverityAlarms(alarms, data.id, 'Low')}
           </span>
         </div>
       </div>
@@ -772,7 +837,7 @@ if(!mount){
 
               <div className="ml-[-10px] h-[1px] w-[330px] bg-[#ffffff]"></div>
               {leftbarstate ? (
-                <>
+                <div className='w-full flex flex-col h-[250px]'>
                   <button className="mt-[30px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
                     Add Station
                   </button>
@@ -783,28 +848,45 @@ if(!mount){
                   <button className="from-9% mt-[30px] h-[40px]  w-[290px] rounded-[10px] bg-gradient-to-b from-[#B3BDF2] to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
                     Add RTU
                   </button>
-                </>
+                </div>
               ) : null}
             </div>
           )}
 
           {/* ---------------reightbars------------------------reightbars-------------------------reightbars--------- */}
           {rightbarstate == 'station' ? (
-            <RightbarStation data={selectedStation!} />
+            <RightbarStation
+            
+            Hightalaems={countStationSeverityAlarms(
+              alarms,
+              selectedStation!.id,
+              'High',
+            )}
+            Lowalarms={countStationSeverityAlarms(
+              alarms,
+              selectedStation!.id,
+              'Low',
+            )}
+            Mediumalarms={countStationSeverityAlarms(
+              alarms,
+              selectedStation!.id,
+              'Medium',
+            )}
+            data={selectedStation!} />
           ) : rightbarstate == 'link' ? (
             <RightbarLink
               data={selectedLink}
-              Hightalaems={countHighSeverityAlarms(
+              Hightalaems={countLinkSeverityAlarms(
                 alarms,
                 selectedLink.id,
                 'High',
               )}
-              Lowalarms={countHighSeverityAlarms(
+              Lowalarms={countLinkSeverityAlarms(
                 alarms,
                 selectedLink.id,
                 'Low',
               )}
-              Mediumalarms={countHighSeverityAlarms(
+              Mediumalarms={countLinkSeverityAlarms(
                 alarms,
                 selectedLink.id,
                 'Medium',
@@ -1018,13 +1100,13 @@ if(!mount){
                                 {data?.name}
                               </span>
                               <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                                High Severity: 0
+                                High Severity: {countSeverityAlarmsInArray(alarms,data.id,"High")}
                               </span>
                               <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                                Medium Severity: 1
+                                Medium Severity:{countSeverityAlarmsInArray(alarms,data.id,"Medium")}
                               </span>
                               <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                                Low Severity: 1
+                                Low Severity: {countSeverityAlarmsInArray(alarms,data.id,"Low")}
                               </span>
                             </div>
                           </Tooltip>
