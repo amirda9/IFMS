@@ -41,8 +41,9 @@ const ReportsRouteLayout: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState('');
-  const {reportselectedlist, ReportsetReport, alldeletereports} =
-    useSelector((state: RootState) => state.reportslice);
+  const {reportselectedlist, ReportsetReport, alldeletereports} = useSelector(
+    (state: RootState) => state.reportslice,
+  );
   const {
     request,
     state: {list, deleteRequest},
@@ -195,7 +196,7 @@ const ReportsRouteLayout: FC = () => {
           if (deleteOticalroute?.status == 201) {
             let networkopticalCopy = deepcopy(ReportsetReport);
             const finddataindex = ReportsetReport.findIndex(
-              (data:any) => data.Reportsetid == networkid,
+              (data: any) => data.Reportsetid == networkid,
             );
             //we update the networks uptical route
             let newnetworkopticalroute = [];
@@ -205,11 +206,8 @@ const ReportsRouteLayout: FC = () => {
               i++
             ) {
               if (
-                alldeletereports[
-                  findopticalroute
-                ]!.reports!.findIndex(
-                  data =>
-                    data == ReportsetReport[finddataindex].reports[i].id,
+                alldeletereports[findopticalroute]!.reports!.findIndex(
+                  data => data == ReportsetReport[finddataindex].reports[i].id,
                 ) < 0
               ) {
                 newnetworkopticalroute.push({
@@ -236,7 +234,9 @@ const ReportsRouteLayout: FC = () => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
         let networkopticalCopy: ReportsetReporttype = deepcopy(ReportsetReport);
-        const finddata = ReportsetReport.findIndex(data => data.Reportsetid == id);
+        const finddata = ReportsetReport.findIndex(
+          data => data.Reportsetid == id,
+        );
         //delete all rtues related to this netwok
         const deleteOticalroute = await $Delete(
           `otdr/optical-route/batch_delete`,
@@ -248,9 +248,8 @@ const ReportsRouteLayout: FC = () => {
         dispatch(setReportserReport(networkopticalCopy));
         // -------------------------------
         //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
-        const alldeleteopticalrouteCopy: alldeletereporttype = deepcopy(
-          alldeletereports,
-        );
+        const alldeleteopticalrouteCopy: alldeletereporttype =
+          deepcopy(alldeletereports);
         const finddeleteopticalrout = alldeleteopticalrouteCopy.findIndex(
           data => data.Reportsetid == id,
         );
@@ -302,7 +301,7 @@ const ReportsRouteLayout: FC = () => {
 
         {openall ? (
           <>
-            {list?.data?.map((dataaa, index) => (
+            {list?.data?.map((dataaa:any, index:any) => (
               <div
                 key={index}
                 className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
@@ -320,41 +319,67 @@ const ReportsRouteLayout: FC = () => {
                       : 'bottom-[-7px]'
                   }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
 
-                <div className="relative flex flex-col">
-                  <Itembtn
+                <div className="relative mt-6  flex flex-col">
+                  <div
+                    className={`mb-[-10px] flex w-auto flex-row  items-center text-[20px] text-[#000000]`}>
+                    <span className="mt-[-6px] text-[12px] ">........</span>
+                    {reportselectedlist.indexOf(dataaa.id) > -1 ? (
+                      <span className="mx-[3px] font-light">-</span>
+                    ) : (
+                      <span className="mx-[3px] mt-[-2px] font-light">+</span>
+                    )}
+                  </div>
+                  <SidebarItem
+                    selected={selectedId == dataaa.id ? true : false}
+                    onclick={() => {
+                      opennetworkopticallist(dataaa.id),
+                        setSelectedId(dataaa.id);
+                      navigate('4646');
+                    }}
+                    // onclickcheckbox={e =>
+                    //   onclickopticalchecbox(e, data.id, dataaa.id)
+                    // }
+                    // checkstatus={findoptical(dataaa.id, data.id)}
+                    onDelete={() => deletenetworkoptical(dataaa.id)}
+                    enabelcheck={true}
+                    className="ml-[40px] mt-[-20px] w-[calc(100%-20px)]"
+                    name={dataaa.name}
+                    to={dataaa.id}
+                  />
+                  {/* <Itembtn
                     classname="mb-[-10px]"
                     name={dataaa.name}
                     id={dataaa.id}
-                  />
+                  /> */}
 
                   {reportselectedlist.indexOf(dataaa.id) > -1 ? (
-                    <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                    <div className="relative ml-[32px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
                       <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
-                      {ReportsetReport
-                        ?.find(dataa => dataa.Reportsetid == dataaa.id)
-                        ?.reports.map((data, index: number) => (
-                          <div
-                            key={index}
-                            className="flex w-full flex-row items-center">
-                            <span className="w-[15px] text-[12px]">.....</span>
+                      {ReportsetReport?.find(
+                        dataa => dataa.Reportsetid == dataaa.id,
+                      )?.reports.map((data, index: number) => (
+                        <div
+                          key={index}
+                          className="flex w-full flex-row items-center">
+                          <span className="w-[15px] text-[12px]">.....</span>
 
-                            <SidebarItem
-                              selected={selectedId == data.id ? true : false}
-                              onclick={() => setSelectedId(data.id)}
-                              onclickcheckbox={e =>
-                                onclickopticalchecbox(e, data.id, dataaa.id)
-                              }
-                              checkstatus={findoptical(dataaa.id, data.id)}
-                              onDelete={() =>
-                                deleteoneopticalroute(data.id, dataaa.id)
-                              }
-                              enabelcheck={true}
-                              className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
-                              name={data.name}
-                              to={data.id}
-                            />
-                          </div>
-                        ))}
+                          <SidebarItem
+                            selected={selectedId == data.id ? true : false}
+                            onclick={() => setSelectedId(data.id)}
+                            onclickcheckbox={e =>
+                              onclickopticalchecbox(e, data.id, dataaa.id)
+                            }
+                            checkstatus={findoptical(dataaa.id, data.id)}
+                            onDelete={() =>
+                              deleteoneopticalroute(data.id, dataaa.id)
+                            }
+                            enabelcheck={true}
+                            className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
+                            name={data.name}
+                            to={data.id}
+                          />
+                        </div>
+                      ))}
                     </div>
                   ) : null}
                 </div>
