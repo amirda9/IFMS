@@ -2,10 +2,12 @@ import React, {ReactNode, useRef, useState} from 'react';
 import * as Yup from 'yup';
 import {Form, FormikProvider, useFormik, validateYupSchema} from 'formik';
 import {InputFormik, SelectFormik} from '~/container';
-import {SimpleBtn} from '~/components';
+import {Select, SimpleBtn, TabItem} from '~/components';
+import AppDialog from '~/components/modals/AppDialog';
 import Checkbox from '~/components/checkbox/checkbox';
 import dateicon from '~/assets/images/dateicon.png';
 import RadioButton from '~/components/radipbutton/radiobutton';
+import { useNavigate } from 'react-router-dom';
 type Iprops = {
   children: ReactNode;
   name: string;
@@ -28,6 +30,105 @@ const Row = ({children, name, classname}: Iprops) => {
   );
 };
 
+const Detail = () => {
+  const navigate = useNavigate();
+
+  return (
+    <AppDialog
+      closefunc={() => navigate(-1)}
+      footerClassName="flex justify-end"
+      // footer={
+      //   <div className="flex flex-col">
+      //     <div className="flex gap-x-4">
+      //       <SimpleBtn onClick={() => formik} type="button">
+      //         Save
+      //       </SimpleBtn>
+      //       <SimpleBtn onClick={()=>navigate(-1)} className="cursor-pointer " >
+      //         Cancel
+      //       </SimpleBtn>
+      //     </div>
+      //   </div>
+      // }
+    >
+      <div className="flex w-full flex-col">
+        <div className="flex w-full flex-row justify-between">
+          <div className="flex flex-row">
+            <span className="text-[18px] font-normal ml-4">Parameters</span>
+            <Select
+              className="ml-[10px] mr-[15px] w-[180px]"
+              value={'Severity'}
+              onChange={event => {}}>
+              <option value="" className="hidden" />
+              <option value={undefined} className="hidden" />
+              <option>Severity</option>
+            </Select>
+          </div>
+
+          <div className="flex flex-row">
+            <span className="text-[18px] font-normal">Operator</span>
+            <Select
+              className="ml-[10px] mr-[15px] w-[180px]"
+              value={`= dd`}
+              onChange={event => {}}>
+              <option value="" className="hidden" />
+              <option value={undefined} className="hidden" />
+              <option>= dd</option>
+            </Select>
+          </div>
+
+          <div className="flex flex-row">
+            <span className="text-[18px] font-normal">Value</span>
+            <Select
+              className="ml-[10px] mr-[15px] w-[180px]"
+              value={'High'}
+              onChange={event => {}}>
+              <option value="" className="hidden" />
+              <option value={undefined} className="hidden" />
+              <option>High</option>
+            </Select>
+          </div>
+
+          <SimpleBtn className='mr-4'>Append</SimpleBtn>
+        </div>
+
+        <div className="fex-row mt-[40px] flex w-full">
+          <span className="mt-[60px] text-[18px] font-normal">
+            Select Query
+          </span>
+          <div className="ml-[15px]  flex w-[calc(100%-135px)] flex-col">
+            <div className="flex w-full flex-row items-center justify-between">
+              <div className="flex w-[270px] flex-row items-center justify-between">
+                <button className="h-[40px] w-[60px] rounded-[10px] bg-[#B3BDF2]">
+                  (
+                </button>
+                <button className="h-[40px] w-[60px] rounded-[10px] bg-[#B3BDF2]">
+                  )
+                </button>
+                <button className="h-[40px] w-[60px] rounded-[10px] bg-[#B3BDF2]">
+                  OR
+                </button>
+                <button className="h-[40px] w-[60px] rounded-[10px] bg-[#B3BDF2]">
+                  AND
+                </button>
+              </div>
+              <SimpleBtn className="h-[40px]">Clear Last</SimpleBtn>
+            </div>
+
+            <div
+              className="mt-[15px] flex h-[270px] w-full flex-row rounded-[10px] border-[1px] border-black
+          bg-white"></div>
+          </div>
+        </div>
+        <div className="my-[20px] flex w-full flex-row justify-end pr-[10px]">
+          <SimpleBtn className="">Clear All</SimpleBtn>
+          <SimpleBtn className="mx-[10px]">Set</SimpleBtn>
+          <SimpleBtn className="">Cancel</SimpleBtn>
+        </div>
+      </div>
+    </AppDialog>
+  );
+};
+// -----------------------------------------------------------------------
 function ReportsDetailpage() {
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
@@ -42,6 +143,8 @@ function ReportsDetailpage() {
     onSubmit: async values => {},
   });
   return (
+    <>
+    <Detail />
     <div className="fex-col relative flex w-full p-[20px]">
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col">
@@ -216,6 +319,8 @@ function ReportsDetailpage() {
       </FormikProvider>
 
     </div>
+    </>
+ 
   );
 }
 

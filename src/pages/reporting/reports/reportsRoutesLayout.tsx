@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {FC} from 'react';
 import {BsPlusLg} from 'react-icons/bs';
 import {NavLink, useNavigate} from 'react-router-dom';
@@ -18,6 +18,7 @@ import {
 } from './../../../store/slices/reportslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
+import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 
 type Itembtntype = {
   name: string;
@@ -26,6 +27,10 @@ type Itembtntype = {
   onclickcheck?: (e: boolean) => void;
 };
 
+type allreportsetType = {
+  id: string;
+  name: string;
+}[];
 // ----- main ----- main ----- main ------ main ------- main ------- main
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
@@ -36,36 +41,62 @@ const swalsetting: any = {
   cancelButtonColor: '#d33',
   confirmButtonText: 'Yes, delete it!',
 };
+// ---------------------------------------------------------------------
 
 const ReportsRouteLayout: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [list, setList] = useState<allreportsetType>();
   const [selectedId, setSelectedId] = useState('');
   const {reportselectedlist, ReportsetReport, alldeletereports} = useSelector(
     (state: RootState) => state.reportslice,
   );
-  const {
-    request,
-    state: {list, deleteRequest},
-  } = useHttpRequest({
-    selector: state => ({
-      list: state.http.networkList,
-      deleteRequest: state.http.networkDelete,
-    }),
-    initialRequests: request => {
-      if (list?.httpRequestStatus !== 'success') {
-        request('networkList', undefined);
+
+  // const {
+  //   request,
+  //   state: {list, deleteRequest},
+  // } = useHttpRequest({
+  //   selector: state => ({
+  //     list: state.http.networkList,
+  //     deleteRequest: state.http.networkDelete,
+  //   }),
+  //   initialRequests: request => {
+  //     if (list?.httpRequestStatus !== 'success') {
+  //       request('networkList', undefined);
+  //     }
+  //   },
+  //   onUpdate: (lastState, state) => {
+  //     if (
+  //       lastState.deleteRequest?.httpRequestStatus === 'loading' &&
+  //       state.deleteRequest!.httpRequestStatus === 'success'
+  //     ) {
+  //       request('networkList', undefined);
+  //     }
+  //   },
+  // });
+
+  useEffect(() => {
+    const getallreportsetsrespons = async () => {
+      try {
+        setLoading(true);
+        const allreportsetsrespons = await $Get(`otdr/report-set/`);
+        console.log('🧑‍🔬', allreportsetsrespons);
+
+        if (allreportsetsrespons?.status == 200) {
+          const allreportsetsresponsData = await allreportsetsrespons.json();
+          setList(allreportsetsresponsData);
+          console.log('📌allreportsetsresponsData', allreportsetsresponsData);
+        }
+      } catch (error) {
+        console.log(`get all report set error is:${error}`);
+      } finally {
+        setLoading(false);
       }
-    },
-    onUpdate: (lastState, state) => {
-      if (
-        lastState.deleteRequest?.httpRequestStatus === 'loading' &&
-        state.deleteRequest!.httpRequestStatus === 'success'
-      ) {
-        request('networkList', undefined);
-      }
-    },
-  });
+    };
+
+    getallreportsetsrespons();
+  }, []);
 
   const findoptical = (networkId: string, opticalId: string) => {
     const findopt = alldeletereports
@@ -258,136 +289,156 @@ const ReportsRouteLayout: FC = () => {
       }
     });
   };
-  const lastnetwork =
-    (list?.data && list?.data[list?.data?.length - 1].id) || '';
-
+  const lastreportset = (list && list[list?.length - 1]?.id) || '';
+  // --------------------------------------------------------------------------------------
   return (
-    <SidebarLayout createTitle="" canAdd>
-      <h1 className="my-6 mt-12 text-[20px] font-bold text-[red]">
-        This page requires a Full-Access license to view the content
-      </h1>
-      <div className="flex flex-row items-center ">
-        <label htmlFor="search" className="mr-2">
-          Search
-        </label>
+    <SidebarLayout
+      classname="h-[calc(100vh-10px)] w-[25%]"
+      createTitle=""
+      canAdd>
+      <div className="h-[2000px] w-full">
+        {/* <h1 className="my-6 mt-12 text-[20px] font-bold text-[red]">
+          This page requires a Full-Access license to view the content
+        </h1> */}
+        <div className="flex flex-row items-center ">
+          <label htmlFor="search" className="mr-2">
+            Search
+          </label>
 
-        <TextInput
-          id="search"
-          className="mr-10 w-full"
-          onChange={event => {
-            console.log(event);
-          }}
-        />
-      </div>
-
-      <div className={`relative mt-[30px] flex w-full flex-col`}>
-        <div
-          className={`absolute h-[40px] w-[10px] ${
-            reportselectedlist.indexOf(lastnetwork) > -1
-              ? 'bottom-[-20px]'
-              : 'bottom-[-15.5px]'
-          }  left-[-5px] bg-[#E7EFF7]`}></div>
-        <div className="flex w-[205px] flex-row items-center text-[20px] font-bold text-[#000000]">
-          {openall ? (
-            <span className="ml-[-4px] mr-[5px] font-light">-</span>
-          ) : (
-            <span className="mb-[5px] ml-[3px] mr-[5px] font-light">+</span>
-          )}
-
-          <button onClick={() => setOpenall(!openall)}>
-            <span>Report Sets</span>
-          </button>
+          <TextInput
+            id="search"
+            className="mr-10 w-full"
+            onChange={event => {
+              console.log(event);
+            }}
+          />
         </div>
 
-        {openall ? (
-          <>
-            {list?.data?.map((dataaa:any, index:any) => (
-              <div
-                key={index}
-                className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
-                  list?.data && index == list?.data?.length - 1
-                    ? 'border-none'
-                    : 'border-[#000000]'
-                }  `}>
-                {list?.data && index == list?.data?.length - 1 ? (
-                  <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
-                ) : null}
-                <div
-                  className={`absolute z-10 ${
-                    reportselectedlist.indexOf(dataaa.id) > -1
-                      ? 'bottom-[-2px]'
-                      : 'bottom-[-7px]'
-                  }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
+        <div className={`relative mt-[30px] flex w-full flex-col`}>
+          <div
+            className={`absolute h-[40px] w-[10px] ${
+              reportselectedlist.indexOf(lastreportset) > -1
+                ? 'bottom-[-20px]'
+                : 'bottom-[-15.5px]'
+            }  left-[-5px] bg-[#E7EFF7]`}></div>
+          <div className="flex w-[205px] flex-row items-center text-[20px] font-bold text-[#000000]">
+            {openall ? (
+              <span className="ml-[-4px] mr-[5px] font-light">-</span>
+            ) : (
+              <span className="mb-[5px] ml-[3px] mr-[5px] font-light">+</span>
+            )}
 
-                <div className="relative mt-6  flex flex-col">
-                  <div
-                    className={`mb-[-10px] flex w-auto flex-row  items-center text-[20px] text-[#000000]`}>
-                    <span className="mt-[-6px] text-[12px] ">........</span>
-                    {reportselectedlist.indexOf(dataaa.id) > -1 ? (
-                      <span className="mx-[3px] font-light">-</span>
-                    ) : (
-                      <span className="mx-[3px] mt-[-2px] font-light">+</span>
-                    )}
-                  </div>
-                  <SidebarItem
-                    selected={selectedId == dataaa.id ? true : false}
-                    onclick={() => {
-                      opennetworkopticallist(dataaa.id),
-                        setSelectedId(dataaa.id);
-                      navigate('4646');
-                    }}
-                    // onclickcheckbox={e =>
-                    //   onclickopticalchecbox(e, data.id, dataaa.id)
-                    // }
-                    // checkstatus={findoptical(dataaa.id, data.id)}
-                    onDelete={() => deletenetworkoptical(dataaa.id)}
-                    enabelcheck={true}
-                    className="ml-[40px] mt-[-20px] w-[calc(100%-20px)]"
-                    name={dataaa.name}
-                    to={dataaa.id}
-                  />
-                  {/* <Itembtn
-                    classname="mb-[-10px]"
-                    name={dataaa.name}
-                    id={dataaa.id}
-                  /> */}
+            <button onClick={() => setOpenall(!openall)}>
+              <span>Report Sets</span>
+            </button>
+            <BsPlusLg color="#18C047" className="ml-[10px]" />
+          </div>
 
-                  {reportselectedlist.indexOf(dataaa.id) > -1 ? (
-                    <div className="relative ml-[32px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
-                      <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
-                      {ReportsetReport?.find(
-                        dataa => dataa.Reportsetid == dataaa.id,
-                      )?.reports.map((data, index: number) => (
+          {openall ? (
+            <>
+              {loading ? (
+                <GeneralLoadingSpinner size="w-8 h-8" className="ml-10 mt-2" />
+              ) : (
+                <>
+                  {list?.map((dataaa: any, index: any) => (
+                    <div
+                      key={index}
+                      className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
+                        list && index == list?.length - 1
+                          ? 'border-none'
+                          : 'border-[#000000]'
+                      }  `}>
+                      {list && index == list.length - 1 ? (
+                        <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
+                      ) : null}
+                      <div
+                        className={`absolute z-10 ${
+                          reportselectedlist.indexOf(dataaa.id) > -1
+                            ? 'bottom-[-2px]'
+                            : 'bottom-[-7px]'
+                        }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
+
+                      <div className="relative mt-6  flex flex-col">
                         <div
-                          key={index}
-                          className="flex w-full flex-row items-center">
-                          <span className="w-[15px] text-[12px]">.....</span>
-
-                          <SidebarItem
-                            selected={selectedId == data.id ? true : false}
-                            onclick={() => setSelectedId(data.id)}
-                            onclickcheckbox={e =>
-                              onclickopticalchecbox(e, data.id, dataaa.id)
-                            }
-                            checkstatus={findoptical(dataaa.id, data.id)}
-                            onDelete={() =>
-                              deleteoneopticalroute(data.id, dataaa.id)
-                            }
-                            enabelcheck={true}
-                            className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
-                            name={data.name}
-                            to={data.id}
-                          />
+                          className={`mb-[-10px] flex w-auto flex-row  items-center text-[20px] text-[#000000]`}>
+                          <span className="mt-[-6px] text-[12px] ">
+                            ........
+                          </span>
+                          {reportselectedlist.indexOf(dataaa.id) > -1 ? (
+                            <span className="mx-[3px] font-light">-</span>
+                          ) : (
+                            <span className="mx-[3px] mt-[-2px] font-light">
+                              +
+                            </span>
+                          )}
                         </div>
-                      ))}
+                        <SidebarItem
+                          selected={selectedId == dataaa.id ? true : false}
+                          onclick={() => {
+                            opennetworkopticallist(dataaa.id),
+                              setSelectedId(dataaa.id);
+                            navigate('4646');
+                          }}
+                          // onclickcheckbox={e =>
+                          //   onclickopticalchecbox(e, data.id, dataaa.id)
+                          // }
+                          // checkstatus={findoptical(dataaa.id, data.id)}
+                          onDelete={() => deletenetworkoptical(dataaa.id)}
+                          enabelcheck={true}
+                          className="ml-[40px] mt-[-20px] w-[calc(100%-20px)]"
+                          name={dataaa.name}
+                          to={dataaa.id}
+                        />
+                        {/* <Itembtn
+                classname="mb-[-10px]"
+                name={dataaa.name}
+                id={dataaa.id}
+              /> */}
+
+                        {reportselectedlist.indexOf(dataaa.id) > -1 ? (
+                          <div className="relative ml-[32px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                            <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                            {ReportsetReport?.find(
+                              dataa => dataa.Reportsetid == dataaa.id,
+                            )?.reports.map((data, index: number) => (
+                              <div
+                                key={index}
+                                className="flex w-full flex-row items-center">
+                                <span className="w-[15px] text-[12px]">
+                                  .....
+                                </span>
+
+                                <SidebarItem
+                                  selected={
+                                    selectedId == data.id ? true : false
+                                  }
+                                  onclick={() => setSelectedId(data.id)}
+                                  onclickcheckbox={e =>
+                                    onclickopticalchecbox(e, data.id, dataaa.id)
+                                  }
+                                  checkstatus={findoptical(dataaa.id, data.id)}
+                                  onDelete={() =>
+                                    deleteoneopticalroute(data.id, dataaa.id)
+                                  }
+                                  enabelcheck={true}
+                                  className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
+                                  name={data.name}
+                                  to={`${dataaa.id}/reportset/${data.id}`}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
-                  ) : null}
-                </div>
-              </div>
-            ))}
-          </>
-        ) : null}
+                  ))}
+                </>
+              )}
+            </>
+          ) : null}
+        </div>
       </div>
+
       {/* </div> */}
     </SidebarLayout>
   );

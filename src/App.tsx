@@ -240,7 +240,7 @@ function App() {
             <Route path="reports" Component={pages.reportsRoutesLayout}>
               <Route path=":reportid" Component={pages.reports} />
               <Route
-                path="reportsdata"
+                path=":reportid/reportset/:reportsetid"
                 Component={pages.SinglereportsRouteLayout}>
                 <Route index Component={pages.reportsDetailpage} />
                 <Route path=":id" Component={pages.reportsDetailmodal} />

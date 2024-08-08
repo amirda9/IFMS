@@ -31,7 +31,7 @@ function Reportsparameters() {
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full flex-row justify-between">
-        <div className="flex h-[667px] w-[29%]  flex-col">
+        <div className="flex h-[667px] w-[28%]  flex-col">
           <span className="mb-[20px] text-[20px] font-bold leading-[24.2px]">
             Available Columns
           </span>
@@ -51,7 +51,8 @@ function Reportsparameters() {
             <Tabitem name="Treshold Value" selected={true} />
           </div>
         </div>
-        <div className="mt-[44px] flex h-[540px] w-[6%] flex-col items-center  pt-[100px]">
+
+        <div className="mt-[44px] flex h-[540px] w-[7%] flex-col items-center  pt-[100px]">
           <div className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[90deg] " src={GreaterThan} />
           </div>
@@ -73,7 +74,8 @@ function Reportsparameters() {
             <img className="rotate-[180deg]" src={GreaterThan} />
           </div>
         </div>
-        <div className="flex h-[667px] w-[29%]  flex-col">
+
+        <div className="flex h-[667px] w-[28%]  flex-col">
           <span className="mb-[20px] text-[20px] font-bold leading-[24.2px]">
             Selected Columns
           </span>
@@ -81,7 +83,8 @@ function Reportsparameters() {
             <Tabitem name="Fault" selected={true} />
           </div>
         </div>
-        <div className="mt-[44px] flex h-[540px] w-[6%] flex-col items-center  pt-[100px]">
+
+        <div className="mt-[44px] flex h-[540px] w-[7%] flex-col items-center  pt-[100px]">
           <div className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[90deg] " src={GreaterThan} />
           </div>
@@ -103,7 +106,8 @@ function Reportsparameters() {
             <img className="rotate-[180deg]" src={GreaterThan} />
           </div>
         </div>
-        <div className="flex h-[667px] w-[30%]  flex-col">
+
+        <div className="flex h-[667px] w-[28%]  flex-col">
           <span className="mb-[20px] text-[20px] font-bold leading-[24.2px]">
             Order By Columns
           </span>
