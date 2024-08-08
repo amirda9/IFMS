@@ -15,6 +15,7 @@ import {
   setAlldeletereports,
   alldeletereporttype,
   ReportsetReporttype,
+  setReportsetlist
 } from './../../../store/slices/reportslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
@@ -47,9 +48,9 @@ const ReportsRouteLayout: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [list, setList] = useState<allreportsetType>();
+  // const [list, setList] = useState<allreportsetType>();
   const [selectedId, setSelectedId] = useState('');
-  const {reportselectedlist, ReportsetReport, alldeletereports} = useSelector(
+  const {reportselectedlist, ReportsetReport, alldeletereports,reportsetlist} = useSelector(
     (state: RootState) => state.reportslice,
   );
 
@@ -85,7 +86,8 @@ const ReportsRouteLayout: FC = () => {
 
         if (allreportsetsrespons?.status == 200) {
           const allreportsetsresponsData = await allreportsetsrespons.json();
-          setList(allreportsetsresponsData);
+          dispatch(setReportsetlist(allreportsetsresponsData))
+          // setList(allreportsetsresponsData);
           console.log('📌allreportsetsresponsData', allreportsetsresponsData);
         }
       } catch (error) {
@@ -289,7 +291,7 @@ const ReportsRouteLayout: FC = () => {
       }
     });
   };
-  const lastreportset = (list && list[list?.length - 1]?.id) || '';
+  const lastreportset = (reportsetlist && reportsetlist[reportsetlist?.length - 1]?.id) || '';
   // --------------------------------------------------------------------------------------
   return (
     <SidebarLayout
@@ -331,7 +333,7 @@ const ReportsRouteLayout: FC = () => {
             <button onClick={() => setOpenall(!openall)}>
               <span>Report Sets</span>
             </button>
-            <BsPlusLg color="#18C047" className="ml-[10px]" />
+            <BsPlusLg onClick={() => navigate('CreateReportset')} color="#18C047" className="ml-[10px] cursor-pointer" />
           </div>
 
           {openall ? (
@@ -340,15 +342,15 @@ const ReportsRouteLayout: FC = () => {
                 <GeneralLoadingSpinner size="w-8 h-8" className="ml-10 mt-2" />
               ) : (
                 <>
-                  {list?.map((dataaa: any, index: any) => (
+                  {reportsetlist?.map((dataaa: any, index: any) => (
                     <div
                       key={index}
                       className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
-                        list && index == list?.length - 1
+                        reportsetlist && index == reportsetlist?.length - 1
                           ? 'border-none'
                           : 'border-[#000000]'
                       }  `}>
-                      {list && index == list.length - 1 ? (
+                      {reportsetlist && index == reportsetlist.length - 1 ? (
                         <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
                       ) : null}
                       <div

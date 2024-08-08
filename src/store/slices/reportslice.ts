@@ -67,6 +67,7 @@ type initialStatetype = {
   alldeleteopticalroute: alldeleteopticalroutetype;
   alldeletereports: alldeletereporttype;
   opticalroutenetworkidadmin: string[];
+  reportsetlist:{id:string,name:string}[]
   gettestsetupdetaildata: boolean;
   modalloading: boolean;
   openall: boolean;
@@ -150,6 +151,7 @@ const initialState: initialStatetype = {
   alldeleteopticalroute: [],
   alldeletereports: [],
   opticalroutenetworkidadmin: [],
+  reportsetlist:[],
   gettestsetupdetaildata: false,
   modalloading: false,
   openall: false,
@@ -161,6 +163,15 @@ const report = createSlice({
   reducers: {
     setopticalroutUpdateTestsetupDetail: (state, action: veiwerlists) => {
       state.opticalroutUpdateTestsetupDetail = action.payload;
+    },
+     createreportsetlist:(state, action: {type:string,payload:{id:string,name:string}}) => {
+      const reportsetlistCopy=deepcopy(state.reportsetlist)
+      reportsetlistCopy.push(action.payload)
+      state.reportsetlist = reportsetlistCopy;
+    },
+
+    setReportsetlist: (state, action: {type:string,payload:{name:string,id:string}[]}) => {
+      state.reportsetlist = action.payload;
     },
     // setNetworkselectedlist: (state, action: networkselectedlisttype) => {
     //   state.networkselectedlist = action.payload;
@@ -265,6 +276,8 @@ export const {
   setgettestsetupdetaildata,
   setmodalloading,
   setopenall,
+  setReportsetlist,
+  createreportsetlist
 } = report.actions;
 
 export default report.reducer;
