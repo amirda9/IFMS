@@ -87,8 +87,6 @@ const ReportsRouteLayout: FC = () => {
         if (allreportsetsrespons?.status == 200) {
           const allreportsetsresponsData = await allreportsetsrespons.json();
           dispatch(setReportsetlist(allreportsetsresponsData))
-          // setList(allreportsetsresponsData);
-          console.log('📌allreportsetsresponsData', allreportsetsresponsData);
         }
       } catch (error) {
         console.log(`get all report set error is:${error}`);
