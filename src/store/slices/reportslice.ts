@@ -298,21 +298,75 @@ const report = createSlice({
     setopenall: (state, action: {type: string; payload: boolean}) => {
       state.openall = action.payload;
     },
-    
-    updaterportname: (state, action: {type: string; payload:{reportsetId:string,reportid:string,name:string}}) => {
-     const ReportsetReportCopy:ReportsetreportType[]=deepcopy(state.ReportsetReport)
-     const findReportsetReportindex=ReportsetReportCopy.findIndex(data => data.Reportsetid == action.payload.reportsetId)
-     const findreportindex=ReportsetReportCopy[findReportsetReportindex].reports.findIndex(data => data.id == action.payload.reportid)
-     ReportsetReportCopy[findReportsetReportindex].reports[findreportindex].name == action.payload.name
-     state.ReportsetReport= ReportsetReportCopy
+
+    updaterportname: (
+      state,
+      action: {
+        type: string;
+        payload: {reportsetId: string; reportid: string; name: string};
+      },
+    ) => {
+      const ReportsetReportCopy: ReportsetreportType[] = deepcopy(
+        state.ReportsetReport,
+      );
+      const findReportsetReportindex = ReportsetReportCopy.findIndex(
+        data => data.Reportsetid == action.payload.reportsetId,
+      );
+      const findreportindex = ReportsetReportCopy[
+        findReportsetReportindex
+      ].reports.findIndex(data => data.id == action.payload.reportid);
+      ReportsetReportCopy[findReportsetReportindex].reports[findreportindex]
+        .name == action.payload.name;
+      state.ReportsetReport = ReportsetReportCopy;
     },
-    updaterportsetname: (state, action: {type: string; payload:{reportsetId:string,name:string}}) => {
-      const reportsetlistCopy:{id: string; name: string}[]=deepcopy(state.reportsetlist)
-      const findreportsetlistindex=reportsetlistCopy.findIndex(data => data.id == action.payload.reportsetId)
+    updaterportsetname: (
+      state,
+      action: {type: string; payload: {reportsetId: string; name: string}},
+    ) => {
+      const reportsetlistCopy: {id: string; name: string}[] = deepcopy(
+        state.reportsetlist,
+      );
+      const findreportsetlistindex = reportsetlistCopy.findIndex(
+        data => data.id == action.payload.reportsetId,
+      );
       reportsetlistCopy[findreportsetlistindex].name = action.payload.name;
-      state.reportsetlist=reportsetlistCopy
-     }
-}});
+      state.reportsetlist = reportsetlistCopy;
+    },
+    deletereportset: (
+      state,
+      action: {type: string; payload: {reportsetId: string}},
+    ) => {
+      const reportsetlistCopy: {id: string; name: string}[] = deepcopy(
+        state.reportsetlist,
+      );
+      const findreportsetlistindex = reportsetlistCopy.findIndex(
+        data => data.id == action.payload.reportsetId,
+      );
+      reportsetlistCopy.splice(findreportsetlistindex, 1);
+      state.reportsetlist = reportsetlistCopy;
+    },
+
+    deletereport: (
+      state,
+      action: {type: string; payload: {reportsetid: string; reportid: string}},
+    ) => {
+      const ReportsetReportCopy: ReportsetreportType[] = deepcopy(
+        state.ReportsetReport,
+      );
+      const findreportsetlistindex = ReportsetReportCopy.findIndex(
+        data => data.Reportsetid == action.payload.reportsetid,
+      );
+      const findreportid = ReportsetReportCopy[
+        findreportsetlistindex
+      ].reports.findIndex(data => data.id == action.payload.reportid);
+      ReportsetReportCopy[findreportsetlistindex].reports.splice(
+        findreportsetlistindex,
+        1,
+      );
+      state.ReportsetReport = ReportsetReportCopy;
+    },
+  },
+});
 
 export const {
   setopticalroutUpdateTestsetupDetail,
@@ -332,7 +386,9 @@ export const {
   createreportsetlist,
   createReport,
   updaterportname,
-  updaterportsetname
+  updaterportsetname,
+  deletereportset,
+  deletereport
 } = report.actions;
 
 export default report.reducer;

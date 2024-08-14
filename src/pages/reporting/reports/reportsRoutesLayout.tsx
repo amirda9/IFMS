@@ -16,10 +16,13 @@ import {
   alldeletereporttype,
   ReportsetReporttype,
   setReportsetlist,
+  deletereportset,
+  deletereport,
 } from './../../../store/slices/reportslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
+import {toast} from 'react-toastify';
 
 type Itembtntype = {
   name: string;
@@ -108,44 +111,6 @@ const ReportsRouteLayout: FC = () => {
     }
   };
   const [openall, setOpenall] = useState(false);
-
-  const Itembtn = ({name, id, classname}: Itembtntype) => {
-    return (
-      <div
-        className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
-        <span className="mt-[-6px] text-[12px] ">.....</span>
-        {reportselectedlist.indexOf(id) > -1 ? (
-          <span className="mx-[3px] font-light">-</span>
-        ) : (
-          <span className="mx-[3px] mt-[-2px] font-light">+</span>
-        )}
-
-        <button
-          onClick={() => {
-            opennetworkopticallist(id), setSelectedId(id);
-            navigate('4646');
-          }}
-          className={`${
-            reportselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
-          }`}>
-          {name}
-        </button>
-        {reportselectedlist.indexOf(id) > -1 ? (
-          <NavLink to={`create/${id}`} end>
-            <BsPlusLg color="#18C047" className="ml-[10px]" />
-          </NavLink>
-        ) : null}
-        {selectedId == id ? (
-          <IoTrashOutline
-            onClick={() => deletenetworkoptical(id)}
-            color="#FF0000"
-            size={24}
-            className="ml-[20px] cursor-pointer"
-          />
-        ) : null}
-      </div>
-    );
-  };
 
   const opennetworkopticallist = async (id: string) => {
     const findnetwork = reportselectedlist.findIndex(data => data == id);
@@ -260,36 +225,39 @@ const ReportsRouteLayout: FC = () => {
     });
   };
 
-  const deletenetworkoptical = async (id: string) => {
-    Swal.fire(swalsetting).then(async result => {
-      if (result.isConfirmed) {
-        let networkopticalCopy: ReportsetReporttype = deepcopy(ReportsetReport);
-        const finddata = ReportsetReport.findIndex(
-          data => data.Reportsetid == id,
-        );
-        //delete all rtues related to this netwok
-        const deleteOticalroute = await $Delete(
-          `otdr/optical-route/batch_delete`,
-          networkopticalCopy[finddata].reports.map(data => data.id),
-        );
-        if (deleteOticalroute?.status == 201) {
-          networkopticalCopy[finddata].reports = [];
-        }
-        dispatch(setReportserReport(networkopticalCopy));
-        // -------------------------------
-        //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
-        const alldeleteopticalrouteCopy: alldeletereporttype =
-          deepcopy(alldeletereports);
-        const finddeleteopticalrout = alldeleteopticalrouteCopy.findIndex(
-          data => data.Reportsetid == id,
-        );
-        alldeleteopticalrouteCopy[finddeleteopticalrout].reports = [];
-        dispatch(setAlldeletereports(alldeleteopticalrouteCopy));
+  const deletereportSet = async (id: string) => {
+    try {
+      const deleteresponse = await $Delete(`otdr/report-set/${id}`);
+      if (deleteresponse?.status == 201) {
+        dispatch(deletereportset({reportsetId: id}));
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
-    });
+    } catch (error) {
+      console.log(`error is:${error}`);
+    }
   };
   const lastreportset =
     (reportsetlist && reportsetlist[reportsetlist?.length - 1]?.id) || '';
+
+  const deleteReport = async (report_id: string, report_set_id: string) => {
+    try {
+      const deleteReportresponse = await $Delete(
+        `otdr/report-set/${report_set_id}/report/${report_id}`,
+      );
+      if (deleteReportresponse?.status == 201) {
+        dispatch(
+          deletereport({reportsetid: report_set_id, reportid: report_id}),
+        );
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      console.log(`error is:${error}`);
+    }
+  };
   // --------------------------------------------------------------------------------------
   return (
     <SidebarLayout
@@ -377,7 +345,9 @@ const ReportsRouteLayout: FC = () => {
                           )}
                         </div>
                         <SidebarItem
-                          selected={selectedId == reportsetdata.id ? true : false}
+                          selected={
+                            selectedId == reportsetdata.id ? true : false
+                          }
                           onclick={() => {
                             opennetworkopticallist(reportsetdata.id),
                               setSelectedId(reportsetdata.id);
@@ -385,7 +355,7 @@ const ReportsRouteLayout: FC = () => {
                           }}
                           canAdd={true}
                           createurl={`CreateReport/${reportsetdata.id}`}
-                          onDelete={() => deletenetworkoptical(reportsetdata.id)}
+                          onDelete={() => deletereportSet(reportsetdata.id)}
                           // enabelcheck={true}
                           className="ml-[40px] mt-[-20px] w-[calc(100%-20px)]"
                           name={reportsetdata.name}
@@ -416,11 +386,18 @@ const ReportsRouteLayout: FC = () => {
                                   }
                                   onclick={() => setSelectedId(data.id)}
                                   onclickcheckbox={e =>
-                                    onclickopticalchecbox(e, data.id, reportsetdata.id)
+                                    onclickopticalchecbox(
+                                      e,
+                                      data.id,
+                                      reportsetdata.id,
+                                    )
                                   }
-                                  checkstatus={findoptical(reportsetdata.id, data.id)}
+                                  checkstatus={findoptical(
+                                    reportsetdata.id,
+                                    data.id,
+                                  )}
                                   onDelete={() =>
-                                    deleteoneopticalroute(data.id, reportsetdata.id)
+                                    deleteReport(data.id, reportsetdata.id)
                                   }
                                   enabelcheck={true}
                                   className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
