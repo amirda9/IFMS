@@ -239,6 +239,7 @@ function App() {
             <Route path="dashboard" Component={pages.dashboard} />
             <Route path="reports" Component={pages.reportsRoutesLayout}>
             <Route path="CreateReportset" Component={pages.CreateReportset} />
+            <Route path="CreateReport/:reportsetId" Component={pages.CreateReport} />
               <Route path=":reportid" Component={pages.reports} />
               <Route
                 path=":reportid/reportset/:reportsetid"

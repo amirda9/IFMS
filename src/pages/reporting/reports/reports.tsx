@@ -13,23 +13,24 @@ function Reports() {
   const [validateerror, setValidateerror] = useState(false);
 
   useEffect(() => {
-    const getdetail = async () => {
-      const response = await $Get(`otdr/report-set/${reportid}`);
-      console.log('response', response);
-
-      if (response?.status == 200) {
-        const responsedata: {
-          name: string;
-          comment: string;
-          id: string;
-          reports: [];
-        } = await response.json();
-        setName(responsedata?.name);
-        setComments(responsedata.comment);
-      }
-    };
+    setLoading(true);
     try {
-      setLoading(true);
+      
+      const getdetail = async () => {
+        const response = await $Get(`otdr/report-set/${reportid}`);
+        console.log('response', response);
+  
+        if (response?.status == 200) {
+          const responsedata: {
+            name: string;
+            comment: string;
+            id: string;
+            reports: [];
+          } = await response.json();
+          setName(responsedata?.name);
+          setComments(responsedata.comment);
+        }
+      };
       getdetail();
     } catch (error) {
       console.log(`get reportset detail error is:${error}`);
@@ -50,6 +51,8 @@ function Reports() {
         })
         if(updatereportdetail?.status == 201){
           toast('It was done successfully', {type: 'success', autoClose: 1000});
+        } else{
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
       } catch (error) {
         console.log(`update report detail error is:${error}`);
@@ -62,7 +65,7 @@ function Reports() {
 
   console.log('reportid', reportid);
   if (loading) {
-    return <h1>loading...</h1>;
+    return <h1>loading...</h1>
   }
   return (
     <div className="relative flex h-[100%-80px] w-full flex-col p-[20px]">

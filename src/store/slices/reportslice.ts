@@ -67,7 +67,7 @@ type initialStatetype = {
   alldeleteopticalroute: alldeleteopticalroutetype;
   alldeletereports: alldeletereporttype;
   opticalroutenetworkidadmin: string[];
-  reportsetlist:{id:string,name:string}[]
+  reportsetlist: {id: string; name: string}[];
   gettestsetupdetaildata: boolean;
   modalloading: boolean;
   openall: boolean;
@@ -151,7 +151,7 @@ const initialState: initialStatetype = {
   alldeleteopticalroute: [],
   alldeletereports: [],
   opticalroutenetworkidadmin: [],
-  reportsetlist:[],
+  reportsetlist: [],
   gettestsetupdetaildata: false,
   modalloading: false,
   openall: false,
@@ -164,13 +164,19 @@ const report = createSlice({
     setopticalroutUpdateTestsetupDetail: (state, action: veiwerlists) => {
       state.opticalroutUpdateTestsetupDetail = action.payload;
     },
-     createreportsetlist:(state, action: {type:string,payload:{id:string,name:string}}) => {
-      const reportsetlistCopy=deepcopy(state.reportsetlist)
-      reportsetlistCopy.push(action.payload)
+    createreportsetlist: (
+      state,
+      action: {type: string; payload: {id: string; name: string}},
+    ) => {
+      const reportsetlistCopy = deepcopy(state.reportsetlist);
+      reportsetlistCopy.push(action.payload);
       state.reportsetlist = reportsetlistCopy;
     },
 
-    setReportsetlist: (state, action: {type:string,payload:{name:string,id:string}[]}) => {
+    setReportsetlist: (
+      state,
+      action: {type: string; payload: {name: string; id: string}[]},
+    ) => {
       state.reportsetlist = action.payload;
     },
     // setNetworkselectedlist: (state, action: networkselectedlisttype) => {
@@ -253,6 +259,39 @@ const report = createSlice({
     ) => {
       state.gettestsetupdetaildata = action.payload;
     },
+
+    createReport: (
+      state,
+      action: {
+        type: string;
+        payload: {ReportSetId: string; id: string; name: string};
+      },
+    ) => {
+      const ReportsetReportCopy: ReportsetreportType[] = deepcopy(
+        state.ReportsetReport,
+      );
+      const findreportsetid = ReportsetReportCopy.findIndex(
+        data => data.Reportsetid == action.payload.ReportSetId,
+      );
+      if (findreportsetid > -1) {
+        ReportsetReportCopy[findreportsetid].reports.push({
+          id: action?.payload?.id,
+          name: action.payload.name,
+        });
+      } else {
+        ReportsetReportCopy.push({
+          Reportsetid: action.payload.ReportSetId,
+          reports: [
+            {
+              name: action.payload.name,
+              id: action.payload.id,
+            },
+          ],
+        });
+      }
+      state.ReportsetReport = ReportsetReportCopy;
+    },
+
     setmodalloading: (state, action: {type: string; payload: boolean}) => {
       state.modalloading = action.payload;
     },
@@ -277,7 +316,8 @@ export const {
   setmodalloading,
   setopenall,
   setReportsetlist,
-  createreportsetlist
+  createreportsetlist,
+  createReport
 } = report.actions;
 
 export default report.reducer;
