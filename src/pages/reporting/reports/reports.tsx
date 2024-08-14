@@ -3,8 +3,10 @@ import {useParams} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {SimpleBtn} from '~/components';
 import {$Get, $Put} from '~/util/requestapi';
-
+import {updaterportsetname} from './../../../store/slices/reportslice'
+import { useDispatch } from 'react-redux';
 function Reports() {
+  const dispatch=useDispatch()
   const {reportid} = useParams();
   const [loading, setLoading] = useState(false);
   const [updateloading,setUpdateLoading]=useState(false)
@@ -50,6 +52,7 @@ function Reports() {
           comment: comments
         })
         if(updatereportdetail?.status == 201){
+          dispatch(updaterportsetname({reportsetId:reportid!,name:name}))
           toast('It was done successfully', {type: 'success', autoClose: 1000});
         } else{
           toast('Encountered an error', {type: 'error', autoClose: 1000});

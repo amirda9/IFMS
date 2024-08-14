@@ -257,78 +257,47 @@ function CreateReport() {
       ReportType: 'network',
     },
     onSubmit: async values => {
-      console.log('🧑‍🏫', {
-        name: values.name,
-        comment: values.comment,
-        report_type: values.ReportType,
-        time_filter: {
-          enable: false,
-          time_filter_type: time_filter_type,
-          time_exact: {
-            from_time: from_time,
-            to_time: to_time,
-          },
-          time_relative: {
-            value: values.Every,
-            period: values.period,
-          },
-        },
-        select_query: select_query,
-        parameters: {
-          selected_columns: [],
-          order_by_columns: {},
-        },
-      });
-
       try {
-        setLoading(true);
-           dispatch(
+        const createreportresponse = await $Post(
+          `otdr/report-set/{report_set_id}/report`,
+          {
+            name: values.name,
+            comment: values.comment,
+            report_type: values.ReportType,
+            time_filter: {
+              enable: false,
+              time_filter_type: time_filter_type,
+              time_exact: {
+                from_time: from_time,
+                to_time: to_time,
+              },
+              time_relative: {
+                value: values.Every,
+                period: values.period,
+              },
+            },
+            select_query: select_query,
+            parameters: {
+              selected_columns: [],
+              order_by_columns: {},
+            },
+          },
+        );
+        if (createreportresponse?.status == 201) {
+          const createreportresponseData = await createreportresponse?.json();
+          dispatch(
             createReport({
               ReportSetId: reportsetId!,
-              id: '45s4d5s4d',
+              id: createreportresponseData,
               name: values.name,
             }),
-          )
-        navigate(`/reporting/reports/${reportsetId}/reportset/45s4d5s4d`)
-        // const createreportresponse = await $Post(
-        //   `otdr/report-set/{report_set_id}/report`,
-        //   {
-        //     name: values.name,
-        //     comment: values.comment,
-        //     report_type: values.ReportType,
-        //     time_filter: {
-        //       enable: false,
-        //       time_filter_type: time_filter_type,
-        //       time_exact: {
-        //         from_time: from_time,
-        //         to_time: to_time,
-        //       },
-        //       time_relative: {
-        //         value: values.Every,
-        //         period: values.period,
-        //       },
-        //     },
-        //     select_query: select_query,
-        //     parameters: {
-        //       selected_columns: [],
-        //       order_by_columns: {},
-        //     },
-        //   },
-        // );
-        // if (createreportresponse?.status == 201) {
-        //   const createreportresponseData = await createreportresponse?.json();
-        //   dispatch(
-        //     createReport({
-        //       ReportSetId: reportsetId!,
-        //       id: '45s4d5s4d',
-        //       name: values.name,
-        //     }),
-        //   );
-        //   navigate("../../")
-        //   toast('It was done successfully', {type: 'success', autoClose: 1000});
-        // } else {
-        //   toast('Encountered an error', {type: 'error', autoClose: 1000});
-        // }
+          );
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
+          navigate(`/reporting/reports/${reportsetId}/reportset/45s4d5s4d`)  
+               
+        } else {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
       } catch (error) {
         console.log(`create error is:${error}`);
       } finally {
@@ -336,7 +305,7 @@ function CreateReport() {
       }
     },
   });
-  console.log('select_query', select_query);
+
 
   return (
     <>
@@ -376,12 +345,6 @@ function CreateReport() {
                   placeholder="select"
                   name="ReportType"
                   className="h-[40px] w-[400px]">
-                  {/* <option value="" className="hidden">
-              {formik.values.station}
-            </option>
-            <option value={undefined} className="hidden">
-              {formik.values.station}
-            </option> */}
                   {reporttypeList.map(data => (
                     <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                       {data}

@@ -232,26 +232,26 @@ const report = createSlice({
     //   state.networkoptical = networkopticalCopy;
     // },
 
-    changeReportname: (
-      state,
-      action: {
-        type: string;
-        payload: {Reportsetid: string; repirtId: string; reportName: string};
-      },
-    ) => {
-      const ReportsetReportCopy: ReportsetreportType[] = deepcopy(
-        state.ReportsetReport,
-      );
-      const findinlist = ReportsetReportCopy.findIndex(
-        data => data.Reportsetid == action.payload.Reportsetid,
-      );
-      const findoptical = ReportsetReportCopy[findinlist].reports.findIndex(
-        data => data.id == action.payload.repirtId,
-      );
-      ReportsetReportCopy[findinlist].reports[findoptical].name =
-        action.payload.reportName;
-      state.ReportsetReport = ReportsetReportCopy;
-    },
+    // changeReportname: (
+    //   state,
+    //   action: {
+    //     type: string;
+    //     payload: {Reportsetid: string; repirtId: string; reportName: string};
+    //   },
+    // ) => {
+    //   const ReportsetReportCopy: ReportsetreportType[] = deepcopy(
+    //     state.ReportsetReport,
+    //   );
+    //   const findinlist = ReportsetReportCopy.findIndex(
+    //     data => data.Reportsetid == action.payload.Reportsetid,
+    //   );
+    //   const findoptical = ReportsetReportCopy[findinlist].reports.findIndex(
+    //     data => data.id == action.payload.repirtId,
+    //   );
+    //   ReportsetReportCopy[findinlist].reports[findoptical].name =
+    //     action.payload.reportName;
+    //   state.ReportsetReport = ReportsetReportCopy;
+    // },
 
     setgettestsetupdetaildata: (
       state,
@@ -298,8 +298,21 @@ const report = createSlice({
     setopenall: (state, action: {type: string; payload: boolean}) => {
       state.openall = action.payload;
     },
-  },
-});
+    
+    updaterportname: (state, action: {type: string; payload:{reportsetId:string,reportid:string,name:string}}) => {
+     const ReportsetReportCopy:ReportsetreportType[]=deepcopy(state.ReportsetReport)
+     const findReportsetReportindex=ReportsetReportCopy.findIndex(data => data.Reportsetid == action.payload.reportsetId)
+     const findreportindex=ReportsetReportCopy[findReportsetReportindex].reports.findIndex(data => data.id == action.payload.reportid)
+     ReportsetReportCopy[findReportsetReportindex].reports[findreportindex].name == action.payload.name
+     state.ReportsetReport= ReportsetReportCopy
+    },
+    updaterportsetname: (state, action: {type: string; payload:{reportsetId:string,name:string}}) => {
+      const reportsetlistCopy:{id: string; name: string}[]=deepcopy(state.reportsetlist)
+      const findreportsetlistindex=reportsetlistCopy.findIndex(data => data.id == action.payload.reportsetId)
+      reportsetlistCopy[findreportsetlistindex].name = action.payload.name;
+      state.reportsetlist=reportsetlistCopy
+     }
+}});
 
 export const {
   setopticalroutUpdateTestsetupDetail,
@@ -311,13 +324,15 @@ export const {
   // setOpticalrouteNetworkidadmin,
   // changeOpticalroutename,
   setAlldeletereports,
-  changeReportname,
+  // changeReportname,
   setgettestsetupdetaildata,
   setmodalloading,
   setopenall,
   setReportsetlist,
   createreportsetlist,
-  createReport
+  createReport,
+  updaterportname,
+  updaterportsetname
 } = report.actions;
 
 export default report.reducer;
