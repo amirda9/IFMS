@@ -48,6 +48,7 @@ function CreateReportset() {
   }
   return (
     <div className="flex w-full relative flex-col p-[20px] h-[100%-80px]">
+      <h1 className='font-bold mb-6'> create reportset</h1>
       <div className="relative flex w-[750px] flex-row items-center justify-between">
         <span className="w-[106px] text-[20px] font-normal leading-[24.2px]">
           Name

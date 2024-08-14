@@ -144,8 +144,9 @@ function ReportsDetailpage() {
   });
   return (
     <>
-    <Detail />
+    {/* <Detail /> */}
     <div className="fex-col relative flex w-full p-[20px]">
+      
       <FormikProvider value={formik}>
         <Form className="flex h-full flex-col">
           <Row name="name">

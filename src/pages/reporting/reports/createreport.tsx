@@ -234,7 +234,7 @@ const Detail = ({onclose, setselectedquery}: any) => {
 // -----------------------------------------------------------------------
 function CreateReport() {
   const {reportsetId} = useParams();
-
+  const navigate=useNavigate()
   const dispatch = useDispatch();
   const [showfilter, setShowfilter] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -282,44 +282,53 @@ function CreateReport() {
 
       try {
         setLoading(true);
-        const createreportresponse = await $Post(
-          `otdr/report-set/{report_set_id}/report`,
-          {
-            name: values.name,
-            comment: values.comment,
-            report_type: values.ReportType,
-            time_filter: {
-              enable: false,
-              time_filter_type: time_filter_type,
-              time_exact: {
-                from_time: from_time,
-                to_time: to_time,
-              },
-              time_relative: {
-                value: values.Every,
-                period: values.period,
-              },
-            },
-            select_query: select_query,
-            parameters: {
-              selected_columns: [],
-              order_by_columns: {},
-            },
-          },
-        );
-        if (createreportresponse?.status == 201) {
-          const createreportresponseData = await createreportresponse?.json();
-          dispatch(
+           dispatch(
             createReport({
               ReportSetId: reportsetId!,
               id: '45s4d5s4d',
               name: values.name,
             }),
-          );
-          toast('It was done successfully', {type: 'success', autoClose: 1000});
-        } else {
-          toast('Encountered an error', {type: 'error', autoClose: 1000});
-        }
+          )
+        navigate(`/reporting/reports/${reportsetId}/reportset/45s4d5s4d`)
+        // const createreportresponse = await $Post(
+        //   `otdr/report-set/{report_set_id}/report`,
+        //   {
+        //     name: values.name,
+        //     comment: values.comment,
+        //     report_type: values.ReportType,
+        //     time_filter: {
+        //       enable: false,
+        //       time_filter_type: time_filter_type,
+        //       time_exact: {
+        //         from_time: from_time,
+        //         to_time: to_time,
+        //       },
+        //       time_relative: {
+        //         value: values.Every,
+        //         period: values.period,
+        //       },
+        //     },
+        //     select_query: select_query,
+        //     parameters: {
+        //       selected_columns: [],
+        //       order_by_columns: {},
+        //     },
+        //   },
+        // );
+        // if (createreportresponse?.status == 201) {
+        //   const createreportresponseData = await createreportresponse?.json();
+        //   dispatch(
+        //     createReport({
+        //       ReportSetId: reportsetId!,
+        //       id: '45s4d5s4d',
+        //       name: values.name,
+        //     }),
+        //   );
+        //   navigate("../../")
+        //   toast('It was done successfully', {type: 'success', autoClose: 1000});
+        // } else {
+        //   toast('Encountered an error', {type: 'error', autoClose: 1000});
+        // }
       } catch (error) {
         console.log(`create error is:${error}`);
       } finally {
@@ -338,7 +347,8 @@ function CreateReport() {
         />
       ) : null}
 
-      <div className="fex-col relative flex w-full p-[20px]">
+      <div className="relative flex flex-col w-full p-[20px]">
+      <h1 className='font-bold mb-6'>create report</h1>
         <FormikProvider value={formik}>
           <Form className="flex h-full flex-col">
             <Row name="name">
