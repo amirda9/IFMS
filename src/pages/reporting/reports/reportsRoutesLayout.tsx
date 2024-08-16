@@ -18,6 +18,7 @@ import {
   setReportsetlist,
   deletereportset,
   deletereport,
+  setloadinggetrports,
 } from './../../../store/slices/reportslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
@@ -51,10 +52,16 @@ const ReportsRouteLayout: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [loadingid, setLoadingid] = useState('');
   // const [list, setList] = useState<allreportsetType>();
   const [selectedId, setSelectedId] = useState('');
-  const {reportselectedlist, ReportsetReport, alldeletereports, reportsetlist} =
-    useSelector((state: RootState) => state.reportslice);
+  const {
+    reportselectedlist,
+    ReportsetReport,
+    alldeletereports,
+    reportsetlist,
+    loadinggetrports,
+  } = useSelector((state: RootState) => state.reportslice);
 
   // const {
   //   request,
@@ -84,7 +91,7 @@ const ReportsRouteLayout: FC = () => {
       try {
         setLoading(true);
         const allreportsetsrespons = await $Get(`otdr/report-set/`);
-        console.log('🧑‍🔬', allreportsetsrespons);
+        // console.log('🧑‍🔬', allreportsetsrespons);
 
         if (allreportsetsrespons?.status == 200) {
           const allreportsetsresponsData = await allreportsetsrespons.json();
@@ -113,11 +120,12 @@ const ReportsRouteLayout: FC = () => {
   const [openall, setOpenall] = useState(false);
 
   const opennetworkopticallist = async (id: string) => {
-    const findnetwork = reportselectedlist.findIndex(data => data == id);
+    // dispatch(setloadinggetrports(true));
+    const findreportset = reportselectedlist.findIndex(data => data == id);
     //We first check whether network has been clicked before or not.
-    if (findnetwork > -1) {
+    if (findreportset > -1) {
       let old = [...reportselectedlist];
-      old.splice(findnetwork, 1);
+      old.splice(findreportset, 1);
       dispatch(setReportselectedlist(old));
     } else {
       let old = [...reportselectedlist];
@@ -125,22 +133,26 @@ const ReportsRouteLayout: FC = () => {
       dispatch(setReportselectedlist(old));
     }
     // -------------------
-    const findopt = ReportsetReport.findIndex(data => data.Reportsetid == id);
-    const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
-    if (opticals?.status == 200) {
-      const opticalslist = await opticals?.json();
-      //Here we add or remove the opticalroutes related to this network to the list.
-      if (findopt > -1) {
-        let old = [...ReportsetReport];
-        let newdata = old.filter(data => data.Reportsetid != id);
-        newdata.push({Reportsetid: id, reports: opticalslist});
-        dispatch(setReportserReport(newdata));
-      } else {
-        let old = [...ReportsetReport];
-        old.push({Reportsetid: id, reports: opticalslist});
-        dispatch(setReportserReport(old));
-      }
-    }
+    // const findreportsetindex = ReportsetReport.findIndex(
+    //   data => data.Reportsetid == id,
+    // );
+    // const reportsetresponse = await $Get(
+    //   `otdr/optical-route/?network_id=${id}`,
+    // );
+    // if (reportsetresponse?.status == 200) {
+    //   const opticalslist = await reportsetresponse?.json();
+    //   //Here we add or remove the opticalroutes related to this network to the list.
+    //   if (findreportsetindex > -1) {
+    //     let old = [...ReportsetReport];
+    //     let newdata = old.filter(data => data.Reportsetid != id);
+    //     newdata.push({Reportsetid: id, reports: opticalslist});
+    //     dispatch(setReportserReport(newdata));
+    //   } else {
+    //     let old = [...ReportsetReport];
+    //     old.push({Reportsetid: id, reports: opticalslist});
+    //     dispatch(setReportserReport(old));
+    //   }
+    // }
   };
 
   const onclickopticalchecbox = (
@@ -349,9 +361,10 @@ const ReportsRouteLayout: FC = () => {
                             selectedId == reportsetdata.id ? true : false
                           }
                           onclick={() => {
+                            setLoadingid(reportsetdata.id)
                             opennetworkopticallist(reportsetdata.id),
                               setSelectedId(reportsetdata.id);
-                            navigate('4646');
+                            navigate(reportsetdata.id);
                           }}
                           canAdd={true}
                           createurl={`CreateReport/${reportsetdata.id}`}
@@ -361,53 +374,63 @@ const ReportsRouteLayout: FC = () => {
                           name={reportsetdata.name}
                           to={reportsetdata.id}
                         />
-                        {/* <Itembtn
-                classname="mb-[-10px]"
-                name={reportsetdata.name}
-                id={reportsetdata.id}
-              /> */}
-
-                        {reportselectedlist.indexOf(reportsetdata.id) > -1 ? (
-                          <div className="relative ml-[32px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
-                            <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
-                            {ReportsetReport?.find(
-                              dataa => dataa.Reportsetid == reportsetdata.id,
-                            )?.reports.map((data, index: number) => (
-                              <div
-                                key={index}
-                                className="flex w-full flex-row items-center">
-                                <span className="w-[15px] text-[12px]">
-                                  .....
-                                </span>
-
-                                <SidebarItem
-                                  selected={
-                                    selectedId == data.id ? true : false
-                                  }
-                                  onclick={() => setSelectedId(data.id)}
-                                  onclickcheckbox={e =>
-                                    onclickopticalchecbox(
-                                      e,
-                                      data.id,
-                                      reportsetdata.id,
-                                    )
-                                  }
-                                  checkstatus={findoptical(
-                                    reportsetdata.id,
-                                    data.id,
-                                  )}
-                                  onDelete={() =>
-                                    deleteReport(data.id, reportsetdata.id)
-                                  }
-                                  enabelcheck={true}
-                                  className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
-                                  name={data.name}
-                                  to={`${reportsetdata.id}/reportset/${data.id}`}
+                        <>
+                          {reportselectedlist.indexOf(reportsetdata.id) > -1 ? (
+                            <>
+                              {loadinggetrports &&
+                              loadingid == reportsetdata.id ? (
+                                <GeneralLoadingSpinner
+                                  size="w-8 h-8"
+                                  className="ml-10 mt-2"
                                 />
-                              </div>
-                            ))}
-                          </div>
-                        ) : null}
+                              ) : (
+                                <div className="relative ml-[32px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                                  <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                                  {ReportsetReport?.find(
+                                    dataa =>
+                                      dataa.Reportsetid == reportsetdata.id,
+                                  )?.reports.map((data, index: number) => (
+                                    <div
+                                      key={index}
+                                      className="flex w-full flex-row items-center">
+                                      <span className="w-[15px] text-[12px]">
+                                        .....
+                                      </span>
+
+                                      <SidebarItem
+                                        selected={
+                                          selectedId == data.id ? true : false
+                                        }
+                                        onclick={() => setSelectedId(data.id)}
+                                        onclickcheckbox={e =>
+                                          onclickopticalchecbox(
+                                            e,
+                                            data.id,
+                                            reportsetdata.id,
+                                          )
+                                        }
+                                        checkstatus={findoptical(
+                                          reportsetdata.id,
+                                          data.id,
+                                        )}
+                                        onDelete={() =>
+                                          deleteReport(
+                                            data.id,
+                                            reportsetdata.id,
+                                          )
+                                        }
+                                        enabelcheck={true}
+                                        className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
+                                        name={data.name}
+                                        to={`${reportsetdata.id}/reportset/report/${data.id}`}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                               )} 
+                            </>
+                          ) : null}
+                        </>
                       </div>
                     </div>
                   ))}

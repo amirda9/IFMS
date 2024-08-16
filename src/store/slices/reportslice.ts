@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType';
-import {deepcopy} from '~/util';
+import {deepcopy} from '~/util/deepcopy';
 
 type veiwerlists = {
   payload: opticalrouteUpdateTestSetupDetailtype;
@@ -58,6 +58,33 @@ type alldeletereporttypeAction = {
   type: string;
 };
 
+type updatereport = {
+  name: string;
+  comment: string;
+  report_type: string;
+  time_filter: {
+    enable: boolean;
+    time_filter_type: string;
+    time_exact: {
+      from_time: string;
+      to_time: string;
+    };
+    time_relative: {
+      value: number;
+      period: string;
+    };
+  };
+  select_query: string;
+  parameters: {
+    selected_columns: [];
+    order_by_columns: {};
+  };
+};
+
+export type reporttype = {
+  id: string;
+} & updatereport;
+
 type initialStatetype = {
   opticalroutUpdateTestsetupDetail: opticalrouteUpdateTestSetupDetailtype;
   networkselectedlist: string[];
@@ -71,6 +98,8 @@ type initialStatetype = {
   gettestsetupdetaildata: boolean;
   modalloading: boolean;
   openall: boolean;
+  reportdetail: reporttype;
+  loadinggetrports: boolean;
 };
 const initialState: initialStatetype = {
   opticalroutUpdateTestsetupDetail: {
@@ -155,12 +184,44 @@ const initialState: initialStatetype = {
   gettestsetupdetaildata: false,
   modalloading: false,
   openall: false,
+  reportdetail: {
+    name: '',
+    comment: '',
+    report_type: 'network',
+    time_filter: {
+      enable: false,
+      time_filter_type: 'exact',
+      time_exact: {
+        from_time: '2024-07-13',
+        to_time: '2024-08-12',
+      },
+      time_relative: {
+        value: 1,
+        period: 'month',
+      },
+    },
+    select_query: '',
+    parameters: {
+      selected_columns: [],
+      order_by_columns: {},
+    },
+    id: '',
+  },
+  loadinggetrports: false,
 };
 
 const report = createSlice({
   name: 'type',
   initialState,
   reducers: {
+    setloadinggetrports: (state, action: {type: string; payload: boolean}) => {
+      state.loadinggetrports = action.payload;
+    },
+    setReportdetail: (state, action: {type: string; payload: reporttype}) => {
+      console.log('action.payload', action.payload);
+
+      state.reportdetail = action.payload;
+    },
     setopticalroutUpdateTestsetupDetail: (state, action: veiwerlists) => {
       state.opticalroutUpdateTestsetupDetail = action.payload;
     },
@@ -179,79 +240,18 @@ const report = createSlice({
     ) => {
       state.reportsetlist = action.payload;
     },
-    // setNetworkselectedlist: (state, action: networkselectedlisttype) => {
-    //   state.networkselectedlist = action.payload;
-    // },
+
     setReportselectedlist: (state, action: reportselectedlisttype) => {
       state.reportselectedlist = action.payload;
     },
-    // setNetworkoptical: (state, action: networkopticaltypeAction) => {
-    //   state.networkoptical = action.payload;
-    // },
+
     setReportserReport: (state, action: ReportsetReportAction) => {
       state.ReportsetReport = action.payload;
     },
-    // setAlldeleteopticalroute: (state, action: alldeleteopticalroutetypeAction) => {
-    //   state.alldeleteopticalroute = action.payload;
-    // },
+
     setAlldeletereports: (state, action: alldeletereporttypeAction) => {
       state.alldeletereports = action.payload;
     },
-    // setOpticalrouteNetworkidadmin: (state, action: {type: string; payload: string}) => {
-    //   const findinlist = state.opticalroutenetworkidadmin.findIndex(
-    //     data => data == action.payload,
-    //   );
-    //   if (findinlist < 0) {
-    //     state.opticalroutenetworkidadmin.push(action.payload);
-    //   }
-    // },
-
-    // changeOpticalroutename: (
-    //   state,
-    //   action: {
-    //     type: string;
-    //     payload: {networkid: string; opticalId: string; opticalName: string};
-    //   },
-    // ) => {
-    //   console.log('🚞', action.payload);
-
-    //   const networkopticalCopy: networkopticalroutetype[] = deepcopy(
-    //     state.networkoptical,
-    //   );
-    //   const findinlist = networkopticalCopy.findIndex(
-    //     data => data.networkid == action.payload.networkid,
-    //   );
-    //   console.log('🧑‍✈️', findinlist);
-
-    //   const findoptical = networkopticalCopy[findinlist].opticalrouts.findIndex(
-    //     data => data.id == action.payload.opticalId,
-    //   );
-    //   console.log('7🧑‍✈️7', findinlist);
-    //   networkopticalCopy[findinlist].opticalrouts[findoptical].name =
-    //     action.payload.opticalName;
-    //   state.networkoptical = networkopticalCopy;
-    // },
-
-    // changeReportname: (
-    //   state,
-    //   action: {
-    //     type: string;
-    //     payload: {Reportsetid: string; repirtId: string; reportName: string};
-    //   },
-    // ) => {
-    //   const ReportsetReportCopy: ReportsetreportType[] = deepcopy(
-    //     state.ReportsetReport,
-    //   );
-    //   const findinlist = ReportsetReportCopy.findIndex(
-    //     data => data.Reportsetid == action.payload.Reportsetid,
-    //   );
-    //   const findoptical = ReportsetReportCopy[findinlist].reports.findIndex(
-    //     data => data.id == action.payload.repirtId,
-    //   );
-    //   ReportsetReportCopy[findinlist].reports[findoptical].name =
-    //     action.payload.reportName;
-    //   state.ReportsetReport = ReportsetReportCopy;
-    // },
 
     setgettestsetupdetaildata: (
       state,
@@ -315,8 +315,9 @@ const report = createSlice({
       const findreportindex = ReportsetReportCopy[
         findReportsetReportindex
       ].reports.findIndex(data => data.id == action.payload.reportid);
-      ReportsetReportCopy[findReportsetReportindex].reports[findreportindex]
-        .name == action.payload.name;
+      ReportsetReportCopy[findReportsetReportindex].reports[
+        findreportindex
+      ].name = action.payload.name;
       state.ReportsetReport = ReportsetReportCopy;
     },
     updaterportsetname: (
@@ -370,15 +371,9 @@ const report = createSlice({
 
 export const {
   setopticalroutUpdateTestsetupDetail,
-  // setNetworkselectedlist,
   setReportselectedlist,
-  // setNetworkoptical,
   setReportserReport,
-  // setAlldeleteopticalroute,
-  // setOpticalrouteNetworkidadmin,
-  // changeOpticalroutename,
   setAlldeletereports,
-  // changeReportname,
   setgettestsetupdetaildata,
   setmodalloading,
   setopenall,
@@ -388,7 +383,9 @@ export const {
   updaterportname,
   updaterportsetname,
   deletereportset,
-  deletereport
+  deletereport,
+  setReportdetail,
+  setloadinggetrports,
 } = report.actions;
 
 export default report.reducer;

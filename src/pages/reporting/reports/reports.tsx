@@ -4,7 +4,21 @@ import { toast } from 'react-toastify';
 import {SimpleBtn} from '~/components';
 import {$Get, $Put} from '~/util/requestapi';
 import {updaterportsetname} from './../../../store/slices/reportslice'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '~/store';
+import {
+  setReportselectedlist,
+  setReportserReport,
+  setAlldeletereports,
+  alldeletereporttype,
+  ReportsetReporttype,
+  setReportsetlist,
+  deletereportset,
+  deletereport,
+  setloadinggetrports
+} from './../../../store/slices/reportslice';
+
+
 function Reports() {
   const dispatch=useDispatch()
   const {reportid} = useParams();
@@ -13,34 +27,64 @@ function Reports() {
   const [name, setName] = useState('');
   const [comments, setComments] = useState('');
   const [validateerror, setValidateerror] = useState(false);
+  const {reportselectedlist, ReportsetReport, alldeletereports, reportsetlist,loadinggetrports} =
+    useSelector((state: RootState) => state.reportslice);
+
+
+
 
   useEffect(() => {
-    setLoading(true);
-    try {
-      
-      const getdetail = async () => {
-        const response = await $Get(`otdr/report-set/${reportid}`);
-        console.log('response', response);
+    const getdetail = async () => {
+       
+      const response = await $Get(`otdr/report-set/${reportid}`);
+      console.log('response', response);
+      if (response?.status == 200) {
+        dispatch(setloadinggetrports(false))
+        const responsedata: {
+          name: string;
+          comment: string;
+          id: string;
+          reports: [];
+        } = await response.json();
+        console.log('responsedata', responsedata);
   
-        if (response?.status == 200) {
-          const responsedata: {
-            name: string;
-            comment: string;
-            id: string;
-            reports: [];
-          } = await response.json();
-          setName(responsedata?.name);
-          setComments(responsedata.comment);
-        }
-      };
-      getdetail();
-    } catch (error) {
-      console.log(`get reportset detail error is:${error}`);
-    } finally {
-      setLoading(false);
+        setName(responsedata?.name);
+        setComments(responsedata.comment);
+        // ----------------------------------------------------
+        const findreportsetindex = ReportsetReport.findIndex(data => data.Reportsetid == reportid);
+  
+          //Here we add or remove the opticalroutes related to this network to the list.
+          if (findreportsetindex > -1) {
+            console.log("😁");
+            
+            let old = [...ReportsetReport];
+            let newdata = old.filter(data => data.Reportsetid != reportid);
+            newdata.push({Reportsetid: reportid!, reports: responsedata.reports});
+            dispatch(setReportserReport(newdata));
+          } else {
+            console.log("🍎");
+            let old = [...ReportsetReport];
+            old.push({Reportsetid: reportid!, reports: responsedata.reports});
+            dispatch(setReportserReport(old));
+          }
+        // --------------------------------------------------------
+     
     }
+    }
+
+try {
+
+  getdetail();
+} catch (error) {
+  
+}finally {
+  dispatch(setloadinggetrports(false))
+}
   }, [reportid]);
 
+
+ console.log("loadinggetrports",loadinggetrports);
+ 
   const save = async () => {
     if (name.length == 0) {
       setValidateerror(true);
@@ -67,7 +111,7 @@ function Reports() {
   };
 
   console.log('reportid', reportid);
-  if (loading) {
+  if (loadinggetrports) {
     return <h1>loading...</h1>
   }
   return (

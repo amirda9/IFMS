@@ -1,19 +1,30 @@
-import React, {ReactNode, useRef, useState} from 'react';
+import React, {ReactNode, useEffect, useRef, useState} from 'react';
 import * as Yup from 'yup';
-import {Form, FormikProvider, useFormik, validateYupSchema} from 'formik';
-import {createReport} from './../../../store/slices/reportslice';
+import {reporttype} from './../../../store/slices/reportslice';
+import {
+  Form,
+  FormikProvider,
+  prepareDataForValidation,
+  useFormik,
+  validateYupSchema,
+} from 'formik';
+import {
+  createReport,
+  setReportdetail,
+} from './../../../store/slices/reportslice';
 import {InputFormik, SelectFormik} from '~/container';
-import {Select, SimpleBtn, TabItem} from '~/components';
+import {Select, SimpleBtn, TabItem, TextInput} from '~/components';
 import AppDialog from '~/components/modals/AppDialog';
 import Checkbox from '~/components/checkbox/checkbox';
 import dateicon from '~/assets/images/dateicon.png';
 import RadioButton from '~/components/radipbutton/radiobutton';
 import {useNavigate, useParams} from 'react-router-dom';
 import {getPrettyDateTime} from '~/util/time';
-import {deepcopy} from '~/util';
+import {deepcopy} from '~/util/deepcopy';
 import {$POST, $Post} from '~/util/requestapi';
 import {toast} from 'react-toastify';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '~/store';
 type Iprops = {
   children: ReactNode;
   name: string;
@@ -145,14 +156,14 @@ const Detail = ({onclose, setselectedquery}: any) => {
 
           <div className="flex flex-row">
             <span className="text-[18px] font-normal">Value</span>
-            <Select
+            <TextInput
+              type="text"
+              value={value}
+              onChange={e => {
+                setValue(e.target.value);
+              }}
               className="ml-[10px] mr-[15px] w-[180px]"
-              value={'High'}
-              onChange={event => {}}>
-              <option value="" className="hidden" />
-              <option value={undefined} className="hidden" />
-              <option>High</option>
-            </Select>
+            />
           </div>
 
           <SimpleBtn onClick={() => append()} className="mr-4">
@@ -234,7 +245,7 @@ const Detail = ({onclose, setselectedquery}: any) => {
 // -----------------------------------------------------------------------
 function CreateReport() {
   const {reportsetId} = useParams();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showfilter, setShowfilter] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -247,233 +258,333 @@ function CreateReport() {
   const [time_filter_type, setTime_filter_type] = useState('exact');
   const [from_time, setFrom_time] = useState('2024-07-09');
   const [to_time, setTo_time] = useState('2024-08-08');
-  const formik = useFormik({
-    // validationSchema: rtuSchema,
-    initialValues: {
-      name: '',
-      comment: '',
-      period: 'month',
-      Every: 999,
-      ReportType: 'network',
-    },
-    onSubmit: async values => {
-      try {
-        const createreportresponse = await $Post(
-          `otdr/report-set/{report_set_id}/report`,
-          {
-            name: values.name,
-            comment: values.comment,
-            report_type: values.ReportType,
-            time_filter: {
-              enable: false,
-              time_filter_type: time_filter_type,
-              time_exact: {
-                from_time: from_time,
-                to_time: to_time,
-              },
-              time_relative: {
-                value: values.Every,
-                period: values.period,
-              },
+  const {reportdetail} = useSelector((state: RootState) => state.reportslice);
+
+  useEffect(() => {
+    dispatch(
+      setReportdetail({
+        name: '',
+        comment: '',
+        report_type: 'network',
+        time_filter: {
+          enable: false,
+          time_filter_type: 'exact',
+          time_exact: {
+            from_time: '2024-07-13',
+            to_time: '2024-08-12',
+          },
+          time_relative: {
+            value: 1,
+            period: 'month',
+          },
+        },
+        select_query: '',
+        parameters: {
+          selected_columns: [],
+          order_by_columns: {},
+        },
+        id: '',
+      }),
+    );
+  }, []);
+  const createreport = async () => {
+    try {
+      const createreportresponse = await $Post(
+        `otdr/report-set/${reportsetId}/report`,
+        {
+          name: reportdetail.name,
+          comment: reportdetail.comment,
+          report_type: reportdetail.report_type,
+          time_filter: {
+            enable: reportdetail.time_filter.enable,
+            time_filter_type: reportdetail.time_filter.time_filter_type,
+            time_exact: {
+              from_time: reportdetail.time_filter.time_exact.from_time,
+              to_time: reportdetail.time_filter.time_exact.to_time,
             },
-            select_query: select_query,
-            parameters: {
-              selected_columns: [],
-              order_by_columns: {},
+            time_relative: {
+              value: reportdetail.time_filter.time_relative.value,
+              period: reportdetail.time_filter.time_relative.period,
             },
           },
+          select_query: reportdetail.select_query,
+          parameters: {
+            selected_columns: [],
+            order_by_columns: {},
+          },
+        },
+      );
+      if (createreportresponse?.status == 201) {
+        const createreportresponseData = await createreportresponse?.json();
+        dispatch(
+          createReport({
+            ReportSetId: reportsetId!,
+            id: createreportresponseData,
+            name: reportdetail.name,
+          }),
         );
-        if (createreportresponse?.status == 201) {
-          const createreportresponseData = await createreportresponse?.json();
-          dispatch(
-            createReport({
-              ReportSetId: reportsetId!,
-              id: createreportresponseData,
-              name: values.name,
-            }),
-          );
-          toast('It was done successfully', {type: 'success', autoClose: 1000});
-          navigate(`/reporting/reports/${reportsetId}/reportset/45s4d5s4d`)  
-               
-        } else {
-          toast('Encountered an error', {type: 'error', autoClose: 1000});
-        }
-      } catch (error) {
-        console.log(`create error is:${error}`);
-      } finally {
-        setLoading(false);
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
+        navigate(
+          `/reporting/reports/${reportsetId}/reportset/report/${createreportresponseData}`,
+        );
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
-    },
-  });
-
-
+    } catch (error) {
+      console.log(`create error is:${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       {showfilter ? (
         <Detail
-          setselectedquery={(value: string) => setSelect_query(value)}
+          setselectedquery={(value: string) => {
+            let reportdetailCopy = JSON.parse(JSON.stringify(reportdetail));
+            console.log(
+              'reportdetail.time_filter.enable',
+              reportdetail.time_filter.enable,
+            );
+
+            reportdetailCopy.select_query = value;
+            dispatch(setReportdetail(reportdetailCopy));
+          }}
           onclose={() => setShowfilter(!showfilter)}
         />
       ) : null}
 
-      <div className="relative flex flex-col w-full p-[20px]">
-      <h1 className='font-bold mb-6'>create report</h1>
-        <FormikProvider value={formik}>
-          <Form className="flex h-full flex-col">
-            <Row name="name">
-              <InputFormik
-                // outerClassName="w-[720px]"
-                wrapperClassName="w-[720px]"
-                className="h-[40px]"
-                name="name"
-                type="text"
+      <div className="relative flex w-full flex-col p-[20px]">
+        <h1 className="mb-6 font-bold">create report</h1>
+
+        <div className="flex h-full flex-col">
+          <Row name="name">
+            <TextInput
+              type="text"
+              value={reportdetail.name}
+              onChange={e => {
+                let reportdetailCopy = {...reportdetail};
+                reportdetailCopy.name = e.target.value;
+                dispatch(setReportdetail(reportdetailCopy));
+              }}
+              className="h-[40px] w-[720px]"
+            />
+          </Row>
+
+          <Row name="Comment">
+            <TextInput
+              type="text"
+              value={reportdetail.comment}
+              onChange={e => {
+                let reportdetailCopy: reporttype = {...reportdetail};
+                reportdetailCopy.comment = e.target.value;
+                dispatch(setReportdetail(reportdetailCopy));
+              }}
+              className="h-[40px] w-[720px]"
+            />
+          </Row>
+
+          <Row classname="mt-[28px]" name="Report Type">
+            <div className="flex w-[550px] flex-row">
+              <Select
+                className={'h-[40px] w-[400px] border border-solid'}
+                value={reportdetail.report_type}
+                onChange={e => {
+                  let reportdetailCopy: reporttype = {...reportdetail};
+                  reportdetailCopy.report_type = e.target.value;
+                  dispatch(setReportdetail(reportdetailCopy));
+                }}>
+                {reporttypeList.map(data => (
+                  <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    {data}
+                  </option>
+                ))}
+              </Select>
+
+              <SimpleBtn onClick={() => setShowfilter(!showfilter)}>
+                Filter
+              </SimpleBtn>
+            </div>
+          </Row>
+
+          <div className="mb-[17px] flex w-[940px]  flex-row  items-center justify-between pr-[18px]">
+            <div className="flex flex-row">
+              <Checkbox
+                checkstatus={reportdetail?.time_filter?.enable || false}
+                onclick={e => {
+                  let reportdetailCopy = JSON.parse(
+                    JSON.stringify(reportdetail),
+                  );
+                  console.log(
+                    'reportdetail.time_filter.enable',
+                    reportdetail.time_filter.enable,
+                  );
+
+                  reportdetailCopy.time_filter.enable =
+                    !reportdetail.time_filter.enable;
+                  dispatch(setReportdetail(reportdetailCopy));
+                }}
+                iconclassnam="w-[15px] h-[15px] ml-[1px] mt-[1px] text-[#18C047]"
+                classname={
+                  'w-[20px] h-[20px] mr-[4px] mt-[5px] border-[1px] text-[#18C047] border-[#000000]'
+                }
               />
-            </Row>
-
-            <Row name="Comment">
-              <InputFormik
-                className="mb-[-45px] h-[80px] w-[720px]"
-                wrapperClassName="w-[720px]"
-                name="comment"
-                type="text"
-              />
-            </Row>
-
-            <Row classname="mt-[28px]" name="Report Type">
-              <div className="flex w-[550px] flex-row">
-                <SelectFormik
-                  placeholder="select"
-                  name="ReportType"
-                  className="h-[40px] w-[400px]">
-                  {reporttypeList.map(data => (
-                    <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                      {data}
-                    </option>
-                  ))}
-                </SelectFormik>
-                <SimpleBtn onClick={() => setShowfilter(!showfilter)}>
-                  Filter
-                </SimpleBtn>
-              </div>
-            </Row>
-
-            <div className="mb-[17px] flex w-[940px]  flex-row  items-center justify-between pr-[18px]">
-              <div className="flex flex-row">
-                <Checkbox
-                  checkstatus={timefilter}
-                  onclick={e => setTimefilter(!timefilter)}
-                  iconclassnam="w-[15px] h-[15px] ml-[1px] mt-[1px] text-[#18C047]"
-                  classname={
-                    'w-[20px] h-[20px] mr-[4px] mt-[5px] border-[1px] text-[#18C047] border-[#000000]'
+              <span className="ml-[10px] text-[20px] font-normal">
+                Time Filter
+              </span>
+            </div>
+            <div className="flex   w-[740px] flex-col">
+              <div className="flex w-full flex-row items-center">
+                <RadioButton
+                  check={
+                    reportdetail?.time_filter?.time_filter_type == 'exact'
+                      ? true
+                      : false
+                  }
+                  onclick={
+                    reportdetail?.time_filter?.enable
+                      ? () => {
+                          let reportdetailCopy = JSON.parse(
+                            JSON.stringify(reportdetail),
+                          );
+                          reportdetailCopy.time_filter.time_filter_type =
+                            'exact';
+                          dispatch(setReportdetail(reportdetailCopy));
+                        }
+                      : () => {}
                   }
                 />
-                <span className="ml-[10px] text-[20px] font-normal">
-                  Time Filter
+                <span className="ml-[10px] mr-[37px] text-[20px] font-normal leading-6">
+                  Exact Time
                 </span>
+                <span className="text-[20px] font-normal leading-6">From</span>
+                <input
+                  ref={firstdateref}
+                  onChange={e => {
+                    let reportdetailCopy = JSON.parse(
+                      JSON.stringify(reportdetail),
+                    );
+                    reportdetailCopy.time_filter.time_exact.from_time =
+                      e.target.value;
+                    dispatch(setReportdetail(reportdetailCopy));
+                  }}
+                  value={reportdetail?.time_filter?.time_exact?.from_time}
+                  type="date"
+                  className="ml-4 h-[40px] w-[170px] cursor-pointer rounded-md border border-black px-2"
+                />
+                <img
+                  src={dateicon}
+                  onClick={() => firstdateref.current.showPicker()}
+                  className="ml-[9px] h-[35px] w-[35px] cursor-pointer"
+                />
+
+                <span className="ml-10 text-[20px] font-normal leading-6">
+                  to
+                </span>
+                <input
+                  ref={secenddateref}
+                  onChange={e => {
+                    let reportdetailCopy: reporttype = deepcopy(reportdetail);
+                    reportdetailCopy.time_filter.time_exact.to_time =
+                      e.target.value;
+                    dispatch(setReportdetail(reportdetailCopy));
+                  }}
+                  value={reportdetail?.time_filter?.time_exact?.to_time}
+                  type="date"
+                  className="ml-4 h-[40px] w-[170px] rounded-md border border-black px-2"
+                />
+                <img
+                  src={dateicon}
+                  onClick={() => secenddateref.current.showPicker()}
+                  className="ml-[9px] h-[35px] w-[35px] cursor-pointer"
+                />
               </div>
-              <div className="flex   w-[740px] flex-col">
-                <div className="flex w-full flex-row items-center">
-                  <RadioButton
-                    check={time_filter_type == 'exact' ? true : false}
-                    onclick={
-                      timefilter ? () => setTime_filter_type('exact') : () => {}
-                    }
-                  />
-                  <span className="ml-[10px] mr-[37px] text-[20px] font-normal leading-6">
-                    Exact Time
-                  </span>
-                  <span className="text-[20px] font-normal leading-6">
-                    From
-                  </span>
-                  <input
-                    ref={firstdateref}
-                    onChange={e => setFrom_time(e.target.value)}
-                    value={from_time}
-                    type="date"
-                    className="ml-4 h-[40px] w-[170px] cursor-pointer rounded-md border border-black px-2"
-                  />
-                  <img
-                    src={dateicon}
-                    onClick={() => firstdateref.current.showPicker()}
-                    className="ml-[9px] h-[35px] w-[35px] cursor-pointer"
-                  />
 
-                  <span className="ml-10 text-[20px] font-normal leading-6">
-                    to
-                  </span>
-                  <input
-                    ref={secenddateref}
-                    onChange={e => setTo_time(e.target.value)}
-                    value={to_time}
-                    type="date"
-                    className="ml-4 h-[40px] w-[170px] rounded-md border border-black px-2"
-                  />
-                  <img
-                    src={dateicon}
-                    onClick={() => secenddateref.current.showPicker()}
-                    className="ml-[9px] h-[35px] w-[35px] cursor-pointer"
-                  />
-                </div>
+              <div className="mt-[10px] flex w-[424px] flex-row items-center">
+                <RadioButton
+                  check={
+                    reportdetail?.time_filter?.time_filter_type == 'relative'
+                      ? true
+                      : false
+                  }
+                  onclick={
+                    reportdetail?.time_filter?.enable
+                      ? () => {
+                          let reportdetailCopy = JSON.parse(
+                            JSON.stringify(reportdetail),
+                          );
+                          reportdetailCopy.time_filter.time_filter_type =
+                            'relative';
+                          dispatch(setReportdetail(reportdetailCopy));
+                        }
+                      : () => {}
+                  }
+                />
+                <span className="ml-[10px] mr-[15px] text-[20px] font-normal leading-6">
+                  Relative Time
+                </span>
+                <span className="text-[20px] font-normal leading-6">Every</span>
+                <TextInput
+                  type="number"
+                  value={reportdetail?.time_filter?.time_relative?.value}
+                  onChange={e => {
+                    let reportdetailCopy = JSON.parse(
+                      JSON.stringify(reportdetail),
+                    );
+                    reportdetailCopy.time_filter.time_relative.value = Number(
+                      e.target.value,
+                    );
+                    dispatch(setReportdetail(reportdetailCopy));
+                  }}
+                  className="ml-[8px] h-[40px] w-[70px]"
+                />
 
-                <div className="mt-[10px] flex w-[424px] flex-row items-center">
-                  <RadioButton
-                    check={time_filter_type == 'Relative' ? true : false}
-                    onclick={
-                      timefilter
-                        ? () => setTime_filter_type('Relative')
-                        : () => {}
-                    }
-                  />
-                  <span className="ml-[10px] mr-[15px] text-[20px] font-normal leading-6">
-                    Relative Time
-                  </span>
-                  <span className="text-[20px] font-normal leading-6">
-                    Every
-                  </span>
-                  <InputFormik
-                    className="ml-[8px] h-[40px] w-[70px]"
-                    wrapperClassName="w-[70px]"
-                    name="Every"
-                    type="number"
-                  />
-                  <SelectFormik
-                    placeholder="select"
-                    name="period"
-                    className="ml-[5px] h-[40px] w-[90px]">
-                    {/* <option value="" className="hidden">
-              {formik.values.station}
-            </option>
-            <option value={undefined} className="hidden">
-              {formik.values.station}
-            </option> */}
-
-                    <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                      months
-                    </option>
-                    <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                      days
-                    </option>
-                    <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                      years
-                    </option>
-                    <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                      hours
-                    </option>
-                  </SelectFormik>
-                </div>
+                <Select
+                  className={'ml-[5px] h-[40px] w-[90px]'}
+                  value={reportdetail?.time_filter?.time_relative?.period}
+                  onChange={e => {
+                    let reportdetailCopy = JSON.parse(
+                      JSON.stringify(reportdetail),
+                    );
+                    reportdetailCopy.time_filter.time_relative.period =
+                      e.target.value;
+                    dispatch(setReportdetail(reportdetailCopy));
+                  }}>
+                  <option value="" className="hidden">
+                    {reportdetail?.time_filter?.time_relative?.period}
+                  </option>
+                  <option value={undefined} className="hidden">
+                    {reportdetail?.time_filter?.time_relative?.period}
+                  </option>
+                  <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    month
+                  </option>
+                  {/* <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    days
+                  </option> */}
+                  <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    year
+                  </option>
+                  <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    hour
+                  </option>
+                </Select>
               </div>
             </div>
+          </div>
 
-            <div className="absolute bottom-0 right-0 flex flex-row items-center">
-              {/* <SimpleBtn>Open Report</SimpleBtn> */}
+          <div className="absolute bottom-0 right-0 flex flex-row items-center">
+            {/* <SimpleBtn>Open Report</SimpleBtn> */}
 
-              <SimpleBtn type="submit" className="mx-[5px]">
-                Save
-              </SimpleBtn>
-              <SimpleBtn onClick={() => {}}>Cancel</SimpleBtn>
-            </div>
-          </Form>
-        </FormikProvider>
+            <SimpleBtn
+              type="button"
+              onClick={() => createreport()}
+              className="mx-[5px]">
+              Save
+            </SimpleBtn>
+            <SimpleBtn onClick={() => {}}>Cancel</SimpleBtn>
+          </div>
+        </div>
       </div>
     </>
   );
