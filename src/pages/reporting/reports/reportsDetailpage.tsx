@@ -284,6 +284,7 @@ function ReportsDetailpage() {
   const [updateloading, setUpdateloading] = useState(false);
   const {reportdetail} = useSelector((state: RootState) => state.reportslice);
 
+  
   useEffect(() => {
     const getreportdetail = async () => {
       try {
@@ -295,7 +296,7 @@ function ReportsDetailpage() {
 
         if (detailresponse?.status == 200) {
           const detailresponsedata: reporttype = await detailresponse.json();
-          console.log('detailresponsedata', detailresponsedata);
+          console.log('😃detailresponsedata', detailresponsedata);
 
           dispatch(setReportdetail(detailresponsedata));
         } else {

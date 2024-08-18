@@ -24,6 +24,7 @@ import {deepcopy} from '~/util';
 import {RootState} from '~/store';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {toast} from 'react-toastify';
+import Mainloading from '~/components/loading/mainloading';
 
 type Itembtntype = {
   name: string;
@@ -117,6 +118,7 @@ const ReportsRouteLayout: FC = () => {
       return false;
     }
   };
+
   const [openall, setOpenall] = useState(false);
 
   const opennetworkopticallist = async (id: string) => {
@@ -157,82 +159,134 @@ const ReportsRouteLayout: FC = () => {
 
   const onclickopticalchecbox = (
     e: boolean,
-    opticalid: string,
-    networkid: string,
+    reportid: string,
+    reportsetid: string,
   ) => {
-    let oldoptical: alldeletereporttype = deepcopy(alldeletereports);
+    let oldolldelete: alldeletereporttype = deepcopy(alldeletereports);
 
     let finddataindex = alldeletereports.findIndex(
-      data => data.Reportsetid == networkid,
+      data => data.Reportsetid == reportsetid,
     );
     if (finddataindex > -1) {
       if (e) {
-        const newdata = deepcopy(oldoptical[finddataindex].reports);
-        newdata.push(opticalid);
-        oldoptical[finddataindex].reports = newdata;
-        dispatch(setAlldeletereports(oldoptical));
+        const newdata = deepcopy(oldolldelete[finddataindex].reports);
+        newdata.push(reportid);
+        oldolldelete[finddataindex].reports = newdata;
+        dispatch(setAlldeletereports(oldolldelete));
       } else {
-        const newdata = oldoptical[finddataindex].reports.filter(
-          data => data != opticalid,
+        const newdata = oldolldelete[finddataindex].reports.filter(
+          data => data != reportid,
         );
-        oldoptical[finddataindex].reports = newdata;
-        dispatch(setAlldeletereports(oldoptical));
+        oldolldelete[finddataindex].reports = newdata;
+        dispatch(setAlldeletereports(oldolldelete));
       }
     } else {
-      oldoptical.push({Reportsetid: networkid, reports: [opticalid]});
-      dispatch(setAlldeletereports(oldoptical));
+      oldolldelete.push({Reportsetid: reportsetid, reports: [reportid]});
+      dispatch(setAlldeletereports(oldolldelete));
     }
   };
 
+  console.log('alldeletereports', alldeletereports);
+
   const deleteoneopticalroute = async (
-    opticalid: string,
-    networkid: string,
+    reportid: string,
+    reportsetid: string,
   ) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
+        setLoading(true);
         //First, we find the list of optical routes of this network that have their checkboxes checked.
-        const findopticalroute = alldeletereports.findIndex(
-          data => data.Reportsetid == networkid,
-        );
-        const alldeleteopticalrouteCopy = deepcopy(alldeletereports);
         try {
-          const deleteOticalroute = await $Delete(
-            `otdr/optical-route/batch_delete`,
-            alldeletereports[findopticalroute]!.reports,
+          const findopticalroute = alldeletereports.findIndex(
+            data => data.Reportsetid == reportsetid,
           );
-          if (deleteOticalroute?.status == 201) {
-            let networkopticalCopy = deepcopy(ReportsetReport);
-            const finddataindex = ReportsetReport.findIndex(
-              (data: any) => data.Reportsetid == networkid,
-            );
-            //we update the networks uptical route
-            let newnetworkopticalroute = [];
+          const alldeleteopticalrouteCopy = deepcopy(alldeletereports);
+          const promises = alldeleteopticalrouteCopy[
+            findopticalroute
+          ].reports.map((data: string) =>
+            $Delete(`otdr/report-set/${reportsetid}/report/${data}`),
+          );
+
+          const results = await Promise.all(promises);
+          const reportsetreportCopy = deepcopy(ReportsetReport);
+          const findinlistindex = ReportsetReport.findIndex(
+            data => data.Reportsetid == reportsetid,
+          );
+
+          for (
+            let i = 0;
+            i < reportsetreportCopy[findinlistindex].reports.length;
+            i++
+          ) {
             for (
-              let i = 0;
-              i < ReportsetReport[finddataindex].reports.length;
-              i++
+              let j = 0;
+              j < alldeleteopticalrouteCopy[findopticalroute].reports.length;
+              j++
             ) {
               if (
-                alldeletereports[findopticalroute]!.reports!.findIndex(
-                  data => data == ReportsetReport[finddataindex].reports[i].id,
-                ) < 0
+                reportsetreportCopy[findinlistindex].reports[i].id ==
+                alldeleteopticalrouteCopy[findopticalroute].reports[j]
               ) {
-                newnetworkopticalroute.push({
-                  id: ReportsetReport[finddataindex].reports[i].id,
-                  name: ReportsetReport[finddataindex].reports[i].name,
-                });
+                const finddataindex = reportsetreportCopy[
+                  findinlistindex
+                ].reports.findIndex(
+                  (data: any) =>
+                    data.id ==
+                    reportsetreportCopy[findinlistindex].reports[i].id,
+                );
+                reportsetreportCopy[findinlistindex].reports.splice(
+                  finddataindex,
+                  1,
+                );
               }
             }
-            networkopticalCopy[finddataindex].opticalrouts =
-              newnetworkopticalroute;
-            dispatch(setReportserReport(networkopticalCopy));
-            //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
-            alldeleteopticalrouteCopy[findopticalroute].opticalrouts = [];
-            dispatch(setAlldeletereports(alldeleteopticalrouteCopy));
           }
+
+          dispatch(setReportserReport(reportsetreportCopy));
         } catch (error) {
-          console.log(error);
+          console.log(`delete errr is:${error}`);
+        } finally {
+          setLoading(false);
         }
+
+        // try {
+        //   const deleteOticalroute = await $Delete(
+        //     `otdr/optical-route/batch_delete`,
+        //     alldeletereports[findopticalroute]!.reports,
+        //   );
+        //   if (deleteOticalroute?.status == 201) {
+        //     let networkopticalCopy = deepcopy(ReportsetReport);
+        //     const finddataindex = ReportsetReport.findIndex(
+        //       (data: any) => data.Reportsetid == networkid,
+        //     );
+        //     //we update the networks uptical route
+        //     let newnetworkopticalroute = [];
+        //     for (
+        //       let i = 0;
+        //       i < ReportsetReport[finddataindex].reports.length;
+        //       i++
+        //     ) {
+        //       if (
+        //         alldeletereports[findopticalroute]!.reports!.findIndex(
+        //           data => data == ReportsetReport[finddataindex].reports[i].id,
+        //         ) < 0
+        //       ) {
+        //         newnetworkopticalroute.push({
+        //           id: ReportsetReport[finddataindex].reports[i].id,
+        //           name: ReportsetReport[finddataindex].reports[i].name,
+        //         });
+        //       }
+        //     }
+        //     networkopticalCopy[finddataindex].opticalrouts =
+        //       newnetworkopticalroute;
+        //     dispatch(setReportserReport(networkopticalCopy));
+        //     //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
+        //     alldeleteopticalrouteCopy[findopticalroute].opticalrouts = [];
+        //     dispatch(setAlldeletereports(alldeleteopticalrouteCopy));
+        //   }
+        // } catch (error) {
+        //   console.log(error);
+        // }
       }
     });
   };
@@ -276,6 +330,12 @@ const ReportsRouteLayout: FC = () => {
       classname="h-[calc(100vh-10px)] w-[25%]"
       createTitle=""
       canAdd>
+      {loading ? (
+        <Mainloading
+          spinerclassname={`fixed left-[calc(15%-50px)] top-[35%] z-[300000] h-[100px] w-[100px]`}
+          classname={`fixed left-0 top-0 z-[200000] flex h-screen w-[30%] items-center justify-center bg-neutral-400 opacity-60`}
+        />
+      ) : null}
       <div className="h-[2000px] w-full">
         {/* <h1 className="my-6 mt-12 text-[20px] font-bold text-[red]">
           This page requires a Full-Access license to view the content
@@ -361,7 +421,7 @@ const ReportsRouteLayout: FC = () => {
                             selectedId == reportsetdata.id ? true : false
                           }
                           onclick={() => {
-                            setLoadingid(reportsetdata.id)
+                            setLoadingid(reportsetdata.id);
                             opennetworkopticallist(reportsetdata.id),
                               setSelectedId(reportsetdata.id);
                             navigate(reportsetdata.id);
@@ -396,7 +456,14 @@ const ReportsRouteLayout: FC = () => {
                                       <span className="w-[15px] text-[12px]">
                                         .....
                                       </span>
-
+                                      {index ==
+                                      ReportsetReport?.find(
+                                        dataa =>
+                                          dataa.Reportsetid == reportsetdata.id,
+                                      )!.reports!.length -
+                                        1 ? (
+                                        <div className="absolute left-[-5px] top-[31px] h-[40px] w-[10px] bg-[red]"></div>
+                                      ) : null}
                                       <SidebarItem
                                         selected={
                                           selectedId == data.id ? true : false
@@ -414,7 +481,7 @@ const ReportsRouteLayout: FC = () => {
                                           data.id,
                                         )}
                                         onDelete={() =>
-                                          deleteReport(
+                                          deleteoneopticalroute(
                                             data.id,
                                             reportsetdata.id,
                                           )
@@ -427,7 +494,7 @@ const ReportsRouteLayout: FC = () => {
                                     </div>
                                   ))}
                                 </div>
-                               )} 
+                              )}
                             </>
                           ) : null}
                         </>
