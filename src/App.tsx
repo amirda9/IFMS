@@ -246,14 +246,14 @@ function App() {
                 path="CreateReport/:reportsetId"
                 Component={pages.SinglereportsRouteLayout}>
                 <Route index Component={pages.CreateReport} />
-                <Route path="Parameters" Component={pages.reportsparameters} />
+                <Route path="createreportsparameters" Component={pages.Createreportsparameters} />
               </Route>
 
               <Route
                 path=":reportsetid/reportset/report/:reportid"
                 Component={pages.SinglereportsRouteLayout}>
                 <Route index Component={pages.reportsDetailpage} />
-                <Route path=":id" Component={pages.reportsDetailmodal} />
+                {/* <Route path=":id" Component={pages.reportsDetailmodal} /> */}
                 <Route path="Parameters" Component={pages.reportsparameters} />
               </Route>
             </Route>

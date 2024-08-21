@@ -6,8 +6,10 @@ import {Select, SimpleBtn, TabItem, TextInput} from '~/components';
 import AppDialog from '~/components/modals/AppDialog';
 import Checkbox from '~/components/checkbox/checkbox';
 import {
+  reporttype,
   setReportdetail,
   updaterportname,
+  setgetdetailstatus
 } from './../../../store/slices/reportslice';
 import dateicon from '~/assets/images/dateicon.png';
 import RadioButton from '~/components/radipbutton/radiobutton';
@@ -49,9 +51,21 @@ type updatereport = {
   };
 };
 
-type reporttype = {
-  id: string;
-} & updatereport;
+const availebellist = [
+  {name: "network",list:["Regions", "Stations", "Optical Routes", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Affected Regions", "Affected Stations", "Occupied Ports", "Free Ports", "Avg. Region Stations", "Max. Region Stations", "Min. Region Stations", "Avg. Region Links", "Max. Region Links", "Min. Region Links", "Avg. Region RTUs", "Max. Region RTUs", "Min. Region RTUs", "Avg. Region Online RTUs", "Max. Region Online RTUs", "Min. Region Online RTUs", "Avg. Region Offline RTUs", "Max. Region Offline RTUs", "Min. Region Offline RTUs"] },
+  {name: "region",list: ["Stations", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Occupied Ports", "Free Ports", "Avg. Station RTUs", "Max. Station RTUs", "Min. Station RTUs", "Avg. Station RTU Ports", "Max. Station RTU Ports", "Min. Station RTU Ports", "Avg. Station RTU Occupied Ports", "Max. Station RTU Occupied Ports", "Min. Station RTU Occupied Ports", "Avg. Station RTU Free Ports", "Max. Station RTU Free Ports", "Min. Station RTU Free Ports", "Avg. Station Tests", "Max. Station Tests", "Min. Station Tests", "Avg. Station Successful Tests", "Max. Station Successful Tests", "Min. Station Successful Tests", "Avg. Station Failed Tests", "Max. Station Failed Tests", "Min. Station Failed Tests"] },
+  { name:"station",list: ["RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Occupied Ports", "Free Ports", "Avg. RTU Ports", "Max. RTU Ports", "Min. RTU Ports", "Avg. RTU Occupied Ports", "Max. RTU Occupied Ports", "Min. RTU Occupied Ports", "Avg. RTU Free Ports", "Max. RTU Free Ports", "Min. RTU Free Ports", "Avg. RTU Tests", "Max. RTU Tests", "Min. RTU Tests", "Avg. RTU Successful Tests", "Max. RTU Successful Tests", "Min. RTU Successful Tests", "Avg. RTU Failed Tests", "Max. RTU Failed Tests", "Min. RTU Failed Tests"] },
+  {name: "rtu",list:["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. RTU Down Time", "Max. RTU Down Time", "Min. RTU Down Time", "Avg. RTU Alarms", "Max. RTU Alarms", "Min. RTU Alarms", "Avg. Test Alarms", "Max. Test Alarms", "Min. Test Alarms"] },
+  { name:"link",list:["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Link Down Time", "Max. Link Down Time", "Min. Link Down Time", "Avg. Link Alarms", "Max. Link Alarms", "Min. Link Alarms", "Avg. Link Tests", "Max. Link Tests", "Min. Link Tests", "Avg. Link Successful Tests", "Max. Link Successful Tests", "Min. Link Successful Tests", "Avg. Link Failed Tests", "Max. Link Failed Tests", "Min. Link Failed Tests"] },
+  { name:"opticalRoute",list: ["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Optical Route Down Time", "Max. Optical Route Down Time", "Min. Optical Route Down Time", "Avg. Optical Route Tests", "Max. Optical Route Tests", "Min. Optical Route Tests", "Avg. Optical Route Successful Tests", "Max. Optical Route Successful Tests", "Min. Optical Route Successful Tests", "Avg. Optical Route Failed Tests", "Max. Optical Route Failed Tests", "Min. Optical Route Failed Tests"] },
+  { name:"test",list: ["Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Test Length", "Max. Test Length", "Min. Test Length", "Avg. Test Wavelength", "Max. Test Wavelength", "Min. Test Wavelength", "Avg. Test Pulsewidth", "Max. Test Pulsewidth", "Min. Test Pulsewidth"] }
+];
+
+
+const findValue = (name:string) => {
+  const item = availebellist.find(data => data.name == name)
+  return item!.list
+  };
 
 const operatorsvalues = (name: string) => {
   if (name == 'AlarmNum') {
@@ -282,7 +296,7 @@ function ReportsDetailpage() {
   const [to_time, setTo_time] = useState('2024-08-08');
   const {reportid, reportsetid} = useParams();
   const [updateloading, setUpdateloading] = useState(false);
-  const {reportdetail} = useSelector((state: RootState) => state.reportslice);
+  const {reportdetail,getdetailstatus} = useSelector((state: RootState) => state.reportslice);
 
   
   useEffect(() => {
@@ -292,13 +306,11 @@ function ReportsDetailpage() {
         const detailresponse = await $Get(
           `otdr/report-set/${reportsetid}/report/${reportid}`,
         );
-        console.log('detailresponse', detailresponse);
 
         if (detailresponse?.status == 200) {
           const detailresponsedata: reporttype = await detailresponse.json();
-          console.log('😃detailresponsedata', detailresponsedata);
-
-          dispatch(setReportdetail(detailresponsedata));
+          dispatch(setgetdetailstatus(true))
+          dispatch(setReportdetail({...detailresponsedata,availebelColumns:findValue(detailresponsedata.report_type)}));
         } else {
           toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
@@ -308,16 +320,18 @@ function ReportsDetailpage() {
         setLoading(false);
       }
     };
-    getreportdetail();
+    if(!getdetailstatus){
+      getreportdetail();
+    }
+  
   }, [reportid]);
 
   const updatereport = async () => {
-    const {id, ...dataWithoutId} = reportdetail;
-    console.log('dataWithoutId', dataWithoutId);
-
+    const {id,availebelColumns,...dataWithoutId} = reportdetail;
     try {
-      const getdetaildata=await $Put(`otdr/report-set/${reportsetid}/report/${reportid}`,reportdetail)
+      const getdetaildata=await $Put(`otdr/report-set/${reportsetid}/report/${reportid}`,dataWithoutId)
       if(getdetaildata?.status == 201){
+        dispatch(setgetdetailstatus(false))
         toast('It was done successfully', {type: 'success', autoClose: 1000});
         dispatch(updaterportname({reportsetId: reportsetid!, reportid: reportid!, name: reportdetail?.name}))
       } else {
@@ -340,11 +354,6 @@ function ReportsDetailpage() {
           quertextdata={reportdetail.select_query}
           setselectedquery={(value: string) => {
             let reportdetailCopy = JSON.parse(JSON.stringify(reportdetail));
-            console.log(
-              'reportdetail.time_filter.enable',
-              reportdetail.time_filter.enable,
-            );
-
             reportdetailCopy.select_query = value;
             dispatch(setReportdetail(reportdetailCopy));
           }}
@@ -415,11 +424,6 @@ function ReportsDetailpage() {
                   let reportdetailCopy = JSON.parse(
                     JSON.stringify(reportdetail),
                   );
-                  console.log(
-                    'reportdetail.time_filter.enable',
-                    reportdetail.time_filter.enable,
-                  );
-
                   reportdetailCopy.time_filter.enable =
                     !reportdetail.time_filter.enable;
                   dispatch(setReportdetail(reportdetailCopy));

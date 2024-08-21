@@ -19,6 +19,7 @@ import {
   deletereportset,
   deletereport,
   setloadinggetrports,
+  setgetdetailstatus,
 } from './../../../store/slices/reportslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
@@ -197,12 +198,14 @@ const ReportsRouteLayout: FC = () => {
         setLoading(true);
         //First, we find the list of optical routes of this network that have their checkboxes checked.
         try {
-          const findopticalroute = alldeletereports.findIndex(
+          const findDelete = alldeletereports.findIndex(
             data => data.Reportsetid == reportsetid,
           );
+          console.log("findDelete",findDelete);
+          
           const alldeleteopticalrouteCopy = deepcopy(alldeletereports);
           const promises = alldeleteopticalrouteCopy[
-            findopticalroute
+            findDelete
           ].reports.map((data: string) =>
             $Delete(`otdr/report-set/${reportsetid}/report/${data}`),
           );
@@ -212,7 +215,7 @@ const ReportsRouteLayout: FC = () => {
           const findinlistindex = ReportsetReport.findIndex(
             data => data.Reportsetid == reportsetid,
           );
-
+          console.log("findinlistindex",findinlistindex);
           for (
             let i = 0;
             i < reportsetreportCopy[findinlistindex].reports.length;
@@ -220,13 +223,12 @@ const ReportsRouteLayout: FC = () => {
           ) {
             for (
               let j = 0;
-              j < alldeleteopticalrouteCopy[findopticalroute].reports.length;
+              j < alldeleteopticalrouteCopy[findDelete].reports.length;
               j++
             ) {
               if (
-                reportsetreportCopy[findinlistindex].reports[i].id ==
-                alldeleteopticalrouteCopy[findopticalroute].reports[j]
-              ) {
+                reportsetreportCopy[findinlistindex].reports[i].id == alldeleteopticalrouteCopy[findDelete].reports[j]
+              ) {          
                 const finddataindex = reportsetreportCopy[
                   findinlistindex
                 ].reports.findIndex(
@@ -234,6 +236,8 @@ const ReportsRouteLayout: FC = () => {
                     data.id ==
                     reportsetreportCopy[findinlistindex].reports[i].id,
                 );
+                console.log("🚶finddataindex",finddataindex);
+                
                 reportsetreportCopy[findinlistindex].reports.splice(
                   finddataindex,
                   1,
@@ -468,7 +472,8 @@ const ReportsRouteLayout: FC = () => {
                                         selected={
                                           selectedId == data.id ? true : false
                                         }
-                                        onclick={() => setSelectedId(data.id)}
+
+                                        onclick={() => {setSelectedId(data.id), dispatch(setgetdetailstatus(false))}}
                                         onclickcheckbox={e =>
                                           onclickopticalchecbox(
                                             e,

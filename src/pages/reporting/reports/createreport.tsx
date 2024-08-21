@@ -10,7 +10,7 @@ import {
 } from 'formik';
 import {
   createReport,
-  setReportdetail,
+  setcreateReportdetail,
 } from './../../../store/slices/reportslice';
 import {InputFormik, SelectFormik} from '~/container';
 import {Select, SimpleBtn, TabItem, TextInput} from '~/components';
@@ -36,6 +36,47 @@ const rtuSchema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
   Everyvalue: Yup.string().required('Please enter Everyvalue'),
 });
+
+
+const availebellist = [
+  {name: "network",list:["Regions", "Stations", "Optical Routes", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Affected Regions", "Affected Stations", "Occupied Ports", "Free Ports", "Avg. Region Stations", "Max. Region Stations", "Min. Region Stations", "Avg. Region Links", "Max. Region Links", "Min. Region Links", "Avg. Region RTUs", "Max. Region RTUs", "Min. Region RTUs", "Avg. Region Online RTUs", "Max. Region Online RTUs", "Min. Region Online RTUs", "Avg. Region Offline RTUs", "Max. Region Offline RTUs", "Min. Region Offline RTUs"] },
+  {name: "region",list: ["Stations", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Occupied Ports", "Free Ports", "Avg. Station RTUs", "Max. Station RTUs", "Min. Station RTUs", "Avg. Station RTU Ports", "Max. Station RTU Ports", "Min. Station RTU Ports", "Avg. Station RTU Occupied Ports", "Max. Station RTU Occupied Ports", "Min. Station RTU Occupied Ports", "Avg. Station RTU Free Ports", "Max. Station RTU Free Ports", "Min. Station RTU Free Ports", "Avg. Station Tests", "Max. Station Tests", "Min. Station Tests", "Avg. Station Successful Tests", "Max. Station Successful Tests", "Min. Station Successful Tests", "Avg. Station Failed Tests", "Max. Station Failed Tests", "Min. Station Failed Tests"] },
+  { name:"station",list: ["RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Occupied Ports", "Free Ports", "Avg. RTU Ports", "Max. RTU Ports", "Min. RTU Ports", "Avg. RTU Occupied Ports", "Max. RTU Occupied Ports", "Min. RTU Occupied Ports", "Avg. RTU Free Ports", "Max. RTU Free Ports", "Min. RTU Free Ports", "Avg. RTU Tests", "Max. RTU Tests", "Min. RTU Tests", "Avg. RTU Successful Tests", "Max. RTU Successful Tests", "Min. RTU Successful Tests", "Avg. RTU Failed Tests", "Max. RTU Failed Tests", "Min. RTU Failed Tests"] },
+  {name: "rtu",list:["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. RTU Down Time", "Max. RTU Down Time", "Min. RTU Down Time", "Avg. RTU Alarms", "Max. RTU Alarms", "Min. RTU Alarms", "Avg. Test Alarms", "Max. Test Alarms", "Min. Test Alarms"] },
+  { name:"link",list:["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Link Down Time", "Max. Link Down Time", "Min. Link Down Time", "Avg. Link Alarms", "Max. Link Alarms", "Min. Link Alarms", "Avg. Link Tests", "Max. Link Tests", "Min. Link Tests", "Avg. Link Successful Tests", "Max. Link Successful Tests", "Min. Link Successful Tests", "Avg. Link Failed Tests", "Max. Link Failed Tests", "Min. Link Failed Tests"] },
+  { name:"opticalRoute",list: ["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Optical Route Down Time", "Max. Optical Route Down Time", "Min. Optical Route Down Time", "Avg. Optical Route Tests", "Max. Optical Route Tests", "Min. Optical Route Tests", "Avg. Optical Route Successful Tests", "Max. Optical Route Successful Tests", "Min. Optical Route Successful Tests", "Avg. Optical Route Failed Tests", "Max. Optical Route Failed Tests", "Min. Optical Route Failed Tests"] },
+  { name:"test",list: ["Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Test Length", "Max. Test Length", "Min. Test Length", "Avg. Test Wavelength", "Max. Test Wavelength", "Min. Test Wavelength", "Avg. Test Pulsewidth", "Max. Test Pulsewidth", "Min. Test Pulsewidth"] }
+];
+
+
+
+// const findValue=(x:string)=>{
+//   if(x == "Network"){
+//     return  list[0].Network
+//   } else if( x == "Region"){
+//     return list[1].Region
+//   }else if( x == "Station"){
+//     return list[2].Station
+//   } else if( x == "RTU"){
+//     return list[3].RTU
+//   }else if( x == "Link"){
+//     return list[4].Link
+//   }else if( x == "OpticalRoute"){
+//     return list[5].OpticalRoute
+//   } else{
+//     return list[6].Test
+//   }
+// }
+
+
+const findValue = (name:string) => {
+  const item = availebellist.find(data => data.name == name)
+  return item!.list
+  };
+// const findValue = (key:string) => {
+//   const item:any = list.find((obj:any) => obj[key]);
+//   return item ? item[key] : null;
+//   };
 
 const Row = ({children, name, classname}: Iprops) => {
   return (
@@ -258,61 +299,41 @@ function CreateReport() {
   const [time_filter_type, setTime_filter_type] = useState('exact');
   const [from_time, setFrom_time] = useState('2024-07-09');
   const [to_time, setTo_time] = useState('2024-08-08');
-  const {reportdetail} = useSelector((state: RootState) => state.reportslice);
+  const {createreportdetail} = useSelector((state: RootState) => state.reportslice);
 
-  useEffect(() => {
-    dispatch(
-      setReportdetail({
-        name: '',
-        comment: '',
-        report_type: 'network',
-        time_filter: {
-          enable: false,
-          time_filter_type: 'exact',
-          time_exact: {
-            from_time: '2024-07-13',
-            to_time: '2024-08-12',
-          },
-          time_relative: {
-            value: 1,
-            period: 'month',
-          },
-        },
-        select_query: '',
-        parameters: {
-          selected_columns: [],
-          order_by_columns: {},
-        },
-        id: '',
-      }),
-    );
-  }, []);
+  // useEffect(() => {
+  
+  // }, []);
+
   const createreport = async () => {
+    const { id, ...dataWithoutId } = createreportdetail;
     try {
+      setLoading(true);
       const createreportresponse = await $Post(
         `otdr/report-set/${reportsetId}/report`,
-        {
-          name: reportdetail.name,
-          comment: reportdetail.comment,
-          report_type: reportdetail.report_type,
-          time_filter: {
-            enable: reportdetail.time_filter.enable,
-            time_filter_type: reportdetail.time_filter.time_filter_type,
-            time_exact: {
-              from_time: reportdetail.time_filter.time_exact.from_time,
-              to_time: reportdetail.time_filter.time_exact.to_time,
-            },
-            time_relative: {
-              value: reportdetail.time_filter.time_relative.value,
-              period: reportdetail.time_filter.time_relative.period,
-            },
-          },
-          select_query: reportdetail.select_query,
-          parameters: {
-            selected_columns: [],
-            order_by_columns: {},
-          },
-        },
+        dataWithoutId
+        // {
+        //   name: createreportdetail.name,
+        //   comment: createreportdetail.comment,
+        //   report_type: createreportdetail.report_type,
+        //   time_filter: {
+        //     enable: createreportdetail.time_filter.enable,
+        //     time_filter_type: createreportdetail.time_filter.time_filter_type,
+        //     time_exact: {
+        //       from_time: createreportdetail.time_filter.time_exact.from_time,
+        //       to_time: createreportdetail.time_filter.time_exact.to_time,
+        //     },
+        //     time_relative: {
+        //       value: createreportdetail.time_filter.time_relative.value,
+        //       period: createreportdetail.time_filter.time_relative.period,
+        //     },
+        //   },
+        //   select_query: createreportdetail.select_query,
+        //   parameters: {
+        //     selected_columns: [],
+        //     order_by_columns: {},
+        //   },
+        // },
       );
       if (createreportresponse?.status == 201) {
         const createreportresponseData = await createreportresponse?.json();
@@ -320,7 +341,33 @@ function CreateReport() {
           createReport({
             ReportSetId: reportsetId!,
             id: createreportresponseData,
-            name: reportdetail.name,
+            name: createreportdetail.name,
+          }),
+        );
+        dispatch(
+          setcreateReportdetail({
+            name: '',
+            comment: '',
+            report_type: 'network',
+            time_filter: {
+              enable: false,
+              time_filter_type: 'exact',
+              time_exact: {
+                from_time: '2024-07-13',
+                to_time: '2024-08-12',
+              },
+              time_relative: {
+                value: 1,
+                period: 'month',
+              },
+            },
+            select_query: '',
+            parameters: {
+              selected_columns: [],
+              order_by_columns: {},
+            },
+            availebelColumns:findValue("network"),
+            id: '',
           }),
         );
         toast('It was done successfully', {type: 'success', autoClose: 1000});
@@ -336,19 +383,20 @@ function CreateReport() {
       setLoading(false);
     }
   };
+
   return (
     <>
       {showfilter ? (
         <Detail
           setselectedquery={(value: string) => {
-            let reportdetailCopy = JSON.parse(JSON.stringify(reportdetail));
+            let reportdetailCopy = JSON.parse(JSON.stringify(createreportdetail));
             console.log(
-              'reportdetail.time_filter.enable',
-              reportdetail.time_filter.enable,
+              'createreportdetail.time_filter.enable',
+              createreportdetail.time_filter.enable,
             );
 
             reportdetailCopy.select_query = value;
-            dispatch(setReportdetail(reportdetailCopy));
+            dispatch(setcreateReportdetail(reportdetailCopy));
           }}
           onclose={() => setShowfilter(!showfilter)}
         />
@@ -361,11 +409,11 @@ function CreateReport() {
           <Row name="name">
             <TextInput
               type="text"
-              value={reportdetail.name}
+              value={createreportdetail.name}
               onChange={e => {
-                let reportdetailCopy = {...reportdetail};
+                let reportdetailCopy = {...createreportdetail};
                 reportdetailCopy.name = e.target.value;
-                dispatch(setReportdetail(reportdetailCopy));
+                dispatch(setcreateReportdetail(reportdetailCopy));
               }}
               className="h-[40px] w-[720px]"
             />
@@ -374,11 +422,11 @@ function CreateReport() {
           <Row name="Comment">
             <TextInput
               type="text"
-              value={reportdetail.comment}
+              value={createreportdetail.comment}
               onChange={e => {
-                let reportdetailCopy: reporttype = {...reportdetail};
+                let reportdetailCopy: reporttype = {...createreportdetail};
                 reportdetailCopy.comment = e.target.value;
-                dispatch(setReportdetail(reportdetailCopy));
+                dispatch(setcreateReportdetail(reportdetailCopy));
               }}
               className="h-[40px] w-[720px]"
             />
@@ -388,11 +436,13 @@ function CreateReport() {
             <div className="flex w-[550px] flex-row">
               <Select
                 className={'h-[40px] w-[400px] border border-solid'}
-                value={reportdetail.report_type}
+                value={createreportdetail.report_type}
                 onChange={e => {
-                  let reportdetailCopy: reporttype = {...reportdetail};
-                  reportdetailCopy.report_type = e.target.value;
-                  dispatch(setReportdetail(reportdetailCopy));
+                  let reportdetailCopy: reporttype = {...createreportdetail};
+                  reportdetailCopy.report_type = e.target.value;                  
+                  let finlistdata:any=findValue(e.target.value)
+                  reportdetailCopy.availebelColumns = finlistdata           
+                  dispatch(setcreateReportdetail(reportdetailCopy));
                 }}>
                 {reporttypeList.map(data => (
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
@@ -410,19 +460,19 @@ function CreateReport() {
           <div className="mb-[17px] flex w-[940px]  flex-row  items-center justify-between pr-[18px]">
             <div className="flex flex-row">
               <Checkbox
-                checkstatus={reportdetail?.time_filter?.enable || false}
+                checkstatus={createreportdetail?.time_filter?.enable || false}
                 onclick={e => {
                   let reportdetailCopy = JSON.parse(
-                    JSON.stringify(reportdetail),
+                    JSON.stringify(createreportdetail),
                   );
                   console.log(
-                    'reportdetail.time_filter.enable',
-                    reportdetail.time_filter.enable,
+                    'createreportdetail.time_filter.enable',
+                    createreportdetail.time_filter.enable,
                   );
 
                   reportdetailCopy.time_filter.enable =
-                    !reportdetail.time_filter.enable;
-                  dispatch(setReportdetail(reportdetailCopy));
+                    !createreportdetail.time_filter.enable;
+                  dispatch(setcreateReportdetail(reportdetailCopy));
                 }}
                 iconclassnam="w-[15px] h-[15px] ml-[1px] mt-[1px] text-[#18C047]"
                 classname={
@@ -437,19 +487,19 @@ function CreateReport() {
               <div className="flex w-full flex-row items-center">
                 <RadioButton
                   check={
-                    reportdetail?.time_filter?.time_filter_type == 'exact'
+                    createreportdetail?.time_filter?.time_filter_type == 'exact'
                       ? true
                       : false
                   }
                   onclick={
-                    reportdetail?.time_filter?.enable
+                    createreportdetail?.time_filter?.enable
                       ? () => {
                           let reportdetailCopy = JSON.parse(
-                            JSON.stringify(reportdetail),
+                            JSON.stringify(createreportdetail),
                           );
                           reportdetailCopy.time_filter.time_filter_type =
                             'exact';
-                          dispatch(setReportdetail(reportdetailCopy));
+                          dispatch(setcreateReportdetail(reportdetailCopy));
                         }
                       : () => {}
                   }
@@ -462,13 +512,13 @@ function CreateReport() {
                   ref={firstdateref}
                   onChange={e => {
                     let reportdetailCopy = JSON.parse(
-                      JSON.stringify(reportdetail),
+                      JSON.stringify(createreportdetail),
                     );
                     reportdetailCopy.time_filter.time_exact.from_time =
                       e.target.value;
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}
-                  value={reportdetail?.time_filter?.time_exact?.from_time}
+                  value={createreportdetail?.time_filter?.time_exact?.from_time}
                   type="date"
                   className="ml-4 h-[40px] w-[170px] cursor-pointer rounded-md border border-black px-2"
                 />
@@ -484,12 +534,12 @@ function CreateReport() {
                 <input
                   ref={secenddateref}
                   onChange={e => {
-                    let reportdetailCopy: reporttype = deepcopy(reportdetail);
+                    let reportdetailCopy: reporttype = deepcopy(createreportdetail);
                     reportdetailCopy.time_filter.time_exact.to_time =
                       e.target.value;
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}
-                  value={reportdetail?.time_filter?.time_exact?.to_time}
+                  value={createreportdetail?.time_filter?.time_exact?.to_time}
                   type="date"
                   className="ml-4 h-[40px] w-[170px] rounded-md border border-black px-2"
                 />
@@ -503,19 +553,19 @@ function CreateReport() {
               <div className="mt-[10px] flex w-[424px] flex-row items-center">
                 <RadioButton
                   check={
-                    reportdetail?.time_filter?.time_filter_type == 'relative'
+                    createreportdetail?.time_filter?.time_filter_type == 'relative'
                       ? true
                       : false
                   }
                   onclick={
-                    reportdetail?.time_filter?.enable
+                    createreportdetail?.time_filter?.enable
                       ? () => {
                           let reportdetailCopy = JSON.parse(
-                            JSON.stringify(reportdetail),
+                            JSON.stringify(createreportdetail),
                           );
                           reportdetailCopy.time_filter.time_filter_type =
                             'relative';
-                          dispatch(setReportdetail(reportdetailCopy));
+                          dispatch(setcreateReportdetail(reportdetailCopy));
                         }
                       : () => {}
                   }
@@ -526,35 +576,35 @@ function CreateReport() {
                 <span className="text-[20px] font-normal leading-6">Every</span>
                 <TextInput
                   type="number"
-                  value={reportdetail?.time_filter?.time_relative?.value}
+                  value={createreportdetail?.time_filter?.time_relative?.value}
                   onChange={e => {
                     let reportdetailCopy = JSON.parse(
-                      JSON.stringify(reportdetail),
+                      JSON.stringify(createreportdetail),
                     );
                     reportdetailCopy.time_filter.time_relative.value = Number(
                       e.target.value,
                     );
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}
                   className="ml-[8px] h-[40px] w-[70px]"
                 />
 
                 <Select
                   className={'ml-[5px] h-[40px] w-[90px]'}
-                  value={reportdetail?.time_filter?.time_relative?.period}
+                  value={createreportdetail?.time_filter?.time_relative?.period}
                   onChange={e => {
                     let reportdetailCopy = JSON.parse(
-                      JSON.stringify(reportdetail),
+                      JSON.stringify(createreportdetail),
                     );
                     reportdetailCopy.time_filter.time_relative.period =
                       e.target.value;
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}>
                   <option value="" className="hidden">
-                    {reportdetail?.time_filter?.time_relative?.period}
+                    {createreportdetail?.time_filter?.time_relative?.period}
                   </option>
                   <option value={undefined} className="hidden">
-                    {reportdetail?.time_filter?.time_relative?.period}
+                    {createreportdetail?.time_filter?.time_relative?.period}
                   </option>
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                     month

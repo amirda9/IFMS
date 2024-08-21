@@ -76,13 +76,19 @@ type updatereport = {
   };
   select_query: string;
   parameters: {
-    selected_columns: [];
+    selected_columns: string[];
     order_by_columns: {};
   };
 };
 
 export type reporttype = {
   id: string;
+  availebelColumns: string[];
+} & updatereport;
+
+export type createreporttype = {
+  id: string;
+  availebelColumns: string[];
 } & updatereport;
 
 type initialStatetype = {
@@ -99,7 +105,9 @@ type initialStatetype = {
   modalloading: boolean;
   openall: boolean;
   reportdetail: reporttype;
+  createreportdetail: createreporttype;
   loadinggetrports: boolean;
+  getdetailstatus:boolean;
 };
 const initialState: initialStatetype = {
   opticalroutUpdateTestsetupDetail: {
@@ -183,6 +191,7 @@ const initialState: initialStatetype = {
   reportsetlist: [],
   gettestsetupdetaildata: false,
   modalloading: false,
+  getdetailstatus:false,
   openall: false,
   reportdetail: {
     name: '',
@@ -205,6 +214,32 @@ const initialState: initialStatetype = {
       selected_columns: [],
       order_by_columns: {},
     },
+    availebelColumns: [],
+    id: '',
+  },
+
+  createreportdetail: {
+    name: '',
+    comment: '',
+    report_type: 'network',
+    time_filter: {
+      enable: false,
+      time_filter_type: 'exact',
+      time_exact: {
+        from_time: '2024-07-13',
+        to_time: '2024-08-12',
+      },
+      time_relative: {
+        value: 1,
+        period: 'month',
+      },
+    },
+    select_query: '',
+    parameters: {
+      selected_columns: [],
+      order_by_columns: {},
+    },
+    availebelColumns: ["Regions", "Stations", "Optical Routes", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Affected Regions", "Affected Stations", "Occupied Ports", "Free Ports", "Avg. Region Stations", "Max. Region Stations", "Min. Region Stations", "Avg. Region Links", "Max. Region Links", "Min. Region Links", "Avg. Region RTUs", "Max. Region RTUs", "Min. Region RTUs", "Avg. Region Online RTUs", "Max. Region Online RTUs", "Min. Region Online RTUs", "Avg. Region Offline RTUs", "Max. Region Offline RTUs", "Min. Region Offline RTUs"],
     id: '',
   },
   loadinggetrports: false,
@@ -221,6 +256,17 @@ const report = createSlice({
       console.log('action.payload', action.payload);
 
       state.reportdetail = action.payload;
+    },
+setgetdetailstatus: (state, action: {type: string; payload: boolean}) => {
+  state.getdetailstatus = action.payload;
+},
+    setcreateReportdetail: (
+      state,
+      action: {type: string; payload: reporttype},
+    ) => {
+      console.log('action.payload', action.payload);
+
+      state.createreportdetail = action.payload;
     },
     setopticalroutUpdateTestsetupDetail: (state, action: veiwerlists) => {
       state.opticalroutUpdateTestsetupDetail = action.payload;
@@ -386,6 +432,8 @@ export const {
   deletereport,
   setReportdetail,
   setloadinggetrports,
+  setcreateReportdetail,
+  setgetdetailstatus
 } = report.actions;
 
 export default report.reducer;
