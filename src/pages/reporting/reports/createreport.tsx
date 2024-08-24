@@ -1,27 +1,30 @@
 import React, {ReactNode, useEffect, useRef, useState} from 'react';
 import * as Yup from 'yup';
-import {Form, FormikProvider, useFormik, validateYupSchema} from 'formik';
+import {reporttype} from './../../../store/slices/reportslice';
+import {
+  Form,
+  FormikProvider,
+  prepareDataForValidation,
+  useFormik,
+  validateYupSchema,
+} from 'formik';
+import {
+  createReport,
+  setcreateReportdetail,
+} from './../../../store/slices/reportslice';
 import {InputFormik, SelectFormik} from '~/container';
 import {Select, SimpleBtn, TabItem, TextInput} from '~/components';
 import AppDialog from '~/components/modals/AppDialog';
 import Checkbox from '~/components/checkbox/checkbox';
-import {
-  reporttype,
-  setReportdetail,
-  updaterportname,
-  setgetdetailstatus,
-  setloadinggetrports
-} from './../../../store/slices/reportslice';
 import dateicon from '~/assets/images/dateicon.png';
 import RadioButton from '~/components/radipbutton/radiobutton';
 import {useNavigate, useParams} from 'react-router-dom';
-import {$Get, $Put} from '~/util/requestapi';
-import {useDispatch, useSelector} from 'react-redux';
+import {getPrettyDateTime} from '~/util/time';
 import {deepcopy} from '~/util/deepcopy';
+import {$POST, $Post} from '~/util/requestapi';
 import {toast} from 'react-toastify';
+import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
-
-// import {setReportdetail} from './../../../store/slices/'
 type Iprops = {
   children: ReactNode;
   name: string;
@@ -29,28 +32,11 @@ type Iprops = {
   ReportType?: string;
 };
 
-type updatereport = {
-  name: string;
-  comment: string;
-  report_type: string;
-  time_filter: {
-    enable: false;
-    time_filter_type: string;
-    time_exact: {
-      from_time: string;
-      to_time: string;
-    };
-    time_relative: {
-      value: 1;
-      period: string;
-    };
-  };
-  select_query: string;
-  parameters: {
-    selected_columns: [];
-    order_by_columns: {};
-  };
-};
+const rtuSchema = Yup.object().shape({
+  name: Yup.string().required('Please enter name'),
+  Everyvalue: Yup.string().required('Please enter Everyvalue'),
+});
+
 
 const availebellist = [
   {name: "network",list:["Regions", "Stations", "Optical Routes", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Affected Regions", "Affected Stations", "Occupied Ports", "Free Ports", "Avg. Region Stations", "Max. Region Stations", "Min. Region Stations", "Avg. Region Links", "Max. Region Links", "Min. Region Links", "Avg. Region RTUs", "Max. Region RTUs", "Min. Region RTUs", "Avg. Region Online RTUs", "Max. Region Online RTUs", "Min. Region Online RTUs", "Avg. Region Offline RTUs", "Max. Region Offline RTUs", "Min. Region Offline RTUs"] },
@@ -63,24 +49,34 @@ const availebellist = [
 ];
 
 
+
+// const findValue=(x:string)=>{
+//   if(x == "Network"){
+//     return  list[0].Network
+//   } else if( x == "Region"){
+//     return list[1].Region
+//   }else if( x == "Station"){
+//     return list[2].Station
+//   } else if( x == "RTU"){
+//     return list[3].RTU
+//   }else if( x == "Link"){
+//     return list[4].Link
+//   }else if( x == "OpticalRoute"){
+//     return list[5].OpticalRoute
+//   } else{
+//     return list[6].Test
+//   }
+// }
+
+
 const findValue = (name:string) => {
   const item = availebellist.find(data => data.name == name)
   return item!.list
   };
-
-const operatorsvalues = (name: string) => {
-  if (name == 'AlarmNum') {
-    return ['=', '!=', '<', '>', '>=', '<='];
-  } else if (name == 'State') {
-    return ['=', '!=', '>', '<'];
-  } else {
-    return ['=', '!='];
-  }
-};
-const rtuSchema = Yup.object().shape({
-  name: Yup.string().required('Please enter name'),
-  Everyvalue: Yup.string().required('Please enter Everyvalue'),
-});
+// const findValue = (key:string) => {
+//   const item:any = list.find((obj:any) => obj[key]);
+//   return item ? item[key] : null;
+//   };
 
 const Row = ({children, name, classname}: Iprops) => {
   return (
@@ -91,6 +87,28 @@ const Row = ({children, name, classname}: Iprops) => {
     </div>
   );
 };
+
+const reporttypeList = [
+  'network',
+  'region',
+  'station',
+  'link',
+  'optical_route',
+  'rtu',
+  'test',
+  'alarm',
+];
+
+const operatorsvalues = (name: string) => {
+  if (name == 'AlarmNum') {
+    return ['=', '!=', '<', '>', '>=', '<='];
+  } else if (name == 'State') {
+    return ['=', '!=', '>', '<'];
+  } else {
+    return ['=', '!='];
+  }
+};
+
 const parameterslist = [
   'NetworkName',
   'RegionName',
@@ -103,27 +121,12 @@ const parameterslist = [
   'State',
 ];
 
-const reporttypeList = [
-  'network',
-  'region',
-  'station',
-  'link',
-  'optical_route',
-  'rtu',
-  'test',
-  'alarm',
-];
-type detailprops = {
-  onclose: () => void;
-  setselectedquery: Function;
-  quertextdata: string;
-};
-const Detail = ({onclose, setselectedquery, quertextdata}: detailprops) => {
+const Detail = ({onclose, setselectedquery}: any) => {
   const navigate = useNavigate();
   const [parametervalue, setParametervalue] = useState('');
   const [operatorname, setOperatorname] = useState('');
-  const [value, setValue] = useState('');
-  const [quertext, setQuerytext] = useState(quertextdata || '');
+  const [value, setValue] = useState('ddddff');
+  const [quertext, setQuerytext] = useState('');
 
   const append = () => {
     if (
@@ -281,7 +284,8 @@ const Detail = ({onclose, setselectedquery, quertextdata}: detailprops) => {
 };
 
 // -----------------------------------------------------------------------
-function ReportsDetailpage() {
+function CreateReport() {
+  const {reportsetId} = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showfilter, setShowfilter] = useState(false);
@@ -295,71 +299,104 @@ function ReportsDetailpage() {
   const [time_filter_type, setTime_filter_type] = useState('exact');
   const [from_time, setFrom_time] = useState('2024-07-09');
   const [to_time, setTo_time] = useState('2024-08-08');
-  const {reportid, reportsetid} = useParams();
-  const [updateloading, setUpdateloading] = useState(false);
-  const {reportdetail,getdetailstatus} = useSelector((state: RootState) => state.reportslice);
+  const {createreportdetail} = useSelector((state: RootState) => state.reportslice);
 
+  // useEffect(() => {
   
-  useEffect(() => {
-    const getreportdetail = async () => {
+  // }, []);
 
-      
-      try {
-        setLoading(true);
-        const detailresponse = await $Get(
-          `otdr/report-set/${reportsetid}/report/${reportid}`,
-        );
-
-        if (detailresponse?.status == 200) {
-          const detailresponsedata: reporttype = await detailresponse.json();
-          dispatch(setgetdetailstatus(true))
-          dispatch(setReportdetail({...detailresponsedata,availebelColumns:findValue(detailresponsedata.report_type)}));
-        } else {
-          toast('Encountered an error', {type: 'error', autoClose: 1000});
-        }
-      } catch (error) {
-        console.log(`get detail error is:${error}`);
-      } finally {
-        dispatch(setloadinggetrports(false))
-        setLoading(false);
-      }
-    };
-    if(!getdetailstatus){
-      getreportdetail();
-    }
-  
-  }, [reportid]);
-
-  const updatereport = async () => {
-    const {id,availebelColumns,...dataWithoutId} = reportdetail;
+  const createreport = async () => {
+    const { id, ...dataWithoutId } = createreportdetail;
     try {
-      const getdetaildata=await $Put(`otdr/report-set/${reportsetid}/report/${reportid}`,dataWithoutId)
-      if(getdetaildata?.status == 201){
-        dispatch(setgetdetailstatus(false))
+      setLoading(true);
+      const createreportresponse = await $Post(
+        `otdr/report-set/${reportsetId}/report`,
+        dataWithoutId
+        // {
+        //   name: createreportdetail.name,
+        //   comment: createreportdetail.comment,
+        //   report_type: createreportdetail.report_type,
+        //   time_filter: {
+        //     enable: createreportdetail.time_filter.enable,
+        //     time_filter_type: createreportdetail.time_filter.time_filter_type,
+        //     time_exact: {
+        //       from_time: createreportdetail.time_filter.time_exact.from_time,
+        //       to_time: createreportdetail.time_filter.time_exact.to_time,
+        //     },
+        //     time_relative: {
+        //       value: createreportdetail.time_filter.time_relative.value,
+        //       period: createreportdetail.time_filter.time_relative.period,
+        //     },
+        //   },
+        //   select_query: createreportdetail.select_query,
+        //   parameters: {
+        //     selected_columns: [],
+        //     order_by_columns: {},
+        //   },
+        // },
+      );
+      if (createreportresponse?.status == 201) {
+        const createreportresponseData = await createreportresponse?.json();
+        dispatch(
+          createReport({
+            ReportSetId: reportsetId!,
+            id: createreportresponseData,
+            name: createreportdetail.name,
+          }),
+        );
+        dispatch(
+          setcreateReportdetail({
+            name: '',
+            comment: '',
+            report_type: 'network',
+            time_filter: {
+              enable: false,
+              time_filter_type: 'exact',
+              time_exact: {
+                from_time: '2024-07-13',
+                to_time: '2024-08-12',
+              },
+              time_relative: {
+                value: 1,
+                period: 'month',
+              },
+            },
+            select_query: '',
+            parameters: {
+              selected_columns: [],
+              order_by_columns: {},
+            },
+            availebelColumns:findValue("network"),
+            id: '',
+          }),
+        );
         toast('It was done successfully', {type: 'success', autoClose: 1000});
-        dispatch(updaterportname({reportsetId: reportsetid!, reportid: reportid!, name: reportdetail?.name}))
+        navigate(
+          `/reporting/reports/${reportsetId}/reportset/report/${createreportresponseData}`,
+        );
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     } catch (error) {
-      toast('Encountered an error', {type: 'error', autoClose: 1000});
+      console.log(`create error is:${error}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-
-  
-  if (loading) {
-    return <h1 className="mt-2">loading...</h1>;
-  }
   return (
     <>
       {showfilter ? (
         <Detail
-          quertextdata={reportdetail.select_query}
           setselectedquery={(value: string) => {
-            let reportdetailCopy = JSON.parse(JSON.stringify(reportdetail));
+            let reportdetailCopy = JSON.parse(JSON.stringify(createreportdetail));
+            console.log(
+              'createreportdetail.time_filter.enable',
+              createreportdetail.time_filter.enable,
+            );
+
             reportdetailCopy.select_query = value;
-            dispatch(setReportdetail(reportdetailCopy));
+            dispatch(setcreateReportdetail(reportdetailCopy));
           }}
           onclose={() => setShowfilter(!showfilter)}
         />
@@ -372,11 +409,11 @@ function ReportsDetailpage() {
           <Row name="name">
             <TextInput
               type="text"
-              value={reportdetail.name}
+              value={createreportdetail.name}
               onChange={e => {
-                let reportdetailCopy = {...reportdetail};
+                let reportdetailCopy = {...createreportdetail};
                 reportdetailCopy.name = e.target.value;
-                dispatch(setReportdetail(reportdetailCopy));
+                dispatch(setcreateReportdetail(reportdetailCopy));
               }}
               className="h-[40px] w-[720px]"
             />
@@ -385,11 +422,11 @@ function ReportsDetailpage() {
           <Row name="Comment">
             <TextInput
               type="text"
-              value={reportdetail.comment}
+              value={createreportdetail.comment}
               onChange={e => {
-                let reportdetailCopy = JSON.parse(JSON.stringify(reportdetail));
+                let reportdetailCopy: reporttype = {...createreportdetail};
                 reportdetailCopy.comment = e.target.value;
-                dispatch(setReportdetail(reportdetailCopy));
+                dispatch(setcreateReportdetail(reportdetailCopy));
               }}
               className="h-[40px] w-[720px]"
             />
@@ -399,13 +436,13 @@ function ReportsDetailpage() {
             <div className="flex w-[550px] flex-row">
               <Select
                 className={'h-[40px] w-[400px] border border-solid'}
-                value={reportdetail.report_type}
+                value={createreportdetail.report_type}
                 onChange={e => {
-                  let reportdetailCopy = JSON.parse(
-                    JSON.stringify(reportdetail),
-                  );
-                  reportdetailCopy.report_type = e.target.value;
-                  dispatch(setReportdetail(reportdetailCopy));
+                  let reportdetailCopy: reporttype = {...createreportdetail};
+                  reportdetailCopy.report_type = e.target.value;                  
+                  let finlistdata:any=findValue(e.target.value)
+                  reportdetailCopy.availebelColumns = finlistdata           
+                  dispatch(setcreateReportdetail(reportdetailCopy));
                 }}>
                 {reporttypeList.map(data => (
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
@@ -423,14 +460,19 @@ function ReportsDetailpage() {
           <div className="mb-[17px] flex w-[940px]  flex-row  items-center justify-between pr-[18px]">
             <div className="flex flex-row">
               <Checkbox
-                checkstatus={reportdetail?.time_filter?.enable || false}
+                checkstatus={createreportdetail?.time_filter?.enable || false}
                 onclick={e => {
                   let reportdetailCopy = JSON.parse(
-                    JSON.stringify(reportdetail),
+                    JSON.stringify(createreportdetail),
                   );
+                  console.log(
+                    'createreportdetail.time_filter.enable',
+                    createreportdetail.time_filter.enable,
+                  );
+
                   reportdetailCopy.time_filter.enable =
-                    !reportdetail.time_filter.enable;
-                  dispatch(setReportdetail(reportdetailCopy));
+                    !createreportdetail.time_filter.enable;
+                  dispatch(setcreateReportdetail(reportdetailCopy));
                 }}
                 iconclassnam="w-[15px] h-[15px] ml-[1px] mt-[1px] text-[#18C047]"
                 classname={
@@ -445,19 +487,19 @@ function ReportsDetailpage() {
               <div className="flex w-full flex-row items-center">
                 <RadioButton
                   check={
-                    reportdetail?.time_filter?.time_filter_type == 'exact'
+                    createreportdetail?.time_filter?.time_filter_type == 'exact'
                       ? true
                       : false
                   }
                   onclick={
-                    reportdetail?.time_filter?.enable
+                    createreportdetail?.time_filter?.enable
                       ? () => {
                           let reportdetailCopy = JSON.parse(
-                            JSON.stringify(reportdetail),
+                            JSON.stringify(createreportdetail),
                           );
                           reportdetailCopy.time_filter.time_filter_type =
                             'exact';
-                          dispatch(setReportdetail(reportdetailCopy));
+                          dispatch(setcreateReportdetail(reportdetailCopy));
                         }
                       : () => {}
                   }
@@ -470,13 +512,13 @@ function ReportsDetailpage() {
                   ref={firstdateref}
                   onChange={e => {
                     let reportdetailCopy = JSON.parse(
-                      JSON.stringify(reportdetail),
+                      JSON.stringify(createreportdetail),
                     );
                     reportdetailCopy.time_filter.time_exact.from_time =
                       e.target.value;
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}
-                  value={reportdetail?.time_filter?.time_exact?.from_time}
+                  value={createreportdetail?.time_filter?.time_exact?.from_time}
                   type="date"
                   className="ml-4 h-[40px] w-[170px] cursor-pointer rounded-md border border-black px-2"
                 />
@@ -492,12 +534,12 @@ function ReportsDetailpage() {
                 <input
                   ref={secenddateref}
                   onChange={e => {
-                    let reportdetailCopy: reporttype = deepcopy(reportdetail);
+                    let reportdetailCopy: reporttype = deepcopy(createreportdetail);
                     reportdetailCopy.time_filter.time_exact.to_time =
                       e.target.value;
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}
-                  value={reportdetail?.time_filter?.time_exact?.to_time}
+                  value={createreportdetail?.time_filter?.time_exact?.to_time}
                   type="date"
                   className="ml-4 h-[40px] w-[170px] rounded-md border border-black px-2"
                 />
@@ -511,19 +553,19 @@ function ReportsDetailpage() {
               <div className="mt-[10px] flex w-[424px] flex-row items-center">
                 <RadioButton
                   check={
-                    reportdetail?.time_filter?.time_filter_type == 'relative'
+                    createreportdetail?.time_filter?.time_filter_type == 'relative'
                       ? true
                       : false
                   }
                   onclick={
-                    reportdetail?.time_filter?.enable
+                    createreportdetail?.time_filter?.enable
                       ? () => {
                           let reportdetailCopy = JSON.parse(
-                            JSON.stringify(reportdetail),
+                            JSON.stringify(createreportdetail),
                           );
                           reportdetailCopy.time_filter.time_filter_type =
                             'relative';
-                          dispatch(setReportdetail(reportdetailCopy));
+                          dispatch(setcreateReportdetail(reportdetailCopy));
                         }
                       : () => {}
                   }
@@ -534,41 +576,41 @@ function ReportsDetailpage() {
                 <span className="text-[20px] font-normal leading-6">Every</span>
                 <TextInput
                   type="number"
-                  value={reportdetail?.time_filter?.time_relative?.value}
+                  value={createreportdetail?.time_filter?.time_relative?.value}
                   onChange={e => {
                     let reportdetailCopy = JSON.parse(
-                      JSON.stringify(reportdetail),
+                      JSON.stringify(createreportdetail),
                     );
                     reportdetailCopy.time_filter.time_relative.value = Number(
                       e.target.value,
                     );
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}
                   className="ml-[8px] h-[40px] w-[70px]"
                 />
 
                 <Select
                   className={'ml-[5px] h-[40px] w-[90px]'}
-                  value={reportdetail?.time_filter?.time_relative?.period}
+                  value={createreportdetail?.time_filter?.time_relative?.period}
                   onChange={e => {
                     let reportdetailCopy = JSON.parse(
-                      JSON.stringify(reportdetail),
+                      JSON.stringify(createreportdetail),
                     );
                     reportdetailCopy.time_filter.time_relative.period =
                       e.target.value;
-                    dispatch(setReportdetail(reportdetailCopy));
+                    dispatch(setcreateReportdetail(reportdetailCopy));
                   }}>
                   <option value="" className="hidden">
-                    {reportdetail?.time_filter?.time_relative?.period}
+                    {createreportdetail?.time_filter?.time_relative?.period}
                   </option>
                   <option value={undefined} className="hidden">
-                    {reportdetail?.time_filter?.time_relative?.period}
+                    {createreportdetail?.time_filter?.time_relative?.period}
                   </option>
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                     month
                   </option>
                   {/* <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                    day
+                    days
                   </option> */}
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
                     year
@@ -581,36 +623,16 @@ function ReportsDetailpage() {
             </div>
           </div>
 
-          <div className="mb-[16px] flex w-[900px]  flex-row items-center justify-between">
-            <span className="text-[20px] font-normal leading-[24.2px]">
-              Owner
-            </span>
-            <span className="w-[720px]">Admin</span>
-          </div>
-
-          <div className="mb-[16px] flex w-[900px]  flex-row items-center justify-between">
-            <span className="text-[20px] font-normal leading-[24.2px]">
-              Created
-            </span>
-            <span className="w-[720px]">2023-12-30 20:18:43</span>
-          </div>
-
-          <div className="mb-[16px] flex w-[900px]  flex-row items-center justify-between">
-            <span className="text-[20px] font-normal leading-[24.2px]">
-              Last Modified
-            </span>
-            <span className="w-[720px]">2023-12-30 20:18:43</span>
-          </div>
           <div className="absolute bottom-0 right-0 flex flex-row items-center">
-            <SimpleBtn>Open Report</SimpleBtn>
+            {/* <SimpleBtn>Open Report</SimpleBtn> */}
 
             <SimpleBtn
-              onClick={() => updatereport()}
-              type="submit"
+              type="button"
+              onClick={() => createreport()}
               className="mx-[5px]">
               Save
             </SimpleBtn>
-            <SimpleBtn>Cancel</SimpleBtn>
+            <SimpleBtn onClick={() => {}}>Cancel</SimpleBtn>
           </div>
         </div>
       </div>
@@ -618,4 +640,4 @@ function ReportsDetailpage() {
   );
 }
 
-export default ReportsDetailpage;
+export default CreateReport;

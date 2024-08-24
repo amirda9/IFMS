@@ -238,12 +238,22 @@ function App() {
           <Route path="/reporting">
             <Route path="dashboard" Component={pages.dashboard} />
             <Route path="reports" Component={pages.reportsRoutesLayout}>
+              <Route path="CreateReportset" Component={pages.CreateReportset} />
+
               <Route path=":reportid" Component={pages.reports} />
+
               <Route
-                path="reportsdata"
+                path="CreateReport/:reportsetId"
+                Component={pages.SinglereportsRouteLayout}>
+                <Route index Component={pages.CreateReport} />
+                <Route path="createreportsparameters" Component={pages.Createreportsparameters} />
+              </Route>
+
+              <Route
+                path=":reportsetid/reportset/report/:reportid"
                 Component={pages.SinglereportsRouteLayout}>
                 <Route index Component={pages.reportsDetailpage} />
-                <Route path=":id" Component={pages.reportsDetailmodal} />
+                {/* <Route path=":id" Component={pages.reportsDetailmodal} /> */}
                 <Route path="Parameters" Component={pages.reportsparameters} />
               </Route>
             </Route>

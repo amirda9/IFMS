@@ -73,38 +73,44 @@ const Detail: FC = () => {
       // }
     >
       <div className="flex w-full flex-col">
-        <div className="flex w-full flex-row">
-          <span className="text-[18px] font-normal">Parameters</span>
-          <Select
-            className="ml-[25px] mr-[15px] w-[180px]"
-            value={'Severity'}
-            onChange={event => {}}>
-            <option value="" className="hidden" />
-            <option value={undefined} className="hidden" />
-            <option>Severity</option>
-          </Select>
+        <div className="flex w-full flex-row justify-between">
+          <div className="flex flex-row">
+            <span className="text-[18px] font-normal ml-4">Parameters</span>
+            <Select
+              className="ml-[10px] mr-[15px] w-[180px]"
+              value={'Severity'}
+              onChange={event => {}}>
+              <option value="" className="hidden" />
+              <option value={undefined} className="hidden" />
+              <option>Severity</option>
+            </Select>
+          </div>
 
-          <span className="text-[18px] font-normal">Parameters</span>
-          <Select
-            className="ml-[25px] mr-[15px] w-[180px]"
-            value={`= dd`}
-            onChange={event => {}}>
-            <option value="" className="hidden" />
-            <option value={undefined} className="hidden" />
-            <option>= dd</option>
-          </Select>
+          <div className="flex flex-row">
+            <span className="text-[18px] font-normal">Operator</span>
+            <Select
+              className="ml-[10px] mr-[15px] w-[180px]"
+              value={`= dd`}
+              onChange={event => {}}>
+              <option value="" className="hidden" />
+              <option value={undefined} className="hidden" />
+              <option>= dd</option>
+            </Select>
+          </div>
 
-          <span className="text-[18px] font-normal">Parameters</span>
-          <Select
-            className="ml-[25px] mr-[15px] w-[180px]"
-            value={'High'}
-            onChange={event => {}}>
-            <option value="" className="hidden" />
-            <option value={undefined} className="hidden" />
-            <option>High</option>
-          </Select>
+          <div className="flex flex-row">
+            <span className="text-[18px] font-normal">Value</span>
+            <Select
+              className="ml-[10px] mr-[15px] w-[180px]"
+              value={'High'}
+              onChange={event => {}}>
+              <option value="" className="hidden" />
+              <option value={undefined} className="hidden" />
+              <option>High</option>
+            </Select>
+          </div>
 
-          <SimpleBtn>Append</SimpleBtn>
+          <SimpleBtn className='mr-4'>Append</SimpleBtn>
         </div>
 
         <div className="fex-row mt-[40px] flex w-full">

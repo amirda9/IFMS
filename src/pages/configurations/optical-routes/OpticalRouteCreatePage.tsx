@@ -49,7 +49,7 @@ const OpticalRouteCreatePage: FC = () => {
             (data: any) => data.networkid == params.id,
           );
           const opticals = await $Get(
-            `otdr/optical-route/?network_id=${params.id}`,
+            `otdr/optical-route/?network_id=${params.id}`, 
           );
           const opticaldata = await opticals?.json();
           if (opticals?.status == 200) {

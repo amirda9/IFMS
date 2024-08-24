@@ -18,13 +18,13 @@ type PropsType = {
   onclick?: () => void;
   selected?: boolean;
   canAdd?: boolean;
-  createurl?:string;
-  canDelete?:boolean;
-  id?:string;
-  disabledcheckbox?:boolean
-  isLink?:boolean
-  navclassname?:string
-  buttonclickname?:string
+  createurl?: string;
+  canDelete?: boolean;
+  id?: string;
+  disabledcheckbox?: boolean;
+  isLink?: boolean;
+  navclassname?: string;
+  buttonclickname?: string;
 };
 
 const SidebarItem: FC<PropsType> = ({
@@ -39,13 +39,13 @@ const SidebarItem: FC<PropsType> = ({
   onclick = () => {},
   selected = false,
   canAdd = false,
-  createurl="",
-  canDelete=true,
+  createurl = '',
+  canDelete = true,
   id,
-  disabledcheckbox=false,
-  isLink=true,
-  navclassname="text-[20px]",
-  buttonclickname="text-[20px]"
+  disabledcheckbox = false,
+  isLink = true,
+  navclassname = 'text-[20px]',
+  buttonclickname = 'text-[20px]',
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
@@ -53,38 +53,39 @@ const SidebarItem: FC<PropsType> = ({
 
   var result = location.pathname.search(to);
 
- const navigate=useNavigate()
+  const navigate = useNavigate();
   return (
     <div className={'relative my-1 flex flex-row ' + className}>
-      {isLink?
-            <NavLink
-            id={id}
-              onClick={() => {
-                onclick();
-              }}
-              to={to}
-              className={({isActive}) =>
-                ` flex h-10 flex-grow  items-center rounded-lg ${
-                  enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
-                } ${isActive ? 'bg-[#C0E7F2] font-bold' : 'font-normal'} ${navclassname}`
-              }>
-              {name}
-            </NavLink>
-    
-    :
-    <button
-    id={id}
-      onClick={() => {
-        onclick();
-      }} 
-      className={
-        ` flex h-10  text-[20px] flex-grow items-center rounded-lg ${
-          enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
-        } ${selected ? 'bg-[#C0E7F2] font-bold' : 'font-normal'} ${buttonclickname}`
-      }>
-      {name}
-    </button>
-    }
+      {isLink ? (
+        <NavLink
+          id={id}
+          onClick={() => {
+            onclick();
+          }}
+          to={to}
+          className={({isActive}) =>
+            ` flex h-10 flex-grow  items-center rounded-lg ${
+              enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
+            } ${
+              isActive && selected ? 'bg-[#C0E7F2] font-bold' : 'font-normal'
+            } ${navclassname}`
+          }>
+          {name}
+        </NavLink>
+      ) : (
+        <button
+          id={id}
+          onClick={() => {
+            onclick();
+          }}
+          className={` flex h-10  flex-grow items-center rounded-lg text-[20px] ${
+            enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
+          } ${
+            selected ? 'bg-[#C0E7F2] font-bold' : 'font-normal'
+          } ${buttonclickname}`}>
+          {name}
+        </button>
+      )}
 
       {enabelcheck ? (
         <Checkbox
@@ -100,10 +101,7 @@ const SidebarItem: FC<PropsType> = ({
 
       {canAdd && result > -1 && selected ? (
         <BsPlusLg
-          onClick={
-            
-             ()=>navigate(createurl)
-          }
+          onClick={() => navigate(createurl)}
           color="#18C047"
           size={25}
           className="absolute right-[27px] top-[15px] mt-[-6px] cursor-pointer"
@@ -116,16 +114,17 @@ const SidebarItem: FC<PropsType> = ({
         //     result > -1 ? 'bg-[#C0E7F2]' : 'white'
         //   } `}
         //   onClick={onDelete}>
-          <IoTrashOutline
+        <IoTrashOutline
           onClick={onDelete}
-            size={32}
-            className={classNames(
-              disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500',
-              'active:text-red-300',"ml-[-4px] rounded-r-lg px-[4px] absolute right-0 top-[4px] cursor-pointer",
-            )}
-          />
-        // </button>
-      ) : null}
+          size={32}
+          className={classNames(
+            disabled ? 'pointer-events-none text-gray-500 ' : 'text-red-500',
+            'active:text-red-300',
+            'absolute right-0 top-[4px] ml-[-4px] cursor-pointer rounded-r-lg px-[4px]',
+          )}
+        />
+      ) : // </button>
+      null}
     </div>
   );
 };

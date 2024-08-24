@@ -1,34 +1,135 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {SimpleBtn} from '~/components';
+import {$Get, $Put} from '~/util/requestapi';
+import {updaterportsetname} from './../../../store/slices/reportslice'
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '~/store';
+import {
+  setReportselectedlist,
+  setReportserReport,
+  setAlldeletereports,
+  alldeletereporttype,
+  ReportsetReporttype,
+  setReportsetlist,
+  deletereportset,
+  deletereport,
+  setloadinggetrports
+} from './../../../store/slices/reportslice';
+
 
 function Reports() {
+  const dispatch=useDispatch()
+  const {reportid} = useParams();
+  const [loading, setLoading] = useState(false);
+  const [updateloading,setUpdateLoading]=useState(false)
   const [name, setName] = useState('');
   const [comments, setComments] = useState('');
   const [validateerror, setValidateerror] = useState(false);
-  const save=()=>{
-    if(name.length == 0){
-      setValidateerror(true)
-    }else{
-      setValidateerror(false)
+  const {reportselectedlist, ReportsetReport, alldeletereports, reportsetlist,loadinggetrports} =
+    useSelector((state: RootState) => state.reportslice);
+
+
+
+
+  useEffect(() => {
+    const getdetail = async () => {
+       
+      const response = await $Get(`otdr/report-set/${reportid}`);
+      console.log('response', response);
+      if (response?.status == 200) {
+        dispatch(setloadinggetrports(false))
+        const responsedata: {
+          name: string;
+          comment: string;
+          id: string;
+          reports: [];
+        } = await response.json();
+        console.log('responsedata', responsedata);
+  
+        setName(responsedata?.name);
+        setComments(responsedata.comment);
+        // ----------------------------------------------------
+        const findreportsetindex = ReportsetReport.findIndex(data => data.Reportsetid == reportid);
+  
+          //Here we add or remove the opticalroutes related to this network to the list.
+          if (findreportsetindex > -1) {
+            console.log("😁");
+            
+            let old = [...ReportsetReport];
+            let newdata = old.filter(data => data.Reportsetid != reportid);
+            newdata.push({Reportsetid: reportid!, reports: responsedata.reports});
+            dispatch(setReportserReport(newdata));
+          } else {
+            console.log("🍎");
+            let old = [...ReportsetReport];
+            old.push({Reportsetid: reportid!, reports: responsedata.reports});
+            dispatch(setReportserReport(old));
+          }
+        // --------------------------------------------------------
+     
     }
+    }
+
+try {
+
+  getdetail();
+} catch (error) {
+  
+}finally {
+  dispatch(setloadinggetrports(false))
+}
+  }, [reportid]);
+
+
+ console.log("loadinggetrports",loadinggetrports);
+ 
+  const save = async () => {
+    if (name.length == 0) {
+      setValidateerror(true);
+    } else {
+      try {
+        setUpdateLoading(true)
+        const updatereportdetail=await $Put(`otdr/report-set/${reportid}`,{
+          name: name,
+          comment: comments
+        })
+        if(updatereportdetail?.status == 201){
+          dispatch(updaterportsetname({reportsetId:reportid!,name:name}))
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
+        } else{
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
+      } catch (error) {
+        console.log(`update report detail error is:${error}`);
+      } finally {
+        setUpdateLoading(false)
+      }
+      setValidateerror(false);
+    }
+  };
+
+  console.log('reportid', reportid);
+  if (loadinggetrports) {
+    return <h1>loading...</h1>
   }
   return (
-    <div className="flex w-full relative flex-col p-[20px] h-[100%-80px]">
+    <div className="relative flex h-[100%-80px] w-full flex-col p-[20px]">
       <div className="relative flex w-[750px] flex-row items-center justify-between">
         <span className="w-[106px] text-[20px] font-normal leading-[24.2px]">
           Name
         </span>
         <input
+          value={name}
           onChange={e => setName(e.target.value)}
-          className="h-[40px] p-[10px] w-[600px] rounded-[10px] border-[1px] border-black bg-white"
+          className="h-[40px] w-[600px] rounded-[10px] border-[1px] border-black bg-white p-[10px]"
         />
-        {validateerror?
-             <span className="absolute left-[150px]  top-[45px] text-[red]">
-             please inter name
-           </span>
-      :null
-      }
-   
+        {validateerror ? (
+          <span className="absolute left-[150px]  top-[45px] text-[red]">
+            please inter name
+          </span>
+        ) : null}
       </div>
 
       <div className="mt-[50px] flex w-[750px] flex-row items-start justify-between">
@@ -36,14 +137,15 @@ function Reports() {
           Comment
         </span>
         <textarea
+          value={comments}
           onChange={e => setComments(e.target.value)}
-          className="h-[80px] w-[600px] p-[10px] rounded-[10px] border-[1px] border-black bg-white"
+          className="h-[80px] w-[600px] rounded-[10px] border-[1px] border-black bg-white p-[10px]"
         />
       </div>
 
-      <div className="flex flex-row absolute right-0 bottom-0">
-        <SimpleBtn onClick={save}>Save</SimpleBtn>
-        <SimpleBtn className='ml-[10px]'>Cancel</SimpleBtn>
+      <div className="absolute bottom-0 right-0 flex flex-row">
+        <SimpleBtn loading={updateloading} onClick={save}>Save</SimpleBtn>
+        <SimpleBtn className="ml-[10px]">Cancel</SimpleBtn>
       </div>
     </div>
   );
