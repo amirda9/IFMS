@@ -1,14 +1,17 @@
-import {useState} from 'react';
+import {log} from 'console';
+import {useEffect, useState} from 'react';
 import {FaArrowUp} from 'react-icons/fa6';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
+import {object} from 'yup';
 import GreaterThan from '~/assets/icons/Greater Than.png';
 import {SimpleBtn} from '~/components';
 import {RootState} from '~/store';
 import {
   createReport,
   createreporttype,
+  setCreatemoune,
   setcreateReportdetail,
 } from '~/store/slices/reportslice';
 import {deepcopy} from '~/util';
@@ -46,7 +49,7 @@ const Tabitemorder = ({selected, name, onclick, status}: itemprops2) => {
       }`}>
       <span>{name}</span>
       <FaArrowUp
-        className={`${status == 'asc' ? 'rotate-0' : 'rotate-90'}`}
+        className={`${status == 'asc' ? 'rotate-0' : 'rotate-180'}`}
         color={selected ? 'black' : '#006BBC'}
       />
     </button>
@@ -289,7 +292,7 @@ function Createreportsparameters() {
   const {reportsetId} = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {createreportdetail} = useSelector(
+  const {createreportdetail, createmount} = useSelector(
     (state: RootState) => state.reportslice,
   );
   const [selectedavailebel, setSelectedavalebel] = useState<string[]>([]);
@@ -393,76 +396,265 @@ function Createreportsparameters() {
 
   const desfunc = () => {
     const createreportdetailCopy = deepcopy(createreportdetail);
-
     const result = Object.keys(
       createreportdetailCopy.parameters.order_by_columns,
     ).reduce((acc: any, key: string) => {
-      // اگر کلید در آرایه وجود نداشت، آن را در آبجکت جدید قرار می‌دهیم
-      if (!selectedordercolumn.includes(key)) {
-        // @ts-ignore
+      console.log('acc', acc);
 
-        acc[key] = 'dec';
+      if (selectedordercolumn.includes(key)) {
+        // @ts-ignore
+        acc[key] = 'desc';
+      } else {
+        // اضافه کردن مقدار اصلی به acc
+        acc[key] = createreportdetailCopy.parameters.order_by_columns[key];
       }
       return acc;
     }, {});
     createreportdetailCopy.parameters.order_by_columns = result;
-
     dispatch(setcreateReportdetail(createreportdetailCopy));
-    setSelectedselectedavailebel([]);
+  };
+
+  const ascfunc = () => {
+    const createreportdetailCopy = deepcopy(createreportdetail);
+    const result = Object.keys(
+      createreportdetailCopy.parameters.order_by_columns,
+    ).reduce((acc: any, key: string) => {
+      console.log('acc', acc);
+
+      if (selectedordercolumn.includes(key)) {
+        // @ts-ignore
+        acc[key] = 'asc';
+      } else {
+        // اضافه کردن مقدار اصلی به acc
+        acc[key] = createreportdetailCopy.parameters.order_by_columns[key];
+      }
+      return acc;
+    }, {});
+    createreportdetailCopy.parameters.order_by_columns = result;
+    dispatch(setcreateReportdetail(createreportdetailCopy));
   };
 
   const availebelalltosellect = () => {
-    if(createreportdetail.availebelColumns.length != 0){
+    if (createreportdetail.availebelColumns.length != 0) {
       const createreportdetailCopy = deepcopy(createreportdetail);
       createreportdetailCopy.availebelColumns = [];
-      createreportdetailCopy.parameters.selected_columns =
-        createreportdetail.availebelColumns;
+      createreportdetailCopy.parameters.selected_columns = [
+        ...createreportdetail.parameters.selected_columns,
+        ...createreportdetail.availebelColumns,
+      ];
       setSelectedavalebel([]);
       dispatch(setcreateReportdetail(createreportdetailCopy));
     }
-
   };
 
   const sellectalltoavailebel = () => {
-    if(createreportdetail.parameters.selected_columns.length != 0){
+    if (createreportdetail.parameters.selected_columns.length != 0) {
       const createreportdetailCopy = deepcopy(createreportdetail);
-      createreportdetailCopy.parameters.selected_columns =[]
-      createreportdetailCopy.availebelColumns =createreportdetail.parameters.selected_columns;
+      createreportdetailCopy.parameters.selected_columns = [];
+      createreportdetailCopy.availebelColumns = [
+        ...createreportdetail.availebelColumns,
+        ...createreportdetail.parameters.selected_columns,
+      ];
       setSelectedselectedavailebel([]);
       dispatch(setcreateReportdetail(createreportdetailCopy));
     }
-
   };
 
-  const selectedtoorder=()=>{
-    if(createreportdetail.parameters.selected_columns.length !=0){
+  const selectedtoorder = () => {
+    if (createreportdetail.parameters.selected_columns.length != 0) {
       const createreportdetailCopy = deepcopy(createreportdetail);
-      createreportdetailCopy.parameters.selected_columns =[]
-      createreportdetailCopy.parameters.order_by_columns =createreportdetail.parameters.selected_columns.map((data:string)=> ({[data]:"asc"}));
-     console.log("🐓",createreportdetailCopy.parameters.order_by_columns);
-     createreportdetailCopy.parameters.order_by_columns = {
-      ...createreportdetail.parameters.selected_columns.reduce((acc, name) => {
-        // @ts-ignore
-        acc[name] = 'ascending';
-        return acc;
-      }, {})
-    }
+      createreportdetailCopy.parameters.selected_columns = [];
+      createreportdetailCopy.parameters.order_by_columns =
+        createreportdetail.parameters.selected_columns.map((data: string) => ({
+          [data]: 'asc',
+        }));
+      console.log('🐓', createreportdetailCopy.parameters.order_by_columns);
+      createreportdetailCopy.parameters.order_by_columns = {
+        ...createreportdetail.parameters.order_by_columns,
+        ...createreportdetail.parameters.selected_columns.reduce(
+          (acc, name) => {
+            // @ts-ignore
+            acc[name] = 'asc';
+            return acc;
+          },
+          {},
+        ),
+      };
       setSelectedselectedavailebel([]);
       dispatch(setcreateReportdetail(createreportdetailCopy));
     }
- 
-  }
-  const orseralltoselected=()=>{
-    if(Object.keys(createreportdetail.parameters.order_by_columns).length !== 0 ){
+  };
+  const orseralltoselected = () => {
+    if (
+      Object.keys(createreportdetail.parameters.order_by_columns).length !== 0
+    ) {
       const createreportdetailCopy: createreporttype =
-      deepcopy(createreportdetail);
-    createreportdetailCopy.parameters.selected_columns =Object.keys(createreportdetail.parameters.order_by_columns)
-    createreportdetailCopy.parameters.order_by_columns = {};
-    dispatch(setcreateReportdetail(createreportdetailCopy));
-    setSelectedordercolumn([]);
+        deepcopy(createreportdetail);
+      createreportdetailCopy.parameters.selected_columns = Object.keys(
+        createreportdetail.parameters.order_by_columns,
+      );
+      createreportdetailCopy.parameters.order_by_columns = {};
+      dispatch(setcreateReportdetail(createreportdetailCopy));
+      setSelectedordercolumn([]);
+    }
+  };
+
+  useEffect(() => {
+    if (!createmount) {
+      const createreportdetailCopy: createreporttype =
+        deepcopy(createreportdetail);
+      createreportdetailCopy.parameters.order_by_columns = {};
+      createreportdetailCopy.parameters.selected_columns = [];
+      createreportdetailCopy.availebelColumns = [
+        'Regions',
+        'Stations',
+        'Optical Routes',
+        'Links',
+        'RTUs',
+        'Online RTUs',
+        'Offline RTUs',
+        'Tests',
+        'Alarms',
+        'Acknowledged Alarms',
+        'In Progress Alarms',
+        'Resolved Alarms',
+        'Escalated Alarms',
+        'Timed Out Alarms',
+        'Affected Regions',
+        'Affected Stations',
+        'Occupied Ports',
+        'Free Ports',
+        'Avg. Region Stations',
+        'Max. Region Stations',
+        'Min. Region Stations',
+        'Avg. Region Links',
+        'Max. Region Links',
+        'Min. Region Links',
+        'Avg. Region RTUs',
+        'Max. Region RTUs',
+        'Min. Region RTUs',
+        'Avg. Region Online RTUs',
+        'Max. Region Online RTUs',
+        'Min. Region Online RTUs',
+        'Avg. Region Offline RTUs',
+        'Max. Region Offline RTUs',
+        'Min. Region Offline RTUs',
+      ];
+      dispatch(setcreateReportdetail(createreportdetailCopy));
+    }
+  }, []);
+
+  const goselectedup = () => {
+    if (selectedselectedavailebel.length == 1) {
+      const createreportdetailCopy: createreporttype =
+        deepcopy(createreportdetail);
+      const findselected =
+        createreportdetailCopy.parameters.selected_columns.findIndex(
+          data => data == selectedselectedavailebel[0],
+        );
+      if (findselected > 0) {
+        createreportdetailCopy.parameters.selected_columns[findselected] =
+          createreportdetail.parameters.selected_columns[findselected - 1];
+        createreportdetailCopy.parameters.selected_columns[findselected - 1] =
+          createreportdetail.parameters.selected_columns[findselected];
+        dispatch(setcreateReportdetail(createreportdetailCopy));
+      }
+    }
+  };
+
+  const goselecteddown = () => {
+    if (selectedselectedavailebel.length == 1) {
+      const createreportdetailCopy: createreporttype =
+        deepcopy(createreportdetail);
+      const findselected =
+        createreportdetailCopy.parameters.selected_columns.findIndex(
+          data => data == selectedselectedavailebel[0],
+        );
+      if (
+        findselected <
+        createreportdetailCopy.parameters.selected_columns.length - 1
+      ) {
+        createreportdetailCopy.parameters.selected_columns[findselected] =
+          createreportdetail.parameters.selected_columns[findselected + 1];
+        createreportdetailCopy.parameters.selected_columns[findselected + 1] =
+          createreportdetail.parameters.selected_columns[findselected];
+        dispatch(setcreateReportdetail(createreportdetailCopy));
+      }
+    }
+  };
+
+  const goorderdown = () => {
+    if (selectedordercolumn.length == 1) {
+      const createreportdetailCopy: createreporttype =
+        deepcopy(createreportdetail);
+      let keys = Object.keys(
+        createreportdetailCopy.parameters.order_by_columns,
+      );
+      let index = keys.findIndex(data => data == selectedordercolumn[0]);
+      const newkekes = deepcopy(keys);
+      if (index < keys.length - 1) {
+        let newdata = keys[index];
+        let newdata2 = keys[index + 1];
+        newkekes[index] = newdata2;
+        newkekes[index + 1] = newdata;
+        keys = newkekes;
+        keys = newkekes;
+
+        let newObject = {};
+
+        // // ساختن آبجکت جدید فقط با کلیدهای انتخاب شده
+        keys.forEach(key => {
+          // @ts-ignore
+          newObject[key] =
+            // @ts-ignore
+            createreportdetailCopy.parameters.order_by_columns[key];
+        });
+        createreportdetailCopy.parameters.order_by_columns = newObject;
+        // createreportdetailCopy.parameters.order_by_columns = newObject;
+
+        dispatch(setcreateReportdetail(createreportdetailCopy));
+      }
     }
 
-  }
+    // }
+  };
+
+  const goorderup = () => {
+    if (selectedordercolumn.length == 1) {
+      const createreportdetailCopy: createreporttype =
+        deepcopy(createreportdetail);
+      let keys = Object.keys(
+        createreportdetailCopy.parameters.order_by_columns,
+      );
+      let index = keys.findIndex(data => data == selectedordercolumn[0]);
+      const newkekes = deepcopy(keys);
+      if (index > 0) {
+        let newdata = keys[index];
+        let newdata2 = keys[index - 1];
+        newkekes[index] = newdata2;
+        newkekes[index - 1] = newdata;
+        keys = newkekes;
+        keys = newkekes;
+
+        let newObject = {};
+
+        // // ساختن آبجکت جدید فقط با کلیدهای انتخاب شده
+        keys.forEach(key => {
+          // @ts-ignore
+          newObject[key] =
+            // @ts-ignore
+            createreportdetailCopy.parameters.order_by_columns[key];
+        });
+        createreportdetailCopy.parameters.order_by_columns = newObject;
+        // createreportdetailCopy.parameters.order_by_columns = newObject;
+
+        dispatch(setcreateReportdetail(createreportdetailCopy));
+      }
+    }
+
+    // }
+  };
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full flex-row justify-between">
@@ -529,23 +721,29 @@ function Createreportsparameters() {
             <img className="rotate-[90deg] " src={GreaterThan} />
           </button>
 
-          <button onClick={sellectalltoavailebel} className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={sellectalltoavailebel}
+            className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[-90deg] " src={GreaterThan} />
             <img className="rotate-[-90deg] " src={GreaterThan} />
           </button>
-          <div className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={goselectedup}
+            className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img src={GreaterThan} />
-          </div>
-          <div className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          </button>
+          <button
+            onClick={goselecteddown}
+            className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[180deg]" src={GreaterThan} />
-          </div>
+          </button>
         </div>
 
         <div className="flex h-[667px] w-[28%]  flex-col">
           <span className="mb-[20px] text-[20px] font-bold leading-[24.2px]">
             Selected Columns
           </span>
-          <div className="h-[540px] w-full border-[1px] border-black bg-white px-[5px] py-[10px]">
+          <div className="h-[540px] w-full overflow-auto border-[1px] border-black bg-white px-[5px] py-[10px]">
             {createreportdetail.parameters.selected_columns.map(
               (data: string) => (
                 <Tabitem
@@ -567,7 +765,7 @@ function Createreportsparameters() {
                 ...createreportdetailCopy.parameters.order_by_columns,
                 ...selectedselectedavailebel.reduce((acc, name) => {
                   // @ts-ignore
-                  acc[name] = 'ascending';
+                  acc[name] = 'asc';
                   return acc;
                 }, {}),
               };
@@ -604,8 +802,9 @@ function Createreportsparameters() {
                   )
                 ) {
                   // @ts-ignore
-
-                  acc[key] = createreportdetailCopy.parameters.order_by_columns[key];
+                  acc[key] =
+                    // @ts-ignore
+                    createreportdetailCopy.parameters.order_by_columns[key];
                 }
                 return acc;
               }, {});
@@ -618,27 +817,35 @@ function Createreportsparameters() {
             className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[-90deg] " src={GreaterThan} />
           </button>
-          <button onClick={selectedtoorder} className="mb-[5px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={selectedtoorder}
+            className="mb-[5px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[90deg] " src={GreaterThan} />
             <img className="rotate-[90deg] " src={GreaterThan} />
           </button>
-          <button onClick={orseralltoselected} className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={orseralltoselected}
+            className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[-90deg] " src={GreaterThan} />
             <img className="rotate-[-90deg] " src={GreaterThan} />
           </button>
-          <div className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={goorderup}
+            className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img src={GreaterThan} />
-          </div>
-          <div className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          </button>
+          <button
+            onClick={goorderdown}
+            className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[180deg]" src={GreaterThan} />
-          </div>
+          </button>
         </div>
 
         <div className="flex h-[667px] w-[28%]  flex-col">
           <span className="mb-[20px] text-[20px] font-bold leading-[24.2px]">
             Order By Columns
           </span>
-          <div className="h-[540px] overflow-auto w-full border-[1px] border-black bg-white">
+          <div className="h-[540px] w-full overflow-auto border-[1px] border-black bg-white">
             {Object.entries(createreportdetail.parameters.order_by_columns).map(
               ([name, value]: [string, any]) => (
                 <Tabitemorder
@@ -652,7 +859,7 @@ function Createreportsparameters() {
           </div>
 
           <div className="mt-[10px] flex flex-row items-center justify-between">
-            <SimpleBtn>Ascending</SimpleBtn>
+            <SimpleBtn onClick={ascfunc}>Ascending</SimpleBtn>
             <SimpleBtn onClick={desfunc}>Descending</SimpleBtn>
           </div>
         </div>

@@ -9,7 +9,8 @@ import {
   reporttype,
   setReportdetail,
   updaterportname,
-  setgetdetailstatus
+  setgetdetailstatus,
+  setloadinggetrports
 } from './../../../store/slices/reportslice';
 import dateicon from '~/assets/images/dateicon.png';
 import RadioButton from '~/components/radipbutton/radiobutton';
@@ -301,6 +302,8 @@ function ReportsDetailpage() {
   
   useEffect(() => {
     const getreportdetail = async () => {
+
+      
       try {
         setLoading(true);
         const detailresponse = await $Get(
@@ -317,6 +320,7 @@ function ReportsDetailpage() {
       } catch (error) {
         console.log(`get detail error is:${error}`);
       } finally {
+        dispatch(setloadinggetrports(false))
         setLoading(false);
       }
     };
@@ -342,7 +346,7 @@ function ReportsDetailpage() {
     }
   };
 
-  console.log("reportdetail",reportdetail);
+
   
   if (loading) {
     return <h1 className="mt-2">loading...</h1>;

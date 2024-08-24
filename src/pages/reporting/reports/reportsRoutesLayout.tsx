@@ -20,6 +20,7 @@ import {
   deletereport,
   setloadinggetrports,
   setgetdetailstatus,
+  setCreatemoune,
 } from './../../../store/slices/reportslice';
 import {deepcopy} from '~/util';
 import {RootState} from '~/store';
@@ -63,6 +64,7 @@ const ReportsRouteLayout: FC = () => {
     alldeletereports,
     reportsetlist,
     loadinggetrports,
+    createmount,
   } = useSelector((state: RootState) => state.reportslice);
 
   // const {
@@ -93,8 +95,6 @@ const ReportsRouteLayout: FC = () => {
       try {
         setLoading(true);
         const allreportsetsrespons = await $Get(`otdr/report-set/`);
-        // console.log('🧑‍🔬', allreportsetsrespons);
-
         if (allreportsetsrespons?.status == 200) {
           const allreportsetsresponsData = await allreportsetsrespons.json();
           dispatch(setReportsetlist(allreportsetsresponsData));
@@ -122,8 +122,8 @@ const ReportsRouteLayout: FC = () => {
 
   const [openall, setOpenall] = useState(false);
 
-  const opennetworkopticallist = async (id: string) => {
-    // dispatch(setloadinggetrports(true));
+  const openreportsetreports = async (id: string) => {
+    //  dispatch(setloadinggetrports(true));
     const findreportset = reportselectedlist.findIndex(data => data == id);
     //We first check whether network has been clicked before or not.
     if (findreportset > -1) {
@@ -187,7 +187,7 @@ const ReportsRouteLayout: FC = () => {
     }
   };
 
-  console.log('alldeletereports', alldeletereports);
+
 
   const deleteoneopticalroute = async (
     reportid: string,
@@ -201,13 +201,12 @@ const ReportsRouteLayout: FC = () => {
           const findDelete = alldeletereports.findIndex(
             data => data.Reportsetid == reportsetid,
           );
-          console.log("findDelete",findDelete);
-          
+
+
           const alldeleteopticalrouteCopy = deepcopy(alldeletereports);
-          const promises = alldeleteopticalrouteCopy[
-            findDelete
-          ].reports.map((data: string) =>
-            $Delete(`otdr/report-set/${reportsetid}/report/${data}`),
+          const promises = alldeleteopticalrouteCopy[findDelete].reports.map(
+            (data: string) =>
+              $Delete(`otdr/report-set/${reportsetid}/report/${data}`),
           );
 
           const results = await Promise.all(promises);
@@ -215,7 +214,7 @@ const ReportsRouteLayout: FC = () => {
           const findinlistindex = ReportsetReport.findIndex(
             data => data.Reportsetid == reportsetid,
           );
-          console.log("findinlistindex",findinlistindex);
+
           for (
             let i = 0;
             i < reportsetreportCopy[findinlistindex].reports.length;
@@ -227,8 +226,9 @@ const ReportsRouteLayout: FC = () => {
               j++
             ) {
               if (
-                reportsetreportCopy[findinlistindex].reports[i].id == alldeleteopticalrouteCopy[findDelete].reports[j]
-              ) {          
+                reportsetreportCopy[findinlistindex].reports[i].id ==
+                alldeleteopticalrouteCopy[findDelete].reports[j]
+              ) {
                 const finddataindex = reportsetreportCopy[
                   findinlistindex
                 ].reports.findIndex(
@@ -236,8 +236,8 @@ const ReportsRouteLayout: FC = () => {
                     data.id ==
                     reportsetreportCopy[findinlistindex].reports[i].id,
                 );
-                console.log("🚶finddataindex",finddataindex);
-                
+    
+
                 reportsetreportCopy[findinlistindex].reports.splice(
                   finddataindex,
                   1,
@@ -253,44 +253,6 @@ const ReportsRouteLayout: FC = () => {
           setLoading(false);
         }
 
-        // try {
-        //   const deleteOticalroute = await $Delete(
-        //     `otdr/optical-route/batch_delete`,
-        //     alldeletereports[findopticalroute]!.reports,
-        //   );
-        //   if (deleteOticalroute?.status == 201) {
-        //     let networkopticalCopy = deepcopy(ReportsetReport);
-        //     const finddataindex = ReportsetReport.findIndex(
-        //       (data: any) => data.Reportsetid == networkid,
-        //     );
-        //     //we update the networks uptical route
-        //     let newnetworkopticalroute = [];
-        //     for (
-        //       let i = 0;
-        //       i < ReportsetReport[finddataindex].reports.length;
-        //       i++
-        //     ) {
-        //       if (
-        //         alldeletereports[findopticalroute]!.reports!.findIndex(
-        //           data => data == ReportsetReport[finddataindex].reports[i].id,
-        //         ) < 0
-        //       ) {
-        //         newnetworkopticalroute.push({
-        //           id: ReportsetReport[finddataindex].reports[i].id,
-        //           name: ReportsetReport[finddataindex].reports[i].name,
-        //         });
-        //       }
-        //     }
-        //     networkopticalCopy[finddataindex].opticalrouts =
-        //       newnetworkopticalroute;
-        //     dispatch(setReportserReport(networkopticalCopy));
-        //     //We update the list of opticalroutes that need to be deleted because their checkboxes are clicked.
-        //     alldeleteopticalrouteCopy[findopticalroute].opticalrouts = [];
-        //     dispatch(setAlldeletereports(alldeleteopticalrouteCopy));
-        //   }
-        // } catch (error) {
-        //   console.log(error);
-        // }
       }
     });
   };
@@ -328,6 +290,9 @@ const ReportsRouteLayout: FC = () => {
       console.log(`error is:${error}`);
     }
   };
+
+
+  
   // --------------------------------------------------------------------------------------
   return (
     <SidebarLayout
@@ -399,12 +364,12 @@ const ReportsRouteLayout: FC = () => {
                       {reportsetlist && index == reportsetlist.length - 1 ? (
                         <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
                       ) : null}
-                      <div
+                      {/* <div
                         className={`absolute z-10 ${
                           reportselectedlist.indexOf(reportsetdata.id) > -1
                             ? 'bottom-[-2px]'
                             : 'bottom-[-7px]'
-                        }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
+                        }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div> */}
 
                       <div className="relative mt-6  flex flex-col">
                         <div
@@ -425,8 +390,9 @@ const ReportsRouteLayout: FC = () => {
                             selectedId == reportsetdata.id ? true : false
                           }
                           onclick={() => {
+                            dispatch(setCreatemoune(false));
                             setLoadingid(reportsetdata.id);
-                            opennetworkopticallist(reportsetdata.id),
+                            openreportsetreports(reportsetdata.id),
                               setSelectedId(reportsetdata.id);
                             navigate(reportsetdata.id);
                           }}
@@ -441,22 +407,29 @@ const ReportsRouteLayout: FC = () => {
                         <>
                           {reportselectedlist.indexOf(reportsetdata.id) > -1 ? (
                             <>
-                              {loadinggetrports &&
+                              {/* {loadinggetrports &&
                               loadingid == reportsetdata.id ? (
                                 <GeneralLoadingSpinner
                                   size="w-8 h-8"
                                   className="ml-10 mt-2"
                                 />
-                              ) : (
-                                <div className="relative ml-[32px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                              ) : ( */}
+                                <div className="relative ml-[32px] flex flex-col mt-[-7px] border-l-[1px] border-dotted border-[#000000]">
                                   <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                                 {ReportsetReport?.find(
+                                    dataa =>
+                                      dataa.Reportsetid == reportsetdata.id,
+                                  )?.reports.length == 0 ? (
+                                    <div className="absolute left-[-5px] top-[-20px] h-[40px] w-[10px] bg-[#E7EFF7]"></div>
+                                  ) : null}
+
                                   {ReportsetReport?.find(
                                     dataa =>
                                       dataa.Reportsetid == reportsetdata.id,
                                   )?.reports.map((data, index: number) => (
                                     <div
                                       key={index}
-                                      className="flex w-full flex-row items-center">
+                                      className="relative flex w-full flex-row items-center">
                                       <span className="w-[15px] text-[12px]">
                                         .....
                                       </span>
@@ -466,14 +439,16 @@ const ReportsRouteLayout: FC = () => {
                                           dataa.Reportsetid == reportsetdata.id,
                                       )!.reports!.length -
                                         1 ? (
-                                        <div className="absolute left-[-5px] top-[31px] h-[40px] w-[10px] bg-[red]"></div>
+                                        <div className="absolute left-[-5px] top-[31px] h-[40px] w-[10px] bg-[#E7EFF7]"></div>
                                       ) : null}
                                       <SidebarItem
                                         selected={
                                           selectedId == data.id ? true : false
                                         }
-
-                                        onclick={() => {setSelectedId(data.id), dispatch(setgetdetailstatus(false))}}
+                                        onclick={() => {
+                                          setSelectedId(data.id),
+                                            dispatch(setgetdetailstatus(false));
+                                        }}
                                         onclickcheckbox={e =>
                                           onclickopticalchecbox(
                                             e,
@@ -499,7 +474,7 @@ const ReportsRouteLayout: FC = () => {
                                     </div>
                                   ))}
                                 </div>
-                              )}
+                              {/* )} */}
                             </>
                           ) : null}
                         </>

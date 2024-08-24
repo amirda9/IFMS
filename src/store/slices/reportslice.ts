@@ -108,6 +108,7 @@ type initialStatetype = {
   createreportdetail: createreporttype;
   loadinggetrports: boolean;
   getdetailstatus:boolean;
+  createmount:boolean
 };
 const initialState: initialStatetype = {
   opticalroutUpdateTestsetupDetail: {
@@ -243,12 +244,16 @@ const initialState: initialStatetype = {
     id: '',
   },
   loadinggetrports: false,
+  createmount:false
 };
 
 const report = createSlice({
   name: 'type',
   initialState,
   reducers: {
+    setCreatemoune: (state, action: {type: string; payload: boolean}) => {
+      state.createmount = action.payload;
+    },
     setloadinggetrports: (state, action: {type: string; payload: boolean}) => {
       state.loadinggetrports = action.payload;
     },
@@ -433,7 +438,8 @@ export const {
   setReportdetail,
   setloadinggetrports,
   setcreateReportdetail,
-  setgetdetailstatus
+  setgetdetailstatus,
+  setCreatemoune
 } = report.actions;
 
 export default report.reducer;

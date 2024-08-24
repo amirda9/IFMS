@@ -22,6 +22,13 @@ type itemprops = {
   onclick: () => void;
 };
 
+type itemprops2 = {
+  selected: boolean;
+  name: string;
+  status: string;
+  onclick: () => void;
+};
+
 const Tabitem = ({selected, name, onclick}: itemprops) => {
   return (
     <button
@@ -33,7 +40,7 @@ const Tabitem = ({selected, name, onclick}: itemprops) => {
     </button>
   );
 };
-const Tabitemorder = ({selected, name, onclick}: itemprops) => {
+const Tabitemorder = ({selected, name, onclick, status}: itemprops2) => {
   return (
     <button
       onClick={onclick}
@@ -41,7 +48,10 @@ const Tabitemorder = ({selected, name, onclick}: itemprops) => {
         selected ? 'bg-[#C0E7F2]' : 'bg-white'
       }`}>
       <span>{name}</span>
-      <FaArrowUp color={selected ? 'black' : '#006BBC'} />
+      <FaArrowUp
+        className={`${status == 'asc' ? 'rotate-0' : 'rotate-180'}`}
+        color={selected ? 'black' : '#006BBC'}
+      />
     </button>
   );
 };
@@ -55,29 +65,279 @@ function Createreportsparameters() {
   const [selectedavailebel, setSelectedavalebel] = useState<string[]>([]);
   const [selectedordercolumn, setSelectedordercolumn] = useState<string[]>([]);
   const {reportid, reportsetid} = useParams();
-  const {reportdetail,getdetailstatus} = useSelector((state: RootState) => state.reportslice);
+  const {reportdetail, getdetailstatus} = useSelector(
+    (state: RootState) => state.reportslice,
+  );
 
   const [selectedselectedavailebel, setSelectedselectedavailebel] = useState<
     string[]
   >([]);
 
   const availebellist = [
-    {name: "network",list:["Regions", "Stations", "Optical Routes", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Affected Regions", "Affected Stations", "Occupied Ports", "Free Ports", "Avg. Region Stations", "Max. Region Stations", "Min. Region Stations", "Avg. Region Links", "Max. Region Links", "Min. Region Links", "Avg. Region RTUs", "Max. Region RTUs", "Min. Region RTUs", "Avg. Region Online RTUs", "Max. Region Online RTUs", "Min. Region Online RTUs", "Avg. Region Offline RTUs", "Max. Region Offline RTUs", "Min. Region Offline RTUs"] },
-    {name: "region",list: ["Stations", "Links", "RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Occupied Ports", "Free Ports", "Avg. Station RTUs", "Max. Station RTUs", "Min. Station RTUs", "Avg. Station RTU Ports", "Max. Station RTU Ports", "Min. Station RTU Ports", "Avg. Station RTU Occupied Ports", "Max. Station RTU Occupied Ports", "Min. Station RTU Occupied Ports", "Avg. Station RTU Free Ports", "Max. Station RTU Free Ports", "Min. Station RTU Free Ports", "Avg. Station Tests", "Max. Station Tests", "Min. Station Tests", "Avg. Station Successful Tests", "Max. Station Successful Tests", "Min. Station Successful Tests", "Avg. Station Failed Tests", "Max. Station Failed Tests", "Min. Station Failed Tests"] },
-    { name:"station",list: ["RTUs", "Online RTUs", "Offline RTUs", "Tests", "Alarms", "Acknowledged Alarms", "In Progress Alarms", "Resolved Alarms", "Escalated Alarms", "Timed Out Alarms", "Occupied Ports", "Free Ports", "Avg. RTU Ports", "Max. RTU Ports", "Min. RTU Ports", "Avg. RTU Occupied Ports", "Max. RTU Occupied Ports", "Min. RTU Occupied Ports", "Avg. RTU Free Ports", "Max. RTU Free Ports", "Min. RTU Free Ports", "Avg. RTU Tests", "Max. RTU Tests", "Min. RTU Tests", "Avg. RTU Successful Tests", "Max. RTU Successful Tests", "Min. RTU Successful Tests", "Avg. RTU Failed Tests", "Max. RTU Failed Tests", "Min. RTU Failed Tests"] },
-    {name: "rtu",list:["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. RTU Down Time", "Max. RTU Down Time", "Min. RTU Down Time", "Avg. RTU Alarms", "Max. RTU Alarms", "Min. RTU Alarms", "Avg. Test Alarms", "Max. Test Alarms", "Min. Test Alarms"] },
-    { name:"link",list:["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Link Down Time", "Max. Link Down Time", "Min. Link Down Time", "Avg. Link Alarms", "Max. Link Alarms", "Min. Link Alarms", "Avg. Link Tests", "Max. Link Tests", "Min. Link Tests", "Avg. Link Successful Tests", "Max. Link Successful Tests", "Min. Link Successful Tests", "Avg. Link Failed Tests", "Max. Link Failed Tests", "Min. Link Failed Tests"] },
-    { name:"opticalRoute",list: ["Tests", "Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Optical Route Down Time", "Max. Optical Route Down Time", "Min. Optical Route Down Time", "Avg. Optical Route Tests", "Max. Optical Route Tests", "Min. Optical Route Tests", "Avg. Optical Route Successful Tests", "Max. Optical Route Successful Tests", "Min. Optical Route Successful Tests", "Avg. Optical Route Failed Tests", "Max. Optical Route Failed Tests", "Min. Optical Route Failed Tests"] },
-    { name:"test",list: ["Alarms", "Avg. Alarm Acknowledge Time", "Max. Alarm Acknowledge Time", "Min. Alarm Acknowledge Time", "Avg. Alarm In Progress Time", "Max. Alarm In Progress Time", "Min. Alarm In Progress Time", "Avg. Alarm Resolve Time", "Max. Alarm Resolve Time", "Min. Alarm Resolve Time", "Avg. Test Length", "Max. Test Length", "Min. Test Length", "Avg. Test Wavelength", "Max. Test Wavelength", "Min. Test Wavelength", "Avg. Test Pulsewidth", "Max. Test Pulsewidth", "Min. Test Pulsewidth"] }
+    {
+      name: 'network',
+      list: [
+        'Regions',
+        'Stations',
+        'Optical Routes',
+        'Links',
+        'RTUs',
+        'Online RTUs',
+        'Offline RTUs',
+        'Tests',
+        'Alarms',
+        'Acknowledged Alarms',
+        'In Progress Alarms',
+        'Resolved Alarms',
+        'Escalated Alarms',
+        'Timed Out Alarms',
+        'Affected Regions',
+        'Affected Stations',
+        'Occupied Ports',
+        'Free Ports',
+        'Avg. Region Stations',
+        'Max. Region Stations',
+        'Min. Region Stations',
+        'Avg. Region Links',
+        'Max. Region Links',
+        'Min. Region Links',
+        'Avg. Region RTUs',
+        'Max. Region RTUs',
+        'Min. Region RTUs',
+        'Avg. Region Online RTUs',
+        'Max. Region Online RTUs',
+        'Min. Region Online RTUs',
+        'Avg. Region Offline RTUs',
+        'Max. Region Offline RTUs',
+        'Min. Region Offline RTUs',
+      ],
+    },
+    {
+      name: 'region',
+      list: [
+        'Stations',
+        'Links',
+        'RTUs',
+        'Online RTUs',
+        'Offline RTUs',
+        'Tests',
+        'Alarms',
+        'Acknowledged Alarms',
+        'In Progress Alarms',
+        'Resolved Alarms',
+        'Escalated Alarms',
+        'Timed Out Alarms',
+        'Occupied Ports',
+        'Free Ports',
+        'Avg. Station RTUs',
+        'Max. Station RTUs',
+        'Min. Station RTUs',
+        'Avg. Station RTU Ports',
+        'Max. Station RTU Ports',
+        'Min. Station RTU Ports',
+        'Avg. Station RTU Occupied Ports',
+        'Max. Station RTU Occupied Ports',
+        'Min. Station RTU Occupied Ports',
+        'Avg. Station RTU Free Ports',
+        'Max. Station RTU Free Ports',
+        'Min. Station RTU Free Ports',
+        'Avg. Station Tests',
+        'Max. Station Tests',
+        'Min. Station Tests',
+        'Avg. Station Successful Tests',
+        'Max. Station Successful Tests',
+        'Min. Station Successful Tests',
+        'Avg. Station Failed Tests',
+        'Max. Station Failed Tests',
+        'Min. Station Failed Tests',
+      ],
+    },
+    {
+      name: 'station',
+      list: [
+        'RTUs',
+        'Online RTUs',
+        'Offline RTUs',
+        'Tests',
+        'Alarms',
+        'Acknowledged Alarms',
+        'In Progress Alarms',
+        'Resolved Alarms',
+        'Escalated Alarms',
+        'Timed Out Alarms',
+        'Occupied Ports',
+        'Free Ports',
+        'Avg. RTU Ports',
+        'Max. RTU Ports',
+        'Min. RTU Ports',
+        'Avg. RTU Occupied Ports',
+        'Max. RTU Occupied Ports',
+        'Min. RTU Occupied Ports',
+        'Avg. RTU Free Ports',
+        'Max. RTU Free Ports',
+        'Min. RTU Free Ports',
+        'Avg. RTU Tests',
+        'Max. RTU Tests',
+        'Min. RTU Tests',
+        'Avg. RTU Successful Tests',
+        'Max. RTU Successful Tests',
+        'Min. RTU Successful Tests',
+        'Avg. RTU Failed Tests',
+        'Max. RTU Failed Tests',
+        'Min. RTU Failed Tests',
+      ],
+    },
+    {
+      name: 'rtu',
+      list: [
+        'Tests',
+        'Alarms',
+        'Avg. Alarm Acknowledge Time',
+        'Max. Alarm Acknowledge Time',
+        'Min. Alarm Acknowledge Time',
+        'Avg. Alarm In Progress Time',
+        'Max. Alarm In Progress Time',
+        'Min. Alarm In Progress Time',
+        'Avg. Alarm Resolve Time',
+        'Max. Alarm Resolve Time',
+        'Min. Alarm Resolve Time',
+        'Avg. RTU Down Time',
+        'Max. RTU Down Time',
+        'Min. RTU Down Time',
+        'Avg. RTU Alarms',
+        'Max. RTU Alarms',
+        'Min. RTU Alarms',
+        'Avg. Test Alarms',
+        'Max. Test Alarms',
+        'Min. Test Alarms',
+      ],
+    },
+    {
+      name: 'link',
+      list: [
+        'Tests',
+        'Alarms',
+        'Avg. Alarm Acknowledge Time',
+        'Max. Alarm Acknowledge Time',
+        'Min. Alarm Acknowledge Time',
+        'Avg. Alarm In Progress Time',
+        'Max. Alarm In Progress Time',
+        'Min. Alarm In Progress Time',
+        'Avg. Alarm Resolve Time',
+        'Max. Alarm Resolve Time',
+        'Min. Alarm Resolve Time',
+        'Avg. Link Down Time',
+        'Max. Link Down Time',
+        'Min. Link Down Time',
+        'Avg. Link Alarms',
+        'Max. Link Alarms',
+        'Min. Link Alarms',
+        'Avg. Link Tests',
+        'Max. Link Tests',
+        'Min. Link Tests',
+        'Avg. Link Successful Tests',
+        'Max. Link Successful Tests',
+        'Min. Link Successful Tests',
+        'Avg. Link Failed Tests',
+        'Max. Link Failed Tests',
+        'Min. Link Failed Tests',
+      ],
+    },
+    {
+      name: 'opticalRoute',
+      list: [
+        'Tests',
+        'Alarms',
+        'Avg. Alarm Acknowledge Time',
+        'Max. Alarm Acknowledge Time',
+        'Min. Alarm Acknowledge Time',
+        'Avg. Alarm In Progress Time',
+        'Max. Alarm In Progress Time',
+        'Min. Alarm In Progress Time',
+        'Avg. Alarm Resolve Time',
+        'Max. Alarm Resolve Time',
+        'Min. Alarm Resolve Time',
+        'Avg. Optical Route Down Time',
+        'Max. Optical Route Down Time',
+        'Min. Optical Route Down Time',
+        'Avg. Optical Route Tests',
+        'Max. Optical Route Tests',
+        'Min. Optical Route Tests',
+        'Avg. Optical Route Successful Tests',
+        'Max. Optical Route Successful Tests',
+        'Min. Optical Route Successful Tests',
+        'Avg. Optical Route Failed Tests',
+        'Max. Optical Route Failed Tests',
+        'Min. Optical Route Failed Tests',
+      ],
+    },
+    {
+      name: 'test',
+      list: [
+        'Alarms',
+        'Avg. Alarm Acknowledge Time',
+        'Max. Alarm Acknowledge Time',
+        'Min. Alarm Acknowledge Time',
+        'Avg. Alarm In Progress Time',
+        'Max. Alarm In Progress Time',
+        'Min. Alarm In Progress Time',
+        'Avg. Alarm Resolve Time',
+        'Max. Alarm Resolve Time',
+        'Min. Alarm Resolve Time',
+        'Avg. Test Length',
+        'Max. Test Length',
+        'Min. Test Length',
+        'Avg. Test Wavelength',
+        'Max. Test Wavelength',
+        'Min. Test Wavelength',
+        'Avg. Test Pulsewidth',
+        'Max. Test Pulsewidth',
+        'Min. Test Pulsewidth',
+      ],
+    },
   ];
 
   // console.log('🧓', reportdetail.availebelColumns.length);
 
-  const findValue = (name:string) => {
-    const item = availebellist.find(data => data.name == name)
-    return item!.list
-    };
+  const findValue = (name: string) => {
+    const item = availebellist.find(data => data.name == name);
+    return item!.list;
+  };
 
+  const goselectedup = () => {
+    if (selectedselectedavailebel.length == 1) {
+      const createreportdetailCopy: createreporttype = deepcopy(reportdetail);
+      const findselected =
+        createreportdetailCopy.parameters.selected_columns.findIndex(
+          data => data == selectedselectedavailebel[0],
+        );
+      if (findselected > 0) {
+        createreportdetailCopy.parameters.selected_columns[findselected] =
+          reportdetail.parameters.selected_columns[findselected - 1];
+        createreportdetailCopy.parameters.selected_columns[findselected - 1] =
+          reportdetail.parameters.selected_columns[findselected];
+        dispatch(setReportdetail(createreportdetailCopy));
+      }
+    }
+  };
+
+  const goselecteddown = () => {
+    if (selectedselectedavailebel.length == 1) {
+      const createreportdetailCopy: createreporttype = deepcopy(reportdetail);
+      const findselected =
+        createreportdetailCopy.parameters.selected_columns.findIndex(
+          data => data == selectedselectedavailebel[0],
+        );
+        if(findselected < createreportdetailCopy.parameters.selected_columns.length-1){
+          createreportdetailCopy.parameters.selected_columns[findselected] =
+          reportdetail.parameters.selected_columns[findselected + 1];
+        createreportdetailCopy.parameters.selected_columns[findselected + 1] =
+          reportdetail.parameters.selected_columns[findselected];
+        dispatch(setReportdetail(createreportdetailCopy));
+        }
+   
+    }
+  };
 
   useEffect(() => {
     const getreportdetail = async () => {
@@ -89,8 +349,13 @@ function Createreportsparameters() {
 
         if (detailresponse?.status == 200) {
           const detailresponsedata: reporttype = await detailresponse.json();
-          dispatch(setgetdetailstatus(true))
-          dispatch(setReportdetail({...detailresponsedata,availebelColumns:findValue(detailresponsedata.report_type)}));
+          dispatch(setgetdetailstatus(true));
+          dispatch(
+            setReportdetail({
+              ...detailresponsedata,
+              availebelColumns: findValue(detailresponsedata.report_type),
+            }),
+          );
         } else {
           toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
@@ -100,20 +365,28 @@ function Createreportsparameters() {
         setLoading(false);
       }
     };
-    if(!getdetailstatus){
+    if (!getdetailstatus) {
       getreportdetail();
     }
-  
   }, [reportid]);
 
   const updatereport = async () => {
-    const {id,availebelColumns,...dataWithoutId} = reportdetail;
+    const {id, availebelColumns, ...dataWithoutId} = reportdetail;
     try {
-      const getdetaildata=await $Put(`otdr/report-set/${reportsetid}/report/${reportid}`,dataWithoutId)
-      if(getdetaildata?.status == 201){
-        dispatch(setgetdetailstatus(false))
+      const getdetaildata = await $Put(
+        `otdr/report-set/${reportsetid}/report/${reportid}`,
+        dataWithoutId,
+      );
+      if (getdetaildata?.status == 201) {
+        dispatch(setgetdetailstatus(false));
         toast('It was done successfully', {type: 'success', autoClose: 1000});
-        dispatch(updaterportname({reportsetId: reportsetid!, reportid: reportid!, name: reportdetail?.name}))
+        dispatch(
+          updaterportname({
+            reportsetId: reportsetid!,
+            reportid: reportid!,
+            name: reportdetail?.name,
+          }),
+        );
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
@@ -121,7 +394,6 @@ function Createreportsparameters() {
       toast('Encountered an error', {type: 'error', autoClose: 1000});
     }
   };
-
 
   const onclictab = (name: string) => {
     const selectedavailebelCopy = deepcopy(selectedavailebel);
@@ -209,62 +481,170 @@ function Createreportsparameters() {
     setSelectedordercolumn(selectedordercolumnCopy);
   };
 
+  const desfunc = () => {
+    const createreportdetailCopy = deepcopy(reportdetail);
+    const result = Object.keys(
+      createreportdetailCopy.parameters.order_by_columns,
+    ).reduce((acc: any, key: string) => {
+      console.log('acc', acc);
 
+      if (selectedordercolumn.includes(key)) {
+        // @ts-ignore
+        acc[key] = 'desc';
+      } else {
+        // اضافه کردن مقدار اصلی به acc
+        acc[key] = createreportdetailCopy.parameters.order_by_columns[key];
+      }
+      return acc;
+    }, {});
+    createreportdetailCopy.parameters.order_by_columns = result;
+    dispatch(setReportdetail(createreportdetailCopy));
+  };
+  const ascfunc = () => {
+    const createreportdetailCopy = deepcopy(reportdetail);
+    const result = Object.keys(
+      createreportdetailCopy.parameters.order_by_columns,
+    ).reduce((acc: any, key: string) => {
+      console.log('acc', acc);
+
+      if (selectedordercolumn.includes(key)) {
+        // @ts-ignore
+        acc[key] = 'asc';
+      } else {
+        // اضافه کردن مقدار اصلی به acc
+        acc[key] = createreportdetailCopy.parameters.order_by_columns[key];
+      }
+      return acc;
+    }, {});
+    createreportdetailCopy.parameters.order_by_columns = result;
+    dispatch(setReportdetail(createreportdetailCopy));
+  };
 
   const availebelalltosellect = () => {
-    if(reportdetail.availebelColumns.length != 0){
+    if (reportdetail.availebelColumns.length != 0) {
       const createreportdetailCopy = deepcopy(reportdetail);
       createreportdetailCopy.availebelColumns = [];
-      createreportdetailCopy.parameters.selected_columns =
-        reportdetail.availebelColumns;
+      createreportdetailCopy.parameters.selected_columns = [
+        ...reportdetail.parameters.selected_columns,
+        ...reportdetail.availebelColumns,
+      ];
       setSelectedavalebel([]);
       dispatch(setReportdetail(createreportdetailCopy));
     }
-
   };
 
   const sellectalltoavailebel = () => {
-    if(reportdetail.parameters.selected_columns.length != 0){
+    if (reportdetail.parameters.selected_columns.length != 0) {
       const createreportdetailCopy = deepcopy(reportdetail);
-      createreportdetailCopy.parameters.selected_columns =[]
-      createreportdetailCopy.availebelColumns =reportdetail.parameters.selected_columns;
+      createreportdetailCopy.parameters.selected_columns = [];
+      createreportdetailCopy.availebelColumns = [
+        ...reportdetail.availebelColumns,
+        ...reportdetail.parameters.selected_columns,
+      ];
       setSelectedselectedavailebel([]);
       dispatch(setReportdetail(createreportdetailCopy));
     }
-
   };
 
-  const selectedtoorder=()=>{
-    if(reportdetail.parameters.selected_columns.length !=0){
+  const selectedtoorder = () => {
+    if (reportdetail.parameters.selected_columns.length != 0) {
       const createreportdetailCopy = deepcopy(reportdetail);
-      createreportdetailCopy.parameters.selected_columns =[]
-      createreportdetailCopy.parameters.order_by_columns =reportdetail.parameters.selected_columns.map((data:string)=> ({[data]:"asc"}));
-     console.log("🐓",createreportdetailCopy.parameters.order_by_columns);
-     createreportdetailCopy.parameters.order_by_columns = {
-      ...reportdetail.parameters.selected_columns.reduce((acc, name) => {
-        // @ts-ignore
-        acc[name] = 'ascending';
-        return acc;
-      }, {})
-    }
+      createreportdetailCopy.parameters.selected_columns = [];
+      createreportdetailCopy.parameters.order_by_columns =
+        reportdetail.parameters.selected_columns.map((data: string) => ({
+          [data]: 'asc',
+        }));
+      createreportdetailCopy.parameters.order_by_columns = {
+        ...reportdetail.parameters.order_by_columns,
+        ...reportdetail.parameters.selected_columns.reduce((acc, name) => {
+          // @ts-ignore
+          acc[name] = 'asc';
+          return acc;
+        }, {}),
+      };
       setSelectedselectedavailebel([]);
       dispatch(setReportdetail(createreportdetailCopy));
     }
- 
-  }
-  const orseralltoselected=()=>{
-    if(Object.keys(reportdetail.parameters.order_by_columns).length !== 0 ){
-      const createreportdetailCopy: createreporttype =
-      deepcopy(reportdetail);
-    createreportdetailCopy.parameters.selected_columns =Object.keys(reportdetail.parameters.order_by_columns)
-    createreportdetailCopy.parameters.order_by_columns = {};
-    dispatch(setReportdetail(createreportdetailCopy));
-    setSelectedordercolumn([]);
+  };
+  const orseralltoselected = () => {
+    if (Object.keys(reportdetail.parameters.order_by_columns).length !== 0) {
+      const createreportdetailCopy: createreporttype = deepcopy(reportdetail);
+      createreportdetailCopy.parameters.selected_columns = Object.keys(
+        reportdetail.parameters.order_by_columns,
+      );
+      createreportdetailCopy.parameters.order_by_columns = {};
+      dispatch(setReportdetail(createreportdetailCopy));
+      setSelectedordercolumn([]);
+    }
+  };
+  const goorderdown = () => {
+    if (selectedordercolumn.length == 1) {
+      const createreportdetailCopy: createreporttype = deepcopy(reportdetail);
+      let keys = Object.keys(
+        createreportdetailCopy.parameters.order_by_columns,
+      );
+      let index = keys.findIndex(data => data == selectedordercolumn[0]);
+      const newkekes = deepcopy(keys);
+      if (index < keys.length - 1) {
+        let newdata = keys[index];
+        let newdata2 = keys[index + 1];
+        newkekes[index] = newdata2;
+        newkekes[index + 1] = newdata;
+        keys = newkekes;
+        keys = newkekes;
+
+        let newObject = {};
+
+        // // ساختن آبجکت جدید فقط با کلیدهای انتخاب شده
+        keys.forEach(key => {
+          // @ts-ignore
+          newObject[key] =
+            // @ts-ignore
+            createreportdetailCopy.parameters.order_by_columns[key];
+        });
+        createreportdetailCopy.parameters.order_by_columns = newObject;
+        // createreportdetailCopy.parameters.order_by_columns = newObject;
+
+        dispatch(setReportdetail(createreportdetailCopy));
+      }
     }
 
-  }
+    // }
+  };
 
+  const goorderup = () => {
+    if (selectedordercolumn.length == 1) {
+      const reportdetailcopy: createreporttype = deepcopy(reportdetail);
+      let keys = Object.keys(reportdetailcopy.parameters.order_by_columns);
+      let index = keys.findIndex(data => data == selectedordercolumn[0]);
+      const newkekes = deepcopy(keys);
+      if (index > 0) {
+        let newdata = keys[index];
+        let newdata2 = keys[index - 1];
+        newkekes[index] = newdata2;
+        newkekes[index - 1] = newdata;
+        keys = newkekes;
+        keys = newkekes;
 
+        let newObject = {};
+
+        // // ساختن آبجکت جدید فقط با کلیدهای انتخاب شده
+        keys.forEach(key => {
+          // @ts-ignore
+          newObject[key] =
+            // @ts-ignore
+            reportdetailcopy.parameters.order_by_columns[key];
+        });
+        // @ts-ignore
+        reportdetailcopy.parameters.order_by_columns = newObject;
+        // reportdetailcopy.parameters.order_by_columns = newObject;
+
+        dispatch(setReportdetail(reportdetailcopy));
+      }
+    }
+
+    // }
+  };
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full flex-row justify-between">
@@ -283,7 +663,7 @@ function Createreportsparameters() {
           </div>
         </div>
 
-        <div className="mt-[44px] flex h-[540px] w-[7%] flex-col items-center  pt-[100px]">
+        <div className="mt-[44px]  flex h-[540px] w-[7%] flex-col items-center  pt-[100px]">
           <button
             onClick={() => {
               const createreportdetailCopy: createreporttype =
@@ -330,23 +710,29 @@ function Createreportsparameters() {
             <img className="rotate-[90deg] " src={GreaterThan} />
           </button>
 
-          <button onClick={sellectalltoavailebel} className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={sellectalltoavailebel}
+            className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[-90deg] " src={GreaterThan} />
             <img className="rotate-[-90deg] " src={GreaterThan} />
           </button>
-          <div className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={goselectedup}
+            className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img src={GreaterThan} />
-          </div>
-          <div className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          </button>
+          <button
+            onClick={goselecteddown}
+            className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[180deg]" src={GreaterThan} />
-          </div>
+          </button>
         </div>
 
         <div className="flex h-[667px] w-[28%]  flex-col">
           <span className="mb-[20px] text-[20px] font-bold leading-[24.2px]">
             Selected Columns
           </span>
-          <div className="h-[540px] w-full border-[1px] border-black bg-white px-[5px] py-[10px]">
+          <div className="h-[540px] w-full overflow-auto border-[1px] border-black bg-white px-[5px] py-[10px]">
             {reportdetail.parameters.selected_columns.map((data: string) => (
               <Tabitem
                 onclick={() => onclicselectedtab(data)}
@@ -357,7 +743,7 @@ function Createreportsparameters() {
           </div>
         </div>
 
-        <div className="mt-[44px] flex h-[540px] w-[7%] flex-col items-center  pt-[100px]">
+        <div className="mt-[44px] flex h-[540px]  w-[7%] flex-col items-center  pt-[100px]">
           <button
             onClick={() => {
               const createreportdetailCopy: createreporttype =
@@ -401,9 +787,10 @@ function Createreportsparameters() {
                     key,
                   )
                 ) {
-
                   // @ts-ignore
-                  acc[key] =createreportdetailCopy.parameters.order_by_columns[key];
+                  acc[key] =
+                   // @ts-ignore
+                    createreportdetailCopy.parameters.order_by_columns[key];
                 }
                 return acc;
               }, {});
@@ -416,20 +803,28 @@ function Createreportsparameters() {
             className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[-90deg] " src={GreaterThan} />
           </button>
-          <button onClick={selectedtoorder} className="mb-[5px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={selectedtoorder}
+            className="mb-[5px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[90deg] " src={GreaterThan} />
             <img className="rotate-[90deg] " src={GreaterThan} />
           </button>
-          <button onClick={orseralltoselected} className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={orseralltoselected}
+            className="mb-[25px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[-90deg] " src={GreaterThan} />
             <img className="rotate-[-90deg] " src={GreaterThan} />
           </button>
-          <div className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          <button
+            onClick={goorderup}
+            className="mb-[10px] flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img src={GreaterThan} />
-          </div>
-          <div className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
+          </button>
+          <button
+            onClick={goorderdown}
+            className="flex h-[40px] w-[50px] flex-row items-center justify-center rounded-[10px] bg-[#BAC2ED]">
             <img className="rotate-[180deg]" src={GreaterThan} />
-          </div>
+          </button>
         </div>
 
         <div className="flex h-[667px] w-[28%]  flex-col">
@@ -437,10 +832,21 @@ function Createreportsparameters() {
             Order By Columns
           </span>
 
-          <div className="h-[540px] w-full border-[1px] border-black bg-white">
-            {Object.keys(reportdetail.parameters.order_by_columns).map(
+          <div className="h-[540px] w-full overflow-auto border-[1px] border-black bg-white">
+            {/* {Object.keys(reportdetail.parameters.order_by_columns).map(
               (name: any) => (
                 <Tabitemorder
+                 status={value}
+                  onclick={() => onclicordercolumn(name)}
+                  name={name}
+                  selected={selectedordercolumn.includes(name)}
+                />
+              ),
+            )} */}
+            {Object.entries(reportdetail.parameters.order_by_columns).map(
+              ([name, value]: [string, any]) => (
+                <Tabitemorder
+                  status={value} // مقدار status برابر با مقدار کلید
                   onclick={() => onclicordercolumn(name)}
                   name={name}
                   selected={selectedordercolumn.includes(name)}
@@ -449,8 +855,8 @@ function Createreportsparameters() {
             )}
           </div>
           <div className="mt-[10px] flex flex-row items-center justify-between">
-            <SimpleBtn>Ascending</SimpleBtn>
-            <SimpleBtn>Descending</SimpleBtn>
+            <SimpleBtn onClick={ascfunc}>Ascending</SimpleBtn>
+            <SimpleBtn onClick={desfunc}>Descending</SimpleBtn>
           </div>
         </div>
       </div>
