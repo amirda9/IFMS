@@ -247,6 +247,7 @@ const ReportsRouteLayout: FC = () => {
           }
 
           dispatch(setReportserReport(reportsetreportCopy));
+        
         } catch (error) {
           console.log(`delete errr is:${error}`);
         } finally {

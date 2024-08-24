@@ -451,7 +451,7 @@ function CreateReport() {
                 ))}
               </Select>
 
-              <SimpleBtn onClick={() => setShowfilter(!showfilter)}>
+              <SimpleBtn className='ml-4' onClick={() => setShowfilter(!showfilter)}>
                 Filter
               </SimpleBtn>
             </div>
