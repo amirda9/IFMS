@@ -48,6 +48,7 @@ const Rowtext = ({name, value}: Rowtext) => {
     </div>
   );
 };
+let modallist=["ArioRTU-D-L-8P", "ArioRTU-D-M-8P", "ArioRTU-D-H-8P", "ArioRTU-A-L-12P" ,"ArioRTU-A-M-12P" ,"ArioRTU-A-H-12P" ,"ArioRTU-B-L-12P", "ArioRTU-B-M-12P", "ArioRTU-B-H-12P", "ArioRTU-C-L-12P", "ArioRTU-C-M-12P", "ArioRTU-C-H-12P", "ArioRTU-D-L-12P", "ArioRTU-D-M-12P", "ArioRTU-D-H-12P", "ArioRTU-A-L-16P", "ArioRTU-A-M-16P", "ArioRTU-A-H-16P", "ArioRTU-B-L-16P", "ArioRTU-B-M-16P","ArioRTU-B-H-16P", "ArioRTU-C-L-16P", "ArioRTU-C-M-16P", "ArioRTU-C-H-16P", "ArioRTU-D-L-16P", "ArioRTU-D-M-16P", "ArioRTU-D-H-16P", "ArioRTU-A-L-24P", "ArioRTU-A-M-24P", "ArioRTU-A-H-24P","ArioRTU-B-L-24P", "ArioRTU-B-M-24P", "ArioRTU-B-H-24P", "ArioRTU-C-L-24P", "ArioRTU-C-M-24P", "ArioRTU-C-H-24P", "ArioRTU-D-L-24P" ,"ArioRTU-A-M-32P", "ArioRTU-A-H-32P", "ArioRTU-B-L-32P", "ArioRTU-B-M-32P", "ArioRTU-B-H-32P" ,"ArioRTU-C-L-32P", "ArioRTU-C-M-32P", "ArioRTU-C-H-32P" ,"ArioRTU-D-L-32P" ,"ArioRTU-D-M-32P", "ArioRTU-D-H-32P", "ArioRTU-A-L-48P", "ArioRTU-A-M-48P", "ArioRTU-A-H-48P", "ArioRTU-B-L-48P" ,"ArioRTU-B-M-48P", "ArioRTU-B-H-48P", "ArioRTU-C-L-48P", "ArioRTU-C-M-48P", "ArioRTU-C-H-48P", "ArioRTU-D-L-48P" ,"ArioRTU-D-M-48P" ,"ArioRTU-D-H-48P", "ArioRTU-A-L-64P" ,"ArioRTU-A-M-64P" ,"ArioRTU-A-H-64P" ,"ArioRTU-B-L-64P", "ArioRTU-B-M-64P", "ArioRTU-B-H-64P", "ArioRTU-C-L-64P", "ArioRTU-C-M-64P", "ArioRTU-C-H-64P", "ArioRTU-D-L-64P", "ArioRTU-D-M-64P" ,"ArioRTU-D-H-64P","ArioRTU-A-L-16P"]
 
 const RtuDetailsPage: FC = () => {
   const dispatch = useDispatch();
@@ -202,12 +203,18 @@ const RtuDetailsPage: FC = () => {
                 <option value={undefined} className="hidden">
                   {rtuDetail?.model || ''}
                 </option>
-                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  model1
-                </option>
-                <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  model2
-                </option>
+              
+                  {modallist.map((data: string, index: number) => (
+                    <option
+                      key={index}
+                      label={data}
+                      className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                      {data}
+                    </option>
+                  ))}
+                
+      
+           
               </Select>
             </Description>
             <Description

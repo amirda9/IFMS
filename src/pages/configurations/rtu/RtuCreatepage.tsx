@@ -16,11 +16,87 @@ type Rowtext = {
   name: string;
   value: string;
 };
-type Iprops={
-  stationId:string
-  regionId:string
-  networkId:string
-}
+type Iprops = {
+  stationId: string;
+  regionId: string;
+  networkId: string;
+};
+
+let modallist = [
+  'ArioRTU-D-L-8P',
+  'ArioRTU-D-M-8P',
+  'ArioRTU-D-H-8P',
+  'ArioRTU-A-L-12P',
+  'ArioRTU-A-M-12P',
+  'ArioRTU-A-H-12P',
+  'ArioRTU-B-L-12P',
+  'ArioRTU-B-M-12P',
+  'ArioRTU-B-H-12P',
+  'ArioRTU-C-L-12P',
+  'ArioRTU-C-M-12P',
+  'ArioRTU-C-H-12P',
+  'ArioRTU-D-L-12P',
+  'ArioRTU-D-M-12P',
+  'ArioRTU-D-H-12P',
+  'ArioRTU-A-L-16P',
+  'ArioRTU-A-M-16P',
+  'ArioRTU-A-H-16P',
+  'ArioRTU-B-L-16P',
+  'ArioRTU-B-M-16P',
+  'ArioRTU-B-H-16P',
+  'ArioRTU-C-L-16P',
+  'ArioRTU-C-M-16P',
+  'ArioRTU-C-H-16P',
+  'ArioRTU-D-L-16P',
+  'ArioRTU-D-M-16P',
+  'ArioRTU-D-H-16P',
+  'ArioRTU-A-L-24P',
+  'ArioRTU-A-M-24P',
+  'ArioRTU-A-H-24P',
+  'ArioRTU-B-L-24P',
+  'ArioRTU-B-M-24P',
+  'ArioRTU-B-H-24P',
+  'ArioRTU-C-L-24P',
+  'ArioRTU-C-M-24P',
+  'ArioRTU-C-H-24P',
+  'ArioRTU-D-L-24P',
+  'ArioRTU-A-M-32P',
+  'ArioRTU-A-H-32P',
+  'ArioRTU-B-L-32P',
+  'ArioRTU-B-M-32P',
+  'ArioRTU-B-H-32P',
+  'ArioRTU-C-L-32P',
+  'ArioRTU-C-M-32P',
+  'ArioRTU-C-H-32P',
+  'ArioRTU-D-L-32P',
+  'ArioRTU-D-M-32P',
+  'ArioRTU-D-H-32P',
+  'ArioRTU-A-L-48P',
+  'ArioRTU-A-M-48P',
+  'ArioRTU-A-H-48P',
+  'ArioRTU-B-L-48P',
+  'ArioRTU-B-M-48P',
+  'ArioRTU-B-H-48P',
+  'ArioRTU-C-L-48P',
+  'ArioRTU-C-M-48P',
+  'ArioRTU-C-H-48P',
+  'ArioRTU-D-L-48P',
+  'ArioRTU-D-M-48P',
+  'ArioRTU-D-H-48P',
+  'ArioRTU-A-L-64P',
+  'ArioRTU-A-M-64P',
+  'ArioRTU-A-H-64P',
+  'ArioRTU-B-L-64P',
+  'ArioRTU-B-M-64P',
+  'ArioRTU-B-H-64P',
+  'ArioRTU-C-L-64P',
+  'ArioRTU-C-M-64P',
+  'ArioRTU-C-H-64P',
+  'ArioRTU-D-L-64P',
+  'ArioRTU-D-M-64P',
+  'ArioRTU-D-H-64P',
+  'ArioRTU-A-L-16P',
+];
 // --------------- component ---------------- component ------------- component -------
 const Rowtext = ({name, value}: Rowtext) => {
   return (
@@ -48,7 +124,7 @@ const rtuSchema = Yup.object().shape({
 const RtuCreatePage: FC = () => {
   const params = useParams<Iprops>();
   const [errortext, setErrortext] = useState('');
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const {stationsrtu} = useSelector((state: RootState) => state.rtu);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -80,7 +156,7 @@ const RtuCreatePage: FC = () => {
     onSubmit: async values => {
       //create an rtu for station
       try {
-        setLoading(true)
+        setLoading(true);
         const creatertu = await $Post(`otdr/rtu/`, {
           name: values.name,
           model: values.model,
@@ -117,11 +193,12 @@ const RtuCreatePage: FC = () => {
               deletertues: [],
             });
           }
-          setLoading(false)
+          setLoading(false);
           dispatch(setStationsrtu(stationsrtuCopy));
           navigate(
-            `../../remote-test-units/${getdata.id}/${
-              params!.stationId!}/${params!.regionId}/${params!.networkId!}`,
+            `../../remote-test-units/${getdata.id}/${params!.stationId!}/${
+              params!.regionId
+            }/${params!.networkId!}`,
           );
         } else {
           setErrortext(getdata.detail[0].msg);
@@ -133,10 +210,10 @@ const RtuCreatePage: FC = () => {
   });
 
   return (
-    <div className="relative flex flex-col w-full">
+    <div className="relative flex w-full flex-col">
       <span className="mb-6 mt-2 font-bold">Create rtu</span>
       <FormikProvider value={formik}>
-        <Form className="flex flex-grow flex-col gap-y-8 w-[calc(100%-10px)]">
+        <Form className="flex w-[calc(100%-10px)] flex-grow flex-col gap-y-8">
           <div className="flex flex-grow flex-col gap-y-4">
             <Description
               labelClassName="text-[18px] font-light leading-[24.2px] mb-[4px]"
@@ -156,19 +233,14 @@ const RtuCreatePage: FC = () => {
                 className="w-[400px]">
                 <option value="select" label="" className="hidden" />
                 <option value={undefined} label="select" className="hidden" />
-
-                <option
-                  key={0}
-                  label={'model1'}
-                  className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  model1
-                </option>
-                <option
-                  key={2}
-                  label={'model2'}
-                  className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  model2
-                </option>
+                {modallist.map((data: string, index: number) => (
+                  <option
+                    key={index}
+                    label={data}
+                    className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                    {data}
+                  </option>
+                ))}
               </SelectFormik>
             </Description>
 
@@ -195,7 +267,7 @@ const RtuCreatePage: FC = () => {
             </Description>
 
             <div className="mb-[4px] flex w-full flex-row">
-              <div className="flex w-[50%] flex-row xl:w-[500px] items-center">
+              <div className="flex w-[50%] flex-row items-center xl:w-[500px]">
                 <Description
                   className="W-[30%]"
                   labelClassName="text-[18px] mt-[-10px] font-light leading-[24.2px]"
@@ -296,8 +368,10 @@ const RtuCreatePage: FC = () => {
               <span className="text-[20px] text-[red]">{errortext}</span>
             ) : null}
 
-            <div className="flex flex-row justify-end w-[calc(100%-10px)]">
-              <SimpleBtn loading={loading} className='mr-2' type="submit">Save</SimpleBtn>
+            <div className="flex w-[calc(100%-10px)] flex-row justify-end">
+              <SimpleBtn loading={loading} className="mr-2" type="submit">
+                Save
+              </SimpleBtn>
               <SimpleBtn>Cancel</SimpleBtn>
             </div>
           </div>
