@@ -9,8 +9,9 @@ import testondemandSlice from './slices/testondemand'
 import createSagaMiddleware from 'redux-saga'; 
 import alarmsslice from './slices/alarmsslice'
 import report from './slices/reportslice'
+import resultbrouserRtuslice from './slices/resultbrouserRtuslice'
 import {AppSaga} from './saga';
-
+import resultbroserOpticalroutslice from './slices/resultbroserOpticalroutslice'
 const middlewares: Middleware[] = [];
 
 const sagaMiddleware = createSagaMiddleware();
@@ -26,7 +27,9 @@ export const store = configureStore({
     alarmtypes:alarmstype,
     testondemandSlice:testondemandSlice,
     alarmsslice:alarmsslice,
-    reportslice:report
+    reportslice:report,
+    resultbrouserRtuslice:resultbrouserRtuslice,
+    resultbroserOpticalroutslice:resultbroserOpticalroutslice
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(middlewares),
