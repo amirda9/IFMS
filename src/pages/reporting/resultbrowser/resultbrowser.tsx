@@ -282,7 +282,6 @@ function Resultbrowser() {
     }
   };
 
-  // const [openall, setOpenall] = useState(false);
 
   const Itembtnopt = ({name, id, classname}: Itembtnopttype) => {
     return (
