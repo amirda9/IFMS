@@ -3,7 +3,6 @@ import {Select, Table} from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
 import dateicon from '~/assets/images/dateicon.png';
 import './index.css';
-// **
 import {Link} from 'react-router-dom';
 import {IoOpenOutline} from 'react-icons/io5';
 import {
@@ -60,6 +59,7 @@ import {RootState} from '~/store';
 import Swal from 'sweetalert2';
 import {UserRole} from '~/constant/users';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
+import { toast } from 'react-toastify';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -123,16 +123,54 @@ type Radiotype = {
   onclick: () => void;
 };
 
+type resultdata={
+    id: string,
+    test_date:string,
+    rtu: {
+      id: string,
+      name: string
+    },
+    optical_route: {
+      id: string,
+      name: string
+    },
+    test_setup: {
+      id: string,
+      name: string,
+      station: {
+        id: string,
+        name: string
+      }
+    },
+    alarm_cnt: number,
+    status: string,
+    test_len: number,
+    event_loss: number
+  }
+ 
+  type tabeltype=  {
+    index: number,
+    date: string,
+    rtu: string,
+    opticalRoute: string,
+    testSetup: string,
+    alarms:number,
+    state: string,
+    length: number,
+    loss: number,
+    detail: string,
+    delete: string,
+  }
 const topcolumns = {
   index: {label: 'Index', size: 'w-[2%]'},
   date: {label: 'Test Date', size: 'w-[16%]'},
   rtu: {label: 'RTU', size: 'w-[10%]'},
   opticalRoute: {label: 'Optical Route', size: 'w-[16%]'},
   testSetup: {label: 'Test Setup', size: 'w-[16%]'},
-  faultStatus: {label: 'Fault Status', size: 'w-[9%]'},
-  faultType: {label: 'Fault Type', size: 'w-[11%]'},
-  distance: {label: 'Distance (km)', size: 'w-[11%]'},
-  Loss: {label: 'Loss (dB)', size: 'w-[6%]'},
+  alarms: {label: '# Alarms', size: 'w-[9%]'},
+  state: {label: 'State', size: 'w-[11%]'},
+  length: {label: 'Length (km)', size: 'w-[11%]'},
+  loss: {label: 'Loss (dB)', size: 'w-[6%]'},
   detail: {label: 'Detail', size: 'w-[2%]'},
   delete: {label: 'Delete', size: 'w-[2%]'},
 };
@@ -144,36 +182,10 @@ const topitems = [
     rtu: 'RTU 1',
     opticalRoute: 'Optical Route 1',
     testSetup: 'Test Setup 1',
-    faultType: 'Break',
-    faultStatus: 'Still There',
-    distance: '200',
-    Loss: '4',
-    detail: '',
-    delete: '',
-  },
-  {
-    index: 1,
-    date: '2022-10-29 22:59:59',
-    rtu: 'RTU 1',
-    opticalRoute: 'Optical Route 1',
-    testSetup: 'Test Setup 1',
-    faultType: 'Break',
-    faultStatus: 'Still There',
-    distance: '200',
-    Loss: '4',
-    detail: '',
-    delete: '',
-  },
-  {
-    index: 1,
-    date: '2022-10-29 22:59:59',
-    rtu: 'RTU 1',
-    opticalRoute: 'Optical Route 1',
-    testSetup: 'Test Setup 1',
-    faultType: 'Break',
-    faultStatus: 'Still There',
-    distance: '200',
-    Loss: '4',
+    alarms: 'Break',
+    state: 'Still There',
+    length: '200',
+    loss: '4',
     detail: '',
     delete: '',
   },
@@ -183,11 +195,29 @@ function Resultbrowser() {
   const fromdateref: any = useRef(null);
   const lastdateref: any = useRef(null);
   const [fromdate, setFromdate] = useState('');
-  const [lastdate, setLastdate] = useState('');
+  const [lastdate, setLastdate] = useState("");
   const [filterByTime, setFilterByTime] = useState(false);
+  const [resultdata,setResultdata]=useState<tabeltype[]>([])
   const [selectedradio, setSelectedradio] = useState('Filter By Optical Route');
   const [selectedradiotime, setSelectedradiotime] = useState('Last');
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const [optical_route_id,setOptical_route_id]=useState("")
+  const [rtu_id,setRtu_id]=useState("")
+  const [loadingid, setLoadingid] = useState('');
+  const [loadingdata, setLoadingdata] = useState(false);
+  const [selectedtabId, setSelectedtabid] = useState('');
+  const [list, setList] = useState<networklisttype[]>();
   const [last, setLast] = useState(0);
+  const [selectdate,setSelectdate]=useState("")
+  const [selectedIdopt, setSelectedIdopt] = useState('');
+  const [listopt, setListopt] = useState<resultbrosernetworklisttype[]>([]);
+  const [loadingopticalid, setLoadingopticalid] = useState('');
+  const [loadingopticaldata, setLoadingopticaldata] = useState(false);
+  const [skipopt, setSkipopt] = useState(0);
+  const [networkopticalloading, setNetworkloading] = useState(false);
+  const {resultnetworkselectedlist, resultbrosernetworkoptical, alldeleteopticalroute, openallopt} =
+    useSelector((state: RootState) => state.resultbroserOpticalroutslice);
   const opennetworkopticallist = async (id: string) => {
     try {
       setLoadingopticaldata(true);
@@ -240,16 +270,11 @@ function Resultbrowser() {
     );
   }
   // ----- optical ------------------------ optical ----------------------- optical ---------------------------
+console.log("optical_route_id",optical_route_id);
+console.log("rtu_id",rtu_id);
 
   const navigte = useNavigate();
-  const [selectedIdopt, setSelectedIdopt] = useState('');
-  const [listopt, setListopt] = useState<resultbrosernetworklisttype[]>([]);
-  const [loadingopticalid, setLoadingopticalid] = useState('');
-  const [loadingopticaldata, setLoadingopticaldata] = useState(false);
-  const [skipopt, setSkipopt] = useState(0);
-  const [networkopticalloading, setNetworkloading] = useState(false);
-  const {resultnetworkselectedlist, resultbrosernetworkoptical, alldeleteopticalroute, openallopt} =
-    useSelector((state: RootState) => state.resultbroserOpticalroutslice);
+
 
   useEffect(() => {
     const getnetworklist = async () => {
@@ -287,7 +312,7 @@ function Resultbrowser() {
   const Itembtnopt = ({name, id, classname}: Itembtnopttype) => {
     return (
       <div
-        className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
+      className={`flex h-[80px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
         <span className="mt-[-6px] text-[12px] ">...</span>
         {resultnetworkselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
@@ -312,21 +337,11 @@ function Resultbrowser() {
 
 
 
-
-
-
-
-
   const lastnetworkopt = useMemo(() => {
     return (listopt && listopt[listopt.length - 1]?.id) || '';
   }, [listopt]);
   // ----------------------------------- rtu -------------------------- rtu -------------------------- rtu ------------
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const [loadingid, setLoadingid] = useState('');
-  const [loadingdata, setLoadingdata] = useState(false);
-  const [selectedtabId, setSelectedtabid] = useState('');
-  const [list, setList] = useState<networklisttype[]>();
+
   const navigate = useNavigate();
   const {
     stationsrtu,
@@ -425,6 +440,18 @@ function Resultbrowser() {
   //     setNetworkselectedlist(prev => [...prev, id]);
   //   }
   // };
+  const opennetworkrtullist = (id: string) => {
+    const findnetwork = networkselectedlist.findIndex(data => data == id);
+    if (findnetwork > -1) {
+      let old = [...networkselectedlist];
+      old.splice(findnetwork, 1);
+      setNetworkselectedlist(old);
+    } else {
+      setNetworkselectedlist(prev => [...prev, id]);
+    }
+  };
+
+
 
   const Itembtn = ({
     name,
@@ -445,8 +472,9 @@ function Resultbrowser() {
 
         <button
           onClick={() => {
-            setSelectedtabid(id);
-            opennetworkopticallist(id), onclick();
+            setSelectedtabid(id)
+            opennetworkrtullist(id) 
+            onclick()
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -457,6 +485,8 @@ function Resultbrowser() {
       </div>
     );
   };
+
+
 
   const ItembtnRegion = ({
     name,
@@ -479,7 +509,8 @@ function Resultbrowser() {
         <button
           onClick={() => {
             setSelectedtabid(id);
-            opennetworkopticallist(id), onclick();
+            
+            opennetworkrtullist(id), onclick();
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -489,6 +520,12 @@ function Resultbrowser() {
       </div>
     );
   };
+
+
+
+
+
+    // console.log("getCurrentTime()",getCurrentTime());
 
   const ItembtnStation = ({
     name,
@@ -512,7 +549,7 @@ function Resultbrowser() {
         <button
           onClick={() => {
             setSelectedtabid(id);
-            opennetworkopticallist(id), onclick();
+            opennetworkrtullist(id), onclick();
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -562,6 +599,8 @@ function Resultbrowser() {
     }
   };
 
+
+
   const onclickregion = async (regionid: string) => {
     try {
       setLoadingdata(true);
@@ -602,6 +641,7 @@ function Resultbrowser() {
       setLoadingdata(false);
     }
   };
+
 
   const ondeletesinglertu = async (rtuid: string, stationid: string) => {
     Swal.fire(swalsetting).then(async result => {
@@ -644,6 +684,7 @@ function Resultbrowser() {
     });
   };
 
+
   const onclickCheckbox = (rtuId: string, stationId: string) => {
     const stationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
     const findstations = stationsrtuCopy.findIndex(
@@ -664,12 +705,99 @@ function Resultbrowser() {
     }
     dispatch(setStationsrtu(stationsrtuCopy));
   };
+
+  console.log("networkregions",networkregions);
+  
+  const getCurrentTime = () => {
+    const now = new Date();
+    const formattedTime = now.toISOString().slice(0, 16);
+    return formattedTime;
+    };
+
+    const getTimeMinusFiveMinutes = (x:number) => {
+
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - x);
+      const formattedTime = now.toISOString().slice(0, 16);
+      return formattedTime;
+      };
+
+      const getTimeMinusOneHour = (x:number) => {
+        const now = new Date();
+        now.setHours(now.getHours() - 1);
+        const formattedTime = now.toISOString().slice(0, 16);
+        return formattedTime;
+        };
+        const getTimeMinusOneDay = (x:number) => {
+const now = new Date();
+now.setDate(now.getDate() - x);
+const formattedTime = now.toISOString().slice(0, 16);
+return formattedTime;
+};
+  const Applayresult=async()=>{
+    const now = new Date();
+    const formattedTime = now.toISOString().slice(0, 16);
+    const calculatelasttime=selectdate == "Day"?getTimeMinusOneDay(last):selectdate == "houre"?getTimeMinusOneHour(last):getTimeMinusFiveMinutes(last)
+    const fromDate=selectedradiotime == 'Last'?formattedTime:fromdate
+    const lastDate=selectedradiotime == 'Last'?calculatelasttime:lastdate
+     const url = `otdr/optical-route/measurement/result-browser?${filterByTime ? `from_time=${fromDate}&` : ''}${selectedradio === 'Filter By Optical Route' ? `optical_route_id=${optical_route_id}` : `rtu_id=${rtu_id}`}${filterByTime ? `&to_time=${lastDate}` : ''}`;
+    try {
+      const response = await $Get(url);
+      if(response?.status == 200){
+        toast('It was done successfully', {
+          type: 'success',
+          autoClose: 1000,
+        });
+       const responsedata:resultdata[]=await response.json()
+       type resultdata={
+        id: string,
+        test_date:string,
+        rtu: {
+          id: string,
+          name: string
+        },
+        optical_route: {
+          id: string,
+          name: string
+        },
+        test_setup: {
+          id: string,
+          name: string,
+          station: {
+            id: string,
+            name: string
+          }
+        },
+        alarm_cnt: number,
+        status: string,
+        test_len: number,
+        event_loss: number
+      }
+       const newresponsedata=responsedata.map((data,index) => ({ 
+        index: index,
+        date: data.test_date,
+        rtu: data.rtu.name,
+        opticalRoute: data.optical_route.name,
+        testSetup: data.test_setup.name,
+        alarms:data.alarm_cnt,
+        state: data.status,
+        length: data.test_len,
+        loss: data.event_loss,
+        detail: '',
+        delete: ''}))
+       setResultdata(newresponsedata)
+       console.log("responsedata",responsedata);  
+      }else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      console.log(`error is:${error}`);
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+    }
+  }
   // ****************** main ****************** main ************************************* main ***********************
   return (
     <div className="border-box flex w-full flex-col p-[20px] pt-[100px]">
-      <h1 className="my-6 mt-2 text-[20px] font-bold text-[red]">
-        This page requires a Full-Access license to view the content
-      </h1>
       <div className="flex w-full flex-row justify-between">
         <div className="flex w-[calc(50%-190px)] flex-col">
           <div className="mb-[20px] flex flex-row">
@@ -682,9 +810,16 @@ function Resultbrowser() {
             </span>
           </div>
 
-          <div className="flex h-[350px] w-full flex-col overflow-y-auto bg-white pl-6">
+          <div className="flex relative   h-[350px] w-full flex-col overflow-y-auto bg-white pl-6">
             {/* ----------------- rtu ------------------------------- rtu --------------------------------------- rtu --------------------------- */}
-
+             {selectedradio == 'Filter By RTU'?
+             null
+            :
+            <div className='absolute top-[0px] right-[0px] w-full h-full z-[100]'></div>
+            
+            }
+             
+             
             <div className="mt-[30px] flex w-full flex-col">
               <div className="flex w-[205px] flex-row items-center text-[20px] font-bold text-[#000000]">
                 {openall ? (
@@ -720,6 +855,7 @@ function Resultbrowser() {
                               <Itembtn
                                 onclick={() => {
                                   setLoadingid(networkdata.id);
+                                 
                                   onclicknetwork(networkdata.id);
                                 }}
                                 id={networkdata.id}
@@ -777,6 +913,7 @@ function Resultbrowser() {
                                                   <div className="flex w-full flex-row items-center">
                                                     <ItembtnRegion
                                                       onclick={() => {
+                                                        setLoadingdata(true)
                                                         onclickregion(
                                                           regionsdata.id,
                                                         );
@@ -922,6 +1059,7 @@ function Resultbrowser() {
                                                                                       </span>
                                                                                       <SidebarItem
                                                                                         onclick={() => {
+                                                                                          setRtu_id(rtudata.id)
                                                                                           if (
                                                                                             !location.pathname.includes(
                                                                                               `${rtudata.id}/${satationdata.id}/${regionsdata.id}/${networkdata.id}`,
@@ -1027,17 +1165,22 @@ function Resultbrowser() {
               Filter By Optical Route
             </span>
           </div>
-          <div className="flex h-[350px] w-full flex-col overflow-y-auto pl-4 bg-white">
+          <div className="flex relative h-[350px] w-full flex-col overflow-y-auto pl-4 bg-white">
             {/* ----------------------- optical route --------------------------- optical route --------------  optical route ---------------- */}
+            {selectedradio == 'Filter By Optical Route'?
+             null
+            :
+            <div className='absolute top-[0px] right-[0px] w-full h-full z-[100]'></div>
+            
+            }
 
-
-      <div className={`relative mt-[30px] flex w-full flex-col`}>
-        <div
+      <div className={`relative mt-[30px] h-auto flex w-full flex-col`}>
+        {/* <div
           className={`absolute h-[40px] w-[10px] ${
             resultnetworkselectedlist.indexOf(lastnetworkopt) > -1
               ? 'bottom-[-20px]'
               : 'bottom-[-15.5px]'
-          }  left-[-5px] bg-[#E7EFF7]`}></div>
+          }  left-[-5px] bg-[#E7EFF7]`}></div> */}
         <div className="flex w-[205px] flex-row items-center text-[20px] font-bold text-[#000000]">
           {openallopt ? (
             <span className="ml-[-4px] mr-[5px] font-light">-</span>
@@ -1080,8 +1223,8 @@ function Resultbrowser() {
 
                       <div className="relative flex flex-col">
                         <Itembtnopt
-                          classname="mb-[-10px]"
-                          name={networkdata.name}
+                           classname="mb-[-10px]"
+                           name={networkdata.name}
                           id={networkdata.id}
                         />
                         <div className='overflow-y-hidden'>
@@ -1096,7 +1239,7 @@ function Resultbrowser() {
                                    className="ml-8 mt-2"
                                  />
                                 :
-                                <div className="relative ml-[18px] bg-[red] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                                <div className="relative ml-[18px]   flex flex-col border-l-[1px] border-dotted border-[#000000]">
                                 <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
                                 {resultbrosernetworkoptical
                                   ?.find(
@@ -1118,8 +1261,10 @@ function Resultbrowser() {
                                               ? true
                                               : false
                                           }
-                                          onclick={() =>
+                                          onclick={() =>{
                                             setSelectedIdopt(data.id)
+                                            setOptical_route_id(data.id)
+                                          }
                                           }
                                           onclickcheckbox={e =>{}
                                             // onclickopticalchecbox(
@@ -1141,7 +1286,7 @@ function Resultbrowser() {
                                           enabelcheck={true}
                                           className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
                                           name={data.name}
-                                          to={`${data.id}/${networkdata.id}`}
+                                          to={`#`}
                                         />
                                       </div>
                                     ),
@@ -1203,26 +1348,30 @@ function Resultbrowser() {
               </span>
               <div className="flex w-[calc(100%-60px)] flex-row justify-between">
                 <input
+                value={last}
                   type="number"
                   onChange={e => setLast(Number(e.target.value))}
-                  className="ml-6 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white"
+                  className="ml-6 p-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white"
                 />
 
                 <Select
-                  onChange={e => {}}
+                  onChange={e => setSelectdate(e.target.value)}
                   className="mr-[40px] h-[40px] w-[120px]">
                   <option value="" className="hidden">
-                    light
+                  minutes
                   </option>
                   <option value={undefined} className="hidden">
-                    light
+                  minutes
                   </option>
 
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                    dark
+                  minutes
                   </option>
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                    light
+                  hour
+                  </option>
+                  <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+                  Day
                   </option>
                 </Select>
               </div>
@@ -1277,7 +1426,7 @@ function Resultbrowser() {
               </div>
             </div>
           </div>
-          <SimpleBtn className="ml-[calc(100%-100px)]">Apply</SimpleBtn>
+          <SimpleBtn onClick={Applayresult} className="ml-[calc(100%-100px)]">Apply</SimpleBtn>
         </div>
       </div>
 
