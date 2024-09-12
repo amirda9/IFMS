@@ -546,7 +546,7 @@ function Testondemand() {
                              />
                             :
                             <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
-                            <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                            <div className="absolute left-[-.8px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
                             {networkoptical
                               ?.find(
                                 dataa => dataa.networkid == networkdata.id,
@@ -703,9 +703,12 @@ function Testondemand() {
             <SimpleBtn onClick={onclickParameters} className="mb-[30px]">
               Parameters
             </SimpleBtn>
-            <SimpleBtn onClick={getallmeasurements} className="px-[34px]">
+            <div className={`${testid.length>0?"opacity-100":"opacity-40"}`}>
+            <SimpleBtn disabled={true} onClick={getallmeasurements} className="px-[34px]">
               Start Test
             </SimpleBtn>
+            </div>
+            
           </div>
 
           <SimpleBtn onClick={getmeasurments} className="mb-1 px-[47px]">
