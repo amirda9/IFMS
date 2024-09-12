@@ -314,7 +314,7 @@ console.log("rtu_id",rtu_id);
   const Itembtnopt = ({name, id, classname}: Itembtnopttype) => {
     return (
       <div
-      className={`flex h-[80px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
+      className={`flex h-[76px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
         <span className="mt-[-6px] text-[12px] ">...</span>
         {resultnetworkselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
@@ -1232,7 +1232,7 @@ return formattedTime;
                           resultnetworkselectedlist.indexOf(networkdata.id) > -1
                             ? 'bottom-[-2px]'
                             : 'bottom-[-7px]'
-                        }  left-[15px] h-[25px] w-[5px] bg-[#E7EFF7]`}></div>
+                        }  left-[15px] h-[25px] w-[5px] bg-white`}></div>
 
                       <div className="relative flex flex-col">
                         <Itembtnopt
@@ -1240,7 +1240,7 @@ return formattedTime;
                            name={networkdata.name}
                           id={networkdata.id}
                         />
-                        <div className='overflow-y-hidden'>
+                        <div className=''>
                          
                             <>
                               {resultnetworkselectedlist.indexOf(networkdata.id) >
@@ -1252,7 +1252,7 @@ return formattedTime;
                                    className="ml-8 mt-2"
                                  />
                                 :
-                                <div className="relative ml-[18px]   flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                                <div className="relative ml-[18px]  flex flex-col border-l-[1px] border-dotted border-[#000000]">
                                 <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
                                 {resultbrosernetworkoptical
                                   ?.find(
