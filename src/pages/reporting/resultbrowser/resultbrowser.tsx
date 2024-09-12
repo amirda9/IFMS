@@ -149,10 +149,12 @@ type resultdata={
   }
  
   type tabeltype=  {
+    id:string,
     index: number,
     date: string,
     rtu: string,
     opticalRoute: string,
+    opticalRouteId:string,
     testSetup: string,
     alarms:number,
     state: string,
@@ -351,13 +353,13 @@ console.log("rtu_id",rtu_id);
     rturegionidadmin,
   } = useSelector((state: RootState) => state.resultbrouserRtuslice);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-  const {
-    state: {regions},
-  } = useHttpRequest({
-    selector: state => ({
-      regions: state.http.regionList,
-    }),
-  });
+  // const {
+  //   state: {regions},
+  // } = useHttpRequest({
+  //   selector: state => ({
+  //     regions: state.http.regionList,
+  //   }),
+  // });
 
   const [openall, setOpenall] = useState(false);
   const [networkselectedlist, setNetworkselectedlist] = useState<string[]>([]);
@@ -714,6 +716,7 @@ console.log("rtu_id",rtu_id);
     return formattedTime;
     };
 
+
     const getTimeMinusFiveMinutes = (x:number) => {
 
       const now = new Date();
@@ -722,18 +725,24 @@ console.log("rtu_id",rtu_id);
       return formattedTime;
       };
 
+
+
       const getTimeMinusOneHour = (x:number) => {
         const now = new Date();
         now.setHours(now.getHours() - 1);
         const formattedTime = now.toISOString().slice(0, 16);
         return formattedTime;
         };
+
+
         const getTimeMinusOneDay = (x:number) => {
 const now = new Date();
 now.setDate(now.getDate() - x);
 const formattedTime = now.toISOString().slice(0, 16);
 return formattedTime;
 };
+
+
   const Applayresult=async()=>{
     const now = new Date();
     const formattedTime = now.toISOString().slice(0, 16);
@@ -742,39 +751,16 @@ return formattedTime;
     const lastDate=selectedradiotime == 'Last'?calculatelasttime:lastdate
      const url = `otdr/optical-route/measurement/result-browser?${filterByTime ? `from_time=${fromDate}&` : ''}${selectedradio === 'Filter By Optical Route' ? `optical_route_id=${optical_route_id}` : `rtu_id=${rtu_id}`}${filterByTime ? `&to_time=${lastDate}` : ''}`;
     try {
+      setLoadingdata(true)
       const response = await $Get(url);
       if(response?.status == 200){
-        toast('It was done successfully', {
-          type: 'success',
-          autoClose: 1000,
-        });
+
        const responsedata:resultdata[]=await response.json()
-       type resultdata={
-        id: string,
-        test_date:string,
-        rtu: {
-          id: string,
-          name: string
-        },
-        optical_route: {
-          id: string,
-          name: string
-        },
-        test_setup: {
-          id: string,
-          name: string,
-          station: {
-            id: string,
-            name: string
-          }
-        },
-        alarm_cnt: number,
-        status: string,
-        test_len: number,
-        event_loss: number
-      }
+    
        const newresponsedata=responsedata.map((data,index) => ({ 
         index: index,
+        opticalRouteId:data.optical_route.id,
+        id:data.id,
         date: data.test_date,
         rtu: data.rtu.name,
         opticalRoute: data.optical_route.name,
@@ -793,9 +779,36 @@ return formattedTime;
     } catch (error) {
       console.log(`error is:${error}`);
       toast('Encountered an error', {type: 'error', autoClose: 1000});
+    } finally{
+      setLoadingdata(false)
+    }
+  }
+
+  const deleteREsult=async(opticalrouteId:string,id:string,index:number)=>{
+    try {
+      setLoadingdata(true)
+      const DeleteResponse= await $Delete(`otdr/optical-route/${opticalrouteId}/measurements`,[id])
+      if(DeleteResponse?.status == 201){
+        toast('It was done successfully', {
+          type: 'success',
+          autoClose: 1000,
+        });
+        setLoadingdata(false)
+        const resultdataCopy=deepcopy(resultdata)
+        resultdataCopy.splice(index,1)
+        setResultdata(resultdataCopy)
+    
+      }else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+     
+      console.log(`error is:${error}`);
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
     }
   }
   // ****************** main ****************** main ************************************* main ***********************
+ 
   return (
     <div className="border-box flex w-full flex-col p-[20px] pt-[100px]">
       <div className="flex w-full flex-row justify-between">
@@ -1431,7 +1444,7 @@ return formattedTime;
       </div>
 
       <Table
-        // loading={state.regionstationlist?.httpRequestStatus !== 'success'}
+      loading={loadingdata}
         // onclicktitle={(tabname: string, sortalfabet: boolean) => {
         //   const dataa = [...reightstationsorted];
         //   if (sortalfabet) {
@@ -1444,7 +1457,7 @@ return formattedTime;
         bordered={true}
         cols={topcolumns}
         tabicon={'Name'}
-        items={topitems}
+        items={resultdata}
         thclassname="pl-2 text-left"
         tdclassname="pl-2 text-left"
         containerClassName="w-full text-left min-h-[72px]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
@@ -1452,14 +1465,23 @@ return formattedTime;
         renderDynamicColumn={({key, value}) => {
           if (key === 'detail')
             return (
-              <Link to={value.detail}>
-                <IoOpenOutline size={22} className="mx-auto" />
-              </Link>
+              // <Link to={value.detail}>
+                <IoOpenOutline 
+                onClick={() =>
+                  navigate(`/config/chart`, {
+                    state: {
+                      opticalrout_id:value.opticalRouteId!,
+                      measurement_id: value.id,
+                    },
+                  })
+                }
+                size={22} className="mx-auto" />
+              // </Link>
             );
           else if (key === 'delete')
             return (
               <IoTrashOutline
-                onClick={() => {}}
+                onClick={() => deleteREsult(value.opticalRouteId,value.id,value.index)}
                 className="mx-auto cursor-pointer text-red-500"
                 size={22}
               />
