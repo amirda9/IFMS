@@ -228,7 +228,6 @@ const TestDetailsLearning: FC = () => {
                     opticalroutUpdateTestsetupDetail?.learning_data?.start_cycle_time?.periodic_options?.period_time || ''
                   }
                   className="w-26">
-                  <option>secondly</option>
                   <option>monthly</option>
                   <option>daily</option>
                   <option>yearly</option>
@@ -335,7 +334,6 @@ const TestDetailsLearning: FC = () => {
                       ?.period_time || ''
                   }
                   className="w-26">
-                  <option>secondly</option>
                   <option>monthly</option>
                   <option>daily</option>
                   <option>yearly</option>
