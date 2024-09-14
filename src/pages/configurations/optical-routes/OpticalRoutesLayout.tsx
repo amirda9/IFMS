@@ -92,7 +92,7 @@ const OpticalRouteLayout: FC = () => {
   const Itembtn = ({name, id, classname}: Itembtntype) => {
     return (
       <div
-        className={`flex h-[70px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
+        className={`flex h-[76px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
         <span className="mt-[-6px] text-[12px] ">...</span>
         {networkselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
@@ -351,7 +351,7 @@ const OpticalRouteLayout: FC = () => {
                           name={networkdata.name}
                           id={networkdata.id}
                         />
-                        <div className='overflow-y-hidden'>
+                        <div className=''>
                          
                             <>
                               {networkselectedlist.indexOf(networkdata.id) >
@@ -364,7 +364,7 @@ const OpticalRouteLayout: FC = () => {
                                  />
                                 :
                                 <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
-                                <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                                <div className="absolute left-[-.5px] top-[-20px] h-[19px] border-l-[1px] border-dotted border-[#000000]"></div>
                                 {networkoptical
                                   ?.find(
                                     dataa =>
