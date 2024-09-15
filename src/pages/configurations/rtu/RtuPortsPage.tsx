@@ -13,6 +13,7 @@ import {useAppSelector} from '~/hooks';
 import {UserRole} from '~/constant/users';
 type allportstype = {
   optical_route_id: string;
+  optical_switch_port_index?:number,
   state: string;
   index: number;
   id: string;
@@ -27,6 +28,8 @@ type allportstype = {
   };
   length: number;
 }[];
+
+
 type opticalroutlistType = {
   id: string;
   name: string;
@@ -96,13 +99,20 @@ const RtuPortsPage: FC = () => {
       const allrtuports: allportstype = await getdata?.json();
       console.log('🖌️', allrtuports);
 
-      let rtuports: allportstype = deepcopy(allrtuports);
+      // let rtuports: allportstype = deepcopy(allrtuports);
+      let rtuports: allportstype =  [];
       if (allrtuports.length < 8) {
-        for (let i = 0; i < 8 - allrtuports.length; i++) {
-          rtuports.push({
+        for (let i = 0; i < 8; i++) {
+          const findsweachindex=allrtuports.findIndex((data) => data.optical_switch_port_index == i)
+        
+        if(findsweachindex>0){
+  rtuports.push({...allrtuports[findsweachindex],index:i});
+        }else{
+       rtuports.push({
             optical_route_id: '',
+            optical_switch_port_index:i,
             state: '',
-            index: 0,
+            index: i,
             id: '',
             new: false,
             end_station: {
@@ -116,13 +126,35 @@ const RtuPortsPage: FC = () => {
             length: 0,
           });
         }
+        }
+        // for (let i = 0; i < 8 - allrtuports.length; i++) {
+        //   const findswichindex=allrtuports
+        //   rtuports.push({
+        //     optical_route_id: '',
+        //     state: '',
+        //     index: 0,
+        //     id: '',
+        //     new: false,
+        //     end_station: {
+        //       id: '',
+        //       name: '',
+        //     },
+        //     optical_route: {
+        //       id: '',
+        //       name: '',
+        //     },
+        //     length: 0,
+        //   });
+        // }
       }
 
       setAllrtuports(
-        rtuports.map((data, index: number) => ({
-          ...data,
-          index,
-        })),
+        rtuports
+        // rtuports.map((data, index: number) => ({
+        //   ...data,
+        //   optical_switch_port_index:index,
+        //   index,
+        // })),
       );
       //get allrtu  optical routes
 
@@ -379,17 +411,20 @@ const RtuPortsPage: FC = () => {
       );
       setAllcreateport(newcreatedlist);
     } else {
-      Swal.fire(swalsetting).then(async result => {
-        if (result.isConfirmed) {
+      // Swal.fire(swalsetting).then(async result => {
+      //   if (result.isConfirmed) {
           const findid = alldeletedports.findIndex(data => data == id);
           if (findid < 0) {
             setAlldeletedports(prev => [...prev, id]);
           }
-        }
-      });
+      //   }
+      // });
     }
   };
 
+  console.log("allrtuports",allrtuports);
+  console.log("allcreateport",allcreateport);
+  
 
   if (loading) {
     return <h1>Loading ...</h1>;
