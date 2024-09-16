@@ -45,10 +45,10 @@ const initialState:initialStatetype = {
     station_name: "",
     init_rtu_id: "",
     init_rtu_name: "",
-    startdatePart:"",
-    starttimePart:"",
-    enddatePart:"",
-   endtimePart:"",
+    startdatePart:"2023-11-28",
+    starttimePart:"22:26:03",
+    enddatePart:"2023-11-28",
+   endtimePart:"22:26:02",
     parameters: {
       enabled: true,
       type: "monitoring",
@@ -76,20 +76,20 @@ const initialState:initialStatetype = {
       targeted_count_per_cycle: 30,
       start_cycle_time: {
         type: "fixed",
-        time: "",
+        time: "2023-11-28 22:26:03",
         periodic_options: {
-          value: 0,
-          period_time: "secondly"
+          value: 1,
+          period_time: "monthly"
         }
       },
       increase_count_options: {
         count: 2,
         timing: {
           type: "fixed",
-          time: "",
+          time: "2023-11-28 22:26:03",
           periodic_options: {
-            value: 0,
-            period_time: "secondly"
+            value: 1,
+            period_time: "monthly"
           }
         },
         maximum_count: 60
@@ -97,16 +97,16 @@ const initialState:initialStatetype = {
     },
     test_program: {
       starting_date: {
-        start:"",
+        start:"2023-11-28 22:26:03",
         immediately: false
       },
       end_date: {
-        end:"",
+        end:"2023-11-28 22:26:02",
         indefinite: true
       },
       period_time: {
-        value: 0,
-        period_time: "hourly"
+        value: 1,
+        period_time: "monthly"
       }
     }},
     networkselectedlist:[],

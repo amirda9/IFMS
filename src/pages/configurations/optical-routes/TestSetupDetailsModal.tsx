@@ -82,8 +82,8 @@ const TestSetupDetailsModal: FC = () => {
       ) {
         delete newdata?.parameters?.sampling_duration;
       }
-      newdata.test_program.starting_date.start = `${newdata?.startdatePart} ${newdata?.starttimePart}:00`;
-      newdata.test_program.end_date.end = `${newdata?.enddatePart} ${newdata?.endtimePart}:00`;
+      newdata.test_program.starting_date.start = `${newdata?.startdatePart} ${newdata?.starttimePart}`;
+      newdata.test_program.end_date.end = `${newdata?.enddatePart} ${newdata?.endtimePart}`;
 
       delete newdata.station_name;
       delete newdata.init_rtu_name;

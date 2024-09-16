@@ -139,6 +139,10 @@ const TestDetailsLearning: FC = () => {
     return <h1>Loading...</h1>;
   }
 
+
+  console.log("yyyy",opticalroutUpdateTestsetupDetail?.learning_data
+    ?.start_cycle_time?.time);
+  
   return (
     <FormikProvider value={formik}>
       <Form className="flex flex-col gap-y-8">
@@ -172,6 +176,7 @@ const TestDetailsLearning: FC = () => {
 
                 <input
                   ref={firstdateref}
+                 
                   onChange={e => {
                     formik.setFieldValue('startcycletime',`${e.target.value} 23:00:00`);
                     let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
