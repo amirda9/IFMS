@@ -104,8 +104,9 @@ const RtuPortsPage: FC = () => {
       if (allrtuports.length < 8) {
         for (let i = 0; i < 8; i++) {
           const findsweachindex=allrtuports.findIndex((data) => data.optical_switch_port_index == i)
+        console.log("findsweachindex",findsweachindex,{...allrtuports[findsweachindex],index:i});
         
-        if(findsweachindex>0){
+        if(findsweachindex>-1){
   rtuports.push({...allrtuports[findsweachindex],index:i});
         }else{
        rtuports.push({
