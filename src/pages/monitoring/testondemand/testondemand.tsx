@@ -704,7 +704,7 @@ function Testondemand() {
               Parameters
             </SimpleBtn>
             <div className={`${testid.length>0?"opacity-100":"opacity-40"}`}>
-            <SimpleBtn disabled={true} onClick={getallmeasurements} className="px-[34px]">
+            <SimpleBtn  onClick={getallmeasurements} className="px-[34px]">
               Start Test
             </SimpleBtn>
             </div>
