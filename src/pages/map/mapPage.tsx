@@ -1035,7 +1035,7 @@ if(!mount){
                           setSelectedStation(data);
                         },
                       }}
-                      position={[data?.latitude, data?.longitude]}
+                      position={[data?.longitude, data?.latitude]}
                       icon={MapServerIcon}>
                       <Tooltip
                         opacity={1}
@@ -1344,8 +1344,8 @@ if(!mount){
                                 },
                               }}
                               positions={[
-                                [start.latitude, start.longitude],
-                                [end.latitude, end.longitude],
+                                [ start.longitude,start.latitude],
+                                [end.longitude,end.latitude],
                               ]}
                               color="red"></Polyline>
 
