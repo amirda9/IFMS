@@ -178,7 +178,7 @@ const LinkPointsPage = () => {
           className="relative my-4 flex w-[677px] flex-row  items-center justify-between rounded-md bg-gis p-4">
           <span>{index + 1}</span>
           <TextInput
-            value={data.latitude}
+            value={data.latitude.toFixed(3)}
             type="number"
             onChange={
               data.fix == true && (index == linkpoints.length - 1 || index == 0)
@@ -188,7 +188,7 @@ const LinkPointsPage = () => {
             className="w-[246px]"
           />
           <TextInput
-            value={data.longitude}
+            value={data.longitude.toFixed(3)}
             type="number"
             onChange={
               data.fix == true && (index == linkpoints.length - 1 || index == 0)
