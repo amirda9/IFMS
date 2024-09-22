@@ -267,7 +267,7 @@ const MapPage = () => {
 
     return count;
   }
-console.log(Regions,'👄Regions');
+// console.log(Regions,'👄Regions');
 
   // console.log('Regions', Regions);
 
@@ -421,6 +421,8 @@ console.log(Regions,'👄Regions');
        mount?null: $Post(`otdr/map/map_alarms/`, selectednetworks)
       ]);
       const responsedata = await mapdetailresponse?.json();
+      console.log("gggggggresponsedatagggggg",responsedata);
+      
 if(!mount){
   const alarmsdata: alarmtype[] = await allalarmsresponse?.json();
   const filteredData =
@@ -492,7 +494,7 @@ if(!mount){
     getalldetail();
   }, [selectednetworks]);
 
-  console.log('alarms', alarms);
+  // console.log('alarms', alarms);
 
   const MapClickAlert = () => {
     useMapEvents({
@@ -653,7 +655,7 @@ if(!mount){
       );
     } else return [];
   }, [alarms,orangealarms]);
-  console.log('highSeverityEvents', highSeverityEvents);
+  // console.log('highSeverityEvents', highSeverityEvents);
 
   // ******************** return ****************** return ************************** return *******************************
   return (
@@ -1086,8 +1088,8 @@ if(!mount){
                             },
                           }}
                           position={[
-                            sumlatitude / data.stations.length,
-                            sumlongitude / data.stations.length,
+                             sumlongitude/ data.stations.length,
+                             sumlatitude / data.stations.length,
                           ]}
                           icon={MapgroupServerIcon}>
                           <Tooltip
@@ -1129,7 +1131,7 @@ if(!mount){
                         setRightbarState('alarm');
                       },
                     }}
-                    position={[data.latitude, data.longitude]}
+                    position={[data.longitude,data.latitude]}
                     icon={NoYellow}>
                     <Tooltip
                       opacity={1}
@@ -1169,7 +1171,7 @@ if(!mount){
                           setRightbarState('alarm');
                         },
                       }}
-                      position={[data?.latitude, data?.longitude]}
+                      position={[data?.longitude,data?.latitude]}
                       icon={NoRed}>
                       <Tooltip
                         opacity={1}
@@ -1209,7 +1211,7 @@ if(!mount){
                         setRightbarState('alarm');
                       },
                     }}
-                    position={[data?.latitude, data?.longitude]}
+                    position={[data?.longitude, data?.latitude]}
                     icon={NoOrange}>
                     <Tooltip
                       opacity={1}
