@@ -321,6 +321,7 @@ const RtuPortsPage: FC = () => {
     if (allportsCopy[findportIndex].state == '') {
       allportsCopy[findportIndex].state = 'deactivate';
     }
+    setAlldeletedports([])
     setAllrtuports(allportsCopy);
     // ----------------------------------------------------------------------------
   };
@@ -360,10 +361,11 @@ const RtuPortsPage: FC = () => {
         data => data.optical_route_id == opticalroutid,
       );
 
-
+     
       allcreateportCopy[findcreateports].state = state;
       setAllcreateport(allcreateportCopy);
     }
+    setAlldeletedports([])
   };
 
   const deleteopticalroute = (id: string, opticalrouteid: string) => {
@@ -505,7 +507,7 @@ const RtuPortsPage: FC = () => {
                       {data.end_station?.name || null}
                     </span>
 
-                    <span className="basis-32">{data.length}</span>
+                    <span className="basis-32">{data.length.toFixed(3)}</span>
 
                     <div className="basis-40">
                       <Select
@@ -539,6 +541,7 @@ const RtuPortsPage: FC = () => {
                     <div className="flex basis-40 flex-row justify-around gap-x-4">
                       <>
                         <IoOpenOutline size={30} />
+                        <div className={`p-2  border-[red] border-solid ${data.id != "" && alldeletedports.findIndex(deletedportsdata => deletedportsdata == data.id)>-1?"border-[2px]":"border-[0px]"}`}>
                         <IoTrashOutline
                           onClick={() =>
                             deleteopticalroute(data.id, data.optical_route_id)
@@ -546,6 +549,8 @@ const RtuPortsPage: FC = () => {
                           className="cursor-pointer text-red-500"
                           size={30}
                         />
+                        </div>
+                      
                       </>
                       {/* )} */}
                     </div>
