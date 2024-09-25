@@ -7,10 +7,14 @@ import {SidebarLayout} from '~/layout';
 import {$Delete, $Get} from '~/util/requestapi';
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  alldefaultstationsrtutype,
   allstationsrtutype,
+  defaultstationsrtutype,
   setRtuNetworkidadmin,
   setRtuRegionidadmin,
   setRtuStationidadmin,
+  setdefaultRegionstations,
+  setdefaultStationsrtu,
   setrtugetdetailStatus,
 } from './../../../store/slices/rtu';
 import {deepcopy} from './../../../util/deepcopy';
@@ -28,12 +32,14 @@ import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
+  candelete?:boolean;
   id: string;
   classname?: string;
   onclick?: () => void;
   canAdd?: boolean;
 };
 type Itemstationbtntype = {
+  type?:string,
   name: string;
   id: string;
   classname?: string;
@@ -97,6 +103,8 @@ const RtuLayout: FC = () => {
     networkregions,
     rtunetworkidadmin,
     rturegionidadmin,
+    defaultregionstations,
+    defaultstationsrtu
   } = useSelector((state: RootState) => state.rtu);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const {
@@ -112,6 +120,17 @@ const RtuLayout: FC = () => {
   // ---------- func ----------- func -----------
   const findstationdeletertuid = (stationid: string, rtuid: string) => {
     let findId = stationsrtu
+      ?.find(data => data.stationid == stationid)
+      ?.deletertues.findIndex(data => data == rtuid);
+    if (findId == undefined || findId < 0) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const finddefaultstationdeletertuid = (stationid: string, rtuid: string) => {
+    let findId = defaultstationsrtu
       ?.find(data => data.stationid == stationid)
       ?.deletertues.findIndex(data => data == rtuid);
     if (findId == undefined || findId < 0) {
@@ -177,6 +196,47 @@ const RtuLayout: FC = () => {
 
     // ------------------------------------
   };
+
+  const onclickdefaultstation = async (
+    id: string,
+    networkid: string,
+  ) => {
+    try {
+      setLoadingdata(true);
+      const [stationrtuesresponse, stationdetailresponse] = await Promise.all([
+        $Get(`otdr/station/${id}/rtus`),
+        $Get(`otdr/station/${id}`),
+      ]);
+      let stationdetail = await stationdetailresponse?.json();
+
+      if (stationrtuesresponse?.status == 200) {
+        const stationrtuesdata = await stationrtuesresponse?.json();
+        const findstation = stationsrtu.findIndex(data => data.stationid == id);
+        if (findstation < 0 && stationrtuesdata.length > 0) {
+          let defaultstationsrtuCopy = deepcopy(defaultstationsrtu);
+
+          defaultstationsrtuCopy.push({
+            networkid: networkid,
+            stationid: id,
+            rtues: stationrtuesdata,
+            deletertues: [...(defaultstationsrtuCopy.deletertues || [])],
+          });
+          dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
+        }
+      }
+      // if (stationdetail.access.access === 'ADMIN') {
+      //   dispatch(setRtuStationidadmin(id));
+      // }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingdata(false);
+    }
+
+    // ------------------------------------
+  };
+
+
 
   const ondeletenetworkrtu = async (id: string) => {
     Swal.fire(swalsetting).then(async result => {
@@ -293,9 +353,57 @@ const RtuLayout: FC = () => {
     });
   };
 
+
+
+  const ondeletedefaultStaionrtu = async (stationid: string) => {
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        let oldsdefaultstationsrtu = deepcopy(defaultstationsrtu);
+        const findstationrtu = defaultstationsrtu.findIndex(
+          data => data.stationid == stationid,
+        );
+        try {
+          //get station rtues
+          const getdefaultstationrtues = await $Get(`otdr/station/${stationid}/rtus`);
+          if (getdefaultstationrtues?.status == 200) {
+            const defaultstationallrtues: {id: string; name: string}[] =
+              await getdefaultstationrtues?.json();
+
+            if (defaultstationallrtues.length > 0) {
+              //delete station rtues
+              const promises = defaultstationallrtues?.map(
+                (data: {id: string; name: string}) =>
+                  $Delete(`otdr/rtu/${data.id}`),
+              );
+              const results = await Promise.allSettled(promises);
+              let alldeletedrtu = deepcopy(
+                defaultstationallrtues?.map(data => data.id),
+              );
+              //update station rtu list
+              for (let i = 0; i < stationsrtu.length; i++) {
+                let result = stationsrtu[i].rtues.filter(
+                  (data: any) => !alldeletedrtu.includes(data.id),
+                );
+                oldsdefaultstationsrtu[i].rtues = result;
+              }
+              oldsdefaultstationsrtu[findstationrtu].deletertues = [];
+              dispatch(setdefaultStationsrtu(oldsdefaultstationsrtu));
+              navigate(`/config/remote-test-units`);
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+  };
+
+
+
   const Itembtn = ({
     name,
     id,
+    candelete=true,
     classname,
     onclick = () => {},
     canAdd = false,
@@ -334,7 +442,7 @@ const RtuLayout: FC = () => {
           false
         )}
 
-        {selectedtabId == id ? (
+        {selectedtabId == id && candelete? (
           <IoTrashOutline
             onClick={() => ondeletenetworkrtu(id)}
             color="#FF0000"
@@ -400,6 +508,7 @@ const RtuLayout: FC = () => {
   };
 
   const ItembtnStation = ({
+    type="",
     name,
     id,
     classname,
@@ -447,7 +556,7 @@ const RtuLayout: FC = () => {
 
         {candelete && networkselectedlist.indexOf(id) > -1 ? (
           <IoTrashOutline
-            onClick={() => ondeleteStaionrtu(id)}
+            onClick={type.length > 0?() => ondeletedefaultStaionrtu(id):() => ondeleteStaionrtu(id)}
             color="#FF0000"
             size={24}
             className="ml-[20px] cursor-pointer"
@@ -546,18 +655,46 @@ const RtuLayout: FC = () => {
     }
   };
 
+
+  const onclickdefaultregion = async (networkid: string) => {
+    try {
+      setLoadingdata(true)
+      let allStations = [];
+      const responsestation = await $Get(`otdr/station/network/${networkid}`);
+      if (responsestation?.status == 200) {
+        const responsestationData = await responsestation?.json();
+        for (let i = 0; i < responsestationData.length; i++) {
+          if (responsestationData[i].region_id == null) {
+            allStations.push({
+              id: responsestationData[i].id,
+              name: responsestationData[i].name,
+            });
+          }
+        }
+      }
+      dispatch(
+        setdefaultRegionstations({networkid: networkid, stations: allStations}),
+      );
+    } catch (error) {
+      console.log(`get default stations error is:${error}`);
+      
+    } finally {
+      setLoadingdata(false)
+    }
+  };
+
   const ondeletesinglertu = async (rtuid: string, stationid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        let StationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
-        let findstation = StationsrtuCopy.findIndex(
+        let stationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
+        let findstation = stationsrtuCopy.findIndex(
           data => data.stationid == stationid,
         );
 
         try {
           //We delete all the rtus related to the station that have their checkboxes checked.
 
-          const promises = StationsrtuCopy[findstation]?.deletertues.map(
+          const promises = stationsrtuCopy[findstation]?.deletertues.map(
             (data: string) => $Delete(`otdr/rtu/${data}`),
           );
           const results = await Promise.allSettled(promises);
@@ -566,19 +703,19 @@ const RtuLayout: FC = () => {
           let newstationreues = [];
           for (
             let i = 0;
-            i < StationsrtuCopy[findstation]!.rtues!.length;
+            i < stationsrtuCopy[findstation]!.rtues!.length;
             i++
           ) {
-            let findrtu = StationsrtuCopy[findstation]!.deletertues.findIndex(
-              data => data == StationsrtuCopy[findstation]!.rtues[i].id,
+            let findrtu = stationsrtuCopy[findstation]!.deletertues.findIndex(
+              data => data == stationsrtuCopy[findstation]!.rtues[i].id,
             );
             if (findrtu < 0) {
-              newstationreues.push(StationsrtuCopy[findstation]!.rtues[i]);
+              newstationreues.push(stationsrtuCopy[findstation]!.rtues[i]);
             }
           }
-          StationsrtuCopy[findstation].rtues = newstationreues;
-          StationsrtuCopy[findstation].deletertues = [];
-          dispatch(setStationsrtu(StationsrtuCopy));
+          stationsrtuCopy[findstation].rtues = newstationreues;
+          stationsrtuCopy[findstation].deletertues = [];
+          dispatch(setStationsrtu(stationsrtuCopy));
           navigate(`/config/remote-test-units`);
         } catch (error) {
           console.log(error);
@@ -586,6 +723,49 @@ const RtuLayout: FC = () => {
       }
     });
   };
+
+
+  const ondeletedefaultsinglertu = async (rtuid: string, stationid: string) => {
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        let defaultstationsrtuCopy: alldefaultstationsrtutype[] = deepcopy(defaultstationsrtu);
+        let findstation = defaultstationsrtuCopy.findIndex(
+          data => data.stationid == stationid,
+        );
+
+        try {
+          //We delete all the rtus related to the station that have their checkboxes checked.
+
+          const promises = defaultstationsrtuCopy[findstation]?.deletertues.map(
+            (data: string) => $Delete(`otdr/rtu/${data}`),
+          );
+          const results = await Promise.allSettled(promises);
+
+          //then update the station rtu list
+          let newstationreues = [];
+          for (
+            let i = 0;
+            i < defaultstationsrtuCopy[findstation]!.rtues!.length;
+            i++
+          ) {
+            let findrtu = defaultstationsrtuCopy[findstation]!.deletertues.findIndex(
+              data => data == defaultstationsrtuCopy[findstation]!.rtues[i].id,
+            );
+            if (findrtu < 0) {
+              newstationreues.push(defaultstationsrtuCopy[findstation]!.rtues[i]);
+            }
+          }
+          defaultstationsrtuCopy[findstation].rtues = newstationreues;
+          defaultstationsrtuCopy[findstation].deletertues = [];
+          dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
+          navigate(`/config/remote-test-units`);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+  };
+
 
   const onclickCheckbox = (rtuId: string, stationId: string) => {
     const stationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
@@ -608,6 +788,27 @@ const RtuLayout: FC = () => {
     dispatch(setStationsrtu(stationsrtuCopy));
   };
 
+
+  const onclickdefaultrtuCheckbox = (rtuId: string, stationId: string) => {
+    const defaultstationsrtuCopy: alldefaultstationsrtutype[] = deepcopy(defaultstationsrtu);
+    const findstations = defaultstationsrtuCopy.findIndex(
+      data => data.stationid == stationId,
+    );
+
+    let findstationdeletertues = defaultstationsrtuCopy[findstations].deletertues.find(
+      data => data == rtuId,
+    );
+
+    if (findstationdeletertues) {
+      const newstationrtu = defaultstationsrtuCopy[findstations].deletertues.filter(
+        data => data != rtuId,
+      );
+      defaultstationsrtuCopy[findstations].deletertues = newstationrtu;
+    } else {
+      defaultstationsrtuCopy[findstations].deletertues.push(rtuId);
+    }
+    dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
+  };
   // ############################################################
   return (
     <SidebarLayout>
@@ -722,7 +923,7 @@ const RtuLayout: FC = () => {
                                                   <div className="relative w-full">
                                                     <div className="absolute left-[16px] top-[-28.5px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                                                     <div className="absolute bottom-[-11px]  left-[14px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div>
-                                                    {networkregions.find(
+                                                    {/* {networkregions.find(
                                                       dataa =>
                                                         dataa.networkid ==
                                                         networkdata.id,
@@ -736,7 +937,7 @@ const RtuLayout: FC = () => {
                                                             ? 'top-[-31px]'
                                                             : 'top-[-29px]'
                                                         }  left-[-2px] z-30 h-full w-[5px] bg-[#E7EFF7]`}></div>
-                                                    ) : null}
+                                                    ) : null} */}
 
                                                     {regionstations
                                                       .find(
@@ -930,6 +1131,255 @@ const RtuLayout: FC = () => {
                                         );
                                       },
                                     )}
+
+<div className='w-full'>
+
+                              <Itembtn
+                                // key={`${networkdata.id}&${networkdata.id}`}
+                                // to={`/regions/defaultregionemptypage/${networkdata.id}`}
+                                // canAdd={false}
+                                // canDelete={false}
+                                // selected={false}
+                                // onDelete={() =>
+                                //   dispatch(
+                                //     deletedefaultRegion({
+                                //       networkid: networkdata.id,
+                                //     }),
+                                //   )
+                                // }
+                                candelete={false}
+                                onclick={() => {
+                                  setLoadingid(`${networkdata.id}${networkdata.id}`);
+                                  // onclikitems(
+                                  //   `${networkdata.id}${networkdata.id}&`
+                                  // );
+                                  onclickdefaultregion(networkdata.id)
+                              
+                                }}
+                                id={`${networkdata.id}${networkdata.id}`}
+                                name="Default Region"
+                              />
+                         
+                            </div>
+                            {networkselectedlist.indexOf(
+                                              `${networkdata.id}${networkdata.id}`
+                                            ) > -1 ? (
+                                              <>
+                                                {loadingid == `${networkdata.id}${networkdata.id}` &&
+                                                loadingdata ? (
+                                                  <GeneralLoadingSpinner
+                                                    size="w-8 h-8"
+                                                    className="ml-8 mt-2"
+                                                  />
+                                                ) : (
+                                                  <div className="relative w-full">
+                                                    <div className="absolute left-[16px] top-[-28.5px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                                                    <div className="absolute bottom-[-11px]  left-[14px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div>
+                                                    {networkregions.find(
+                                                      dataa =>
+                                                        dataa.networkid ==
+                                                        networkdata.id,
+                                                    )?.regions.length ==
+                                                    index + 1 ? (
+                                                      <div
+                                                        className={`absolute left-[-1px] ${
+                                                          networkselectedlist.indexOf(
+                                                            networkdata.id,
+                                                          ) > -1
+                                                            ? 'top-[-31px]'
+                                                            : 'top-[-29px]'
+                                                        }  left-[-2px] z-30 h-full w-[5px] bg-[#E7EFF7]`}></div>
+                                                    ) : null}
+
+                                                    {defaultregionstations
+                                                    .find(
+                                                     dataa =>
+                                                     dataa?.networkid == networkdata?.id,
+                                                       )
+                                                      ?.stations.map(
+                                                        (
+                                                          satationdata,
+                                                          index: number,
+                                                        ) => {
+                                                          let findrtu =
+                                                            defaultstationsrtu?.find(
+                                                              data =>
+                                                                data.stationid ==
+                                                                satationdata.id,
+                                                            )?.rtues || [];
+                                                          return (
+                                                            <div
+                                                              key={index}
+                                                              className=" relative ml-[16px] mt-[2px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
+                                                              <div className="absolute bottom-[-17px]  left-[25px] z-10 h-[40px] w-[5px] border-l-[1px] bg-[#E7EFF7]"></div>
+                                                              {/* {index == regionstations.length - 1 ? ( */}
+
+                                                              {/* ) : null} */}
+                                                              <div className="flex w-[290px] flex-row items-center ">
+                                                                <span className="mt-[-6px] w-[10px] text-[12px]">
+                                                                  ...
+                                                                </span>
+                                                                <ItembtnStation
+                                                                type="default"
+                                                                  onclick={() => {
+                                                                    setLoadingid(
+                                                                      satationdata.id,
+                                                                    );
+                                                                    onclickdefaultstation(
+                                                                      satationdata.id,
+                                                                      // regionsdata.id,
+                                                                      // networkdata.id,
+                                                                      networkdata.id,
+                                                                    );
+                                                                    // dispatch(setRtuStationidadmin(satationdata.id))
+                                                                  }}
+                                                                  canAdd={
+                                                                    loggedInUser.role ===
+                                                                      UserRole.SUPER_USER ||
+                                                                    rtunetworkidadmin.includes(
+                                                                      networkdata.id,
+                                                                    ) ||
+                                                                    rturegionidadmin.includes(
+                                                                      networkdata.id,
+                                                                    )
+                                                                  }
+                                                                  candelete={
+                                                                    loggedInUser.role ===
+                                                                      UserRole.SUPER_USER ||
+                                                                    rtunetworkidadmin.includes(
+                                                                      networkdata.id,
+                                                                    ) ||
+                                                                    rturegionidadmin.includes(
+                                                                      networkdata.id,
+                                                                    )
+                                                                  }
+                                                                  id={
+                                                                    satationdata.id
+                                                                  }
+                                                                  regionid={
+                                                                    "1111"
+                                                                  }
+                                                                  networkid={
+                                                                    networkdata.id
+                                                                  }
+                                                                  name={
+                                                                    satationdata.name
+                                                                  }
+                                                                />
+                                                              </div>
+                                                              {networkselectedlist.indexOf(
+                                                                satationdata.id,
+                                                              ) > -1 ? (
+                                                                <>
+                                                                  {loadingid ==
+                                                                    satationdata.id &&
+                                                                  loadingdata ? (
+                                                                    <GeneralLoadingSpinner
+                                                                      size="w-8 h-8"
+                                                                      className="ml-[60px] mt-2"
+                                                                    />
+                                                                  ) : (
+                                                                    <div
+                                                                      className={`relative ml-[28px] flex  flex-col  border-l-[1px] border-dotted  border-[#000000]`}>
+                                                                      {findrtu.length >
+                                                                      0 ? (
+                                                                        <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                                                                      ) : null}
+                                                                      {defaultstationsrtu
+                                                                        ?.find(
+                                                                          data =>
+                                                                            data.stationid ==
+                                                                            satationdata.id,
+                                                                        )
+                                                                        ?.rtues.map(
+                                                                          (
+                                                                            rtudata,
+                                                                            index: number,
+                                                                          ) => {
+                                                                            return (
+                                                                              <div
+                                                                                key={
+                                                                                  index
+                                                                                }
+                                                                                className="ml-[0px] mt-[10px] flex w-full flex-row items-center">
+                                                                                <span className="mt-[-6px] w-[20px] text-[12px] ">
+                                                                                  .....
+                                                                                </span>
+                                                                                <SidebarItem
+                                                                                  onclick={() => {
+                                                                                    if (
+                                                                                      !location.pathname.includes(
+                                                                                        `${rtudata.id}/${satationdata.id}/${networkdata.id}/${networkdata.id}`,
+                                                                                      )
+                                                                                    ) {
+                                                                                      dispatch(
+                                                                                        setrtugetdetailStatus(
+                                                                                          false,
+                                                                                        ),
+                                                                                      );
+                                                                                    }
+
+                                                                                    setSelectedtabid(
+                                                                                      rtudata.id,
+                                                                                    );
+                                                                                  }}
+                                                                                  selected={
+                                                                                    selectedtabId ==
+                                                                                    rtudata.id
+                                                                                      ? true
+                                                                                      : false
+                                                                                  }
+                                                                                  checkstatus={finddefaultstationdeletertuid(
+                                                                                    satationdata.id,
+                                                                                    rtudata.id,
+                                                                                  )}
+                                                                                  onclickcheckbox={() =>
+                                                                                    onclickdefaultrtuCheckbox(
+                                                                                      rtudata.id,
+                                                                                      satationdata.id,
+                                                                                    )
+                                                                                  }
+                                                                                  canDelete={
+                                                                                    loggedInUser.role ===
+                                                                                      UserRole.SUPER_USER ||
+                                                                                    rtunetworkidadmin.includes(
+                                                                                      networkdata.id,
+                                                                                    ) ||
+                                                                                    rturegionidadmin.includes(
+                                                                                      networkdata.id,
+                                                                                    )
+                                                                                  }
+                                                                                  onDelete={() =>
+                                                                                    ondeletedefaultsinglertu(
+                                                                                      rtudata.id,
+                                                                                      satationdata.id,
+                                                                                    )
+                                                                                  }
+                                                                                  enabelcheck={
+                                                                                    true
+                                                                                  }
+                                                                                  className="w-[200px]"
+                                                                                  name={
+                                                                                    rtudata.name
+                                                                                  }
+                                                                                  to={`${rtudata.id}/${satationdata.id}/${networkdata.id}/${networkdata.id}`}
+                                                                                />
+                                                                              </div>
+                                                                            );
+                                                                          },
+                                                                        )}
+                                                                    </div>
+                                                                  )}
+                                                                </>
+                                                              ) : null}
+                                                            </div>
+                                                          );
+                                                        },
+                                                      )}
+                                                  </div>
+                                                )}
+                                              </>
+                                            ) : null}
                                 </>
                               )}
                             </>
@@ -940,6 +1390,8 @@ const RtuLayout: FC = () => {
                 </div>
               </>
             )}
+
+            
           </>
         ) : null}
       </div>

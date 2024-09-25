@@ -68,7 +68,14 @@ export type regionstationstype = {
   payload: {regionid: string; stations: {name: string; id: string}[]}[];
   type: string;
 };
-
+export type defaultregionstationstype = {
+  payload: {networkid: string; stations: {name: string; id: string}[]};
+  type: string;
+};
+export type alldefaultregionstationstype = {
+  networkid: string;
+  stations: {name: string; id: string}[];
+};
 export type allstationsrtutype = {
   stationid: string;
   regionid: string;
@@ -77,11 +84,22 @@ export type allstationsrtutype = {
   deletertues: string[];
 };
 
+
+
+export type alldefaultstationsrtutype = {
+  stationid: string;
+  networkid: string;
+  rtues: {name: string; id: string}[];
+  deletertues: string[];
+};
 export type stationsrtutype = {
   payload: allstationsrtutype[];
   type: string;
 };
-
+export type defaultstationsrtutype = {
+  payload: alldefaultstationsrtutype[];
+  type: string;
+};
 export type allnetworkregionstype = {
   networkid: string;
   regions: {name: string; id: string}[];
@@ -91,7 +109,10 @@ export type allregionstationstype = {
   regionid: string;
   stations: {name: string; id: string}[];
 };
-
+export type alldefaulregionstationstype = {
+  networkid: string;
+  stations: {name: string; id: string}[];
+};
 type leftbarStationcheckboxlist = {
   length: number;
   stationid: string;
@@ -101,7 +122,9 @@ export type initialStatetype = {
   leftbarStationcheckboxlist: leftbarStationcheckboxlist;
   networkregions: allnetworkregionstype[];
   regionstations: allregionstationstype[];
+  defaultregionstations: alldefaultregionstationstype[];
   stationsrtu: allstationsrtutype[];
+  defaultstationsrtu: alldefaultstationsrtutype[];
   allrtues: string[];
   allLeftbar: allLeftbartype[];
   rtunetworkidadmin: string[];
@@ -111,6 +134,8 @@ export type initialStatetype = {
 };
 const initialState: initialStatetype = {
   leftbarStationcheckboxlist: [],
+  defaultstationsrtu:[],
+  defaultregionstations:[],
   networkregions: [],
   regionstations: [],
   stationsrtu: [],
@@ -147,9 +172,31 @@ const rtu = createSlice({
     setRegionstations: (state, action: regionstationstype) => {
       state.regionstations = action.payload;
     },
+    setdefaultRegionstations: (state, action: defaultregionstationstype) => {
+      console.log('🧟', action.payload);
+
+      const defaultregionStationsCopy = deepcopy(state.defaultregionstations);
+      const finddataindex = state.defaultregionstations.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+      if (finddataindex > -1) {
+        console.log('ok');
+
+        defaultregionStationsCopy[finddataindex].stations =
+          action.payload.stations;
+      } else {
+        console.log('no');
+        defaultregionStationsCopy.push(action.payload);
+      }
+      state.defaultregionstations = defaultregionStationsCopy;
+    },
     // ----------------------------------------------------------------
     setStationsrtu: (state, action: stationsrtutype) => {
       state.stationsrtu = action.payload;
+    },
+
+    setdefaultStationsrtu: (state, action: defaultstationsrtutype) => {
+      state.defaultstationsrtu = action.payload;
     },
     // ----------------------------------------------------------------
     setRtuNetworkidadmin: (state, action: {type: string; payload: string}) => {
@@ -199,7 +246,9 @@ export const {
   setRtuNetworkidadmin,
   setRtuRegionidadmin,
   setRtuStationidadmin,
-  setrtugetdetailStatus
+  setrtugetdetailStatus,
+  setdefaultRegionstations,
+  setdefaultStationsrtu
 } = rtu.actions;
 
 export default rtu.reducer;
