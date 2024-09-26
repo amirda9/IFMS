@@ -139,6 +139,8 @@ type serverity = {
   longitude: number;
   alarm_type:string
 };
+type pointsdatatype={longitude:string,latitude:string,linkdetail:linktype}
+
 /* ------ component ----------- */
 
 function ZoomComponent({fullscreen}: fullscreen) {
@@ -173,6 +175,7 @@ const MapPage = () => {
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [fullscreen, setfullscreen] = useState(false);
   const [alarms, setAlarms] = useState<alarmtype[]>([]);
+  const [allLinkpoints,setAllLinkpoints]=useState<pointsdatatype[]>([])
   const [showlinktoolkit, setShowlinltoolkit] = useState(false);
   const [leftbarstate, setLeftbarstate] = useState(false);
   const [switchstatus, setSwitchstatus] = useState(true);
@@ -192,6 +195,7 @@ const MapPage = () => {
   const [loading, setLoading] = useState(false);
   const [selectednetworks, setSelectednetworks] = useState<string[]>([]);
   const [links, setLinks] = useState<linktype[]>([]);
+
   const [sumselectedregionlatitude, setSumSelectedregionlatitude] =
     useState<any>([]);
   const [sumselectedregionlongitude, setSumSelectedregionlongitude] =
@@ -414,14 +418,16 @@ const MapPage = () => {
     setorangeallarms(false);
     setredallarms(false);
     setyellowallarms(false);
+
     try {
+      let allpoints:any=[]
       setLoading(true);
       const [mapdetailresponse, allalarmsresponse] = await Promise.all([
         $Post(`otdr/map`, selectednetworks),
        mount?null: $Post(`otdr/map/map_alarms/`, selectednetworks)
       ]);
       const responsedata = await mapdetailresponse?.json();
-      console.log("gggggggresponsedatagggggg",responsedata);
+   
       
 if(!mount){
   const alarmsdata: alarmtype[] = await allalarmsresponse?.json();
@@ -436,7 +442,7 @@ if(!mount){
   setAlarms(filteredData);
 }
 
-   
+
       let regiondata: any = [];
       let stationdata: Stationtype[] = [];
       let linksdata = [];
@@ -469,6 +475,7 @@ if(!mount){
         }
 
         for (let d = 0; d < responsedata[i].links.length; d++) {
+          allpoints.push(...responsedata[i].links[d].link_points.map((dataa:{latitude:number,longitude:number})=>({latitude:dataa.latitude,longitude:dataa.longitude,linkdetail:responsedata[i].links[d]})))
           const findstationdata = linksdata.findIndex(
             data => data.id == responsedata[i].links[d].id,
           );
@@ -477,6 +484,7 @@ if(!mount){
           }
         }
       }
+      setAllLinkpoints(allpoints)
       setRegions(regiondata);
       setStaations(stationdata);
       setLinks(linksdata);
@@ -656,7 +664,7 @@ if(!mount){
     } else return [];
   }, [alarms,orangealarms]);
   // console.log('highSeverityEvents', highSeverityEvents);
-
+  console.log("gggggggresponsedatagggggg",allLinkpoints);
   // ******************** return ****************** return ************************** return *******************************
   return (
     <>
@@ -1317,73 +1325,134 @@ if(!mount){
             ) : (
               <>
                 {switchstatus ? (
+                  // <>
+                  //   {links?.map((data, index) => {
+                  //     let start = Stations?.find(
+                  //       dat => dat?.id == data?.source?.id,
+                  //     );
+
+                  //     let end = Stations?.find(
+                  //       dat => dat?.id == data?.destination?.id,
+                  //     );
+                  //     if (start && end) {
+                  //       return (
+                  //         <>
+                  //           <Polyline
+                  //             key={index}
+                  //             eventHandlers={{
+                  //               click: e => {
+                  //                 setRightbarState('link');
+                  //                 setSelectedLink(data);
+                  //               },
+                  //               mouseover: e => {
+                  //                 setShowlinltoolkit(true);
+                  //                 setSelectedLink(data);
+                  //               },
+                  //               mouseout: e => {
+                  //                 setShowlinltoolkit(false);
+                  //                 // alert('dfdfd');
+                  //               },
+                  //             }}
+                  //             positions={[
+                  //               [ start.longitude,start.latitude],
+                  //               [end.longitude,end.latitude],
+                  //             ]}
+                  //             color="red"></Polyline>
+
+                  //           <Polyline
+                  //             key={data.id}
+                  //             weight={5}
+                  //             eventHandlers={{
+                  //               click: e => {
+                  //                 setRightbarState('link');
+                  //                 setSelectedLink(data);
+                  //               },
+                  //               mouseover: e => {
+                  //                 setShowlinltoolkit(true);
+                  //                 setSelectedLink(data);
+                  //               },
+                  //               mouseout: e => {
+                  //                 setShowlinltoolkit(false);
+                  //               },
+                  //             }}
+                  //             positions={[
+                  //               [start.latitude, start.longitude],
+                  //               [end.latitude, end.longitude],
+                  //             ]}
+                  //             pathOptions={{
+                  //               color: 'black',
+                  //               weight: 20,
+                  //               opacity: 0,
+                  //             }}
+                  //             // color="black"
+                  //           ></Polyline>
+                  //         </>
+                  //       );
+                  //     } else {
+                  //       return <></>;
+                  //     }
+                  //   })}
+                  // </>
                   <>
-                    {links?.map((data, index) => {
-                      let start = Stations?.find(
-                        dat => dat?.id == data?.source?.id,
-                      );
+                  {allLinkpoints.map((pointdata,index) => {
+                      const prevPointData = index > 0 ? allLinkpoints[index - 1] : pointdata;
+                    return(
+                      <>
+                      <Polyline
+                        key={index}
+                        eventHandlers={{
+                          click: e => {
+                            setRightbarState('link');
+                            setSelectedLink(pointdata.linkdetail);
+                          },
+                          mouseover: e => {
+                            setShowlinltoolkit(true);
+                            setSelectedLink(pointdata.linkdetail);
+                          },
+                          mouseout: e => {
+                            setShowlinltoolkit(false);
+                            // alert('dfdfd');
+                          },
+                        }}
+                        positions={[
+                          [ Number(prevPointData.longitude),Number(prevPointData.latitude)],
+                          [Number(pointdata.longitude),Number(pointdata.latitude)],
+                        ]}
+                        color="red"></Polyline>
 
-                      let end = Stations?.find(
-                        dat => dat?.id == data?.destination?.id,
-                      );
-                      if (start && end) {
-                        return (
-                          <>
-                            <Polyline
-                              key={index}
-                              eventHandlers={{
-                                click: e => {
-                                  setRightbarState('link');
-                                  setSelectedLink(data);
-                                },
-                                mouseover: e => {
-                                  setShowlinltoolkit(true);
-                                  setSelectedLink(data);
-                                },
-                                mouseout: e => {
-                                  setShowlinltoolkit(false);
-                                  // alert('dfdfd');
-                                },
-                              }}
-                              positions={[
-                                [ start.longitude,start.latitude],
-                                [end.longitude,end.latitude],
-                              ]}
-                              color="red"></Polyline>
+                      <Polyline
+                        key={index}
+                        weight={5}
+                        eventHandlers={{
+                          click: e => {
+                            setRightbarState('link');
+                            setSelectedLink(pointdata.linkdetail);
+                          },
+                          mouseover: e => {
+                            setShowlinltoolkit(true);
+                            setSelectedLink(pointdata.linkdetail);
+                          },
+                          mouseout: e => {
+                            setShowlinltoolkit(false);
+                          },
+                        }}
+                        positions={[
+                          [Number(prevPointData.longitude),Number(prevPointData.latitude)],
+                          [Number(pointdata.longitude),Number(pointdata.latitude)],
+                        ]}
+                        pathOptions={{
+                          color: 'black',
+                          weight: 20,
+                          opacity: 0,
+                        }}
+                        // color="black"
+                      ></Polyline>
+                    </>
+                    )
+                  }
 
-                            <Polyline
-                              key={data.id}
-                              weight={5}
-                              eventHandlers={{
-                                click: e => {
-                                  setRightbarState('link');
-                                  setSelectedLink(data);
-                                },
-                                mouseover: e => {
-                                  setShowlinltoolkit(true);
-                                  setSelectedLink(data);
-                                },
-                                mouseout: e => {
-                                  setShowlinltoolkit(false);
-                                },
-                              }}
-                              positions={[
-                                [start.latitude, start.longitude],
-                                [end.latitude, end.longitude],
-                              ]}
-                              pathOptions={{
-                                color: 'black',
-                                weight: 20,
-                                opacity: 0,
-                              }}
-                              // color="black"
-                            ></Polyline>
-                          </>
-                        );
-                      } else {
-                        return <></>;
-                      }
-                    })}
+                      
+                  )}
                   </>
                 ) : null}
               </>
