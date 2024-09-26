@@ -97,17 +97,14 @@ const RtuPortsPage: FC = () => {
         ),
       ]);
       const allrtuports: allportstype = await getdata?.json();
-      console.log('🖌️', allrtuports);
 
       // let rtuports: allportstype = deepcopy(allrtuports);
       let rtuports: allportstype =  [];
       if (allrtuports.length < 8) {
         for (let i = 0; i < 8; i++) {
-          const findsweachindex=allrtuports.findIndex((data) => data.optical_switch_port_index == i+1)
-        console.log("findsweachindex",findsweachindex,{...allrtuports[findsweachindex],index:i});
-        
+          const findsweachindex=allrtuports.findIndex((data) => data.optical_switch_port_index == i+1)        
         if(findsweachindex>-1){
-  rtuports.push({...allrtuports[findsweachindex],index:i+1});
+           rtuports.push({...allrtuports[findsweachindex],index:i+1});
         }else{
        rtuports.push({
             optical_route_id: '',
@@ -425,9 +422,6 @@ const RtuPortsPage: FC = () => {
     }
   };
 
-  console.log("allrtuports",allrtuports);
-  console.log("allcreateport",allcreateport);
-  
 
   if (loading) {
     return <h1>Loading ...</h1>;
@@ -507,7 +501,7 @@ const RtuPortsPage: FC = () => {
                       {data.end_station?.name || null}
                     </span>
 
-                    <span className="basis-32">{data.length.toFixed(3)}</span>
+                    <span className="basis-32">{data.length.toFixed(1)}</span>
 
                     <div className="basis-40">
                       <Select
