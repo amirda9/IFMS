@@ -103,17 +103,17 @@ const RtuPortsPage: FC = () => {
       let rtuports: allportstype =  [];
       if (allrtuports.length < 8) {
         for (let i = 0; i < 8; i++) {
-          const findsweachindex=allrtuports.findIndex((data) => data.optical_switch_port_index == i)
+          const findsweachindex=allrtuports.findIndex((data) => data.optical_switch_port_index == i+1)
         console.log("findsweachindex",findsweachindex,{...allrtuports[findsweachindex],index:i});
         
         if(findsweachindex>-1){
-  rtuports.push({...allrtuports[findsweachindex],index:i});
+  rtuports.push({...allrtuports[findsweachindex],index:i+1});
         }else{
        rtuports.push({
             optical_route_id: '',
-            optical_switch_port_index:i,
+            optical_switch_port_index:i+1,
             state: '',
-            index: i,
+            index: i+1,
             id: '',
             new: false,
             end_station: {
@@ -468,7 +468,7 @@ const RtuPortsPage: FC = () => {
                     value={data.optical_route.name}
                     onChange={e =>
                       changeupticalroute(
-                        index,
+                        index+1,
                         e.target.value.split('_')[0],
                         e.target.value.split('_')[1],
                         e.target.value.split('_')[2],
@@ -513,7 +513,7 @@ const RtuPortsPage: FC = () => {
                       <Select
                         onChange={e =>
                           changestate(
-                            index,
+                            index+1,
                             e.target.value.toString().toLowerCase(),
                             data.optical_route_id,
                           )
