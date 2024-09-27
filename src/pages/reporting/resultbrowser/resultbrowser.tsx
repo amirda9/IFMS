@@ -751,22 +751,21 @@ return formattedTime;
       if(response?.status == 200){
 
        const responsedata:resultdata[]=await response.json()
-    console.log("responsedata",responsedata);
     
-       const newresponsedata=responsedata.map((data,index) => ({ 
-        index: index,
-        opticalRouteId:data?.optical_route?.id,
-        id:data.id,
-        date: data?.test_date,
-        rtu: data?.rtu?.name,
-        opticalRoute: data?.optical_route?.name,
-        testSetup: data?.test_setup?.name,
-        alarms:data?.alarm_cnt,
-        state: data?.status,
-        length: data?.test_len,
-        loss: data?.event_loss,
-        detail: '',
-        delete: ''}))
+    const newresponsedata=responsedata.map((data,index) => ({ 
+      index: index,
+      opticalRouteId:data?.optical_route?.id,
+      id:data.id,
+      date: data?.test_date,
+      rtu: data?.rtu?.name,
+      opticalRoute: data?.optical_route?.name,
+      testSetup: data?.test_setup?.name,
+      alarms:data?.alarm_cnt,
+      state: data?.status,
+      length: data?.test_len,
+      loss: data?.event_loss,
+      detail: '',
+      delete: ''}))
        setResultdata(newresponsedata)
       }else{
         toast('Encountered an error', {type: 'error', autoClose: 1000});
