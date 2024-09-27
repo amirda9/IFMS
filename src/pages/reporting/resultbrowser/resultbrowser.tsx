@@ -272,9 +272,6 @@ function Resultbrowser() {
     );
   }
   // ----- optical ------------------------ optical ----------------------- optical ---------------------------
-console.log("optical_route_id",optical_route_id);
-console.log("rtu_id",rtu_id);
-
   const navigte = useNavigate();
 
 
@@ -707,8 +704,6 @@ console.log("rtu_id",rtu_id);
     }
     dispatch(setStationsrtu(stationsrtuCopy));
   };
-
-  console.log("networkregions",networkregions);
   
   const getCurrentTime = () => {
     const now = new Date();
@@ -756,28 +751,28 @@ return formattedTime;
       if(response?.status == 200){
 
        const responsedata:resultdata[]=await response.json()
+    console.log("responsedata",responsedata);
     
        const newresponsedata=responsedata.map((data,index) => ({ 
         index: index,
-        opticalRouteId:data.optical_route.id,
+        opticalRouteId:data?.optical_route?.id,
         id:data.id,
-        date: data.test_date,
-        rtu: data.rtu.name,
-        opticalRoute: data.optical_route.name,
-        testSetup: data.test_setup.name,
-        alarms:data.alarm_cnt,
-        state: data.status,
-        length: data.test_len,
-        loss: data.event_loss,
+        date: data?.test_date,
+        rtu: data?.rtu?.name,
+        opticalRoute: data?.optical_route?.name,
+        testSetup: data?.test_setup?.name,
+        alarms:data?.alarm_cnt,
+        state: data?.status,
+        length: data?.test_len,
+        loss: data?.event_loss,
         detail: '',
         delete: ''}))
        setResultdata(newresponsedata)
-       console.log("responsedata",responsedata);  
       }else{
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     } catch (error) {
-      console.log(`error is:${error}`);
+      console.log(`error iss:${error}`);
       toast('Encountered an error', {type: 'error', autoClose: 1000});
     } finally{
       setLoadingdata(false)
