@@ -1281,6 +1281,19 @@ const RtuLayout: FC = () => {
                                                                   ) : (
                                                                     <div
                                                                       className={`relative ml-[28px] flex  flex-col  border-l-[1px] border-dotted  border-[#000000]`}>
+                                                                   
+                                                                   {defaultregionstations.find(dataa =>dataa?.networkid == networkdata?.id)?.stations.length ==
+                                                          index + 1 ? (
+                                                            <div
+                                                              className={`absolute left-[-1px] ${
+                                                                networkselectedlist.indexOf(
+                                                                  `${networkdata.id}${networkdata.id}`,
+                                                                ) > -1
+                                                                  ? 'top-[-29px]'
+                                                                  : 'top-[-29px]'
+                                                              }  left-[-34px] z-30 h-full w-[8px] bg-[#E7EFF7]`}></div>
+                                                           ) : null}
+                                                                   
                                                                       {findrtu.length >
                                                                       0 ? (
                                                                         <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
