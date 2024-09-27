@@ -742,8 +742,8 @@ return formattedTime;
     const now = new Date();
     const formattedTime = now.toISOString().slice(0, 16);
     const calculatelasttime=selectdate == "Day"?getTimeMinusOneDay(last):selectdate == "houre"?getTimeMinusOneHour(last):getTimeMinusFiveMinutes(last)
-    const fromDate=selectedradiotime == 'Last'?formattedTime:fromdate
-    const lastDate=selectedradiotime == 'Last'?calculatelasttime:lastdate
+    const fromDate=selectedradiotime == 'Last'?calculatelasttime:fromdate
+    const lastDate=selectedradiotime == 'Last'?formattedTime:lastdate
      const url = `otdr/optical-route/measurement/result-browser?${filterByTime ? `from_time=${fromDate}&` : ''}${selectedradio === 'Filter By Optical Route' ? `optical_route_id=${optical_route_id}` : `rtu_id=${rtu_id}`}${filterByTime ? `&to_time=${lastDate}` : ''}`;
     try {
       setLoadingdata(true)
@@ -1116,7 +1116,7 @@ return formattedTime;
                                                                                           )
                                                                                         }
                                                                                         enabelcheck={
-                                                                                          true
+                                                                                          false
                                                                                         }
                                                                                         className="w-[200px]"
                                                                                         name={
@@ -1290,7 +1290,7 @@ return formattedTime;
                                             //   networkdata.id,
                                             // )
                                           }
-                                          enabelcheck={true}
+                                          enabelcheck={false}
                                           className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
                                           name={data.name}
                                           to={`#`}
