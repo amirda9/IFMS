@@ -1,7 +1,12 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType'
 import { deepcopy } from '~/util';
-
+export type alldefaultstationsrtutype = {
+  stationid: string;
+  networkid: string;
+  rtues: {name: string; id: string}[];
+  deletertues: string[];
+};
 type veiwerlists = {
   payload: opticalrouteUpdateTestSetupDetailtype;
   type: string;
@@ -19,8 +24,14 @@ type networkopticaltypeAction={
 export  type alldeleteopticalroutetype={
   networkid: string; opticalrouts:string[];
 }[]
-
-
+export type alldefaultregionstationstype = {
+  networkid: string;
+  stations: {name: string; id: string}[];
+};
+export type defaultstationsrtutype = {
+  payload: alldefaultstationsrtutype[];
+  type: string;
+};
 type alldeleteopticalroutetypeAction={
   payload:alldeleteopticalroutetype;
   type: string;
@@ -30,12 +41,14 @@ type networkopticalroutetype={networkid: string; opticalrouts: {name: string; id
 
 
 type initialStatetype={
+  defaultregionstations: alldefaultregionstationstype[];
   opticalroutUpdateTestsetupDetail:opticalrouteUpdateTestSetupDetailtype
   resultnetworkselectedlist:string[]
   resultbrosernetworkoptical:networkopticalroutetype[]
   alldeleteopticalroute:alldeleteopticalroutetype
   opticalroutenetworkidadmin:string[]
   gettestsetupdetaildata:boolean,
+  defaultstationsrtu: alldefaultstationsrtutype[];
   modalloading:boolean,
   openallopt:boolean
 }
@@ -109,6 +122,8 @@ const initialState:initialStatetype = {
         period_time: "hourly"
       }
     }},
+    defaultregionstations:[],
+    defaultstationsrtu:[],
     resultnetworkselectedlist:[],
     resultbrosernetworkoptical:[],
     alldeleteopticalroute:[],
@@ -116,6 +131,11 @@ const initialState:initialStatetype = {
     gettestsetupdetaildata:false,
     modalloading:false,
     openallopt:false
+};
+
+export type defaultregionstationstype = {
+  payload: {networkid: string; stations: {name: string; id: string}[]};
+  type: string;
 };
 
 const resultbroserOpticalroutslice = createSlice({
@@ -164,7 +184,28 @@ const resultbroserOpticalroutslice = createSlice({
     },
     setopenallopt:(state, action: {type: string; payload: boolean}) => {
       state.openallopt=action.payload
-    }
+    },
+    setdefaultRegionstations: (state, action: defaultregionstationstype) => {
+      console.log('🧟', action.payload);
+
+      const defaultregionStationsCopy = deepcopy(state.defaultregionstations);
+      const finddataindex = state.defaultregionstations.findIndex(
+        data => data.networkid == action.payload.networkid,
+      );
+      if (finddataindex > -1) {
+        console.log('ok');
+
+        defaultregionStationsCopy[finddataindex].stations =
+          action.payload.stations;
+      } else {
+        console.log('no');
+        defaultregionStationsCopy.push(action.payload);
+      }
+      state.defaultregionstations = defaultregionStationsCopy;
+    },
+    setdefaultStationsrtu: (state, action: defaultstationsrtutype) => {
+      state.defaultstationsrtu = action.payload;
+    },
   },
 });
 
@@ -177,7 +218,9 @@ export const {
   changeOpticalroutename,
   setgettestsetupdetaildata,
   setmodalloading,
-  setopenallopt
+  setopenallopt,
+  setdefaultStationsrtu,
+  setdefaultRegionstations
 } = resultbroserOpticalroutslice.actions;
 
 export default resultbroserOpticalroutslice.reducer;
