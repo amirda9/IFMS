@@ -48,6 +48,16 @@ type tabelItemstype = {
   event_code: string | undefined;
 };
 
+
+type alllalarmsType=[
+  {
+    alarm: {
+      id: string,
+      name: string
+    },
+    severity: string
+  }
+]
 type eventstype = {
   event_number: number;
   event_location: {
@@ -175,6 +185,26 @@ function Chart() {
   const [mousecursor, setMousecursor] = useState(false);
   const [fixedyaxies, setFixedyaxies] = useState(false);
   const [selectedevents, setSelectedEvents] = useState<any>(null);
+  const [allalarms,setAllalarms]=useState<alllalarmsType | []>([])
+  console.log('locationlocationlocation', location);
+
+  useEffect(() => {
+    const Getmeasermentsalarms = async () => {
+      try {
+        const response = await $Get(
+          `otdr/optical-route/${location.state.optical_route_id}/test-setups/measurements/${location.state.measurement_id}/alarms`,
+        );
+        console.log('responseresponse', response);
+        if (response?.status == 200 || response?.status == 201) {
+          const resonsedata:alllalarmsType = await response.json();
+          setAllalarms(resonsedata)
+          console.log('resonsedataresonsedataresonsedata', resonsedata);
+        }
+      } catch (error) {}
+    };
+
+    Getmeasermentsalarms();
+  }, []);
   const [dragmode, setDragmode] = useState<
     | false
     | 'select'
@@ -229,16 +259,16 @@ function Chart() {
         for (let i = 0; i < datass?.key_events?.events?.length; i++) {
           if (datass?.key_events?.events[i]?.event_code == 'Start of fiber') {
             Arrowevents.push({
-              x: datass?.key_events.events[i]?.event_location?.x,
-              y: datass.key_events.events[i].event_location.y,
+              x: datass?.key_events.events[i]?.event_location,
+              y: datass.key_events.events[i].event_y,
               type: 'arrowevent',
               location: 'start',
               event_number: datass.key_events.events[i].event_number,
             });
           } else if (datass.key_events.events[i].event_code == 'End of fiber') {
             Arrowevents.push({
-              x: datass.key_events.events[i].event_location.x,
-              y: datass.key_events.events[i].event_location.y,
+              x: datass.key_events.events[i].event_location,
+              y: datass.key_events.events[i].event_y,
               type: 'arrowevent',
               location: 'end',
               event_number: datass.key_events.events[i].event_number,
@@ -447,7 +477,7 @@ function Chart() {
           sumloss += Allevents[c].event_loss;
           items.push({
             index: c + 1,
-            Position: (Allevents[c].event_location.x / 1000)
+            Position: (Allevents[c].event_location / 1000)
               .toString()
               .substring(0, 7),
             Loss: Allevents[c]?.event_loss?.toString().substring(0, 7) || '',
@@ -463,31 +493,31 @@ function Chart() {
           });
           if (c < Allevents.length - 1) {
             sumloss +=
-              Allevents[c + 1]?.event_location?.y -
-                Allevents[c]?.event_location?.y || 0;
+              Allevents[c + 1]?.event_y-
+                Allevents[c]?.event_y || 0;
             items.push({
               index: '',
               Position: (
-                (Allevents[c + 1].event_location.x -
-                  Allevents[c].event_location.x) /
+                (Allevents[c + 1].event_location -
+                  Allevents[c].event_location) /
                 1000
               )
                 .toString()
                 .substring(0, 7),
               Loss:
                 (
-                  Allevents[c + 1]?.event_location?.y -
-                  Allevents[c]?.event_location?.y
+                  Allevents[c + 1]?.event_y -
+                  Allevents[c]?.event_y
                 )
                   ?.toString()
                   .substring(0, 7) || '---',
               Reflectance: '',
               Peak: '',
               Attenuation: (
-                (Allevents[c + 1]?.event_location?.y -
-                  Allevents[c]?.event_location?.y) /
-                ((Allevents[c + 1].event_location.x -
-                  Allevents[c].event_location.x) /
+                (Allevents[c + 1]?.event_y -
+                  Allevents[c]?.event_y) /
+                ((Allevents[c + 1].event_location -
+                  Allevents[c].event_location) /
                   1000)
               )
                 .toString()
@@ -593,16 +623,16 @@ function Chart() {
     for (let i = 0; i < chartdata?.key_events?.events?.length; i++) {
       if (chartdata?.key_events?.events[i]?.event_code == 'Start of fiber') {
         Arrowevents.push({
-          x: chartdata?.key_events.events[i]?.event_location?.x,
-          y: chartdata.key_events.events[i].event_location.y,
+          x: chartdata?.key_events.events[i]?.event_location,
+          y: chartdata.key_events.events[i].event_y,
           type: 'arrowevent',
           location: 'start',
           event_number: chartdata.key_events.events[i].event_number,
         });
       } else if (chartdata.key_events.events[i].event_code == 'End of fiber') {
         Arrowevents.push({
-          x: chartdata.key_events.events[i].event_location.x,
-          y: chartdata.key_events.events[i].event_location.y,
+          x: chartdata.key_events.events[i].event_location,
+          y: chartdata.key_events.events[i].event_y,
           type: 'arrowevent',
           location: 'end',
           event_number: chartdata.key_events.events[i].event_number,
@@ -821,11 +851,11 @@ function Chart() {
       setfakeEvents([
         {
           x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[0]?.event_location?.x,
+            dataa => chartdata?.key_events?.events[0]?.event_location,
           ),
           y: [...Array(41).keys()].map(
             (dat, index) =>
-              chartdata?.key_events?.events[0]?.event_location?.y +
+              chartdata?.key_events?.events[0]?.event_y +
               index / 2 -
               10,
           ),
@@ -845,11 +875,11 @@ function Chart() {
         },
         {
           x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[1]?.event_location?.x,
+            dataa => chartdata?.key_events?.events[1]?.event_location,
           ),
           y: [...Array(41).keys()].map(
             (dat, index) =>
-              chartdata?.key_events?.events[1]?.event_location?.y +
+              chartdata?.key_events?.events[1]?.event_y +
               index / 2 -
               10,
           ),
@@ -867,11 +897,11 @@ function Chart() {
         },
         {
           x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[2]?.event_location?.x,
+            dataa => chartdata?.key_events?.events[2]?.event_location,
           ),
           y: [...Array(41).keys()].map(
             (dat, index) =>
-              chartdata?.key_events?.events[2]?.event_location?.y +
+              chartdata?.key_events?.events[2]?.event_y +
               index / 2 -
               10,
           ),
@@ -917,8 +947,6 @@ function Chart() {
     setLeftverticaltab('LinkView');
   };
 
-
-
   const showcurveline = (name: string) => {
     const find = allcurve.findIndex(data => data.id == name);
     const find2 = allcurveline.findIndex(data => data.id == name);
@@ -945,16 +973,32 @@ function Chart() {
   };
 
   const movebigline = (name: string, direction: string) => {
-    const verticalLinesCopy = deepcopy(verticalLines);
+    console.log("name",name);
+    console.log("fakeevents",fakeevents);
+    
+  const verticalLinesCopy = deepcopy(verticalLines);
     const findverticalindex = verticalLines.findIndex(
       data => data.name && data.name == name,
     );
+    console.log("findverticalindex",findverticalindex);
+    
     verticalLinesCopy[findverticalindex].x =
       direction == 'right'
         ? verticalLines[findverticalindex].x + 10
         : verticalLines[findverticalindex].x - 10;
     setVerticalLines(verticalLinesCopy);
 
+
+    //   const fakeeventsCopy = deepcopy(fakeevents);
+    // const findverticalindex = fakeevents.findIndex(
+    //   data => data.text && data.text[0] == name,
+    // );
+    // console.log("findverticalindex",findverticalindex);
+    // fakeeventsCopy[findverticalindex].x =
+    //   direction == 'right'
+    //     ? fakeevents[findverticalindex].x + 10
+    //     : fakeevents[findverticalindex].x - 10;
+    // setfakeEvents(fakeeventsCopy);
   };
 
   // ------ component --------- component ------------ component --------------- component ------------------
@@ -1328,10 +1372,8 @@ function Chart() {
   };
 
   const plotwidth = window.innerWidth - 510;
-  console.log(window.innerWidth - 510);
-  console.log('maxx', maxx);
   const ratio = plotwidth / maxx;
-  console.log('ratio', ratio);
+  console.log('chartdata', chartdata);
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       <div className="flex h-[540px]  w-full flex-row">
@@ -1376,14 +1418,8 @@ function Chart() {
                 src={hand}
                 className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
               />
-              <GoZoomIn
-                size={30}
-                className="mt-[20px] cursor-pointer"
-              />
-              <GoZoomOut
-                size={30}
-                className="mt-[20px] cursor-pointer"
-              />
+              <GoZoomIn size={30} className="mt-[20px] cursor-pointer" />
+              <GoZoomOut size={30} className="mt-[20px] cursor-pointer" />
               <img
                 onClick={() => {
                   setFixedyaxies(true), setDragmode('zoom');
@@ -1392,8 +1428,7 @@ function Chart() {
                 className="mt-[20px] h-[30px] w-[30px] cursor-pointer"
               />
               <img
-                onClick={() => {
-                }}
+                onClick={() => {}}
                 src={Vector1}
                 className="mt-[15px] h-[25.5px] w-[30px] cursor-pointer"
               />
@@ -1441,7 +1476,7 @@ function Chart() {
                     y: allcurveline[0]?.data?.map(dat => dat.y),
                     type: 'scatter',
                     mode: 'lines',
-                    line: {width: 6},
+                    line: {width: 2},
                     marker: {color: 'red'},
                   },
 
@@ -1491,8 +1526,6 @@ function Chart() {
                         className={`absolute left-[${data.position}px] top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]`}></div>
                     );
                   })}
-
-       
                 </div>
               );
             })}
@@ -1509,7 +1542,7 @@ function Chart() {
               Length={(
                 chartdata?.key_events?.events[
                   chartdata.key_events.events.length - 1
-                ].event_location.x / 1000
+                ].event_location / 1000
               )
                 .toString()
                 .substring(0, 5)}
@@ -1517,7 +1550,7 @@ function Chart() {
                 Number(chartdata?.key_events?.end_to_end_loss) /
                 (chartdata?.key_events?.events[
                   chartdata?.key_events.events?.length - 1
-                ].event_location.x /
+                ].event_location /
                   1000)
               )
                 .toString()
@@ -1530,10 +1563,11 @@ function Chart() {
               onclick={e => setReightbar(e)}
             />
           ) : reightbar == 'Alarms' ? (
-            <Alarms onclick={e => setReightbar(e)} />
+            <Alarms data={allalarms} onclick={e => setReightbar(e)} />
           ) : (
             <Opticalroute
-              Wavelength={chartdata.fxd_params.actual_wavelength}
+              data={chartdata?.optical_route}
+              Wavelength={chartdata?.fxd_params?.actual_wavelength}
               onclick={e => setReightbar(e)}
             />
           )}
@@ -1619,7 +1653,7 @@ function Chart() {
               </div>
 
               <div className="flex h-[222px] w-[63.9%] flex-col">
-                <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] 2xl:bg-[red]">
+                <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] ">
                   <div className="flex h-full w-[265px] flex-col items-center justify-center">
                     <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
                       Avg. A-B Loss:
