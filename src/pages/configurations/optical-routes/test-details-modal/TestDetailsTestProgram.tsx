@@ -5,6 +5,7 @@ import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutsli
 import {useDispatch, useSelector} from 'react-redux';
 import {useFormik} from 'formik';
 import { deepcopy } from '~/util';
+import Checkbox from '~/components/checkbox/checkbox';
 
 const seperatedate = (time: string) => {
   //The function below takes a date and separates its time and date
@@ -179,7 +180,29 @@ const TestDetailsTestProgram: FC = () => {
             className="mr-[30px]"
             type="time"
           />
-          <RadioButton name="As Soon As Possible" />
+
+<Checkbox
+          checkstatus={ selectedradio.indexOf("As Soon As Possible") > -1}
+          onclick={()=>{
+            let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail)
+             const finddataindex=selectedradio.findIndex((data)=> data == "As Soon As Possible")
+            if (finddataindex> -1) {
+              const selectedradioCopy=deepcopy(selectedradio)
+              selectedradioCopy.splice(finddataindex,1)
+              setSelectedradio(selectedradioCopy);
+            } else {
+              setSelectedradio(prev => [...prev, "As Soon As Possible"]);
+            }
+            formik.setFieldValue('immediately', !formik.values.immediately);
+
+            dataa.test_program.starting_date.immediately = !opticalroutUpdateTestsetupDetail.test_program.starting_date.immediately;
+            dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+          }}
+          iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+          classname={' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'}
+        />
+
+          {/* <RadioButton name="As Soon As Possible" /> */}
         </div>
       </Description>
       <Description label="End Date">
@@ -214,7 +237,28 @@ const TestDetailsTestProgram: FC = () => {
             className="mr-[30px]"
             type="time"
           />
-          <RadioButton name="Indefinite" />
+
+<Checkbox
+          checkstatus={ selectedradio.indexOf("Indefinite") > -1}
+          onclick={()=>{
+            let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail)
+             const finddataindex=selectedradio.findIndex((data)=> data == "Indefinite")
+            if (finddataindex> -1) {
+              const selectedradioCopy=deepcopy(selectedradio)
+              selectedradioCopy.splice(finddataindex,1)
+              setSelectedradio(selectedradioCopy);
+            } else {
+              setSelectedradio(prev => [...prev, "Indefinite"]);
+            }
+            formik.setFieldValue('enddateEnd', !formik.values.enddateEnd);
+        dataa.test_program.end_date.indefinite = !opticalroutUpdateTestsetupDetail.test_program.end_date.indefinite;
+        dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+          }}
+          iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+          classname={' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'}
+        />
+
+          {/* <RadioButton name="Indefinite" /> */}
         </div>
       </Description>
       <Description label="Periodicity">

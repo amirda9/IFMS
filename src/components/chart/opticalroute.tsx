@@ -1,5 +1,6 @@
 import React from 'react'
 import Selectbox from '~/components/selectbox/selectbox';
+
 type Resultdata={
  name:string,
  value:string
@@ -15,6 +16,7 @@ type Iprops={
   rtu_name: string
 },
 }
+
 const options = [
   {value: 'Result', label: 'Result'},
   {value: 'Optical Route', label: 'Optical Route'},
@@ -33,6 +35,8 @@ const Resultdata=({name,value}:Resultdata)=>{
  </div>
  )
 }
+
+
 function Opticalroute({onclick,Wavelength,data}:Iprops) {
   console.log("optical-data",data);
   

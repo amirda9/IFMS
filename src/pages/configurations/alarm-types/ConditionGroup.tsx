@@ -256,7 +256,7 @@ const ConditionGroup: FC<Props> = ({title}) => {
           onChange={e => {
             changeFault(e.target.value);
           }}
-          value={alarmtypedetail!.alarm_definition![security()]!.fault || "No"}
+          value={alarmtypedetail?.alarm_definition![security()]?.fault || "No"}
           className="mr-[50px] w-[100px] disabled:text-gray-400 disabled:opacity-100">
           {Faultoptins.map(data => (
             <option>{data.label}</option>
