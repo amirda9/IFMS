@@ -26,7 +26,6 @@ type FormType = {
 const AlarmTypeDetailsPage: FC = () => {
   const params = useParams();
   const dispatch = useDispatch();
-
   const {alarmtypedetail, alarmtypelist, alarmtypeloading, getalarmtype} =
     useSelector((state: RootState) => state.alarmtypes);
 
@@ -43,6 +42,9 @@ const AlarmTypeDetailsPage: FC = () => {
             let alarmdetailresponsedataCopy: alarmtypedetailtype = deepcopy(
               alarmdetailresponsedata,
             );
+
+            console.log("alarmdetailresponsedataalarmdetailresponsedata",alarmdetailresponsedata);
+            
             if (alarmdetailresponsedataCopy.alarm_definition == null) {
               alarmdetailresponsedataCopy = {
                 ...alarmdetailresponsedataCopy,
@@ -292,7 +294,7 @@ const AlarmTypeDetailsPage: FC = () => {
       };
       getalarmdetail();
     }
-  }, []);
+  }, [params.alarmId]);
 
   const formik = useFormik<FormType>({
     enableReinitialize: true,

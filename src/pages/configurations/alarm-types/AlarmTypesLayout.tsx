@@ -7,6 +7,9 @@ import {RootState} from '~/store';
 import {deletealarmtype, setalarmlist} from '~/store/slices/alarmstypeslice';
 import {$Delete, $Get} from '~/util/requestapi';
 import Swal from 'sweetalert2';
+import {
+  setGetalarmtype,
+} from '~/store/slices/alarmstypeslice';
 const swalsetting: any = {
   title: 'Are you sure you want to delete these components?',
   icon: 'warning',
@@ -18,7 +21,8 @@ const swalsetting: any = {
 const AlarmTypesLayout: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {alarmtypelist} = useSelector((state: RootState) => state.alarmtypes);
+
+  const {alarmtypelist,alarmtypedetail} = useSelector((state: RootState) => state.alarmtypes);
   useEffect(() => {
     const getalarmms = async () => {
       const getalarmsresponse = await $Get(`otdr/alarm`);
@@ -42,10 +46,13 @@ const AlarmTypesLayout: FC = () => {
     });
   };
 
+
+  
   return (
     <SidebarLayout createTitle="Alarm Types Definition" canAdd>
       {alarmtypelist.map((data: any) => (
         <SidebarItem
+        onclick={()=> dispatch(setGetalarmtype(false))}
           selected={true}
           canDelete={true}
           onDelete={() => Deletealarms(data.id)}
