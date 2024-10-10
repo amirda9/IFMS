@@ -172,6 +172,8 @@ function ZoomComponent({fullscreen}: fullscreen) {
 
 const MapPage = () => {
   const selectboxref: any = useRef();
+  const [defaultzoom,setDefaultzoom]=useState(10)
+  const [mapcenter,setMapcenter]=useState<[number,number]>([ 35.6892,51.3890])
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [fullscreen, setfullscreen] = useState(false);
   const [alarms, setAlarms] = useState<alarmtype[]>([]);
@@ -203,6 +205,32 @@ const MapPage = () => {
   const [selectboxregions, setSelectboxregions] = useState<
     {value: string; label: string}[]
   >([]);
+
+  // const UpdateMapCenter = ({ center }) => {
+  //   const map = useMap();
+  //   const [userInteracted, setUserInteracted] = useState(false);
+  
+  //   // این رویداد جابه‌جایی کاربر را ردیابی می‌کند
+  //   useEffect(() => {
+  //     const onMove = () => {
+  //       setUserInteracted(true);
+  //     };
+  //     map.on('move', onMove);
+  
+  //     return () => {
+  //       map.off('move', onMove);
+  //     };
+  //   }, [map]);
+  
+  //   useEffect(() => {
+  //     if (!userInteracted && center) {
+  //       map.flyTo(center); // حرکت نرم به مرکز جدید
+  //     }
+  //   }, [center, userInteracted, map]);
+  
+  //   return null;
+  // };
+
 
   function countSeverityAlarmsInArray(dataArray:alarmtype[], targetRegionId:string,status:string) {
     let highSeverityCount = 0;
@@ -484,6 +512,15 @@ if(!mount){
           }
         }
       }
+      if(stationdata.length >0){
+setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdata.length-1].latitude])
+
+      }else{
+        setMapcenter([35.6892, 51.3890])
+    
+      }
+      console.log("stationdata",stationdata);
+      
       setAllLinkpoints(allpoints)
       setRegions(regiondata);
       setStaations(stationdata);
@@ -502,7 +539,7 @@ if(!mount){
     getalldetail();
   }, [selectednetworks]);
 
-  // console.log('alarms', alarms);
+ console.log('mapcenter', mapcenter);
 
   const MapClickAlert = () => {
     useMapEvents({
@@ -664,7 +701,7 @@ if(!mount){
     } else return [];
   }, [alarms,orangealarms]);
   // console.log('highSeverityEvents', highSeverityEvents);
-  console.log("gggggggresponsedatagggggg",allLinkpoints);
+  // console.log("gggggggresponsedatagggggg",allLinkpoints);
   // ******************** return ****************** return ************************** return *******************************
   return (
     <>
@@ -909,11 +946,12 @@ if(!mount){
           {/* -------------------- map ---------------- map ------------------- map ----------------- map ------------- */}
 
           <MapContainer
-            center={[51.505, -0.09]}
-            zoom={13}
+            center={mapcenter}
+            zoom={defaultzoom}
             scrollWheelZoom={true}
             zoomControl={false}
             className={`h-full w-full`}>
+              {/* <UpdateMapCenter center={mapcenter} /> */}
             {loading ? (
               <Mainloading classname="w-full h-full absolute left-0 right-0 top-0 z-[100] items-center justify-center bg-neutral-400 opacity-10" />
             ) : null}
@@ -1088,7 +1126,7 @@ if(!mount){
                     if (data?.stations?.length > 0) {
                       return (
                         <Marker
-                          key={data.id}
+                          key={`${data.id}${data.id}`}
                           eventHandlers={{
                             click: e => {
                               setRightbarState('station');
@@ -1132,8 +1170,9 @@ if(!mount){
 
             {yellowalarms ? (
               <>
-                {LowSeverityEvents.map(data => (
+                {LowSeverityEvents.map((data,index) => (
                   <Marker
+                  key={`${data.longitude}${index}`}
                     eventHandlers={{
                       click: e => {
                         setRightbarState('alarm');
@@ -1399,7 +1438,7 @@ if(!mount){
                     return(
                       <>
                       <Polyline
-                        key={index}
+                        key={`${pointdata.latitude}${index}`}
                         eventHandlers={{
                           click: e => {
                             setRightbarState('link');
