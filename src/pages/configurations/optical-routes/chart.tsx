@@ -186,7 +186,6 @@ function Chart() {
   const [fixedyaxies, setFixedyaxies] = useState(false);
   const [selectedevents, setSelectedEvents] = useState<any>(null);
   const [allalarms,setAllalarms]=useState<alllalarmsType | []>([])
-  console.log('locationlocationlocation', location);
 
   useEffect(() => {
     const Getmeasermentsalarms = async () => {
@@ -266,6 +265,8 @@ function Chart() {
               event_number: datass.key_events.events[i].event_number,
             });
           } else if (datass.key_events.events[i].event_code == 'End of fiber') {
+            console.log("datass.key_events.events[i]",datass.key_events.events[i]);
+            
             Arrowevents.push({
               x: datass.key_events.events[i].event_location,
               y: datass.key_events.events[i].event_y,
@@ -280,6 +281,8 @@ function Chart() {
         let allshapesCopy = deepcopy(allshapes);
         let elements: JSX.Element[] = [];
         // if (!showeventdetail) {
+        console.log("Arrowevents",Arrowevents);
+        
         Arrowevents?.forEach((point, index) => {
           const X = point.x;
           const Y = point.y!;
@@ -373,92 +376,98 @@ function Chart() {
               },
             );
           } else {
+            
             allshapesCopy.push(
               {
                 type: 'line',
-                x0: X, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X, // x coordinate of the second point
-                y1: Y - 10, // y coordinate of the second point
+                x0: X, 
+                y0: Y + 10,
+                x1: X, 
+                y1: Y - 10,
 
                 editable: false,
                 line: {
-                  color: '#A80000', // color of the line
-                  width: 3, // width of the line
-                  // zindex: 10,
+                  color: '#A80000',
+                  width: 3, 
+                  zindex: 10,
                   // layer: 'below',
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X, // x coordinate of the second point
-                y1: Y + 10, // y coordinate of the second point
+                x0: X - 70, 
+                y0: Y + 10,
+                x1: X, 
+                y1: Y + 10, 
                 editable: false,
                 line: {
-                  color: '#A80000', // color of the line
-                  width: 3, // width of the line
+                  color: '#A80000',
+                  width: 3, 
+                  zindex: 10,
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, // x coordinate of the first point
-                y0: Y - 10, // y coordinate of the first point
-                x1: X, // x coordinate of the second point
-                y1: Y - 10, // y coordinate of the second point
+                x0: X - 70,
+                y0: Y - 10, 
+                x1: X,
+                y1: Y - 10, 
                 editable: false,
                 line: {
-                  color: '#A80000', // color of the line
-                  width: 3, // width of the line
+                  color: '#A80000',
+                  width: 3,
+                  zindex: 10,
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, // x coordinate of the first point
-                y0: Y - 10, // y coordinate of the first point
-                x1: X - 15, // x coordinate of the second point
-                y1: Y - 11, // y coordinate of the second point
+                x0: X - 70, 
+                y0: Y - 10, 
+                x1: X - 15, 
+                y1: Y - 11, 
                 editable: false,
                 line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
+                  color: '#A80000',
+                  width: 1,
+                  zindex: 10,
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, // x coordinate of the first point
-                y0: Y - 10, // y coordinate of the first point
-                x1: X - 15, // x coordinate of the second point
-                y1: Y - 9, // y coordinate of the second point
+                x0: X - 70,
+                y0: Y - 10, 
+                x1: X - 15,
+                y1: Y - 9, 
                 editable: false,
                 line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
+                  color: '#A80000',
+                  width: 1,
+                  zindex: 10,
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X - 15, // x coordinate of the second point
-                y1: Y + 9, // y coordinate of the second point
+                x0: X - 70, 
+                y0: Y + 10, 
+                x1: X - 15,
+                y1: Y + 9, 
                 editable: false,
                 line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
+                  color: '#A80000', 
+                  width: 1,
+                  zindex: 10,
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X - 15, // x coordinate of the second point
-                y1: Y + 11, // y coordinate of the second point
+                x0: X - 70, 
+                y0: Y + 10,
+                x1: X - 15,
+                y1: Y + 11,
                 editable: false,
                 line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
+                  color: '#A80000',
+                  width: 1,
                   zindex: 10,
                 },
               },
@@ -859,16 +868,13 @@ function Chart() {
               index / 2 -
               10,
           ),
-          //   data?.key_events?.events[0]?.event_location?.y - 10,
-          // ],
           type: 'lines',
           text: [chartdata?.key_events?.events[0]?.event_number],
           textfont: {color: ['#A80000']},
           showlegend: false,
           textposition: 'bottom',
           mode: 'lines+text',
-          line: {width: 6, zindex: 10, color: '#A80000'},
-          // marker: {color: '#A80000', zIndex: 10},
+          line: {width: 6, zindex: 100, color: '#A80000'},
           event_number: chartdata?.key_events?.events[0]?.event_number,
           name: 'events',
           layer: 'above',
@@ -889,8 +895,7 @@ function Chart() {
           showlegend: false,
           textposition: 'bottom',
           mode: 'lines+text',
-          line: {width: 6, zindex: 10, color: '#A80000'},
-          // marker: {color: '#A80000', zIndex: 10},
+          line: {width: 6, zindex: 100, color: '#A80000'},
           event_number: chartdata?.key_events?.events[1]?.event_number,
           name: 'events',
           layer: 'above',
@@ -912,12 +917,10 @@ function Chart() {
           showlegend: false,
           textposition: 'bottom',
           mode: 'lines+text',
-          line: {width: 6, zindex: 10, color: '#A80000'},
-          // marker: {color: '#A80000', zIndex: 10},
+          line: {width: 6, zindex: 100, color: '#A80000'},
           name: 'events',
           event_number: chartdata?.key_events?.events[2]?.event_number,
           layer: 'above',
-          // marker: {color: 'blue',zIndex: 2},
         },
       ]);
       setSelectedEvents(null);
@@ -973,14 +976,14 @@ function Chart() {
   };
 
   const movebigline = (name: string, direction: string) => {
-    console.log("name",name);
-    console.log("fakeevents",fakeevents);
+    // console.log("name",name);
+    // console.log("fakeevents",fakeevents);
     
   const verticalLinesCopy = deepcopy(verticalLines);
     const findverticalindex = verticalLines.findIndex(
       data => data.name && data.name == name,
     );
-    console.log("findverticalindex",findverticalindex);
+    // console.log("findverticalindex",findverticalindex);
     
     verticalLinesCopy[findverticalindex].x =
       direction == 'right'
@@ -1373,7 +1376,8 @@ function Chart() {
 
   const plotwidth = window.innerWidth - 510;
   const ratio = plotwidth / maxx;
-  console.log('chartdata', chartdata);
+  // console.log('allshapes', allshapes);
+  // console.log('chartdata', chartdata);
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       <div className="flex h-[540px]  w-full flex-row">
