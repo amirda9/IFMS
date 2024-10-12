@@ -98,6 +98,9 @@ type leftbarStationcheckboxlist = {
   rtues: string[];
 }[];
 export type initialStatetype = {
+  openallrtu:boolean;
+  selectedradio:string;
+  networkselectedlist:string[];
   leftbarStationcheckboxlist: leftbarStationcheckboxlist;
   networkregions: allnetworkregionstype[];
   regionstations: allregionstationstype[];
@@ -110,6 +113,9 @@ export type initialStatetype = {
   rtugetdetailStatus: boolean;
 };
 const initialState: initialStatetype = {
+  selectedradio:'Filter By Optical Route',
+  openallrtu:false,
+  networkselectedlist:[],
   leftbarStationcheckboxlist: [],
   networkregions: [],
   regionstations: [],
@@ -132,6 +138,35 @@ const resultbrouserRtuslice = createSlice({
     ) => {
       state.allLeftbar = action.payload;
     },
+    // -------------------------------------------------------------------
+    setSelectedradio: (
+      state,
+      action: {type: string; payload: string},
+    ) => {
+      state.selectedradio = action.payload;
+    },
+    // ------------------------------------------------------------------
+    setOppenallrtu:(
+      state,
+      action: {payload: boolean; type: string},
+    )=>{
+     state.openallrtu=!action.payload
+    },
+// --------------------------------------------------------------------------
+setNetworkselectedlist: (
+  state,
+  action: {payload: string; type: string},
+) =>{
+  const findnetwork = state.networkselectedlist.findIndex(data => data == action.payload);
+  if (findnetwork > -1) {
+    let old = [...state.networkselectedlist];
+    old.splice(findnetwork, 1);
+    state.networkselectedlist=old
+  } else {
+    state.networkselectedlist=[...state.networkselectedlist,action.payload]
+    // setNetworkselectedlist(prev => [...prev, id]);
+  }
+},
     // ----------------------------------------------------------------
     setleftbarStationcheckboxlist: (
       state,
@@ -199,7 +234,10 @@ export const {
   setRtuNetworkidadmin,
   setRtuRegionidadmin,
   setRtuStationidadmin,
-  setrtugetdetailStatus
+  setrtugetdetailStatus,
+  setOppenallrtu,
+  setNetworkselectedlist,
+  setSelectedradio
 } = resultbrouserRtuslice.actions;
 
 export default resultbrouserRtuslice.reducer;

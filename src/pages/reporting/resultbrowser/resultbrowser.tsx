@@ -1,4 +1,4 @@
-import React, {useRef, } from 'react';
+import React, {useRef} from 'react';
 import {Select, Table} from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
 import dateicon from '~/assets/images/dateicon.png';
@@ -22,7 +22,7 @@ import {
   setopenallopt,
   setdefaultStationsrtu,
   setdefaultRegionstations,
-  alldefaultstationsrtutype
+  alldefaultstationsrtutype,
 } from './../../../store/slices/resultbroserOpticalroutslice';
 type resultbrosernetworklisttype = {
   id: string;
@@ -49,6 +49,9 @@ import {
   setRtuRegionidadmin,
   setRtuStationidadmin,
   setrtugetdetailStatus,
+  setOppenallrtu,
+  setNetworkselectedlist,
+  setSelectedradio
 } from './../../../store/slices/resultbrouserRtuslice';
 import {deepcopy} from './../../../util/deepcopy';
 
@@ -62,7 +65,7 @@ import {RootState} from '~/store';
 import Swal from 'sweetalert2';
 import {UserRole} from '~/constant/users';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -126,46 +129,46 @@ type Radiotype = {
   onclick: () => void;
 };
 
-type resultdata={
-    id: string,
-    test_date:string,
-    rtu: {
-      id: string,
-      name: string
-    },
-    optical_route: {
-      id: string,
-      name: string
-    },
-    test_setup: {
-      id: string,
-      name: string,
-      station: {
-        id: string,
-        name: string
-      }
-    },
-    alarm_cnt: number,
-    status: string,
-    test_len: number,
-    event_loss: number
-  }
- 
-  type tabeltype=  {
-    id:string,
-    index: number,
-    date: string,
-    rtu: string,
-    opticalRoute: string,
-    opticalRouteId:string,
-    testSetup: string,
-    alarms:number,
-    state: string,
-    length: number,
-    loss: number,
-    detail: string,
-    delete: string,
-  }
+type resultdata = {
+  id: string;
+  test_date: string;
+  rtu: {
+    id: string;
+    name: string;
+  };
+  optical_route: {
+    id: string;
+    name: string;
+  };
+  test_setup: {
+    id: string;
+    name: string;
+    station: {
+      id: string;
+      name: string;
+    };
+  };
+  alarm_cnt: number;
+  status: string;
+  test_len: number;
+  event_loss: number;
+};
+
+type tabeltype = {
+  id: string;
+  index: number;
+  date: string;
+  rtu: string;
+  opticalRoute: string;
+  opticalRouteId: string;
+  testSetup: string;
+  alarms: number;
+  state: string;
+  length: number;
+  loss: number;
+  detail: string;
+  delete: string;
+};
 const topcolumns = {
   index: {label: 'Index', size: 'w-[2%]'},
   date: {label: 'Test Date', size: 'w-[16%]'},
@@ -200,33 +203,40 @@ function Resultbrowser() {
   const fromdateref: any = useRef(null);
   const lastdateref: any = useRef(null);
   const [fromdate, setFromdate] = useState('');
-  const [lastdate, setLastdate] = useState("");
+  const [lastdate, setLastdate] = useState('');
   const [filterByTime, setFilterByTime] = useState(false);
-  const [resultdata,setResultdata]=useState<tabeltype[]>([])
-  const [selectedradio, setSelectedradio] = useState('Filter By Optical Route');
+  const [resultdata, setResultdata] = useState<tabeltype[]>([]);
   const [selectedradiotime, setSelectedradiotime] = useState('Last');
   const dispatch = useDispatch();
   const location = useLocation();
-  const [optical_route_id,setOptical_route_id]=useState("")
-  const [rtu_id,setRtu_id]=useState("")
+  const [optical_route_id, setOptical_route_id] = useState('');
+  const [rtu_id, setRtu_id] = useState('');
   const [loadingid, setLoadingid] = useState('');
   const [loadingdata, setLoadingdata] = useState(false);
   const [selectedtabId, setSelectedtabid] = useState('');
   const [list, setList] = useState<networklisttype[]>();
   const [last, setLast] = useState(0);
-  const [selectdate,setSelectdate]=useState("")
+  const [selectdate, setSelectdate] = useState('');
   const [selectedIdopt, setSelectedIdopt] = useState('');
   const [listopt, setListopt] = useState<resultbrosernetworklisttype[]>([]);
   const [loadingopticalid, setLoadingopticalid] = useState('');
   const [loadingopticaldata, setLoadingopticaldata] = useState(false);
   const [skipopt, setSkipopt] = useState(0);
   const [networkopticalloading, setNetworkloading] = useState(false);
-  const {resultnetworkselectedlist, resultbrosernetworkoptical, alldeleteopticalroute, openallopt,defaultstationsrtu,defaultregionstations} =
-    useSelector((state: RootState) => state.resultbroserOpticalroutslice);
+  const {
+    resultnetworkselectedlist,
+    resultbrosernetworkoptical,
+    alldeleteopticalroute,
+    openallopt,
+    defaultstationsrtu,
+    defaultregionstations,
+  } = useSelector((state: RootState) => state.resultbroserOpticalroutslice);
   const opennetworkopticallist = async (id: string) => {
     try {
       setLoadingopticaldata(true);
-      const findnetwork = resultnetworkselectedlist.findIndex(data => data == id);
+      const findnetwork = resultnetworkselectedlist.findIndex(
+        data => data == id,
+      );
       //We first check whether network has been clicked before or not.
       if (findnetwork > -1) {
         let old = [...resultnetworkselectedlist];
@@ -238,7 +248,9 @@ function Resultbrowser() {
         dispatch(setresultNetworkselectedlist(old));
       }
       // -------------------
-      const findopt = resultbrosernetworkoptical.findIndex(data => data.networkid == id);
+      const findopt = resultbrosernetworkoptical.findIndex(
+        data => data.networkid == id,
+      );
       const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
       if (opticals?.status == 200) {
         const opticalslist = await opticals?.json();
@@ -277,7 +289,6 @@ function Resultbrowser() {
   // ----- optical ------------------------ optical ----------------------- optical ---------------------------
   const navigte = useNavigate();
 
-
   useEffect(() => {
     const getnetworklist = async () => {
       try {
@@ -310,11 +321,10 @@ function Resultbrowser() {
     }
   };
 
-
   const Itembtnopt = ({name, id, classname}: Itembtnopttype) => {
     return (
       <div
-      className={`flex h-[76px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
+        className={`flex h-[76px] w-auto flex-row items-center  text-[20px] text-[#000000] ${classname}`}>
         <span className="mt-[-6px] text-[12px] ">...</span>
         {resultnetworkselectedlist.indexOf(id) > -1 ? (
           <span className="mx-[3px] font-light">-</span>
@@ -324,20 +334,20 @@ function Resultbrowser() {
 
         <button
           onClick={() => {
-            opennetworkopticallist(id), setSelectedIdopt(id), setLoadingopticalid(id);
+            opennetworkopticallist(id),
+              setSelectedIdopt(id),
+              setLoadingopticalid(id);
           }}
           className={`${
-            resultnetworkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
+            resultnetworkselectedlist.indexOf(id) > -1
+              ? 'font-bold'
+              : 'font-light'
           }`}>
           {name}
         </button>
-      
-    
       </div>
     );
   };
-
-
 
   const lastnetworkopt = useMemo(() => {
     return (listopt && listopt[listopt.length - 1]?.id) || '';
@@ -351,6 +361,9 @@ function Resultbrowser() {
     networkregions,
     rtunetworkidadmin,
     rturegionidadmin,
+    openallrtu,
+    networkselectedlist,
+    selectedradio
   } = useSelector((state: RootState) => state.resultbrouserRtuslice);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   // const {
@@ -362,7 +375,7 @@ function Resultbrowser() {
   // });
 
   const [openall, setOpenall] = useState(false);
-  const [networkselectedlist, setNetworkselectedlist] = useState<string[]>([]);
+
   // ---------- func ----------- func -----------
   const findstationdeletertuid = (stationid: string, rtuid: string) => {
     let findId = stationsrtu
@@ -391,11 +404,11 @@ function Resultbrowser() {
     getnetworklist();
   }, []);
 
-
   const ondeletedefaultsinglertu = async (rtuid: string, stationid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        let defaultstationsrtuCopy: alldefaultstationsrtutype[] = deepcopy(defaultstationsrtu);
+        let defaultstationsrtuCopy: alldefaultstationsrtutype[] =
+          deepcopy(defaultstationsrtu);
         let findstation = defaultstationsrtuCopy.findIndex(
           data => data.stationid == stationid,
         );
@@ -415,11 +428,15 @@ function Resultbrowser() {
             i < defaultstationsrtuCopy[findstation]!.rtues!.length;
             i++
           ) {
-            let findrtu = defaultstationsrtuCopy[findstation]!.deletertues.findIndex(
+            let findrtu = defaultstationsrtuCopy[
+              findstation
+            ]!.deletertues.findIndex(
               data => data == defaultstationsrtuCopy[findstation]!.rtues[i].id,
             );
             if (findrtu < 0) {
-              newstationreues.push(defaultstationsrtuCopy[findstation]!.rtues[i]);
+              newstationreues.push(
+                defaultstationsrtuCopy[findstation]!.rtues[i],
+              );
             }
           }
           defaultstationsrtuCopy[findstation].rtues = newstationreues;
@@ -485,17 +502,16 @@ function Resultbrowser() {
   //   }
   // };
   const opennetworkrtullist = (id: string) => {
-    const findnetwork = networkselectedlist.findIndex(data => data == id);
-    if (findnetwork > -1) {
-      let old = [...networkselectedlist];
-      old.splice(findnetwork, 1);
-      setNetworkselectedlist(old);
-    } else {
-      setNetworkselectedlist(prev => [...prev, id]);
-    }
+    dispatch(setNetworkselectedlist(id));
+    // const findnetwork = networkselectedlist.findIndex(data => data == id);
+    // if (findnetwork > -1) {
+    //   let old = [...networkselectedlist];
+    //   old.splice(findnetwork, 1);
+    //   setNetworkselectedlist(old);
+    // } else {
+    //   setNetworkselectedlist(prev => [...prev, id]);
+    // }
   };
-
-
 
   const Itembtn = ({
     name,
@@ -516,21 +532,18 @@ function Resultbrowser() {
 
         <button
           onClick={() => {
-            setSelectedtabid(id)
-            opennetworkrtullist(id) 
-            onclick()
+            setSelectedtabid(id);
+            opennetworkrtullist(id);
+            onclick();
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
         </button>
- 
       </div>
     );
   };
-
-
 
   const ItembtnRegion = ({
     name,
@@ -553,7 +566,7 @@ function Resultbrowser() {
         <button
           onClick={() => {
             setSelectedtabid(id);
-            
+
             opennetworkrtullist(id), onclick();
           }}
           className={`${
@@ -565,11 +578,7 @@ function Resultbrowser() {
     );
   };
 
-
-
-
-
-    // console.log("getCurrentTime()",getCurrentTime());
+  // console.log("getCurrentTime()",getCurrentTime());
 
   const ItembtnStation = ({
     name,
@@ -603,8 +612,6 @@ function Resultbrowser() {
       </div>
     );
   };
-
-
 
   const onclicknetwork = async (id: string) => {
     try {
@@ -642,8 +649,6 @@ function Resultbrowser() {
       setLoadingdata(false);
     }
   };
-
-
 
   const onclickregion = async (regionid: string) => {
     try {
@@ -686,7 +691,6 @@ function Resultbrowser() {
     }
   };
 
-
   const ondeletesinglertu = async (rtuid: string, stationid: string) => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
@@ -728,7 +732,6 @@ function Resultbrowser() {
     });
   };
 
-
   const onclickCheckbox = (rtuId: string, stationId: string) => {
     const stationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
     const findstations = stationsrtuCopy.findIndex(
@@ -749,98 +752,106 @@ function Resultbrowser() {
     }
     dispatch(setStationsrtu(stationsrtuCopy));
   };
-  
+
   const getCurrentTime = () => {
     const now = new Date();
     const formattedTime = now.toISOString().slice(0, 16);
     return formattedTime;
-    };
+  };
 
+  const getTimeMinusFiveMinutes = (x: number) => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - x);
+    const formattedTime = now.toISOString().slice(0, 16);
+    return formattedTime;
+  };
 
-    const getTimeMinusFiveMinutes = (x:number) => {
+  const onclickdefaultrtuCheckbox = (rtuId: string, stationId: string) => {
+    const defaultstationsrtuCopy: alldefaultstationsrtutype[] =
+      deepcopy(defaultstationsrtu);
+    const findstations = defaultstationsrtuCopy.findIndex(
+      data => data.stationid == stationId,
+    );
 
-      const now = new Date();
-      now.setMinutes(now.getMinutes() - x);
-      const formattedTime = now.toISOString().slice(0, 16);
-      return formattedTime;
-      };
+    let findstationdeletertues = defaultstationsrtuCopy[
+      findstations
+    ].deletertues.find(data => data == rtuId);
 
-      const onclickdefaultrtuCheckbox = (rtuId: string, stationId: string) => {
-        const defaultstationsrtuCopy: alldefaultstationsrtutype[] = deepcopy(defaultstationsrtu);
-        const findstations = defaultstationsrtuCopy.findIndex(
-          data => data.stationid == stationId,
-        );
-    
-        let findstationdeletertues = defaultstationsrtuCopy[findstations].deletertues.find(
-          data => data == rtuId,
-        );
-    
-        if (findstationdeletertues) {
-          const newstationrtu = defaultstationsrtuCopy[findstations].deletertues.filter(
-            data => data != rtuId,
-          );
-          defaultstationsrtuCopy[findstations].deletertues = newstationrtu;
-        } else {
-          defaultstationsrtuCopy[findstations].deletertues.push(rtuId);
-        }
-        dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
-      };
+    if (findstationdeletertues) {
+      const newstationrtu = defaultstationsrtuCopy[
+        findstations
+      ].deletertues.filter(data => data != rtuId);
+      defaultstationsrtuCopy[findstations].deletertues = newstationrtu;
+    } else {
+      defaultstationsrtuCopy[findstations].deletertues.push(rtuId);
+    }
+    dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
+  };
 
-      const getTimeMinusOneHour = (x:number) => {
-        const now = new Date();
-        now.setHours(now.getHours() - 1);
-        const formattedTime = now.toISOString().slice(0, 16);
-        return formattedTime;
-        };
+  const getTimeMinusOneHour = (x: number) => {
+    const now = new Date();
+    now.setHours(now.getHours() - 1);
+    const formattedTime = now.toISOString().slice(0, 16);
+    return formattedTime;
+  };
 
+  const getTimeMinusOneDay = (x: number) => {
+    const now = new Date();
+    now.setDate(now.getDate() - x);
+    const formattedTime = now.toISOString().slice(0, 16);
+    return formattedTime;
+  };
 
-        const getTimeMinusOneDay = (x:number) => {
-const now = new Date();
-now.setDate(now.getDate() - x);
-const formattedTime = now.toISOString().slice(0, 16);
-return formattedTime;
-};
-
-
-  const Applayresult=async()=>{
+  const Applayresult = async () => {
     const now = new Date();
     const formattedTime = now.toISOString().slice(0, 16);
-    const calculatelasttime=selectdate == "Day"?getTimeMinusOneDay(last):selectdate == "houre"?getTimeMinusOneHour(last):getTimeMinusFiveMinutes(last)
-    const fromDate=selectedradiotime == 'Last'?calculatelasttime:fromdate
-    const lastDate=selectedradiotime == 'Last'?formattedTime:lastdate
-     const url = `otdr/optical-route/measurement/result-browser?${filterByTime ? `from_time=${fromDate}&` : ''}${selectedradio === 'Filter By Optical Route' ? `optical_route_id=${optical_route_id}` : `rtu_id=${rtu_id}`}${filterByTime ? `&to_time=${lastDate}` : ''}`;
+    const calculatelasttime =
+      selectdate == 'Day'
+        ? getTimeMinusOneDay(last)
+        : selectdate == 'houre'
+        ? getTimeMinusOneHour(last)
+        : getTimeMinusFiveMinutes(last);
+    const fromDate = selectedradiotime == 'Last' ? calculatelasttime : fromdate;
+    const lastDate = selectedradiotime == 'Last' ? formattedTime : lastdate;
+    const url = `otdr/optical-route/measurement/result-browser?${
+      filterByTime ? `from_time=${fromDate}&` : ''
+    }${
+      selectedradio === 'Filter By Optical Route'
+        ? `optical_route_id=${optical_route_id}`
+        : `rtu_id=${rtu_id}`
+    }${filterByTime ? `&to_time=${lastDate}` : ''}`;
     try {
-      setLoadingdata(true)
+      setLoadingdata(true);
       const response = await $Get(url);
-      if(response?.status == 200){
+      if (response?.status == 200) {
+        const responsedata: resultdata[] = await response.json();
 
-       const responsedata:resultdata[]=await response.json()
-    
-    const newresponsedata=responsedata.map((data,index) => ({ 
-      index: index,
-      opticalRouteId:data?.optical_route?.id,
-      id:data.id,
-      date: data?.test_date,
-      rtu: data?.rtu?.name,
-      opticalRoute: data?.optical_route?.name,
-      testSetup: data?.test_setup?.name,
-      alarms:data?.alarm_cnt,
-      state: data?.status,
-      length: data?.test_len,
-      loss: data?.event_loss,
-      detail: '',
-      delete: ''}))
-       setResultdata(newresponsedata)
-      }else{
+        const newresponsedata = responsedata.map((data, index) => ({
+          index: index,
+          opticalRouteId: data?.optical_route?.id,
+          id: data.id,
+          date: data?.test_date,
+          rtu: data?.rtu?.name,
+          opticalRoute: data?.optical_route?.name,
+          testSetup: data?.test_setup?.name,
+          alarms: data?.alarm_cnt,
+          state: data?.status,
+          length: data?.test_len,
+          loss: data?.event_loss,
+          detail: '',
+          delete: '',
+        }));
+        setResultdata(newresponsedata);
+      } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     } catch (error) {
       console.log(`error iss:${error}`);
       toast('Encountered an error', {type: 'error', autoClose: 1000});
-    } finally{
-      setLoadingdata(false)
+    } finally {
+      setLoadingdata(false);
     }
-  }
+  };
 
   const finddefaultstationdeletertuid = (stationid: string, rtuid: string) => {
     let findId = defaultstationsrtu
@@ -852,10 +863,7 @@ return formattedTime;
       return true;
     }
   };
-  const onclickdefaultstation = async (
-    id: string,
-    networkid: string,
-  ) => {
+  const onclickdefaultstation = async (id: string, networkid: string) => {
     try {
       setLoadingdata(true);
       const [stationrtuesresponse, stationdetailresponse] = await Promise.all([
@@ -891,42 +899,38 @@ return formattedTime;
     // ------------------------------------
   };
 
-
-  const deleteREsult=async(opticalrouteId:string,id:string,index:number)=>{
+  const deleteREsult = async (
+    opticalrouteId: string,
+    id: string,
+    index: number,
+  ) => {
     try {
-      setLoadingdata(true)
-      const DeleteResponse= await $Delete(`otdr/optical-route/${opticalrouteId}/measurements`,[id])
-      if(DeleteResponse?.status == 201){
+      setLoadingdata(true);
+      const DeleteResponse = await $Delete(
+        `otdr/optical-route/${opticalrouteId}/measurements`,
+        [id],
+      );
+      if (DeleteResponse?.status == 201) {
         toast('It was done successfully', {
           type: 'success',
           autoClose: 1000,
         });
-        setLoadingdata(false)
-        const resultdataCopy=deepcopy(resultdata)
-        resultdataCopy.splice(index,1)
-        setResultdata(resultdataCopy)
-    
-      }else{
+        setLoadingdata(false);
+        const resultdataCopy = deepcopy(resultdata);
+        resultdataCopy.splice(index, 1);
+        setResultdata(resultdataCopy);
+      } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     } catch (error) {
-     
       console.log(`error is:${error}`);
       toast('Encountered an error', {type: 'error', autoClose: 1000});
     }
-  }
-
-
-
-
-
-
-
-
+  };
 
   const onclickdefaultregion = async (networkid: string) => {
     try {
-      setLoadingdata(true)
+      setLoadingdata(true);
       let allStations = [];
       const responsestation = await $Get(`otdr/station/network/${networkid}`);
       if (responsestation?.status == 200) {
@@ -945,16 +949,13 @@ return formattedTime;
       );
     } catch (error) {
       console.log(`get default stations error is:${error}`);
-      
     } finally {
-      setLoadingdata(false)
+      setLoadingdata(false);
     }
   };
 
-
-
   // ****************** main ****************** main ************************************* main ***********************
- 
+
   return (
     <div className="border-box flex w-full flex-col p-[20px] pt-[100px]">
       <div className="flex w-full flex-row justify-between">
@@ -962,26 +963,22 @@ return formattedTime;
           <div className="mb-[20px] flex flex-row">
             <RadioButton
               check={selectedradio == 'Filter By RTU' ? true : false}
-              onclick={() => setSelectedradio('Filter By RTU')}
+              onclick={() => dispatch(setSelectedradio('Filter By RTU'))}
             />
             <span className="ml-[15px] text-[20px] font-bold leading-[24.2px] text-[#000000]">
               Filter By RTU
             </span>
           </div>
 
-          <div className="flex relative   h-[350px] w-full flex-col overflow-y-auto bg-white pl-6">
+          <div className="relative flex   h-[350px] w-full flex-col overflow-y-auto bg-white pl-6">
             {/* ----------------- rtu ------------------------------- rtu --------------------------------------- rtu --------------------------- */}
-             {selectedradio == 'Filter By RTU'?
-             null
-            :
-            <div className='absolute top-[0px] right-[0px] w-full h-full z-[100]'></div>
-            
-            }
-             
-             
+            {selectedradio == 'Filter By RTU' ? null : (
+              <div className="absolute right-[0px] top-[0px] z-[100] h-full w-full"></div>
+            )}
+
             <div className="mt-[30px] flex w-full flex-col">
               <div className="flex w-[205px] flex-row items-center text-[20px] font-bold text-[#000000]">
-                {openall ? (
+                {openallrtu ? (
                   <span className="ml-[-4px] mr-[5px] font-light">-</span>
                 ) : (
                   <span className="mb-[5px] ml-[-6px] mr-[5px] font-light">
@@ -991,13 +988,14 @@ return formattedTime;
 
                 <button
                   onClick={() => {
+                    dispatch(setOppenallrtu(openallrtu));
                     setOpenall(!openall), setLoadingid('allrtues');
                   }}>
                   <span>Rtu</span>
                 </button>
               </div>
 
-              {openall ? (
+              {openallrtu ? (
                 <>
                   {loadingid == 'allrtues' && loadingdata ? (
                     <GeneralLoadingSpinner
@@ -1014,7 +1012,7 @@ return formattedTime;
                               <Itembtn
                                 onclick={() => {
                                   setLoadingid(networkdata.id);
-                                 
+
                                   onclicknetwork(networkdata.id);
                                 }}
                                 id={networkdata.id}
@@ -1072,7 +1070,7 @@ return formattedTime;
                                                   <div className="flex w-full flex-row items-center">
                                                     <ItembtnRegion
                                                       onclick={() => {
-                                                        setLoadingdata(true)
+                                                        setLoadingdata(true);
                                                         onclickregion(
                                                           regionsdata.id,
                                                         );
@@ -1098,7 +1096,7 @@ return formattedTime;
                                                         />
                                                       ) : (
                                                         <div className="relative w-full">
-                                                          <div className="absolute left-[16px] top-[-28.5px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                                                          <div className="absolute left-[16px] top-[-28.5px] z-10 h-[29px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                                                           <div className="absolute bottom-[-11px]  left-[14px] z-10 h-[40px] w-[5px] bg-white"></div>
                                                           {/* {networkregions.find(
                                                             dataa =>
@@ -1137,11 +1135,9 @@ return formattedTime;
                                                                 return (
                                                                   <div
                                                                     key={index}
-                                                                    className=" relative ml-[16px] mt-[2px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
+                                                                    className=" relative ml-[16px] mt-[1px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
                                                                     <div className="absolute bottom-[-17px]  left-[25px] z-10 h-[40px] w-[5px]  bg-white"></div>
-                                                                    {/* {index == regionstations.length - 1 ? ( */}
 
-                                                                    {/* ) : null} */}
                                                                     <div className="flex w-[290px] flex-row items-center ">
                                                                       <span className="mt-[-6px] w-[10px] text-[12px]">
                                                                         ...
@@ -1196,6 +1192,13 @@ return formattedTime;
                                                                             0 ? (
                                                                               <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                                                                             ) : null}
+
+                                                                            {/* {index ==
+                                                                            stationsrtu.length -
+                                                                              1 ? ( */}
+                                                                            <div className="absolute left-[-32px]  top-[-29.5px] z-10 h-[40px] h-full w-[5px]  bg-white"></div>
+                                                                            {/* ) : null} */}
+
                                                                             {stationsrtu
                                                                               ?.find(
                                                                                 data =>
@@ -1218,7 +1221,9 @@ return formattedTime;
                                                                                       </span>
                                                                                       <SidebarItem
                                                                                         onclick={() => {
-                                                                                          setRtu_id(rtudata.id)
+                                                                                          setRtu_id(
+                                                                                            rtudata.id,
+                                                                                          );
                                                                                           if (
                                                                                             !location.pathname.includes(
                                                                                               `${rtudata.id}/${satationdata.id}/${regionsdata.id}/${networkdata.id}`,
@@ -1241,8 +1246,6 @@ return formattedTime;
                                                                                             ? true
                                                                                             : false
                                                                                         }
-                                                                                    
-                                                                                  
                                                                                         enabelcheck={
                                                                                           false
                                                                                         }
@@ -1266,19 +1269,6 @@ return formattedTime;
                                                             )}
                                                         </div>
                                                       )}
-
-
-
-
-
-
-
-
-
-
-
-
-
                                                     </>
                                                   ) : null}
                                                 </div>
@@ -1286,269 +1276,248 @@ return formattedTime;
                                             },
                                           )}
 
-
-
-
-
-
-
-
-
-
-
-
-
-<div className='w-full relative'>
-
-<Itembtn
-  // key={`${networkdata.id}&${networkdata.id}`}
-  // to={`/regions/defaultregionemptypage/${networkdata.id}`}
-  // canAdd={false}
-  // canDelete={false}
-  // selected={false}
-  // onDelete={() =>
-  //   dispatch(
-  //     deletedefaultRegion({
-  //       networkid: networkdata.id,
-  //     }),
-  //   )
-  // }
-  // candelete={false}
-  onclick={() => {
-    setLoadingid(`${networkdata.id}${networkdata.id}`);
-
-     onclickdefaultregion(networkdata.id)
-
-  }}
-  id={`${networkdata.id}${networkdata.id}`}
-  name="Default Region"
-/>
-
-</div>
-
-
-
-
-{networkselectedlist.indexOf(
-                `${networkdata.id}${networkdata.id}`
-              ) > -1 ? (
-                <>
-                  {loadingid == `${networkdata.id}${networkdata.id}` &&
-                  loadingdata ? (
-                    <GeneralLoadingSpinner
-                      size="w-8 h-8"
-                      className="ml-8 mt-2"
-                    />
-                  ) : (
-                    <div className="relative w-full">
-         
-
-                      <div className="absolute left-[16px] top-[-28.5px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
-                      <div className="absolute bottom-[-11px]  left-[13px] z-10 h-[40px] w-[10px] bg-[#ffffff]"></div>
-                      {networkregions.find(
-                        dataa =>
-                          dataa.networkid ==
-                          networkdata.id,
-                      )?.regions.length ==
-                      index + 1 ? (
-                        <div
-                          className={`absolute left-[-1px] ${
-                            networkselectedlist.indexOf(
-                              networkdata.id,
-                            ) > -1
-                              ? 'top-[-31px]'
-                              : 'top-[-29px]'
-                          }  left-[-2px] z-30 h-full w-[5px]  bg-[#ffffff]`}></div>
-                      ) : null}
-
-                      {defaultregionstations
-                      .find(
-                       dataa =>
-                       dataa?.networkid == networkdata?.id,
-                         )
-                        ?.stations.map(
-                          (
-                            satationdata,
-                            index: number,
-                          ) => {
-                            let findrtu =
-                              defaultstationsrtu?.find(
-                                data =>
-                                  data.stationid ==
-                                  satationdata.id,
-                              )?.rtues || [];
-                            return (
-                              <div
-                                key={index}
-                                className=" relative ml-[16px] mt-[2px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
-                                <div className="absolute bottom-[-17px]  left-[25px] z-10 h-[40px] w-[5px]   bg-[#ffffff]"></div>
-                                {/* {index == regionstations.length - 1 ? ( */}
-
-                                {/* ) : null} */}
-                                <div className="flex w-[290px] flex-row items-center ">
-                                  <span className="mt-[-6px] w-[10px] text-[12px]">
-                                    ...
-                                  </span>
-                                  <ItembtnStation
-                                  // type="default"
-                                    onclick={() => {
-                                      setLoadingid(
-                                        satationdata.id,
-                                      );
-                                      onclickdefaultstation(
-                                        satationdata.id,
-                                        // regionsdata.id,
-                                        // networkdata.id,
-                                        networkdata.id,
-                                      );
-                                      // dispatch(setRtuStationidadmin(satationdata.id))
-                                    }}
-                                    canAdd={
-                                      loggedInUser.role ===
-                                        UserRole.SUPER_USER ||
-                                      rtunetworkidadmin.includes(
-                                        networkdata.id,
-                                      ) ||
-                                      rturegionidadmin.includes(
-                                        networkdata.id,
-                                      )
-                                    }
-                                    candelete={
-                                      loggedInUser.role ===
-                                        UserRole.SUPER_USER ||
-                                      rtunetworkidadmin.includes(
-                                        networkdata.id,
-                                      ) ||
-                                      rturegionidadmin.includes(
-                                        networkdata.id,
-                                      )
-                                    }
-                                    id={
-                                      satationdata.id
-                                    }
-                                    regionid={
-                                      "1111"
-                                    }
-                                    networkid={
-                                      networkdata.id
-                                    }
-                                    name={
-                                      satationdata.name
-                                    }
-                                  />
-                                </div>
-                                {networkselectedlist.indexOf(
-                                  satationdata.id,
-                                ) > -1 ? (
-                                  <>
-                                    {loadingid ==
-                                      satationdata.id &&
-                                    loadingdata ? (
-                                      <GeneralLoadingSpinner
-                                        size="w-8 h-8"
-                                        className="ml-[60px] mt-2"
-                                      />
-                                    ) : (
-                                      <div
-                                        className={`relative ml-[28px] flex  flex-col  border-l-[1px] border-dotted  border-[#000000]`}>
-                                                     {defaultregionstations.find(dataa =>dataa?.networkid == networkdata?.id)?.stations.length ==
-                                                          index + 1 ? (
-                                                            <div
-                                                              className={`absolute left-[-1px] ${
-                                                                networkselectedlist.indexOf(
-                                                                  `${networkdata.id}${networkdata.id}`,
-                                                                ) > -1
-                                                                  ? 'top-[-29px]'
-                                                                  : 'top-[-29px]'
-                                                              }  left-[-34px] z-30 h-full w-[8px] bg-white`}></div>
-                                                           ) : null}
-                                        {findrtu.length >
-                                        0 ? (
-                                          <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
-                                        ) : null}
-                                        {defaultstationsrtu
-                                          ?.find(
-                                            data =>
-                                              data.stationid ==
-                                              satationdata.id,
-                                          )
-                                          ?.rtues.map(
-                                            (
-                                              rtudata,
-                                              index: number,
-                                            ) => {
-                                              return (
-                                                <div
-                                                  key={
-                                                    index
-                                                  }
-                                                  className="ml-[0px] mt-[10px] flex w-full flex-row items-center">
-                                                  <span className="mt-[-6px] w-[20px] text-[12px] ">
-                                                    .....
-                                                  </span>
-                                                  <SidebarItem
-                                                       onclick={() => {
-                                                        setRtu_id(rtudata.id)
-                                                        if (
-                                                          !location.pathname.includes(
-                                                            `${rtudata.id}/${satationdata.id}/${networkdata.id}/${networkdata.id}`,
-                                                          )
-                                                        ) {
-                                                          dispatch(
-                                                            setrtugetdetailStatus(
-                                                              false,
-                                                            ),
-                                                          );
-                                                        }
-
-                                                        setSelectedtabid(
-                                                          rtudata.id,
-                                                        );
-                                                      }}
-                                                    selected={
-                                                      selectedtabId ==
-                                                      rtudata.id
-                                                        ? true
-                                                        : false
-                                                    }
-                                                 
-                                              
-                                                    enabelcheck={
-                                                      false
-                                                    }
-                                                    className="w-[200px]"
-                                                    name={
-                                                      rtudata.name
-                                                    }
-                                                    to={`#`}
-                                                  />
-                                                </div>
+                                        <div className="relative w-full">
+                                          <Itembtn
+                                            // key={`${networkdata.id}&${networkdata.id}`}
+                                            // to={`/regions/defaultregionemptypage/${networkdata.id}`}
+                                            // canAdd={false}
+                                            // canDelete={false}
+                                            // selected={false}
+                                            // onDelete={() =>
+                                            //   dispatch(
+                                            //     deletedefaultRegion({
+                                            //       networkid: networkdata.id,
+                                            //     }),
+                                            //   )
+                                            // }
+                                            // candelete={false}
+                                            onclick={() => {
+                                              setLoadingid(
+                                                `${networkdata.id}${networkdata.id}`,
                                               );
-                                            },
-                                          )}
-                                      </div>
-                                    )}
-                                  </>
-                                ) : null}
-                              </div>
-                            );
-                          },
-                        )}
-                    </div>
-                  )}
-                </>
-              ) : null}
 
+                                              onclickdefaultregion(
+                                                networkdata.id,
+                                              );
+                                            }}
+                                            id={`${networkdata.id}${networkdata.id}`}
+                                            name="Default Region"
+                                          />
+                                        </div>
 
+                                        {networkselectedlist.indexOf(
+                                          `${networkdata.id}${networkdata.id}`,
+                                        ) > -1 ? (
+                                          <>
+                                            {loadingid ==
+                                              `${networkdata.id}${networkdata.id}` &&
+                                            loadingdata ? (
+                                              <GeneralLoadingSpinner
+                                                size="w-8 h-8"
+                                                className="ml-8 mt-2"
+                                              />
+                                            ) : (
+                                              <div className="relative w-full">
+                                                <div className="absolute left-[16px] top-[-28.5px] z-10 h-[29px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                                                <div className="absolute bottom-[-11px]  left-[13px] z-10 h-[40px] w-[10px] bg-[#ffffff]"></div>
+                                                {networkregions.find(
+                                                  dataa =>
+                                                    dataa.networkid ==
+                                                    networkdata.id,
+                                                )?.regions.length ==
+                                                index + 1 ? (
+                                                  <div
+                                                    className={`absolute left-[-1px] ${
+                                                      networkselectedlist.indexOf(
+                                                        networkdata.id,
+                                                      ) > -1
+                                                        ? 'top-[-31px]'
+                                                        : 'top-[-29px]'
+                                                    }  left-[-2px] z-30 h-full w-[5px]  bg-[#ffffff]`}></div>
+                                                ) : null}
+                                                <div className="absolute left-[-3px]  top-[-29.5px] z-10 h-[40px] h-full w-[5px]  bg-white"></div>
 
+                                                {defaultregionstations
+                                                  .find(
+                                                    dataa =>
+                                                      dataa?.networkid ==
+                                                      networkdata?.id,
+                                                  )
+                                                  ?.stations.map(
+                                                    (
+                                                      satationdata,
+                                                      index: number,
+                                                    ) => {
+                                                      let findrtu =
+                                                        defaultstationsrtu?.find(
+                                                          data =>
+                                                            data.stationid ==
+                                                            satationdata.id,
+                                                        )?.rtues || [];
+                                                      return (
+                                                        <div
+                                                          key={index}
+                                                          className=" relative ml-[16px] mt-[1px] flex  flex-col border-l-[1px] border-dotted  border-[#000000]">
+                                                          <div className="absolute bottom-[-17px]  left-[25px] z-10 h-[40px] w-[5px]   bg-[#ffffff]"></div>
+                                                          {/* {index == regionstations.length - 1 ? ( */}
 
+                                                          {/* ) : null} */}
+                                                          <div className="flex w-[290px] flex-row items-center ">
+                                                            <span className="mt-[-6px] w-[10px] text-[12px]">
+                                                              ...
+                                                            </span>
+                                                            <ItembtnStation
+                                                              // type="default"
+                                                              onclick={() => {
+                                                                setLoadingid(
+                                                                  satationdata.id,
+                                                                );
+                                                                onclickdefaultstation(
+                                                                  satationdata.id,
+                                                                  // regionsdata.id,
+                                                                  // networkdata.id,
+                                                                  networkdata.id,
+                                                                );
+                                                                // dispatch(setRtuStationidadmin(satationdata.id))
+                                                              }}
+                                                              canAdd={
+                                                                loggedInUser.role ===
+                                                                  UserRole.SUPER_USER ||
+                                                                rtunetworkidadmin.includes(
+                                                                  networkdata.id,
+                                                                ) ||
+                                                                rturegionidadmin.includes(
+                                                                  networkdata.id,
+                                                                )
+                                                              }
+                                                              candelete={
+                                                                loggedInUser.role ===
+                                                                  UserRole.SUPER_USER ||
+                                                                rtunetworkidadmin.includes(
+                                                                  networkdata.id,
+                                                                ) ||
+                                                                rturegionidadmin.includes(
+                                                                  networkdata.id,
+                                                                )
+                                                              }
+                                                              id={
+                                                                satationdata.id
+                                                              }
+                                                              regionid={'1111'}
+                                                              networkid={
+                                                                networkdata.id
+                                                              }
+                                                              name={
+                                                                satationdata.name
+                                                              }
+                                                            />
+                                                          </div>
+                                                          {networkselectedlist.indexOf(
+                                                            satationdata.id,
+                                                          ) > -1 ? (
+                                                            <>
+                                                              {loadingid ==
+                                                                satationdata.id &&
+                                                              loadingdata ? (
+                                                                <GeneralLoadingSpinner
+                                                                  size="w-8 h-8"
+                                                                  className="ml-[60px] mt-2"
+                                                                />
+                                                              ) : (
+                                                                <div
+                                                                  className={`relative ml-[28px] flex  flex-col  border-l-[1px] border-dotted  border-[#000000]`}>
+                                                                  {defaultregionstations.find(
+                                                                    dataa =>
+                                                                      dataa?.networkid ==
+                                                                      networkdata?.id,
+                                                                  )?.stations
+                                                                    .length ==
+                                                                  index + 1 ? (
+                                                                    <div
+                                                                      className={`absolute left-[-1px] ${
+                                                                        networkselectedlist.indexOf(
+                                                                          `${networkdata.id}${networkdata.id}`,
+                                                                        ) > -1
+                                                                          ? 'top-[-29px]'
+                                                                          : 'top-[-29px]'
+                                                                      }  left-[-34px] z-30 h-full w-[8px] bg-white`}></div>
+                                                                  ) : null}
+                                                                  {findrtu.length >
+                                                                  0 ? (
+                                                                    <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
+                                                                  ) : null}
+                                                                  {defaultstationsrtu
+                                                                    ?.find(
+                                                                      data =>
+                                                                        data.stationid ==
+                                                                        satationdata.id,
+                                                                    )
+                                                                    ?.rtues.map(
+                                                                      (
+                                                                        rtudata,
+                                                                        index: number,
+                                                                      ) => {
+                                                                        return (
+                                                                          <div
+                                                                            key={
+                                                                              index
+                                                                            }
+                                                                            className="ml-[0px] mt-[10px] flex w-full flex-row items-center">
+                                                                            <span className="mt-[-6px] w-[20px] text-[12px] ">
+                                                                              .....
+                                                                            </span>
+                                                                            <SidebarItem
+                                                                              onclick={() => {
+                                                                                setRtu_id(
+                                                                                  rtudata.id,
+                                                                                );
+                                                                                if (
+                                                                                  !location.pathname.includes(
+                                                                                    `${rtudata.id}/${satationdata.id}/${networkdata.id}/${networkdata.id}`,
+                                                                                  )
+                                                                                ) {
+                                                                                  dispatch(
+                                                                                    setrtugetdetailStatus(
+                                                                                      false,
+                                                                                    ),
+                                                                                  );
+                                                                                }
 
-
-
-
-
-
-
+                                                                                setSelectedtabid(
+                                                                                  rtudata.id,
+                                                                                );
+                                                                              }}
+                                                                              selected={
+                                                                                selectedtabId ==
+                                                                                rtudata.id
+                                                                                  ? true
+                                                                                  : false
+                                                                              }
+                                                                              enabelcheck={
+                                                                                false
+                                                                              }
+                                                                              className="w-[200px]"
+                                                                              name={
+                                                                                rtudata.name
+                                                                              }
+                                                                              to={`#`}
+                                                                            />
+                                                                          </div>
+                                                                        );
+                                                                      },
+                                                                    )}
+                                                                </div>
+                                                              )}
+                                                            </>
+                                                          ) : null}
+                                                        </div>
+                                                      );
+                                                    },
+                                                  )}
+                                              </div>
+                                            )}
+                                          </>
+                                        ) : null}
                                       </>
                                     )}
                                   </>
@@ -1571,165 +1540,172 @@ return formattedTime;
           <div className="mb-[20px] flex flex-row">
             <RadioButton
               check={selectedradio == 'Filter By Optical Route' ? true : false}
-              onclick={() => setSelectedradio('Filter By Optical Route')}
+              onclick={() => dispatch(setSelectedradio('Filter By Optical Route'))}
             />
             <span className="ml-[15px] text-[20px] font-bold leading-[24.2px] text-[#000000]">
               Filter By Optical Route
             </span>
           </div>
-          <div className="flex relative h-[350px] w-full flex-col overflow-y-auto pl-4 bg-white">
+          <div className="relative flex h-[350px] w-full flex-col overflow-y-auto bg-white pl-4">
             {/* ----------------------- optical route --------------------------- optical route --------------  optical route ---------------- */}
-            {selectedradio == 'Filter By Optical Route'?
-             null
-            :
-            <div className='absolute top-[0px] right-[0px] w-full h-full z-[100]'></div>
-            
-            }
+            {selectedradio == 'Filter By Optical Route' ? null : (
+              <div className="absolute right-[0px] top-[0px] z-[100] h-full w-full"></div>
+            )}
 
-      <div className={`relative mt-[30px] h-auto flex w-full flex-col`}>
-        {/* <div
+            <div className={`relative mt-[30px] flex h-auto w-full flex-col`}>
+              {/* <div
           className={`absolute h-[40px] w-[10px] ${
             resultnetworkselectedlist.indexOf(lastnetworkopt) > -1
               ? 'bottom-[-20px]'
               : 'bottom-[-15.5px]'
           }  left-[-5px] bg-[#E7EFF7]`}></div> */}
-        <div className="flex w-[205px] flex-row items-center text-[20px] font-bold text-[#000000]">
-          {openallopt ? (
-            <span className="ml-[-4px] mr-[5px] font-light">-</span>
-          ) : (
-            <span className="mb-[5px] ml-[3px] mr-[5px] font-light">+</span>
-          )}
+              <div className="flex w-[205px] flex-row items-center text-[20px] font-bold text-[#000000]">
+                {openallopt ? (
+                  <span className="ml-[-4px] mr-[5px] font-light">-</span>
+                ) : (
+                  <span className="mb-[5px] ml-[3px] mr-[5px] font-light">
+                    +
+                  </span>
+                )}
 
-          <button
-            onClick={() => {
-              dispatch(setopenallopt(!openallopt)), setLoadingopticalid('allnetworks');
-            }}>
-            <span>Optical Routes</span>
-          </button>
-        </div>
+                <button
+                  onClick={() => {
+                    dispatch(setopenallopt(!openallopt)),
+                      setLoadingopticalid('allnetworks');
+                  }}>
+                  <span>Optical Routes</span>
+                </button>
+              </div>
 
-        {openallopt ? (
-          <>
-            {loadingopticalid == 'allnetworks' && loadingopticaldata ? (
-              <GeneralLoadingSpinner size="w-8 h-8" className="ml-8 mt-2" />
-            ) : (
-              <>
-                {Array.isArray(listopt) &&
-                  listopt?.map((networkdata, index) => (
-                    <div
-                      key={index}
-                      className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
-                        listopt && index == listopt?.length - 1
-                          ? 'border-none'
-                          : 'border-[#000000]'
-                      }  `}>
-                      {listopt && index == listopt?.length - 1 ? (
-                        <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
-                      ) : null}
-                      <div
-                        className={`absolute z-10 ${
-                          resultnetworkselectedlist.indexOf(networkdata.id) > -1
-                            ? 'bottom-[-2px]'
-                            : 'bottom-[-7px]'
-                        }  left-[15px] h-[25px] w-[5px] bg-white`}></div>
+              {openallopt ? (
+                <>
+                  {loadingopticalid == 'allnetworks' && loadingopticaldata ? (
+                    <GeneralLoadingSpinner
+                      size="w-8 h-8"
+                      className="ml-8 mt-2"
+                    />
+                  ) : (
+                    <>
+                      {Array.isArray(listopt) &&
+                        listopt?.map((networkdata, index) => (
+                          <div
+                            key={index}
+                            className={`relative mt-[-10px] w-full  border-l-[1px] border-dotted   ${
+                              listopt && index == listopt?.length - 1
+                                ? 'border-none'
+                                : 'border-[#000000]'
+                            }  `}>
+                            {listopt && index == listopt?.length - 1 ? (
+                              <div className="absolute ml-[0px] h-[36px] border-l-[1px] border-dotted border-[#000000]"></div>
+                            ) : null}
+                            <div
+                              className={`absolute z-10 ${
+                                resultnetworkselectedlist.indexOf(
+                                  networkdata.id,
+                                ) > -1
+                                  ? 'bottom-[-2px]'
+                                  : 'bottom-[-7px]'
+                              }  left-[15px] h-[25px] w-[5px] bg-white`}></div>
 
-                      <div className="relative flex flex-col">
-                        <Itembtnopt
-                           classname="mb-[-10px]"
-                           name={networkdata.name}
-                          id={networkdata.id}
-                        />
-                        <div className=''>
-                         
-                            <>
-                              {resultnetworkselectedlist.indexOf(networkdata.id) >
-                              -1 ? (
+                            <div className="relative flex flex-col">
+                              <Itembtnopt
+                                classname="mb-[-10px]"
+                                name={networkdata.name}
+                                id={networkdata.id}
+                              />
+                              <div className="">
                                 <>
-                                {(loadingopticalid == networkdata.id && loadingopticaldata) ?
-                                   <GeneralLoadingSpinner
-                                   size="w-8 h-8"
-                                   className="ml-8 mt-2"
-                                 />
-                                :
-                                <div className="relative ml-[18px]  flex flex-col border-l-[1px] border-dotted border-[#000000]">
-                                <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
-                                {resultbrosernetworkoptical
-                                  ?.find(
-                                    dataa =>
-                                      dataa.networkid == networkdata.id,
-                                  )
-                                  ?.opticalrouts.map(
-                                    (data, index: number) => (
-                                      <div
-                                        key={index}
-                                        className="flex w-full flex-row items-center">
-                                        <span className="w-[15px] text-[12px]">
-                                          .....
-                                        </span>
-
-                                        <SidebarItem
-                                          selected={
-                                            selectedIdopt == data.id
-                                              ? true
-                                              : false
-                                          }
-                                          onclick={() =>{
-                                            setSelectedIdopt(data.id)
-                                            setOptical_route_id(data.id)
-                                          }
-                                          }
-                                          onclickcheckbox={e =>{}
-                                            // onclickopticalchecbox(
-                                            //   e,
-                                            //   data.id,
-                                            //   networkdata.id,
-                                            // )
-                                          }
-                                          checkstatus={findoptical(
-                                            networkdata.id,
-                                            data.id,
-                                          )}
-                                          onDelete={() =>{}
-                                            // deleteoneopticalroute(
-                                            //   data.id,
-                                            //   networkdata.id,
-                                            // )
-                                          }
-                                          enabelcheck={false}
-                                          className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
-                                          name={data.name}
-                                          to={`#`}
+                                  {resultnetworkselectedlist.indexOf(
+                                    networkdata.id,
+                                  ) > -1 ? (
+                                    <>
+                                      {loadingopticalid == networkdata.id &&
+                                      loadingopticaldata ? (
+                                        <GeneralLoadingSpinner
+                                          size="w-8 h-8"
+                                          className="ml-8 mt-2"
                                         />
-                                      </div>
-                                    ),
-                                  )}
-                              </div>
-                              }
+                                      ) : (
+                                        <div className="relative ml-[18px]  flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                                          <div className="absolute left-[-1px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                                          {resultbrosernetworkoptical
+                                            ?.find(
+                                              dataa =>
+                                                dataa.networkid ==
+                                                networkdata.id,
+                                            )
+                                            ?.opticalrouts.map(
+                                              (data, index: number) => (
+                                                <div
+                                                  key={index}
+                                                  className="flex w-full flex-row items-center">
+                                                  <span className="w-[15px] text-[12px]">
+                                                    .....
+                                                  </span>
+
+                                                  <SidebarItem
+                                                    selected={
+                                                      selectedIdopt == data.id
+                                                        ? true
+                                                        : false
+                                                    }
+                                                    onclick={() => {
+                                                      setSelectedIdopt(data.id);
+                                                      setOptical_route_id(
+                                                        data.id,
+                                                      );
+                                                    }}
+                                                    onclickcheckbox={
+                                                      e => {}
+                                                      // onclickopticalchecbox(
+                                                      //   e,
+                                                      //   data.id,
+                                                      //   networkdata.id,
+                                                      // )
+                                                    }
+                                                    checkstatus={findoptical(
+                                                      networkdata.id,
+                                                      data.id,
+                                                    )}
+                                                    onDelete={
+                                                      () => {}
+                                                      // deleteoneopticalroute(
+                                                      //   data.id,
+                                                      //   networkdata.id,
+                                                      // )
+                                                    }
+                                                    enabelcheck={false}
+                                                    className="ml-[5px] mt-[10px] w-[calc(100%-20px)]"
+                                                    name={data.name}
+                                                    to={`#`}
+                                                  />
+                                                </div>
+                                              ),
+                                            )}
+                                        </div>
+                                      )}
+                                    </>
+                                  ) : null}
                                 </>
-                           
-                              ) : null}
-                            </>
-                       
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-              </>
-            )}
-          </>
-        ) : null}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </>
+                  )}
+                </>
+              ) : null}
 
-        {openallopt && listopt.length >= 10 ? (
-          <SimpleBtn
-            loading={networkopticalloading}
-            onClick={() => setSkipopt(skipopt + 10)}
-            className="mx-auto mt-4">
-            more
-          </SimpleBtn>
-        ) : null}
-      </div>
-                    {/* ----------------------- optical route --------------------------- optical route --------------  optical route ---------------- */}
-
+              {openallopt && listopt.length >= 10 ? (
+                <SimpleBtn
+                  loading={networkopticalloading}
+                  onClick={() => setSkipopt(skipopt + 10)}
+                  className="mx-auto mt-4">
+                  more
+                </SimpleBtn>
+              ) : null}
+            </div>
+            {/* ----------------------- optical route --------------------------- optical route --------------  optical route ---------------- */}
           </div>
         </div>
 
@@ -1760,30 +1736,30 @@ return formattedTime;
               </span>
               <div className="flex w-[calc(100%-60px)] flex-row justify-between">
                 <input
-                value={last}
+                  value={last}
                   type="number"
                   onChange={e => setLast(Number(e.target.value))}
-                  className="ml-6 p-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white"
+                  className="ml-6 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white p-2"
                 />
 
                 <Select
                   onChange={e => setSelectdate(e.target.value)}
                   className="mr-[40px] h-[40px] w-[120px]">
                   <option value="" className="hidden">
-                  minutes
+                    minutes
                   </option>
                   <option value={undefined} className="hidden">
-                  minutes
+                    minutes
                   </option>
 
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  minutes
+                    minutes
                   </option>
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  hour
+                    hour
                   </option>
                   <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                  Day
+                    Day
                   </option>
                 </Select>
               </div>
@@ -1838,12 +1814,14 @@ return formattedTime;
               </div>
             </div>
           </div>
-          <SimpleBtn onClick={Applayresult} className="ml-[calc(100%-100px)]">Apply</SimpleBtn>
+          <SimpleBtn onClick={Applayresult} className="ml-[calc(100%-100px)]">
+            Apply
+          </SimpleBtn>
         </div>
       </div>
 
       <Table
-      loading={loadingdata}
+        loading={loadingdata}
         // onclicktitle={(tabname: string, sortalfabet: boolean) => {
         //   const dataa = [...reightstationsorted];
         //   if (sortalfabet) {
@@ -1865,22 +1843,26 @@ return formattedTime;
           if (key === 'detail')
             return (
               // <Link to={value.detail}>
-                <IoOpenOutline 
+              <IoOpenOutline
                 onClick={() =>
                   navigate(`/config/chart`, {
                     state: {
-                      opticalrout_id:value.opticalRouteId!,
+                      opticalrout_id: value.opticalRouteId!,
                       measurement_id: value.id,
                     },
                   })
                 }
-                size={22} className="mx-auto" />
+                size={22}
+                className="mx-auto"
+              />
               // </Link>
             );
           else if (key === 'delete')
             return (
               <IoTrashOutline
-                onClick={() => deleteREsult(value.opticalRouteId,value.id,value.index)}
+                onClick={() =>
+                  deleteREsult(value.opticalRouteId, value.id, value.index)
+                }
                 className="mx-auto cursor-pointer text-red-500"
                 size={22}
               />

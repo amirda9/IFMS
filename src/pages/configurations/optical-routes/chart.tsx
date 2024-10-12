@@ -187,6 +187,10 @@ function Chart() {
   const [selectedevents, setSelectedEvents] = useState<any>(null);
   const [allalarms,setAllalarms]=useState<alllalarmsType | []>([])
 
+
+
+  console.log("location",location);
+  
   useEffect(() => {
     const Getmeasermentsalarms = async () => {
       try {
@@ -483,6 +487,8 @@ function Chart() {
         let items = [];
         let sumloss = 0;
         for (let c = 0; c < Allevents?.length; c++) {
+          console.log("Allevents[c].event_reflectance",Allevents[c].event_reflectance);
+          
           sumloss += Allevents[c].event_loss;
           items.push({
             index: c + 1,
@@ -974,6 +980,9 @@ function Chart() {
       setAllchart(prev => [...prev, name]);
     }
   };
+
+console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.optical_return_loss);
+
 
   const movebigline = (name: string, direction: string) => {
     // console.log("name",name);
