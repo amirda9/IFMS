@@ -51,7 +51,7 @@ import {
   setrtugetdetailStatus,
   setOppenallrtu,
   setNetworkselectedlist,
-  setSelectedradio
+  setSelectedradio,
 } from './../../../store/slices/resultbrouserRtuslice';
 import {deepcopy} from './../../../util/deepcopy';
 
@@ -363,7 +363,7 @@ function Resultbrowser() {
     rturegionidadmin,
     openallrtu,
     networkselectedlist,
-    selectedradio
+    selectedradio,
   } = useSelector((state: RootState) => state.resultbrouserRtuslice);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   // const {
@@ -1193,10 +1193,17 @@ function Resultbrowser() {
                                                                               <div className="absolute left-[-1px] top-[-28px] z-10 h-[27px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                                                                             ) : null}
 
-                                                                            {/* {index ==
-                                                                            stationsrtu.length -
-                                                                              1 ? ( */}
-                                                                            <div className="absolute left-[-32px]  top-[-29.5px] z-10 h-[40px] h-full w-[5px]  bg-white"></div>
+                                                                            {index ==
+                                                                            regionstations.find(
+                                                                              dataa =>
+                                                                                dataa.regionid ==
+                                                                                regionsdata.id,
+                                                                            )
+                                                                              ?.stations
+                                                                              ?.length! -
+                                                                              1 ? (
+                                                                              <div className="absolute left-[-32px]  top-[-29.5px] z-10 h-[40px] h-full w-[5px]  bg-white"></div>
+                                                                            ) : null}
                                                                             {/* ) : null} */}
 
                                                                             {stationsrtu
@@ -1540,7 +1547,9 @@ function Resultbrowser() {
           <div className="mb-[20px] flex flex-row">
             <RadioButton
               check={selectedradio == 'Filter By Optical Route' ? true : false}
-              onclick={() => dispatch(setSelectedradio('Filter By Optical Route'))}
+              onclick={() =>
+                dispatch(setSelectedradio('Filter By Optical Route'))
+              }
             />
             <span className="ml-[15px] text-[20px] font-bold leading-[24.2px] text-[#000000]">
               Filter By Optical Route
