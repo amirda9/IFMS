@@ -189,7 +189,7 @@ function Chart() {
 
 
 
-  console.log("location",location);
+
   
   useEffect(() => {
     const Getmeasermentsalarms = async () => {
@@ -197,11 +197,10 @@ function Chart() {
         const response = await $Get(
           `otdr/optical-route/${location.state.optical_route_id}/test-setups/measurements/${location.state.measurement_id}/alarms`,
         );
-        console.log('responseresponse', response);
+   
         if (response?.status == 200 || response?.status == 201) {
           const resonsedata:alllalarmsType = await response.json();
           setAllalarms(resonsedata)
-          console.log('resonsedataresonsedataresonsedata', resonsedata);
         }
       } catch (error) {}
     };
@@ -235,7 +234,6 @@ function Chart() {
           `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
         );
         let datass = await getdata?.json();
-        console.log('😶‍🌫️', datass);
 
         let allpointsdata = datass?.datapoints?.data_points?.map(
           (data: [number, number]) => ({x: data[0], y: data[1]}),
@@ -269,7 +267,6 @@ function Chart() {
               event_number: datass.key_events.events[i].event_number,
             });
           } else if (datass.key_events.events[i].event_code == 'End of fiber') {
-            console.log("datass.key_events.events[i]",datass.key_events.events[i]);
             
             Arrowevents.push({
               x: datass.key_events.events[i].event_location,
@@ -285,7 +282,6 @@ function Chart() {
         let allshapesCopy = deepcopy(allshapes);
         let elements: JSX.Element[] = [];
         // if (!showeventdetail) {
-        console.log("Arrowevents",Arrowevents);
         
         Arrowevents?.forEach((point, index) => {
           const X = point.x;
@@ -487,7 +483,6 @@ function Chart() {
         let items = [];
         let sumloss = 0;
         for (let c = 0; c < Allevents?.length; c++) {
-          console.log("Allevents[c].event_reflectance",Allevents[c].event_reflectance);
           
           sumloss += Allevents[c].event_loss;
           items.push({
@@ -981,7 +976,9 @@ function Chart() {
     }
   };
 
-console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.optical_return_loss);
+console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.events.reduce((max:any, item:any) => {
+  return item.event_loss > max ? item.event_loss : max;
+}, -Infinity));
 
 
   const movebigline = (name: string, direction: string) => {
@@ -1559,6 +1556,10 @@ console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.
               )
                 .toString()
                 .substring(0, 5)}
+                maxloss={chartdata?.key_events?.events.reduce((max:any, item:any) => {
+                  return item.event_loss > max ? item.event_loss : max;
+                }, -Infinity)}
+                AverageSplice={(chartdata?.key_events?.events.reduce((sum:any, item:any) => sum + item.event_loss, 0))/chartdata?.key_events?.events.length}
               AverageLoss={(
                 Number(chartdata?.key_events?.end_to_end_loss) /
                 (chartdata?.key_events?.events[

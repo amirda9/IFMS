@@ -2,9 +2,9 @@ import React from 'react'
 import Selectbox from '~/components/selectbox/selectbox';
 type Resultdata={
  name:string,
- value:string
+ value:string | number
 }
-
+6104338976908588
 type Iprops={
   onclick:(name:string)=>void;
   Length:string;
@@ -13,6 +13,8 @@ type Iprops={
   NoiseFloor:string;
   ORL:string;
   Date:string;
+  maxloss:number;
+  AverageSplice:number
  }
  const options = [
    {value: 'Result', label: 'Result'},
@@ -32,7 +34,7 @@ const Resultdata=({name,value}:Resultdata)=>{
  </div>
  )
 }
-function Rightbar({onclick,Length,Loss,AverageLoss,NoiseFloor,ORL,Date}:Iprops) {
+function Rightbar({onclick,Length,Loss,AverageLoss,NoiseFloor,ORL,Date,maxloss,AverageSplice}:Iprops) {
   return (
    <div className="h-full w-full o bg-[#C6DFF8] p-[10px] box-border rounded-[10px]">
    <Selectbox
@@ -47,8 +49,8 @@ function Rightbar({onclick,Length,Loss,AverageLoss,NoiseFloor,ORL,Date}:Iprops) 
   <Resultdata name={'Loss'} value={Loss}  />
   <Resultdata name={'Average Loss'} value={AverageLoss}  />
   <Resultdata name={'ORL'} value={ORL}  />
-  <Resultdata name={'Average Splice Loss'} value={'0.285 dB'}  />
-  <Resultdata name={'Max. Splice Loss'} value={'0.315 dB'}  />
+  <Resultdata name={'Average Splice Loss'} value={AverageSplice.toFixed(3)}  />
+  <Resultdata name={'Max. Splice Loss'} value={maxloss}  />
   <Resultdata name={'Noise Floor'} value={NoiseFloor}  />
  </div>
   )
