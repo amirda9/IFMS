@@ -668,7 +668,8 @@ function Testondemand() {
               ))
             )}
           </div>
-          <div className="mt-4 flex w-full flex-row items-center">
+          <div className="mt-4 flex w-full flex-row items-center space-between">
+            <div className='w-[90%] flex flex-row'>
             <Checkbox
               checkstatus={showCompletedTestsFrom}
               onclick={() =>
@@ -688,13 +689,19 @@ function Testondemand() {
               onChange={e => dispatch(setFromtimeupdated(e.target.value))}
               value={fromtimeupdated}
               type="date"
-              className="ml-6 h-8 w-48 rounded-md border border-black px-2"
+              className="ml-4 h-8 w-40 rounded-md border border-black px-2"
             />
             <img
               src={dateicon}
               onClick={() => Thirdref.current.showPicker()}
               className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
             />
+            </div>
+         
+
+<SimpleBtn onClick={getmeasurments} className="mb-1 px-[30px] ml-4">
+            refresh
+          </SimpleBtn>
           </div>
         </div>
 
@@ -710,7 +717,8 @@ function Testondemand() {
             </div>
             
           </div>
-
+       
+        
           <SimpleBtn onClick={getmeasurments} className="mb-1 px-[47px]">
             Apply
           </SimpleBtn>
