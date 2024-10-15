@@ -188,7 +188,13 @@ function Chart() {
   const [allalarms,setAllalarms]=useState<alllalarmsType | []>([])
 
 
-
+  function checkNumber(num:number) {
+    if (num < -80) {
+    return "";
+    } else {
+    return num;
+    }
+    }
 
   
   useEffect(() => {
@@ -490,10 +496,10 @@ function Chart() {
             Position: (Allevents[c].event_location / 1000)
               .toString()
               .substring(0, 7),
-            Loss: Allevents[c]?.event_loss?.toString().substring(0, 7) || '',
-            Reflectance: Allevents[c].event_reflectance
+            Loss:Math.abs(Number(Allevents[c]?.event_loss?.toString().substring(0, 7))).toString()  || '',
+            Reflectance:checkNumber(Number(Allevents[c].event_reflectance
               .toString()
-              .substring(0, 7),
+              .substring(0, 7))).toString(),
             Peak: '',
             Attenuation: '',
             Cumulative: sumloss.toString().substring(0, 7),
@@ -514,13 +520,13 @@ function Chart() {
               )
                 .toString()
                 .substring(0, 7),
-              Loss:
-                (
-                  Allevents[c + 1]?.event_y -
-                  Allevents[c]?.event_y
-                )
-                  ?.toString()
-                  .substring(0, 7) || '---',
+              Loss:Math.abs(Number((
+                Allevents[c + 1]?.event_y -
+                Allevents[c]?.event_y
+              )
+                ?.toString()
+                .substring(0, 7))).toString()
+                 || '---',
               Reflectance: '',
               Peak: '',
               Attenuation: (
@@ -855,6 +861,7 @@ function Chart() {
     setAllshapes(allshapesCopy);
   };
 
+
   const Events = () => {
     if (showevents) {
     } else {
@@ -1091,6 +1098,7 @@ console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.
     );
     return (findequal && findequal) || findbigger;
   };
+
 
   const Tabbox = ({name}: {name: string}) => {
     return (
