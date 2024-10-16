@@ -689,7 +689,7 @@ function Testondemand() {
               onChange={e => dispatch(setFromtimeupdated(e.target.value))}
               value={fromtimeupdated}
               type="date"
-              className="ml-4 h-8 w-40 rounded-md border border-black px-2"
+              className="ml-4 h-8 w-30 rounded-md border border-black px-2"
             />
             <img
               src={dateicon}
