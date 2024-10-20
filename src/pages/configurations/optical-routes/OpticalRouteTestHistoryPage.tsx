@@ -108,6 +108,9 @@ const OpticalRouteTestHistoryPage: FC = () => {
     }
   };
 
+
+  console.log("historydata",historydata);
+  
   useEffect(() => {
     gethistory();
   }, []);
@@ -202,6 +205,9 @@ const OpticalRouteTestHistoryPage: FC = () => {
     }
   };
 
+
+  console.log("params",params);
+  
   return (
     <div className="flex flex-grow flex-col">
       <div className="flex flex-grow flex-col gap-y-4 pr-16">

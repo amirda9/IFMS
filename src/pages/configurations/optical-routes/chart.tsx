@@ -48,16 +48,15 @@ type tabelItemstype = {
   event_code: string | undefined;
 };
 
-
-type alllalarmsType=[
+type alllalarmsType = [
   {
     alarm: {
-      id: string,
-      name: string
-    },
-    severity: string
-  }
-]
+      id: string;
+      name: string;
+    };
+    severity: string;
+  },
+];
 type eventstype = {
   event_number: number;
   event_location: {
@@ -82,6 +81,15 @@ type linklengthtype = {
   Length: Number;
   segments: {Length: number; offset: number; position: number}[];
 }[];
+
+type allchartdataype = {
+  number_of_points: 0;
+  number_of_used_scale_factors: 0;
+  avg_data_points: [number, number][];
+  max_data_points: [number, number][];
+  min_data_points: [number, number][];
+  reference_data_points: [number, number][];
+};
 
 const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
   {
@@ -177,7 +185,7 @@ function Chart() {
   const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
-  const [allchart, setAllchart] = useState<string[]>([]);
+  const [allchart, setAllchart] = useState<string[]>(["Cur"]);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [fakeevents, setfakeEvents] = useState<any>([]);
   const [arrowevents, setArrowevents] = useState<any>([]);
@@ -185,28 +193,46 @@ function Chart() {
   const [mousecursor, setMousecursor] = useState(false);
   const [fixedyaxies, setFixedyaxies] = useState(false);
   const [selectedevents, setSelectedEvents] = useState<any>(null);
-  const [allalarms,setAllalarms]=useState<alllalarmsType | []>([])
+  const [allalarms, setAllalarms] = useState<alllalarmsType | []>([]);
+  const [allchartdata, setAllchartdata] = useState<allchartdataype | []>([]);
+  const [allcurveline, setAllcurveline] = useState<
+    {
+      id: string;
+      data: {x: number; y: number}[];
+    }[]
+  >([]);
+  const [avg_data_points, setAvg_data_points] = useState<
+    {x: number; y: number}[]
+  >([]);
+  const [max_data_point, setMax_data_point] = useState<
+    {x: number; y: number}[]
+  >([]);
+  const [min_data_points, setMin_data_points] = useState<
+    {x: number; y: number}[]
+  >([]);
+  const [reference_data_points, setReference_data_points] = useState<
+    {x: number; y: number}[]
+  >([]);
+  const [getallcurvedata, setGetallcurvedata] = useState(false);
 
-
-  function checkNumber(num:number) {
+  function checkNumber(num: number) {
     if (num < -80) {
-    return "";
+      return '';
     } else {
-    return num;
+      return num;
     }
-    }
+  }
 
-  
   useEffect(() => {
     const Getmeasermentsalarms = async () => {
       try {
         const response = await $Get(
           `otdr/optical-route/${location.state.optical_route_id}/test-setups/measurements/${location.state.measurement_id}/alarms`,
         );
-   
+
         if (response?.status == 200 || response?.status == 201) {
-          const resonsedata:alllalarmsType = await response.json();
-          setAllalarms(resonsedata)
+          const resonsedata: alllalarmsType = await response.json();
+          setAllalarms(resonsedata);
         }
       } catch (error) {}
     };
@@ -223,12 +249,7 @@ function Chart() {
     | 'turntable'
     | undefined
   >(false);
-  const [allcurveline, setAllcurveline] = useState<
-    {
-      id: string;
-      data: {x: number; y: number}[];
-    }[]
-  >([]);
+
   const [autotick, setAutodic] = useState(true);
 
   useEffect(() => {
@@ -244,6 +265,7 @@ function Chart() {
         let allpointsdata = datass?.datapoints?.data_points?.map(
           (data: [number, number]) => ({x: data[0], y: data[1]}),
         );
+
         setChartdata(datass);
         setAllcurveline([
           {
@@ -273,7 +295,6 @@ function Chart() {
               event_number: datass.key_events.events[i].event_number,
             });
           } else if (datass.key_events.events[i].event_code == 'End of fiber') {
-            
             Arrowevents.push({
               x: datass.key_events.events[i].event_location,
               y: datass.key_events.events[i].event_y,
@@ -288,7 +309,7 @@ function Chart() {
         let allshapesCopy = deepcopy(allshapes);
         let elements: JSX.Element[] = [];
         // if (!showeventdetail) {
-        
+
         Arrowevents?.forEach((point, index) => {
           const X = point.x;
           const Y = point.y!;
@@ -382,42 +403,28 @@ function Chart() {
               },
             );
           } else {
-            
             allshapesCopy.push(
               {
                 type: 'line',
-                x0: X, 
+                x0: X,
                 y0: Y + 10,
-                x1: X, 
+                x1: X,
                 y1: Y - 10,
 
                 editable: false,
                 line: {
                   color: '#A80000',
-                  width: 3, 
+                  width: 3,
                   zindex: 10,
                   // layer: 'below',
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, 
-                y0: Y + 10,
-                x1: X, 
-                y1: Y + 10, 
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 3, 
-                  zindex: 10,
-                },
-              },
-              {
-                type: 'line',
                 x0: X - 70,
-                y0: Y - 10, 
+                y0: Y + 10,
                 x1: X,
-                y1: Y - 10, 
+                y1: Y + 10,
                 editable: false,
                 line: {
                   color: '#A80000',
@@ -427,10 +434,23 @@ function Chart() {
               },
               {
                 type: 'line',
-                x0: X - 70, 
-                y0: Y - 10, 
-                x1: X - 15, 
-                y1: Y - 11, 
+                x0: X - 70,
+                y0: Y - 10,
+                x1: X,
+                y1: Y - 10,
+                editable: false,
+                line: {
+                  color: '#A80000',
+                  width: 3,
+                  zindex: 10,
+                },
+              },
+              {
+                type: 'line',
+                x0: X - 70,
+                y0: Y - 10,
+                x1: X - 15,
+                y1: Y - 11,
                 editable: false,
                 line: {
                   color: '#A80000',
@@ -441,9 +461,9 @@ function Chart() {
               {
                 type: 'line',
                 x0: X - 70,
-                y0: Y - 10, 
+                y0: Y - 10,
                 x1: X - 15,
-                y1: Y - 9, 
+                y1: Y - 9,
                 editable: false,
                 line: {
                   color: '#A80000',
@@ -453,20 +473,20 @@ function Chart() {
               },
               {
                 type: 'line',
-                x0: X - 70, 
-                y0: Y + 10, 
+                x0: X - 70,
+                y0: Y + 10,
                 x1: X - 15,
-                y1: Y + 9, 
+                y1: Y + 9,
                 editable: false,
                 line: {
-                  color: '#A80000', 
+                  color: '#A80000',
                   width: 1,
                   zindex: 10,
                 },
               },
               {
                 type: 'line',
-                x0: X - 70, 
+                x0: X - 70,
                 y0: Y + 10,
                 x1: X - 15,
                 y1: Y + 11,
@@ -489,17 +509,19 @@ function Chart() {
         let items = [];
         let sumloss = 0;
         for (let c = 0; c < Allevents?.length; c++) {
-          
           sumloss += Allevents[c].event_loss;
           items.push({
             index: c + 1,
             Position: (Allevents[c].event_location / 1000)
               .toString()
               .substring(0, 7),
-            Loss:Math.abs(Number(Allevents[c]?.event_loss?.toString().substring(0, 7))).toString()  || '',
-            Reflectance:checkNumber(Number(Allevents[c].event_reflectance
-              .toString()
-              .substring(0, 7))).toString(),
+            Loss:
+              Math.abs(
+                Number(Allevents[c]?.event_loss?.toString().substring(0, 7)),
+              ).toString() || '',
+            Reflectance: checkNumber(
+              Number(Allevents[c].event_reflectance.toString().substring(0, 7)),
+            ).toString(),
             Peak: '',
             Attenuation: '',
             Cumulative: sumloss.toString().substring(0, 7),
@@ -508,9 +530,7 @@ function Chart() {
             // tabbodybg: [{name: "Position", onclick: ()=>alert("Position")}],
           });
           if (c < Allevents.length - 1) {
-            sumloss +=
-              Allevents[c + 1]?.event_y-
-                Allevents[c]?.event_y || 0;
+            sumloss += Allevents[c + 1]?.event_y - Allevents[c]?.event_y || 0;
             items.push({
               index: '',
               Position: (
@@ -520,18 +540,18 @@ function Chart() {
               )
                 .toString()
                 .substring(0, 7),
-              Loss:Math.abs(Number((
-                Allevents[c + 1]?.event_y -
-                Allevents[c]?.event_y
-              )
-                ?.toString()
-                .substring(0, 7))).toString()
-                 || '---',
+              Loss:
+                Math.abs(
+                  Number(
+                    (Allevents[c + 1]?.event_y - Allevents[c]?.event_y)
+                      ?.toString()
+                      .substring(0, 7),
+                  ),
+                ).toString() || '---',
               Reflectance: '',
               Peak: '',
               Attenuation: (
-                (Allevents[c + 1]?.event_y -
-                  Allevents[c]?.event_y) /
+                (Allevents[c + 1]?.event_y - Allevents[c]?.event_y) /
                 ((Allevents[c + 1].event_location -
                   Allevents[c].event_location) /
                   1000)
@@ -568,8 +588,8 @@ function Chart() {
           for (let i = 0; i < results.length; i++) {
             let sementsdata =
               results[i].current_version.type == 'cable'
-                ? results[i].data.cables
-                : results[i].data.ducts;
+                ? results[i]?.data?.cables
+                : results[i]?.data?.ducts;
 
             // for(let j=0;j<sementsdata.length;j++){
             let data = [];
@@ -861,7 +881,6 @@ function Chart() {
     setAllshapes(allshapesCopy);
   };
 
-
   const Events = () => {
     if (showevents) {
     } else {
@@ -872,9 +891,7 @@ function Chart() {
           ),
           y: [...Array(41).keys()].map(
             (dat, index) =>
-              chartdata?.key_events?.events[0]?.event_y +
-              index / 2 -
-              10,
+              chartdata?.key_events?.events[0]?.event_y + index / 2 - 10,
           ),
           type: 'lines',
           text: [chartdata?.key_events?.events[0]?.event_number],
@@ -893,9 +910,7 @@ function Chart() {
           ),
           y: [...Array(41).keys()].map(
             (dat, index) =>
-              chartdata?.key_events?.events[1]?.event_y +
-              index / 2 -
-              10,
+              chartdata?.key_events?.events[1]?.event_y + index / 2 - 10,
           ),
           type: 'lines',
           text: [chartdata?.key_events?.events[1]?.event_number],
@@ -914,9 +929,7 @@ function Chart() {
           ),
           y: [...Array(41).keys()].map(
             (dat, index) =>
-              chartdata?.key_events?.events[2]?.event_y +
-              index / 2 -
-              10,
+              chartdata?.key_events?.events[2]?.event_y + index / 2 - 10,
           ),
 
           type: 'lines',
@@ -958,52 +971,77 @@ function Chart() {
     setLeftverticaltab('LinkView');
   };
 
-  const showcurveline = (name: string) => {
-    const find = allcurve.findIndex(data => data.id == name);
-    const find2 = allcurveline.findIndex(data => data.id == name);
-
+  const showcurveline = async (name: string) => {
     const find3 = allchart.findIndex(data => data == name);
-    if (find2 > -1) {
-      const filtercurvs = allcurveline.filter(data => data.id != name);
-      setAllcurveline(filtercurvs);
-    } else {
-      setAllcurveline(
-        (prev: {id: string; data: {x: number; y: number}[]}[]) => [
-          ...prev,
-          allcurve[find],
-        ],
-      );
-    }
-
     if (find3 > -1) {
       const filtercurvs = allchart.filter(data => data != name);
       setAllchart(filtercurvs);
     } else {
       setAllchart(prev => [...prev, name]);
     }
+
+    if (!getallcurvedata) {
+      try {
+        setLoading(true);
+        const allcurvresponse = await $Get(
+          `otdr/optical-route/${location.state.optical_route_id}/learning-measurements-chart-detail`,
+        );
+        
+        if (allcurvresponse?.status == 200) {
+          const allcurvresponsedata: allchartdataype =
+            await allcurvresponse?.json();
+          setAvg_data_points(
+            allcurvresponsedata?.avg_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setMax_data_point(
+            allcurvresponsedata?.max_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setMin_data_points(
+            allcurvresponsedata?.min_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setReference_data_points(
+            allcurvresponsedata?.reference_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setAllchartdata(allcurvresponsedata);
+        
+        }
+      } catch (error) {
+        console.log(`error is :${error}`);
+      } finally {
+        setLoading(false);
+        setGetallcurvedata(true)
+      }
+    }
   };
 
-console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.events.reduce((max:any, item:any) => {
-  return item.event_loss > max ? item.event_loss : max;
-}, -Infinity));
 
 
   const movebigline = (name: string, direction: string) => {
-    // console.log("name",name);
+
     // console.log("fakeevents",fakeevents);
-    
-  const verticalLinesCopy = deepcopy(verticalLines);
+
+    const verticalLinesCopy = deepcopy(verticalLines);
     const findverticalindex = verticalLines.findIndex(
       data => data.name && data.name == name,
     );
-    // console.log("findverticalindex",findverticalindex);
-    
+
     verticalLinesCopy[findverticalindex].x =
       direction == 'right'
         ? verticalLines[findverticalindex].x + 10
         : verticalLines[findverticalindex].x - 10;
     setVerticalLines(verticalLinesCopy);
-
 
     //   const fakeeventsCopy = deepcopy(fakeevents);
     // const findverticalindex = fakeevents.findIndex(
@@ -1098,7 +1136,6 @@ console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.
     );
     return (findequal && findequal) || findbigger;
   };
-
 
   const Tabbox = ({name}: {name: string}) => {
     return (
@@ -1390,8 +1427,6 @@ console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.
 
   const plotwidth = window.innerWidth - 510;
   const ratio = plotwidth / maxx;
-  // console.log('allshapes', allshapes);
-  // console.log('chartdata', chartdata);
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       <div className="flex h-[540px]  w-full flex-row">
@@ -1495,9 +1530,61 @@ console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.
                     type: 'scatter',
                     mode: 'lines',
                     line: {width: 2},
-                    marker: {color: 'red'},
+                    marker: {color: '#273746'},
+                  },
+                  {
+                    showlegend: false,
+                    x:
+                      allchart.indexOf('Max') > -1 &&
+                      max_data_point?.map(data => data.x),
+                    y:
+                      allchart.indexOf('Max') > -1 &&
+                      max_data_point?.map(data => data.y),
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: {width: 2},
+                    marker: {color: '#A93226'},
                   },
 
+                  {
+                    showlegend: false,
+                    x:
+                      allchart.indexOf('Min') > -1 &&
+                      min_data_points?.map(data => data.x),
+                    y:
+                      allchart.indexOf('Min') > -1 &&
+                      min_data_points?.map(data => data.y),
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: {width: 2},
+                    marker: {color: '#2471A3'},
+                  },
+                  {
+                    showlegend: false,
+                    x:
+                      allchart.indexOf('Ref') > -1 &&
+                      reference_data_points?.map(data => data.x),
+                    y:
+                      allchart.indexOf('Ref') > -1 &&
+                      reference_data_points?.map(data => data.y),
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: {width: 2},
+                    marker: {color: '#229954'},
+                  },
+                  {
+                    showlegend: false,
+                    x:
+                      allchart.indexOf('Avg') > -1 &&
+                      avg_data_points?.map(data => data.x),
+                    y:
+                      allchart.indexOf('Avg') > -1 &&
+                      avg_data_points?.map(data => data.y),
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: {width: 2},
+                    marker: {color: '#D4AC0D'},
+                  },
                   ...fakeevents,
                 ]}
                 config={{
@@ -1530,7 +1617,6 @@ console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.
           <div className="flex flex-row">
             {linkslengthdata.map(segmentsdata => {
               let linklength = Number(segmentsdata.Length) * 100;
-              console.log('linklength', linklength);
 
               return (
                 <div
@@ -1564,10 +1650,18 @@ console.log("chartdata?.key_events?.optical_return_loss",chartdata?.key_events?.
               )
                 .toString()
                 .substring(0, 5)}
-                maxloss={chartdata?.key_events?.events.reduce((max:any, item:any) => {
+              maxloss={chartdata?.key_events?.events.reduce(
+                (max: any, item: any) => {
                   return item.event_loss > max ? item.event_loss : max;
-                }, -Infinity)}
-                AverageSplice={(chartdata?.key_events?.events.reduce((sum:any, item:any) => sum + item.event_loss, 0))/chartdata?.key_events?.events.length}
+                },
+                -Infinity,
+              )}
+              AverageSplice={
+                chartdata?.key_events?.events.reduce(
+                  (sum: any, item: any) => sum + item.event_loss,
+                  0,
+                ) / chartdata?.key_events?.events.length
+              }
               AverageLoss={(
                 Number(chartdata?.key_events?.end_to_end_loss) /
                 (chartdata?.key_events?.events[
