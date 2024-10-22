@@ -43,7 +43,7 @@ const AlarmTypeDetailsPage: FC = () => {
               alarmdetailresponsedata,
             );
 
-            console.log("alarmdetailresponsedataalarmdetailresponsedata",alarmdetailresponsedata);
+            
             
             if (alarmdetailresponsedataCopy.alarm_definition == null) {
               alarmdetailresponsedataCopy = {
@@ -64,49 +64,56 @@ const AlarmTypeDetailsPage: FC = () => {
                 },
               };
             } else {
+              console.log("alarmdeyyyyyyyyyyyyyy",alarmdetailresponsedata.alarm_definition);
               // Here we need to add index to the objects so that when we click the Add button on the front side or delete a row, the rows are arranged in order.
-              alarmdetailresponsedataCopy.alarm_definition.low_severity!.conditions =
-                alarmdetailresponsedata.alarm_definition.low_severity!.conditions.map(
-                  (
-                    data: {
-                      parameter: string;
-                      operator: string;
-                      coef: number;
-                      value: string;
-                      logical_operator: string;
-                    },
-                    index: number,
-                  ) => ({...data, index: index}),
-                );
+           if(alarmdetailresponsedataCopy.alarm_definition.low_severity){
+            alarmdetailresponsedataCopy.alarm_definition.low_severity!.conditions =
+            Array.isArray(alarmdetailresponsedata.alarm_definition?.low_severity?.conditions) && alarmdetailresponsedata.alarm_definition?.low_severity?.conditions?.map(
+                (
+                  data: {
+                    parameter: string;
+                    operator: string;
+                    coef: number;
+                    value: string;
+                    logical_operator: string;
+                  },
+                  index: number,
+                ) => ({...data, index: index}),
+              );
 
-              alarmdetailresponsedataCopy.alarm_definition.medium_severity!.conditions =
-                alarmdetailresponsedata.alarm_definition.medium_severity!.conditions.map(
-                  (
-                    data: {
-                      parameter: string;
-                      operator: string;
-                      coef: number;
-                      value: string;
-                      logical_operator: string;
-                    },
-                    index: number,
-                  ) => ({...data, index: index}),
-                );
+             alarmdetailresponsedataCopy.alarm_definition.medium_severity!.conditions =
+               alarmdetailresponsedata.alarm_definition?.medium_severity?.conditions?.map(
+                 (
+                   data: {
+                     parameter: string;
+                     operator: string;
+                     coef: number;
+                     value: string;
+                     logical_operator: string;
+                   },
+                   index: number,
+                 ) => ({...data, index: index}),
+               );
 
-              alarmdetailresponsedataCopy.alarm_definition.high_severity!.conditions =
-                alarmdetailresponsedata.alarm_definition.high_severity!.conditions.map(
-                  (
-                    data: {
-                      parameter: string;
-                      operator: string;
-                      coef: number;
-                      value: string;
-                      logical_operator: string;
-                    },
-                    index: number,
-                  ) => ({...data, index: index}),
-                );
+             alarmdetailresponsedataCopy.alarm_definition.high_severity!.conditions =
+               alarmdetailresponsedata?.alarm_definition?.high_severity!.conditions?.map(
+                 (
+                   data: {
+                     parameter: string;
+                     operator: string;
+                     coef: number;
+                     value: string;
+                     logical_operator: string;
+                   },
+                   index: number,
+                 ) => ({...data, index: index}),
+               );
+           }
+           
             }
+
+
+
             if (alarmdetailresponsedataCopy.alarm_content == null) {
               alarmdetailresponsedataCopy = {
                 ...alarmdetailresponsedataCopy,
@@ -124,7 +131,7 @@ const AlarmTypeDetailsPage: FC = () => {
                 },
               };
             }
-            if (alarmdetailresponsedataCopy.alert_sending == null) {
+            if (alarmdetailresponsedataCopy?.alert_sending == null) {
               alarmdetailresponsedataCopy = {
                 ...alarmdetailresponsedataCopy,
                 alert_sending: {
@@ -134,7 +141,7 @@ const AlarmTypeDetailsPage: FC = () => {
               };
             }
 
-            if (alarmdetailresponsedataCopy.automatic_events == null) {
+            if (alarmdetailresponsedataCopy?.automatic_events == null) {
               alarmdetailresponsedataCopy = {
                 ...alarmdetailresponsedataCopy,
                 automatic_events: {
@@ -287,7 +294,7 @@ const AlarmTypeDetailsPage: FC = () => {
           }
         } catch (error) {
           console.log(`getalarmtypeDetailError is:${error}`);
-          toast('Encountered an error', {type: 'error', autoClose: 1000});
+          // toast('Encountered an error', {type: 'error', autoClose: 1000});
         } finally {
           dispatch(setAlarmtypeloading(false));
         }

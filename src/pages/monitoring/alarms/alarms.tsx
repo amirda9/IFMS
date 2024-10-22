@@ -145,13 +145,16 @@ function Alarms() {
         total_count: number;
       } = await allalarmresponse?.json();
 
+      console.log("allalarmresponsedata",allalarmresponsedata);
+      
+
       setTotalalarms(allalarmresponsedata.total_count)
       setAllpagecount(allalarmresponsedata.page_number);
       let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
         AlarmType: truncateString(data.alarm_type_list.join(',')),
         SourceType: data.source_name,
-        Network: 'network1',
-        Alarms: 2,
+        Network:data?.network_name,
+        Alarms: data.alarm_number,
         Severity: data.severity,
         State: data.status,
         AlarmTime: getPrettyDateTime(data.time_created),

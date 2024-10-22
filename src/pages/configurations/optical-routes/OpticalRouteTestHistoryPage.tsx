@@ -4,6 +4,7 @@ import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {useParams, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
+import ChartComponent from '~/components/chart/chartcomponent';
 import {deepcopy} from '~/util';
 import {$Delete, $Get} from '~/util/requestapi';
 
@@ -30,10 +31,10 @@ type historydatatype = {
   delete: string;
 }[];
 
-type Iprops={
-  opticalRouteId:string
-  networkId:string
-}
+type Iprops = {
+  opticalRouteId: string;
+  networkId: string;
+};
 const items = [
   {
     index: 1,
@@ -74,19 +75,18 @@ const OpticalRouteTestHistoryPage: FC = () => {
   const navigate = useNavigate();
   const params = useParams<Iprops>();
   const [mount, setMount] = useState(false);
+  const [showchart, setShowchart] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedtab, setSelectedtab] = useState('Date');
   const [veiwertablesorte, setVeiwertablesort] = useState(false);
   const [historydata, setHistorydata] = useState<historydatatype>([]);
   const [deletelist, setDeletelist] = useState<string[]>([]);
-
+  const [measurement_id, setMeasurement_id] = useState('');
   const gethistory = async () => {
     try {
       setLoading(true);
       const getdata = await $Get(
-        `otdr/optical-route/${
-          params.opticalRouteId!
-        }/test-setups/history`,
+        `otdr/optical-route/${params.opticalRouteId!}/test-setups/history`,
       );
 
       const data: {
@@ -108,9 +108,8 @@ const OpticalRouteTestHistoryPage: FC = () => {
     }
   };
 
+  console.log('historydata', historydata);
 
-  console.log("historydata",historydata);
-  
   useEffect(() => {
     gethistory();
   }, []);
@@ -162,17 +161,13 @@ const OpticalRouteTestHistoryPage: FC = () => {
     try {
       setLoading(true);
       const deleteonehistory = await $Delete(
-        `otdr/optical-route/${
-          params.opticalRouteId!
-        }/measurements`,
+        `otdr/optical-route/${params.opticalRouteId!}/measurements`,
         deletelist,
       );
       const data = await deleteonehistory?.json();
       if (deleteonehistory?.status == 201) {
         const getdata = await $Get(
-          `otdr/optical-route/${
-            params.opticalRouteId!
-          }/test-setups/history`,
+          `otdr/optical-route/${params.opticalRouteId!}/test-setups/history`,
         );
         const data: {
           measurement_id: string;
@@ -206,55 +201,75 @@ const OpticalRouteTestHistoryPage: FC = () => {
   };
 
 
-  console.log("params",params);
-  
+
   return (
-    <div className="flex flex-grow flex-col">
-      <div className="flex flex-grow flex-col gap-y-4 pr-16">
-        <Table
-          loading={loading}
-          tdclassname="text-left pl-[6px]"
-          onclicktitle={(tabname: string, sortalfabet: boolean) => {
-            setSelectedtab(tabname), setVeiwertablesort(sortalfabet);
-          }}
-          tabicon={selectedtab}
-          cols={columns}
-          items={historydata}
-          dynamicColumns={['details', 'delete']}
-          renderDynamicColumn={({value, key}) => {
-            if (key === 'details')
-              return (
-                <IoOpenOutline
-                  onClick={() =>
-                    navigate(`../../../chart`, {
-                      state: {
-                        opticalrout_id: params.opticalRouteId!,
-                        measurement_id: value.measurement_id,
-                      },
-                    })
-                  }
-                  size={22}
-                  className="mx-auto cursor-pointer"
-                />
-              );
-            else if (key === 'delete')
-              return (
-                <IoTrashOutline
-                  onClick={() => onclickdelete(value.measurement_id)}
-                  className="mx-auto cursor-pointer text-red-500"
-                  size={22}
-                />
-              );
-            else return <></>;
-          }}
-          bordered
+    <>
+
+    
+
+      {showchart ? (
+        <ChartComponent
+          measurement_id={measurement_id}
+          onclose={() => setShowchart(false)}
+          opticalrout_id={params.opticalRouteId!}
         />
+      ) : null}
+
+
+
+      <div className={`flex-col ${showchart?"hidden":"flex flex-grow"}`}>
+        <div className="flex flex-grow flex-col gap-y-4 pr-16">
+          <Table
+            loading={loading}
+            tdclassname="text-left pl-[6px]"
+            onclicktitle={(tabname: string, sortalfabet: boolean) => {
+              setSelectedtab(tabname), setVeiwertablesort(sortalfabet);
+            }}
+            tabicon={selectedtab}
+            cols={columns}
+            items={historydata}
+            dynamicColumns={['details', 'delete']}
+            renderDynamicColumn={({value, key}) => {
+              if (key === 'details')
+                return (
+                  <IoOpenOutline
+                    onClick={
+                      () => {
+                        setMeasurement_id(value.measurement_id);
+                        setShowchart(true);
+                      }
+
+                      // navigate(`../../../chart`, {
+                      //   state: {
+                      //     opticalrout_id: params.opticalRouteId!,
+                      //     measurement_id: value.measurement_id,
+                      //   },
+                      // })
+                    }
+                    size={22}
+                    className="mx-auto cursor-pointer"
+                  />
+                );
+              else if (key === 'delete')
+                return (
+                  <IoTrashOutline
+                    onClick={() => onclickdelete(value.measurement_id)}
+                    className="mx-auto cursor-pointer text-red-500"
+                    size={22}
+                  />
+                );
+              else return <></>;
+            }}
+            bordered
+          />
+        </div>
+        <div className="mt-4 flex flex-row gap-x-4 self-end">
+          <SimpleBtn onClick={deletehistory}>Save</SimpleBtn>
+          <SimpleBtn>Cancel</SimpleBtn>
+        </div>
       </div>
-      <div className="mt-4 flex flex-row gap-x-4 self-end">
-        <SimpleBtn onClick={deletehistory}>Save</SimpleBtn>
-        <SimpleBtn>Cancel</SimpleBtn>
-      </div>
-    </div>
+
+    </>
   );
 };
 

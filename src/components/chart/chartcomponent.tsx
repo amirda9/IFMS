@@ -1,9 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import Plot from 'react-plotly.js';
 import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import Resultdata from '~/components/chart/result';
 import Opticalroute from '~/components/chart/opticalroute';
-import Group from './../../../assets/icons/Group 29.png';
+import Group from './../../assets/icons/Group 29.png';
 import nonereflective from '~/assets/icons/Group 23.png';
 import reflecive from '~/assets/icons/Group 27.png';
 import startoffibeer from '~/assets/icons/startoffibeer.png';
@@ -27,7 +27,7 @@ import {useLocation} from 'react-router-dom';
 import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-
+import {IoClose} from 'react-icons/io5';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -178,14 +178,20 @@ const columns = {
   Cumulative: {label: 'Cumulative Loss (dB)', size: 'w-[13%]'},
 };
 
+type chartprops = {
+  measurement_id: string;
+  opticalrout_id: string;
+  onclose: () => void;
+};
+
 // -----------main --------------main ---------------- main ------------------- main --------------
-function Chart() {
+function ChartComponent({measurement_id, opticalrout_id, onclose}: chartprops) {
   const plotref: any = useRef();
   let location = useLocation();
   const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
-  const [allchart, setAllchart] = useState<string[]>(["Cur"]);
+  const [allchart, setAllchart] = useState<string[]>(['Cur']);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [fakeevents, setfakeEvents] = useState<any>([]);
   const [arrowevents, setArrowevents] = useState<any>([]);
@@ -227,7 +233,7 @@ function Chart() {
     const Getmeasermentsalarms = async () => {
       try {
         const response = await $Get(
-          `otdr/optical-route/${location.state.optical_route_id}/test-setups/measurements/${location.state.measurement_id}/alarms`,
+          `otdr/optical-route/${opticalrout_id}/test-setups/measurements/${measurement_id}/alarms`,
         );
 
         if (response?.status == 200 || response?.status == 201) {
@@ -258,7 +264,7 @@ function Chart() {
     const getchartdata = async () => {
       try {
         const getdata = await $Get(
-          `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
+          `otdr/optical-route/${opticalrout_id}/test-setups/measurements/${measurement_id}`,
         );
         let datass = await getdata?.json();
 
@@ -569,7 +575,7 @@ function Chart() {
         // get optical route links and segment
         const getopticalroteRoute = async () => {
           const getopticalroteRouteResponse = await $Get(
-            `otdr/optical-route/${location.state.opticalrout_id}/routes`,
+            `otdr/optical-route/${opticalrout_id}/routes`,
           );
           const getopticalroteRoutedata =
             await getopticalroteRouteResponse?.json();
@@ -979,14 +985,15 @@ function Chart() {
     } else {
       setAllchart(prev => [...prev, name]);
     }
-
-    if (!getallcurvedata) {
+    setAllshapes([])
+    if (!getallcurvedata || name != "Cur") {
+       
       try {
         setLoading(true);
         const allcurvresponse = await $Get(
-          `otdr/optical-route/${location.state.optical_route_id}/learning-measurements-chart-detail`,
+          `otdr/optical-route/${opticalrout_id}/learning-measurements-chart-detail`,
         );
-        
+
         if (allcurvresponse?.status == 200) {
           const allcurvresponsedata: allchartdataype =
             await allcurvresponse?.json();
@@ -1015,21 +1022,17 @@ function Chart() {
             })) || [],
           );
           setAllchartdata(allcurvresponsedata);
-        
         }
       } catch (error) {
         console.log(`error is :${error}`);
       } finally {
         setLoading(false);
-        setGetallcurvedata(true)
+        setGetallcurvedata(true);
       }
     }
   };
 
-  console.log("location",location);
-
   const movebigline = (name: string, direction: string) => {
-
     // console.log("fakeevents",fakeevents);
 
     const verticalLinesCopy = deepcopy(verticalLines);
@@ -1427,498 +1430,525 @@ function Chart() {
 
   const plotwidth = window.innerWidth - 510;
   const ratio = plotwidth / maxx;
+
+  console.log("max_data_pointmax_data_point",max_data_point);
+  
+  //   *****************************************************************************************
+  //   *****************************************************************************************
+  //   *****************************************************************************************
   return (
-    <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
-      <div className="flex h-[540px]  w-full flex-row">
-        {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
-        <div className="flex h-full w-[87px] flex-col">
-          <div className="flex h-[360px] w-full flex-row">
-            <div className="flex w-[40px] flex-col">
-              <Verticalbotton
-                onClick={() => Trace()}
-                name="Trace"
-                classname="pb-[5px] h-[72px]"
-              />
-              <Verticalbotton
-                onClick={() => Events()}
-                name="Events"
-                classname="pb-[15px] h-[79px]"
-              />
-              <Verticalbotton
-                onClick={() => Measure()}
-                name="Measure"
-                classname="pb-[27px] h-[79px]"
-              />
-              <Verticalbotton
-                onClick={() => LinkView()}
-                name={`Link${''}View`}
-                classname="pb-[35px] h-[99px]"
-              />
-            </div>
+    <>
 
-            <div className="ml-[15px] flex w-[30px] flex-col">
-              <img
-                onClick={() => {
-                  setFixedyaxies(false), setDragmode(false);
-                }}
-                src={arrowupchart}
-                className="h-[30px] w-[30px] cursor-pointer"
-              />
-              <img
-                onClick={() => {
-                  setFixedyaxies(true), setDragmode('pan');
-                }}
-                src={hand}
-                className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
-              />
-              <GoZoomIn size={30} className="mt-[20px] cursor-pointer" />
-              <GoZoomOut size={30} className="mt-[20px] cursor-pointer" />
-              <img
-                onClick={() => {
-                  setFixedyaxies(true), setDragmode('zoom');
-                }}
-                src={ZoomArea}
-                className="mt-[20px] h-[30px] w-[30px] cursor-pointer"
-              />
-              <img
-                onClick={() => {}}
-                src={Vector1}
-                className="mt-[15px] h-[25.5px] w-[30px] cursor-pointer"
-              />
-              <img
-                src={print}
-                className="mt-[20px] h-[25.5px] w-[30px] cursor-pointer"
-              />
-            </div>
-          </div>
+      <IoClose
+        onClick={onclose}
+        size={30}
+        className="fixed right-[30px] top-[20px] z-[2000000] cursor-pointer"
+      />
 
-          <Chatrtabtype name="Cur" src={Cur} />
-          <Chatrtabtype name="Ref" src={Ref} />
-          <Chatrtabtype name="Max" src={Max} />
-          <Chatrtabtype name="Min" src={Min} />
-          <Chatrtabtype name="Avg" src={Avg} />
-        </div>
-        {/* ---- chart ------- chart ------------------ chart ------------- chart ------------- chart ------------ */}
-        <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
-          <div className="h-[calc(100%-50px)] w-full">
-            <div
-              className={`relative ${
-                mousecursor ? 'cursor-pointer' : 'cursor-default'
-              } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
-              {loading ? (
-                <div className="absolute left-[50%] top-[130px] z-20">
-                  <GeneralLoadingSpinner size="h-14 w-14" />
+
+      <div className="fixed right-[0px] top-0 z-[1000000] h-screen w-screen overflow-y-auto bg-white">
+        <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[50px]">
+          <div className="flex h-[540px]  w-full flex-row">
+            {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
+            <div className="flex h-full w-[87px] flex-col">
+              <div className="flex h-[360px] w-full flex-row">
+                <div className="flex w-[40px] flex-col">
+                  <Verticalbotton
+                    onClick={() => Trace()}
+                    name="Trace"
+                    classname="pb-[5px] h-[72px]"
+                  />
+                  <Verticalbotton
+                    onClick={() => Events()}
+                    name="Events"
+                    classname="pb-[15px] h-[79px]"
+                  />
+                  <Verticalbotton
+                    onClick={() => Measure()}
+                    name="Measure"
+                    classname="pb-[27px] h-[79px]"
+                  />
+                  <Verticalbotton
+                    onClick={() => LinkView()}
+                    name={`Link${''}View`}
+                    classname="pb-[35px] h-[99px]"
+                  />
                 </div>
-              ) : null}
 
-              <Plot
-                ref={plotref}
-                onRelayout={e => moveshapes(e)}
-                className="h-[500px] w-full bg-[red] p-0"
-                onHover={e =>
-                  setMousecoordinate({
-                    x: Number(e.points[0].x),
-                    y: Number(e.points[0].y),
-                  })
-                }
-                onClick={e => onclickshap()}
-                data={[
-                  {
-                    showlegend: false,
-                    x: allcurveline[0]?.data?.map(dat => dat.x),
-                    y: allcurveline[0]?.data?.map(dat => dat.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#273746'},
-                  },
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Max') > -1 &&
-                      max_data_point?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Max') > -1 &&
-                      max_data_point?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#A93226'},
-                  },
+                <div className="ml-[15px] flex w-[30px] flex-col">
+                  <img
+                    onClick={() => {
+                      setFixedyaxies(false), setDragmode(false);
+                    }}
+                    src={arrowupchart}
+                    className="h-[30px] w-[30px] cursor-pointer"
+                  />
+                  <img
+                    onClick={() => {
+                      setFixedyaxies(true), setDragmode('pan');
+                    }}
+                    src={hand}
+                    className="mt-[20px] h-[40px] w-[30px] cursor-pointer"
+                  />
+                  <GoZoomIn size={30} className="mt-[20px] cursor-pointer" />
+                  <GoZoomOut size={30} className="mt-[20px] cursor-pointer" />
+                  <img
+                    onClick={() => {
+                      setFixedyaxies(true), setDragmode('zoom');
+                    }}
+                    src={ZoomArea}
+                    className="mt-[20px] h-[30px] w-[30px] cursor-pointer"
+                  />
+                  <img
+                    onClick={() => {}}
+                    src={Vector1}
+                    className="mt-[15px] h-[25.5px] w-[30px] cursor-pointer"
+                  />
+                  <img
+                    src={print}
+                    className="mt-[20px] h-[25.5px] w-[30px] cursor-pointer"
+                  />
+                </div>
+              </div>
 
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Min') > -1 &&
-                      min_data_points?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Min') > -1 &&
-                      min_data_points?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#2471A3'},
-                  },
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Ref') > -1 &&
-                      reference_data_points?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Ref') > -1 &&
-                      reference_data_points?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#229954'},
-                  },
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Avg') > -1 &&
-                      avg_data_points?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Avg') > -1 &&
-                      avg_data_points?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#D4AC0D'},
-                  },
-                  ...fakeevents,
-                ]}
-                config={{
-                  displayModeBar: true,
-                }}
-                layout={{
-                  margin: {
-                    l: 20,
-                    r: 20,
-                    t: 20,
-                    b: 20,
-                  },
-                  clickmode: 'event+select',
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  dragmode: dragmode,
-                  uirevision: 'constant',
-                  shapes: allshapes,
-                  yaxis: {
-                    fixedrange: false,
-                  },
-                  xaxis: {
-                    autotick: autotick,
-                    dtick: 100,
-                  },
-                }}
-              />
+              <Chatrtabtype name="Cur" src={Cur} />
+              <Chatrtabtype name="Ref" src={Ref} />
+              <Chatrtabtype name="Max" src={Max} />
+              <Chatrtabtype name="Min" src={Min} />
+              <Chatrtabtype name="Avg" src={Avg} />
             </div>
-          </div>
-          <div className="flex flex-row">
-            {linkslengthdata.map(segmentsdata => {
-              let linklength = Number(segmentsdata.Length) * 100;
-
-              return (
+            {/* ---- chart ------- chart ------------------ chart ------------- chart ------------- chart ------------ */}
+            <div className="mx-[10px] flex h-full w-[calc(100vw-510px)]  flex-col">
+              <div className="h-[calc(100%-50px)] w-full">
                 <div
-                  style={{width: `${linklength}px`}}
-                  className={`relative mt-[30px] flex h-[10px]  bg-[#18C047]`}>
-                  {segmentsdata.segments.map(data => {
-                    let position = data.position * 100;
-                    return (
-                      <div
-                        style={{left: `${position}px`}}
-                        className={`absolute left-[${data.position}px] top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]`}></div>
-                    );
-                  })}
+                  className={`relative ${
+                    mousecursor ? 'cursor-pointer' : 'cursor-default'
+                  } h-full  w-[calc(100vw-510px)] bg-[#fffff]`}>
+                  {loading ? (
+                    <div className="absolute left-[50%] top-[130px] z-20">
+                      <GeneralLoadingSpinner size="h-14 w-14" />
+                    </div>
+                  ) : null}
+
+                  <Plot
+                    ref={plotref}
+                    onRelayout={e => moveshapes(e)}
+                    className="h-[500px] w-full bg-[red] p-0"
+                    onHover={e =>
+                      setMousecoordinate({
+                        x: Number(e.points[0].x),
+                        y: Number(e.points[0].y),
+                      })
+                    }
+                    onClick={e => onclickshap()}
+                    data={[
+                      {
+                        showlegend: false,
+                        x:allchart.indexOf('Cur') > -1 && allcurveline[0]?.data?.map(dat => dat.x),
+                        y:allchart.indexOf('Cur') > -1 && allcurveline[0]?.data?.map(dat => dat.y),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {width: 2},
+                        marker: {color: '#273746'},
+                      },
+                      {
+                        showlegend: false,
+                        x:
+                          allchart.indexOf('Max') > -1 &&
+                          max_data_point?.map(data => data.x),
+                        y:
+                          allchart.indexOf('Max') > -1 &&
+                          max_data_point?.map(data => data.y),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {width: 2},
+                        marker: {color: '#A93226'},
+                      },
+
+                      {
+                        showlegend: false,
+                        x:
+                          allchart.indexOf('Min') > -1 &&
+                          min_data_points?.map(data => data.x),
+                        y:
+                          allchart.indexOf('Min') > -1 &&
+                          min_data_points?.map(data => data.y),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {width: 2},
+                        marker: {color: '#2471A3'},
+                      },
+                      {
+                        showlegend: false,
+                        x:
+                          allchart.indexOf('Ref') > -1 &&
+                          reference_data_points?.map(data => data.x),
+                        y:
+                          allchart.indexOf('Ref') > -1 &&
+                          reference_data_points?.map(data => data.y),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {width: 2},
+                        marker: {color: '#229954'},
+                      },
+                      {
+                        showlegend: false,
+                        x:
+                          allchart.indexOf('Avg') > -1 &&
+                          avg_data_points?.map(data => data.x),
+                        y:
+                          allchart.indexOf('Avg') > -1 &&
+                          avg_data_points?.map(data => data.y),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {width: 2},
+                        marker: {color: '#D4AC0D'},
+                      },
+                      ...fakeevents,
+                    ]}
+                    config={{
+                      displayModeBar: true,
+                    }}
+                    layout={{
+                      margin: {
+                        l: 20,
+                        r: 20,
+                        t: 20,
+                        b: 20,
+                      },
+                      clickmode: 'event+select',
+                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                      // @ts-ignore
+                      dragmode: dragmode,
+                      uirevision: 'constant',
+                      shapes: allshapes,
+                      yaxis: {
+                        fixedrange: false,
+                      },
+                      xaxis: {
+                        autotick: autotick,
+                        dtick: 100,
+                      },
+                    }}
+                  />
                 </div>
-              );
-            })}
-          </div>
-        </div>
-        {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}
-        <div className="w-[370px]">
-          {reightbar == 'Result' ? (
-            <Resultdata
-              Date={getPrettyDateTime(chartdata?.date)
-                .split(' ')[0]
-                .replace('-', '/')
-                .replace('-', '/')}
-              Length={(
-                chartdata?.key_events?.events[
-                  chartdata.key_events.events.length - 1
-                ].event_location / 1000
-              )
-                .toString()
-                .substring(0, 5)}
-              maxloss={chartdata?.key_events?.events.reduce(
-                (max: any, item: any) => {
-                  return item.event_loss > max ? item.event_loss : max;
-                },
-                -Infinity,
+              </div>
+              <div className="flex flex-row">
+                {linkslengthdata.map(segmentsdata => {
+                  let linklength = Number(segmentsdata.Length) * 100;
+
+                  return (
+                    <div
+                      style={{width: `${linklength}px`}}
+                      className={`relative mt-[30px] flex h-[10px]  bg-[#18C047]`}>
+                      {segmentsdata.segments.map(data => {
+                        let position = data.position * 100;
+                        return (
+                          <div
+                            style={{left: `${position}px`}}
+                            className={`absolute left-[${data.position}px] top-[-5px] z-10 h-[20px] w-[5px] bg-[#C09B18]`}></div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* ---- reightbar ------- reightbar ------------------ reightbar ------------- reightbar ------------- reightbar ------------ */}
+            <div className="w-[370px]">
+              {reightbar == 'Result' ? (
+                <Resultdata
+                  Date={getPrettyDateTime(chartdata?.date)
+                    .split(' ')[0]
+                    .replace('-', '/')
+                    .replace('-', '/')}
+                  Length={(
+                    chartdata?.key_events?.events[
+                      chartdata.key_events.events.length - 1
+                    ].event_location / 1000
+                  )
+                    .toString()
+                    .substring(0, 5)}
+                  maxloss={chartdata?.key_events?.events.reduce(
+                    (max: any, item: any) => {
+                      return item.event_loss > max ? item.event_loss : max;
+                    },
+                    -Infinity,
+                  )}
+                  AverageSplice={
+                    chartdata?.key_events?.events.reduce(
+                      (sum: any, item: any) => sum + item.event_loss,
+                      0,
+                    ) / chartdata?.key_events?.events.length
+                  }
+                  AverageLoss={(
+                    Number(chartdata?.key_events?.end_to_end_loss) /
+                    (chartdata?.key_events?.events[
+                      chartdata?.key_events.events?.length - 1
+                    ].event_location /
+                      1000)
+                  )
+                    .toString()
+                    .substring(0, 5)}
+                  ORL={chartdata?.key_events?.optical_return_loss}
+                  Loss={chartdata?.key_events?.end_to_end_loss
+                    .toString()
+                    .substring(0, 5)}
+                  NoiseFloor={chartdata?.fxd_params?.noise_floor_level}
+                  onclick={e => setReightbar(e)}
+                />
+              ) : reightbar == 'Alarms' ? (
+                <Alarms data={allalarms} onclick={e => setReightbar(e)} />
+              ) : (
+                <Opticalroute
+                  data={chartdata?.optical_route}
+                  Wavelength={chartdata?.fxd_params?.actual_wavelength}
+                  onclick={e => setReightbar(e)}
+                />
               )}
-              AverageSplice={
-                chartdata?.key_events?.events.reduce(
-                  (sum: any, item: any) => sum + item.event_loss,
-                  0,
-                ) / chartdata?.key_events?.events.length
-              }
-              AverageLoss={(
-                Number(chartdata?.key_events?.end_to_end_loss) /
-                (chartdata?.key_events?.events[
-                  chartdata?.key_events.events?.length - 1
-                ].event_location /
-                  1000)
-              )
-                .toString()
-                .substring(0, 5)}
-              ORL={chartdata?.key_events?.optical_return_loss}
-              Loss={chartdata?.key_events?.end_to_end_loss
-                .toString()
-                .substring(0, 5)}
-              NoiseFloor={chartdata?.fxd_params?.noise_floor_level}
-              onclick={e => setReightbar(e)}
-            />
-          ) : reightbar == 'Alarms' ? (
-            <Alarms data={allalarms} onclick={e => setReightbar(e)} />
-          ) : (
-            <Opticalroute
-              data={chartdata?.optical_route}
-              Wavelength={chartdata?.fxd_params?.actual_wavelength}
-              onclick={e => setReightbar(e)}
-            />
-          )}
+            </div>
+          </div>
+
+          <div className="flex w-full flex-row justify-between">
+            {/* ---- tabel ------- tabel ------------------ tabel ------------- tabel ------------- tabel ------------ */}
+            {leftverticaltab == 'Measure' ? (
+              <>
+                <div className="ml-[80px] mt-[55px] flex w-[calc(100vw-504px)] flex-row justify-between">
+                  <div className="box-border  flex  w-[35.4%] flex-col ">
+                    <div className="relative box-border h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px]">
+                      <Tabbox name="a" />
+                      <Tabbox name="A" />
+                      <Tabbox name="B" />
+                      <Tabbox name="b" />
+                      <Tabbox name="A-B" />
+                    </div>
+                    <div className="mt-[10px] flex w-full flex-row justify-between">
+                      <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
+                        <MdOutlineArrowBackIos
+                          size={40}
+                          onClick={() => {
+                            movebigline(selectedVerticalline, 'left');
+                          }}
+                        />
+                      </button>
+                      <button
+                        onClick={() => {
+                          onclickwordtab('a'), setSelectedVerticalline('a');
+                        }}
+                        className={`flex h-[50px] w-[50px] items-center justify-center ${
+                          selectedevents != null &&
+                          selectedevents.text[0] == 'a'
+                            ? 'bg-[#006BBC] text-white'
+                            : 'bg-[#C6DFF8] text-black'
+                        }  text-[20px]`}>
+                        a
+                      </button>
+                      <button
+                        onClick={() => {
+                          onclickwordtab('A'), setSelectedVerticalline('A');
+                        }}
+                        className={`flex h-[50px] w-[50px] items-center justify-center ${
+                          selectedevents != null &&
+                          selectedevents.text[0] == 'A'
+                            ? 'bg-[#006BBC] text-white'
+                            : 'bg-[#C6DFF8] text-black'
+                        } text-[20px]`}>
+                        A
+                      </button>
+                      <button
+                        onClick={() => {
+                          onclickwordtab('B'), setSelectedVerticalline('B');
+                        }}
+                        className={`flex h-[50px] w-[50px] items-center justify-center ${
+                          selectedevents != null &&
+                          selectedevents.text[0] == 'B'
+                            ? 'bg-[#006BBC] text-white'
+                            : 'bg-[#C6DFF8] text-black'
+                        } text-[20px]`}>
+                        B
+                      </button>
+                      <button
+                        onClick={() => {
+                          onclickwordtab('b'), setSelectedVerticalline('b');
+                        }}
+                        className={`flex h-[50px] w-[50px] items-center justify-center ${
+                          selectedevents != null &&
+                          selectedevents.text[0] == 'b'
+                            ? 'bg-[#006BBC] text-white'
+                            : 'bg-[#C6DFF8] text-black'
+                        } text-[20px]`}>
+                        b
+                      </button>
+                      <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
+                        <MdOutlineArrowBackIos
+                          size={40}
+                          onClick={() => {
+                            movebigline(selectedVerticalline, 'right');
+                          }}
+                          className="rotate-180"
+                        />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex h-[222px] w-[63.9%] flex-col">
+                    <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] ">
+                      <div className="flex h-full w-[265px] flex-col items-center justify-center">
+                        <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                          Avg. A-B Loss:
+                        </span>
+                        {/* <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                  {(
+                    (finddata('B')[1] - finddata('A')[1]) /
+                    (finddata('B')[0] - finddata('A')[0])
+                  )
+                    .toString()
+                    .substring(0, 9)}
+                </span> */}
+                      </div>
+                      <div className="flex h-full w-[265px] flex-col items-center justify-center">
+                        <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                          Four-Point Loss:
+                        </span>
+                        <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                          0.384 dB
+                        </span>
+                      </div>
+                      <div className="flex h-full w-[265px] flex-col items-center justify-center">
+                        <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                          Four-Point Loss:
+                        </span>
+                        <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
+                          0.384 dB
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-[10px] flex w-full flex-row justify-between">
+                      <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+                        Event
+                      </button>
+                      <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+                        Section
+                      </button>
+                      <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
+                        ORL
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Table
+                bordered={true}
+                onclicktitle={(tabname: string, sortalfabet: boolean) =>
+                  () => {}}
+                tabicon={'Name'}
+                cols={columns}
+                items={tabelItems}
+                dynamicColumns={['index']}
+                renderDynamicColumn={({key, value}) => {
+                  if (key == 'index') {
+                    if (value.index == '') {
+                      return (
+                        <div className="flex  w-full flex-row items-center justify-start">
+                          <BiPlus />
+                          <img
+                            className="ml-[5px] h-[8px] w-[16px]"
+                            src={Group}
+                          />
+                        </div>
+                      );
+                    } else if (value.event_code == 'Start of fiber') {
+                      return (
+                        <div className="flex  w-full flex-row items-center justify-start">
+                          <BiPlus />
+                          <img
+                            className="ml-[5px] h-[22px] w-[13px]"
+                            src={startoffibeer}
+                          />
+                          <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                            {value.index}
+                          </span>
+                        </div>
+                      );
+                    } else if (value.event_code == 'End of fiber') {
+                      return (
+                        <div className="flex  w-full flex-row items-center justify-start">
+                          <BiPlus />
+                          <img
+                            className="ml-[5px] h-[22px] w-[13px] rotate-180"
+                            src={startoffibeer}
+                          />
+                          <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                            {value.index}
+                          </span>
+                        </div>
+                      );
+                    } else if (value.event_code == 'reflecive') {
+                      return (
+                        <div className="flex  w-full flex-row items-center justify-start">
+                          <BiPlus />
+                          <img
+                            className="ml-[5px] h-[22px] w-[13px] rotate-180"
+                            src={reflecive}
+                          />
+                          <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                            {value.index}
+                          </span>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div className="flex  w-full flex-row items-center justify-start">
+                          <BiPlus />
+                          <img
+                            className="ml-[5px] h-[22px] w-[13px] rotate-180"
+                            src={nonereflective}
+                          />
+                          <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
+                            {value.index}
+                          </span>
+                        </div>
+                      );
+                    }
+                  }
+                }}
+                containerClassName="w-[calc(100vw-504px)] ml-[80px] mt-[20px]"
+              />
+            )}
+
+            {/* -------------------------------- */}
+            <div className={`flex flex-col `}>
+              <div
+                className={`w-auto ${
+                  fakeevents.length >= 3 &&
+                  allshapes.length <= 1 &&
+                  leftverticaltab != 'Measure'
+                    ? 'opacity-100'
+                    : 'opacity-0'
+                }`}>
+                <div className="mt-[20px] box-border h-[195px] w-[370px] rounded-[10px] bg-[#C6DFF8] p-[20px]">
+                  <Row name="a" />
+                  <Row name="A" />
+                  <Row name="B" />
+                  <Row name="b" />
+                </div>
+              </div>
+              <div className="flex w-[360px] flex-row">
+                <span className="ml-[25px] mr-[45px] text-[24px] font-normal text-[#000000]">
+                  x:{mousecoordinate.x.toString().substring(0, 5)}
+                </span>
+                <span className="text-[24px] font-normal text-[#000000]">
+                  y:{mousecoordinate.y.toString().substring(0, 5)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="flex w-full flex-row justify-between">
-        {/* ---- tabel ------- tabel ------------------ tabel ------------- tabel ------------- tabel ------------ */}
-        {leftverticaltab == 'Measure' ? (
-          <>
-            <div className="ml-[80px] mt-[55px] flex w-[calc(100vw-504px)] flex-row justify-between">
-              <div className="box-border  flex  w-[35.4%] flex-col ">
-                <div className="relative box-border h-auto w-full rounded-[10px] bg-[#C6DFF8] p-[9px]">
-                  <Tabbox name="a" />
-                  <Tabbox name="A" />
-                  <Tabbox name="B" />
-                  <Tabbox name="b" />
-                  <Tabbox name="A-B" />
-                </div>
-                <div className="mt-[10px] flex w-full flex-row justify-between">
-                  <button className="flex h-[53px] w-[50px] items-center justify-center  bg-[#C6DFF8]">
-                    <MdOutlineArrowBackIos
-                      size={40}
-                      onClick={() => {
-                        movebigline(selectedVerticalline, 'left');
-                      }}
-                    />
-                  </button>
-                  <button
-                    onClick={() => {
-                      onclickwordtab('a'), setSelectedVerticalline('a');
-                    }}
-                    className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedevents != null && selectedevents.text[0] == 'a'
-                        ? 'bg-[#006BBC] text-white'
-                        : 'bg-[#C6DFF8] text-black'
-                    }  text-[20px]`}>
-                    a
-                  </button>
-                  <button
-                    onClick={() => {
-                      onclickwordtab('A'), setSelectedVerticalline('A');
-                    }}
-                    className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedevents != null && selectedevents.text[0] == 'A'
-                        ? 'bg-[#006BBC] text-white'
-                        : 'bg-[#C6DFF8] text-black'
-                    } text-[20px]`}>
-                    A
-                  </button>
-                  <button
-                    onClick={() => {
-                      onclickwordtab('B'), setSelectedVerticalline('B');
-                    }}
-                    className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedevents != null && selectedevents.text[0] == 'B'
-                        ? 'bg-[#006BBC] text-white'
-                        : 'bg-[#C6DFF8] text-black'
-                    } text-[20px]`}>
-                    B
-                  </button>
-                  <button
-                    onClick={() => {
-                      onclickwordtab('b'), setSelectedVerticalline('b');
-                    }}
-                    className={`flex h-[50px] w-[50px] items-center justify-center ${
-                      selectedevents != null && selectedevents.text[0] == 'b'
-                        ? 'bg-[#006BBC] text-white'
-                        : 'bg-[#C6DFF8] text-black'
-                    } text-[20px]`}>
-                    b
-                  </button>
-                  <button className="flex h-[50px] w-[50px] bg-[#C6DFF8]">
-                    <MdOutlineArrowBackIos
-                      size={40}
-                      onClick={() => {
-                        movebigline(selectedVerticalline, 'right');
-                      }}
-                      className="rotate-180"
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex h-[222px] w-[63.9%] flex-col">
-                <div className=" flex h-full w-full flex-row justify-between rounded-[10px] bg-[#C6DFF8] ">
-                  <div className="flex h-full w-[265px] flex-col items-center justify-center">
-                    <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      Avg. A-B Loss:
-                    </span>
-                    {/* <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      {(
-                        (finddata('B')[1] - finddata('A')[1]) /
-                        (finddata('B')[0] - finddata('A')[0])
-                      )
-                        .toString()
-                        .substring(0, 9)}
-                    </span> */}
-                  </div>
-                  <div className="flex h-full w-[265px] flex-col items-center justify-center">
-                    <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      Four-Point Loss:
-                    </span>
-                    <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      0.384 dB
-                    </span>
-                  </div>
-                  <div className="flex h-full w-[265px] flex-col items-center justify-center">
-                    <span className="mt-[-10px] text-[20px] font-light leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      Four-Point Loss:
-                    </span>
-                    <span className="mt-[20px] text-[20px] font-bold leading-[36.31px] text-[#000000] 2xl:text-[25px]">
-                      0.384 dB
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-[10px] flex w-full flex-row justify-between">
-                  <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
-                    Event
-                  </button>
-                  <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
-                    Section
-                  </button>
-                  <button className="h-[50px] w-[32%] bg-[#C6DFF8] text-[20px] font-light">
-                    ORL
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <Table
-            bordered={true}
-            onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
-            tabicon={'Name'}
-            cols={columns}
-            items={tabelItems}
-            dynamicColumns={['index']}
-            renderDynamicColumn={({key, value}) => {
-              if (key == 'index') {
-                if (value.index == '') {
-                  return (
-                    <div className="flex  w-full flex-row items-center justify-start">
-                      <BiPlus />
-                      <img className="ml-[5px] h-[8px] w-[16px]" src={Group} />
-                    </div>
-                  );
-                } else if (value.event_code == 'Start of fiber') {
-                  return (
-                    <div className="flex  w-full flex-row items-center justify-start">
-                      <BiPlus />
-                      <img
-                        className="ml-[5px] h-[22px] w-[13px]"
-                        src={startoffibeer}
-                      />
-                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
-                        {value.index}
-                      </span>
-                    </div>
-                  );
-                } else if (value.event_code == 'End of fiber') {
-                  return (
-                    <div className="flex  w-full flex-row items-center justify-start">
-                      <BiPlus />
-                      <img
-                        className="ml-[5px] h-[22px] w-[13px] rotate-180"
-                        src={startoffibeer}
-                      />
-                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
-                        {value.index}
-                      </span>
-                    </div>
-                  );
-                } else if (value.event_code == 'reflecive') {
-                  return (
-                    <div className="flex  w-full flex-row items-center justify-start">
-                      <BiPlus />
-                      <img
-                        className="ml-[5px] h-[22px] w-[13px] rotate-180"
-                        src={reflecive}
-                      />
-                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
-                        {value.index}
-                      </span>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div className="flex  w-full flex-row items-center justify-start">
-                      <BiPlus />
-                      <img
-                        className="ml-[5px] h-[22px] w-[13px] rotate-180"
-                        src={nonereflective}
-                      />
-                      <span className="ml-[4px] text-[20px] font-normal leading-[24.2px]">
-                        {value.index}
-                      </span>
-                    </div>
-                  );
-                }
-              }
-            }}
-            containerClassName="w-[calc(100vw-504px)] ml-[80px] mt-[20px]"
-          />
-        )}
-
-        {/* -------------------------------- */}
-        <div className={`flex flex-col `}>
-          <div
-            className={`w-auto ${
-              fakeevents.length >= 3 &&
-              allshapes.length <= 1 &&
-              leftverticaltab != 'Measure'
-                ? 'opacity-100'
-                : 'opacity-0'
-            }`}>
-            <div className="mt-[20px] box-border h-[195px] w-[370px] rounded-[10px] bg-[#C6DFF8] p-[20px]">
-              <Row name="a" />
-              <Row name="A" />
-              <Row name="B" />
-              <Row name="b" />
-            </div>
-          </div>
-          <div className="flex w-[360px] flex-row">
-            <span className="ml-[25px] mr-[45px] text-[24px] font-normal text-[#000000]">
-              x:{mousecoordinate.x.toString().substring(0, 5)}
-            </span>
-            <span className="text-[24px] font-normal text-[#000000]">
-              y:{mousecoordinate.y.toString().substring(0, 5)}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
 
-export default Chart;
+export default ChartComponent;

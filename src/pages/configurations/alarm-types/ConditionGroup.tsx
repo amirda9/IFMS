@@ -279,7 +279,7 @@ const ConditionGroup: FC<Props> = ({title}) => {
 
         {alarmtypedetail!.alarm_definition![
                     security()
-                  ]!.conditions?.map((cond: any, index: number) => (
+                  ]?.conditions?.map((cond: any, index: number) => (
           <Fragment key={index}>
             {/* Parameter */}
             <div className="col-span-3">
@@ -289,7 +289,7 @@ const ConditionGroup: FC<Props> = ({title}) => {
                 }}
                 value={cond.parameter}
                 className="w-full disabled:text-gray-400 disabled:opacity-100">
-                {parameteroptins.map(data => (
+                {parameteroptins?.map(data => (
                   <option>{data.label}</option>
                 ))}
               </Select>
