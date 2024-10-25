@@ -349,9 +349,6 @@ function Resultbrowser() {
     );
   };
 
-  const lastnetworkopt = useMemo(() => {
-    return (listopt && listopt[listopt.length - 1]?.id) || '';
-  }, [listopt]);
   // ----------------------------------- rtu -------------------------- rtu -------------------------- rtu ------------
 
   const navigate = useNavigate();
@@ -366,27 +363,7 @@ function Resultbrowser() {
     selectedradio,
   } = useSelector((state: RootState) => state.resultbrouserRtuslice);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-  // const {
-  //   state: {regions},
-  // } = useHttpRequest({
-  //   selector: state => ({
-  //     regions: state.http.regionList,
-  //   }),
-  // });
-
   const [openall, setOpenall] = useState(false);
-
-  // ---------- func ----------- func -----------
-  const findstationdeletertuid = (stationid: string, rtuid: string) => {
-    let findId = stationsrtu
-      ?.find(data => data.stationid == stationid)
-      ?.deletertues.findIndex(data => data == rtuid);
-    if (findId == undefined || findId < 0) {
-      return false;
-    } else {
-      return true;
-    }
-  };
   // ***************************
   useEffect(() => {
     const getnetworklist = async () => {
@@ -403,52 +380,6 @@ function Resultbrowser() {
     };
     getnetworklist();
   }, []);
-
-  const ondeletedefaultsinglertu = async (rtuid: string, stationid: string) => {
-    Swal.fire(swalsetting).then(async result => {
-      if (result.isConfirmed) {
-        let defaultstationsrtuCopy: alldefaultstationsrtutype[] =
-          deepcopy(defaultstationsrtu);
-        let findstation = defaultstationsrtuCopy.findIndex(
-          data => data.stationid == stationid,
-        );
-
-        try {
-          //We delete all the rtus related to the station that have their checkboxes checked.
-
-          const promises = defaultstationsrtuCopy[findstation]?.deletertues.map(
-            (data: string) => $Delete(`otdr/rtu/${data}`),
-          );
-          const results = await Promise.allSettled(promises);
-
-          //then update the station rtu list
-          let newstationreues = [];
-          for (
-            let i = 0;
-            i < defaultstationsrtuCopy[findstation]!.rtues!.length;
-            i++
-          ) {
-            let findrtu = defaultstationsrtuCopy[
-              findstation
-            ]!.deletertues.findIndex(
-              data => data == defaultstationsrtuCopy[findstation]!.rtues[i].id,
-            );
-            if (findrtu < 0) {
-              newstationreues.push(
-                defaultstationsrtuCopy[findstation]!.rtues[i],
-              );
-            }
-          }
-          defaultstationsrtuCopy[findstation].rtues = newstationreues;
-          defaultstationsrtuCopy[findstation].deletertues = [];
-          dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
-          navigate(`/config/remote-test-units`);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
-  };
 
   const onclickstation = async (
     id: string,
@@ -491,26 +422,8 @@ function Resultbrowser() {
     // ------------------------------------
   };
 
-  // const opennetworkopticallist = (id: string) => {
-  //   const findnetwork = networkselectedlist.findIndex(data => data == id);
-  //   if (findnetwork > -1) {
-  //     let old = [...networkselectedlist];
-  //     old.splice(findnetwork, 1);
-  //     setNetworkselectedlist(old);
-  //   } else {
-  //     setNetworkselectedlist(prev => [...prev, id]);
-  //   }
-  // };
   const opennetworkrtullist = (id: string) => {
     dispatch(setNetworkselectedlist(id));
-    // const findnetwork = networkselectedlist.findIndex(data => data == id);
-    // if (findnetwork > -1) {
-    //   let old = [...networkselectedlist];
-    //   old.splice(findnetwork, 1);
-    //   setNetworkselectedlist(old);
-    // } else {
-    //   setNetworkselectedlist(prev => [...prev, id]);
-    // }
   };
 
   const Itembtn = ({
@@ -577,8 +490,6 @@ function Resultbrowser() {
       </div>
     );
   };
-
-  // console.log("getCurrentTime()",getCurrentTime());
 
   const ItembtnStation = ({
     name,
@@ -691,101 +602,11 @@ function Resultbrowser() {
     }
   };
 
-  const ondeletesinglertu = async (rtuid: string, stationid: string) => {
-    Swal.fire(swalsetting).then(async result => {
-      if (result.isConfirmed) {
-        let StationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
-        let findstation = StationsrtuCopy.findIndex(
-          data => data.stationid == stationid,
-        );
-
-        try {
-          //We delete all the rtus related to the station that have their checkboxes checked.
-
-          const promises = StationsrtuCopy[findstation]?.deletertues.map(
-            (data: string) => $Delete(`otdr/rtu/${data}`),
-          );
-          const results = await Promise.allSettled(promises);
-
-          //then update the station rtu list
-          let newstationreues = [];
-          for (
-            let i = 0;
-            i < StationsrtuCopy[findstation]!.rtues!.length;
-            i++
-          ) {
-            let findrtu = StationsrtuCopy[findstation]!.deletertues.findIndex(
-              data => data == StationsrtuCopy[findstation]!.rtues[i].id,
-            );
-            if (findrtu < 0) {
-              newstationreues.push(StationsrtuCopy[findstation]!.rtues[i]);
-            }
-          }
-          StationsrtuCopy[findstation].rtues = newstationreues;
-          StationsrtuCopy[findstation].deletertues = [];
-          dispatch(setStationsrtu(StationsrtuCopy));
-          navigate(`/config/remote-test-units`);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
-  };
-
-  const onclickCheckbox = (rtuId: string, stationId: string) => {
-    const stationsrtuCopy: allstationsrtutype[] = deepcopy(stationsrtu);
-    const findstations = stationsrtuCopy.findIndex(
-      data => data.stationid == stationId,
-    );
-
-    let findstationdeletertues = stationsrtuCopy[findstations].deletertues.find(
-      data => data == rtuId,
-    );
-
-    if (findstationdeletertues) {
-      const newstationrtu = stationsrtuCopy[findstations].deletertues.filter(
-        data => data != rtuId,
-      );
-      stationsrtuCopy[findstations].deletertues = newstationrtu;
-    } else {
-      stationsrtuCopy[findstations].deletertues.push(rtuId);
-    }
-    dispatch(setStationsrtu(stationsrtuCopy));
-  };
-
-  const getCurrentTime = () => {
-    const now = new Date();
-    const formattedTime = now.toISOString().slice(0, 16);
-    return formattedTime;
-  };
-
   const getTimeMinusFiveMinutes = (x: number) => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - x);
     const formattedTime = now.toISOString().slice(0, 16);
     return formattedTime;
-  };
-
-  const onclickdefaultrtuCheckbox = (rtuId: string, stationId: string) => {
-    const defaultstationsrtuCopy: alldefaultstationsrtutype[] =
-      deepcopy(defaultstationsrtu);
-    const findstations = defaultstationsrtuCopy.findIndex(
-      data => data.stationid == stationId,
-    );
-
-    let findstationdeletertues = defaultstationsrtuCopy[
-      findstations
-    ].deletertues.find(data => data == rtuId);
-
-    if (findstationdeletertues) {
-      const newstationrtu = defaultstationsrtuCopy[
-        findstations
-      ].deletertues.filter(data => data != rtuId);
-      defaultstationsrtuCopy[findstations].deletertues = newstationrtu;
-    } else {
-      defaultstationsrtuCopy[findstations].deletertues.push(rtuId);
-    }
-    dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
   };
 
   const getTimeMinusOneHour = (x: number) => {
@@ -1098,21 +919,6 @@ function Resultbrowser() {
                                                         <div className="relative w-full">
                                                           <div className="absolute left-[16px] top-[-28.5px] z-10 h-[29px] w-[5px]  border-l-[1px] border-dotted border-[#000000]"></div>
                                                           <div className="absolute bottom-[-11px]  left-[14px] z-10 h-[40px] w-[5px] bg-white"></div>
-                                                          {/* {networkregions.find(
-                                                            dataa =>
-                                                              dataa.networkid ==
-                                                              networkdata.id,
-                                                          )?.regions.length ==
-                                                          index + 1 ? (
-                                                            <div
-                                                              className={`absolute left-[-1px] ${
-                                                                networkselectedlist.indexOf(
-                                                                  regionsdata.id,
-                                                                ) > -1
-                                                                  ? 'top-[-31px]'
-                                                                  : 'top-[-29px]'
-                                                              }  left-[-2px] z-30 h-full w-[5px] bg-[yellow]`}></div>
-                                                          ) : null} */}
 
                                                           {regionstations
                                                             .find(
@@ -1854,12 +1660,13 @@ function Resultbrowser() {
               // <Link to={value.detail}>
               <IoOpenOutline
                 onClick={() =>
-                  navigate(`/config/chart`, {
-                    state: {
-                      opticalrout_id: value.opticalRouteId!,
-                      measurement_id: value.id,
-                    },
-                  })
+                  window.open(
+                    `/config/chart?opticalrout_id=${value.opticalRouteId!}&measurement_id=${
+                      value.id
+                    }`,
+                    '_blank',
+                    'noopener,noreferrer',
+                  )
                 }
                 size={22}
                 className="mx-auto"
