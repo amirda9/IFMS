@@ -108,8 +108,6 @@ const OpticalRouteTestHistoryPage: FC = () => {
     }
   };
 
-  console.log('historydata', historydata);
-
   useEffect(() => {
     gethistory();
   }, []);
@@ -200,13 +198,8 @@ const OpticalRouteTestHistoryPage: FC = () => {
     }
   };
 
-
-
   return (
     <>
-
-    
-
       {showchart ? (
         <ChartComponent
           measurement_id={measurement_id}
@@ -215,9 +208,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
         />
       ) : null}
 
-
-
-      <div className={`flex-col ${showchart?"hidden":"flex flex-grow"}`}>
+      <div className={`flex-col ${showchart ? 'hidden' : 'flex flex-grow'}`}>
         <div className="flex flex-grow flex-col gap-y-4 pr-16">
           <Table
             loading={loading}
@@ -234,11 +225,14 @@ const OpticalRouteTestHistoryPage: FC = () => {
                 return (
                   <IoOpenOutline
                     onClick={
-                      () => {
-                        setMeasurement_id(value.measurement_id);
-                        setShowchart(true);
-                      }
-
+                      () =>
+                        window.open(
+                          `/config/chart?opticalrout_id=${params.opticalRouteId!}&measurement_id=${
+                            value.measurement_id
+                          }`,
+                          '_blank',
+                          'noopener,noreferrer',
+                        )
                       // navigate(`../../../chart`, {
                       //   state: {
                       //     opticalrout_id: params.opticalRouteId!,
@@ -246,6 +240,14 @@ const OpticalRouteTestHistoryPage: FC = () => {
                       //   },
                       // })
                     }
+                    // onClick={
+                    //   () => {
+                    //     window.open('/chart', '_blank', 'noopener,noreferrer');
+                    //     setMeasurement_id(value.measurement_id);
+                    //     setShowchart(true);
+                    //   }
+
+                    // }
                     size={22}
                     className="mx-auto cursor-pointer"
                   />
@@ -268,7 +270,6 @@ const OpticalRouteTestHistoryPage: FC = () => {
           <SimpleBtn>Cancel</SimpleBtn>
         </div>
       </div>
-
     </>
   );
 };

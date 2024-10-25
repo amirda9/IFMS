@@ -27,7 +27,7 @@ import {useLocation} from 'react-router-dom';
 import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-
+import {useSearchParams} from 'react-router-dom';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -185,7 +185,7 @@ function Chart() {
   const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
-  const [allchart, setAllchart] = useState<string[]>(["Cur"]);
+  const [allchart, setAllchart] = useState<string[]>(['Cur']);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [fakeevents, setfakeEvents] = useState<any>([]);
   const [arrowevents, setArrowevents] = useState<any>([]);
@@ -223,11 +223,20 @@ function Chart() {
     }
   }
 
+  function useQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
+
+  const query = useQuery();
+
+  const opticalRouteId = query.get('opticalrout_id');
+  const measurementId = query.get('measurement_id');
+
   useEffect(() => {
     const Getmeasermentsalarms = async () => {
       try {
         const response = await $Get(
-          `otdr/optical-route/${location.state.optical_route_id}/test-setups/measurements/${location.state.measurement_id}/alarms`,
+          `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}/alarms`,
         );
 
         if (response?.status == 200 || response?.status == 201) {
@@ -258,7 +267,7 @@ function Chart() {
     const getchartdata = async () => {
       try {
         const getdata = await $Get(
-          `otdr/optical-route/${location.state.opticalrout_id}/test-setups/measurements/${location.state.measurement_id}`,
+          `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}`,
         );
         let datass = await getdata?.json();
 
@@ -569,7 +578,7 @@ function Chart() {
         // get optical route links and segment
         const getopticalroteRoute = async () => {
           const getopticalroteRouteResponse = await $Get(
-            `otdr/optical-route/${location.state.opticalrout_id}/routes`,
+            `otdr/optical-route/${opticalRouteId}/routes`,
           );
           const getopticalroteRoutedata =
             await getopticalroteRouteResponse?.json();
@@ -972,64 +981,62 @@ function Chart() {
   };
 
   const showcurveline = async (name: string) => {
-    const find3 = allchart.findIndex(data => data == name);
-    if (find3 > -1) {
-      const filtercurvs = allchart.filter(data => data != name);
-      setAllchart(filtercurvs);
-    } else {
-      setAllchart(prev => [...prev, name]);
-    }
+    if (name != 'Cur') {
+      const find3 = allchart.findIndex(data => data == name);
+      if (find3 > -1) {
+        const filtercurvs = allchart.filter(data => data != name);
+        setAllchart(filtercurvs);
+      } else {
+        setAllchart(prev => [...prev, name]);
+      }
 
-    if (!getallcurvedata) {
-      try {
-        setLoading(true);
-        const allcurvresponse = await $Get(
-          `otdr/optical-route/${location.state.optical_route_id}/learning-measurements-chart-detail`,
-        );
-        
-        if (allcurvresponse?.status == 200) {
-          const allcurvresponsedata: allchartdataype =
-            await allcurvresponse?.json();
-          setAvg_data_points(
-            allcurvresponsedata?.avg_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
+      if (!getallcurvedata) {
+        try {
+          setLoading(true);
+          const allcurvresponse = await $Get(
+            `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
           );
-          setMax_data_point(
-            allcurvresponsedata?.max_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
-          );
-          setMin_data_points(
-            allcurvresponsedata?.min_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
-          );
-          setReference_data_points(
-            allcurvresponsedata?.reference_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
-          );
-          setAllchartdata(allcurvresponsedata);
-        
+
+          if (allcurvresponse?.status == 200) {
+            const allcurvresponsedata: allchartdataype =
+              await allcurvresponse?.json();
+            setAvg_data_points(
+              allcurvresponsedata?.avg_data_points?.map(data => ({
+                x: data[0],
+                y: data[1],
+              })) || [],
+            );
+            setMax_data_point(
+              allcurvresponsedata?.max_data_points?.map(data => ({
+                x: data[0],
+                y: data[1],
+              })) || [],
+            );
+            setMin_data_points(
+              allcurvresponsedata?.min_data_points?.map(data => ({
+                x: data[0],
+                y: data[1],
+              })) || [],
+            );
+            setReference_data_points(
+              allcurvresponsedata?.reference_data_points?.map(data => ({
+                x: data[0],
+                y: data[1],
+              })) || [],
+            );
+            setAllchartdata(allcurvresponsedata);
+          }
+        } catch (error) {
+          console.log(`error is :${error}`);
+        } finally {
+          setLoading(false);
+          setGetallcurvedata(true);
         }
-      } catch (error) {
-        console.log(`error is :${error}`);
-      } finally {
-        setLoading(false);
-        setGetallcurvedata(true)
       }
     }
   };
 
-  console.log("location",location);
-
   const movebigline = (name: string, direction: string) => {
-
     // console.log("fakeevents",fakeevents);
 
     const verticalLinesCopy = deepcopy(verticalLines);
@@ -1429,6 +1436,11 @@ function Chart() {
   const ratio = plotwidth / maxx;
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
+      {loading ? (
+        <div className="fixed right-0 top-0 z-[10000] h-screen w-screen "></div>
+      ) : (
+        <></>
+      )}
       <div className="flex h-[540px]  w-full flex-row">
         {/* ---- left ------- left ------------------ left ------------- left ------------- left ------------ */}
         <div className="flex h-full w-[87px] flex-col">
