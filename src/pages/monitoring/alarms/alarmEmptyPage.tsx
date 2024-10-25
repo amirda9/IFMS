@@ -1,12 +1,13 @@
 
 import {TabItem} from '~/components';
-import {Outlet, useParams, useSearchParams} from 'react-router-dom';
+import {Outlet, useNavigate, useParams, useSearchParams} from 'react-router-dom';
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 const AlarmEmpty = () => {
   const params = useParams<{alarmId: string}>();
   const [searchparams] = useSearchParams();
   const idLisString = searchparams.get('id_lis');
   const idLisArray = idLisString && idLisString.split(',');
+  const navigate=useNavigate()
 
   return (
     <div className="flex h-full w-full flex-col pt-20 px-6">
@@ -19,7 +20,7 @@ const AlarmEmpty = () => {
           </>
         {/* // ) : null} */}
       </div>
-      <IoArrowBackCircleSharp onClick={()=>{}} color="bg-blue-200" size={45} />
+      <IoArrowBackCircleSharp className='cursor-pointer' onClick={()=>navigate("/monitoring/alarms")} color="#006BBC" size={45} />
       </div>
      
       <Outlet key={params.alarmId} />
