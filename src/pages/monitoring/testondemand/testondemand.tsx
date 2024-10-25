@@ -739,12 +739,20 @@ function Testondemand() {
             return (
               <IoOpenOutline
                 onClick={() =>
-                  navigate('/config/chart', {
-                    state: {
-                      opticalrout_id: value.opticalrouteid,
-                      measurement_id: value.id,
-                    },
-                  })
+                  
+                    window.open(
+                      `/config/chart?opticalrout_id=${value.opticalrouteid!}&measurement_id=${
+                        value.id
+                      }`,
+                      '_blank',
+                      'noopener,noreferrer',
+                    )
+                  // navigate('/config/chart', {
+                  //   state: {
+                  //     opticalrout_id: value.opticalrouteid,
+                  //     measurement_id: value.id,
+                  //   },
+                  // })
                 }
                 size={22}
                 className="mx-auto cursor-pointer"
