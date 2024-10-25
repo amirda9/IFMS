@@ -81,8 +81,8 @@ const AlarmTypeDetailsPage: FC = () => {
                 ) => ({...data, index: index}),
               );
 
-             alarmdetailresponsedataCopy.alarm_definition.medium_severity!.conditions =
-               alarmdetailresponsedata.alarm_definition?.medium_severity?.conditions?.map(
+               alarmdetailresponsedataCopy.alarm_definition.medium_severity!.conditions =
+               Array.isArray(alarmdetailresponsedata.alarm_definition?.medium_severity?.conditions) &&  alarmdetailresponsedata.alarm_definition?.medium_severity?.conditions?.map(
                  (
                    data: {
                      parameter: string;
@@ -96,7 +96,7 @@ const AlarmTypeDetailsPage: FC = () => {
                );
 
              alarmdetailresponsedataCopy.alarm_definition.high_severity!.conditions =
-               alarmdetailresponsedata?.alarm_definition?.high_severity!.conditions?.map(
+             Array.isArray(alarmdetailresponsedata?.alarm_definition?.high_severity!.conditions) &&  alarmdetailresponsedata?.alarm_definition?.high_severity!.conditions?.map(
                  (
                    data: {
                      parameter: string;
