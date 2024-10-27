@@ -95,7 +95,7 @@ type alarmtype = {
               region_id: string;
               latitude: number;
               longitude: number;
-              alarm_type:string
+              alarm_type: string;
             },
           ];
         },
@@ -116,7 +116,7 @@ type alarmtype = {
               region_id: string;
               latitude: number;
               longitude: number;
-              alarm_type:string
+              alarm_type: string;
             },
           ];
         },
@@ -137,9 +137,13 @@ type serverity = {
   region_id: string;
   latitude: number;
   longitude: number;
-  alarm_type:string
+  alarm_type: string;
 };
-type pointsdatatype={longitude:string,latitude:string,linkdetail:linktype}
+type pointsdatatype = {
+  longitude: string;
+  latitude: string;
+  linkdetail: linktype;
+};
 
 /* ------ component ----------- */
 
@@ -172,12 +176,14 @@ function ZoomComponent({fullscreen}: fullscreen) {
 
 const MapPage = () => {
   const selectboxref: any = useRef();
-  const [defaultzoom,setDefaultzoom]=useState(10)
-  const [mapcenter,setMapcenter]=useState<[number,number]>([ 35.6892,51.3890])
+  const [defaultzoom, setDefaultzoom] = useState(10);
+  const [mapcenter, setMapcenter] = useState<[number, number]>([
+    35.6892, 51.389,
+  ]);
   const [mousePosition, setMousePosition] = React.useState({x: 0, y: 0});
   const [fullscreen, setfullscreen] = useState(false);
   const [alarms, setAlarms] = useState<alarmtype[]>([]);
-  const [allLinkpoints,setAllLinkpoints]=useState<pointsdatatype[]>([])
+  const [allLinkpoints, setAllLinkpoints] = useState<pointsdatatype[]>([]);
   const [showlinktoolkit, setShowlinltoolkit] = useState(false);
   const [leftbarstate, setLeftbarstate] = useState(false);
   const [switchstatus, setSwitchstatus] = useState(true);
@@ -196,8 +202,9 @@ const MapPage = () => {
   const [selectedregion, setSelectedregion] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [selectednetworks, setSelectednetworks] = useState<string[]>([]);
+  const [lastselectednetwork,setLastselectednetwork]=useState("")
   const [links, setLinks] = useState<linktype[]>([]);
-
+  const [showUpdateMapCenter,setShowUpdateMapCenter]=useState(false)
   const [sumselectedregionlatitude, setSumSelectedregionlatitude] =
     useState<any>([]);
   const [sumselectedregionlongitude, setSumSelectedregionlongitude] =
@@ -206,51 +213,57 @@ const MapPage = () => {
     {value: string; label: string}[]
   >([]);
 
-  // const UpdateMapCenter = ({ center }) => {
-  //   const map = useMap();
-  //   const [userInteracted, setUserInteracted] = useState(false);
-  
-  //   // این رویداد جابه‌جایی کاربر را ردیابی می‌کند
-  //   useEffect(() => {
-  //     const onMove = () => {
-  //       setUserInteracted(true);
-  //     };
-  //     map.on('move', onMove);
-  
-  //     return () => {
-  //       map.off('move', onMove);
-  //     };
-  //   }, [map]);
-  
-  //   useEffect(() => {
-  //     if (!userInteracted && center) {
-  //       map.flyTo(center); // حرکت نرم به مرکز جدید
-  //     }
-  //   }, [center, userInteracted, map]);
-  
-  //   return null;
-  // };
+  const UpdateMapCenter = ({ center }:any) => {
+    const map = useMap();
+    const [userInteracted, setUserInteracted] = useState(false);
 
+    // این رویداد جابه‌جایی کاربر را ردیابی می‌کند
+    useEffect(() => {
+      const onMove = () => {
+        setUserInteracted(true);
+      };
+      map.on('move', onMove);
 
-  function countSeverityAlarmsInArray(dataArray:alarmtype[], targetRegionId:string,status:string) {
+      return () => {
+        map.off('move', onMove);
+      };
+    }, [map]);
+
+    useEffect(() => {
+      if (!userInteracted && center) {
+        map.setView(center); // حرکت نرم به مرکز جدید
+      }
+  
+    }, [center, userInteracted, map]);
+
+    return null;
+  };
+
+  function countSeverityAlarmsInArray(
+    dataArray: alarmtype[],
+    targetRegionId: string,
+    status: string,
+  ) {
     let highSeverityCount = 0;
-    
+
     dataArray.forEach(data => {
-    const region = data.regions.find(region => region.region_id === targetRegionId);
-    
-    if (region) {
-    region.links.forEach(link => {
-    link.alarm_events.forEach(event => {
-    if (event.severity === status) {
-    highSeverityCount++;
-    }
+      const region = data.regions.find(
+        region => region.region_id === targetRegionId,
+      );
+
+      if (region) {
+        region.links.forEach(link => {
+          link.alarm_events.forEach(event => {
+            if (event.severity === status) {
+              highSeverityCount++;
+            }
+          });
+        });
+      }
     });
-    });
-    }
-    });
-    
+
     return highSeverityCount;
-    }
+  }
 
   function countLinkSeverityAlarms(
     dataArray: alarmtype[],
@@ -259,23 +272,23 @@ const MapPage = () => {
   ) {
     let count = 0;
 
-    Array.isArray(dataArray) &&   dataArray.forEach(data => {
-      data?.regions?.forEach(region => {
-        region?.links?.forEach(link => {
-          if (link?.link_id === targetLinkId) {
-            link.alarm_events.forEach(event => {
-              if (event.severity === status) {
-                count++;
-              }
-            });
-          }
+    Array.isArray(dataArray) &&
+      dataArray.forEach(data => {
+        data?.regions?.forEach(region => {
+          region?.links?.forEach(link => {
+            if (link?.link_id === targetLinkId) {
+              link.alarm_events.forEach(event => {
+                if (event.severity === status) {
+                  count++;
+                }
+              });
+            }
+          });
         });
       });
-    });
 
     return count;
   }
-
 
   function countStationSeverityAlarms(
     dataArray: alarmtype[],
@@ -283,23 +296,24 @@ const MapPage = () => {
     status: string,
   ) {
     let count = 0;
-    Array.isArray(dataArray) &&   dataArray.forEach(data => {
-      data?.regions?.forEach(region => {
-        region?.stations?.forEach(stationdata => {
-          if (stationdata?.station_id === targetLinkId) {
-            stationdata.alarm_events.forEach(event => {
-              if (event.severity === status) {
-                count++;
-              }
-            });
-          }
+    Array.isArray(dataArray) &&
+      dataArray.forEach(data => {
+        data?.regions?.forEach(region => {
+          region?.stations?.forEach(stationdata => {
+            if (stationdata?.station_id === targetLinkId) {
+              stationdata.alarm_events.forEach(event => {
+                if (event.severity === status) {
+                  count++;
+                }
+              });
+            }
+          });
         });
       });
-    });
 
     return count;
   }
-// console.log(Regions,'👄Regions');
+  // console.log(Regions,'👄Regions');
 
   // console.log('Regions', Regions);
 
@@ -440,6 +454,9 @@ const MapPage = () => {
   //   }
   // }, [redalarms, yellowalarms, orangealarms]);
 
+
+
+
   const getalldetail = async () => {
     setSelectedregion([]);
     setRegionname('');
@@ -448,29 +465,28 @@ const MapPage = () => {
     setyellowallarms(false);
 
     try {
-      let allpoints:any=[]
+      let allpoints: any = [];
       setLoading(true);
       const [mapdetailresponse, allalarmsresponse] = await Promise.all([
         $Post(`otdr/map`, selectednetworks),
-       mount?null: $Post(`otdr/map/map_alarms/`, selectednetworks)
+        mount ? null : $Post(`otdr/map/map_alarms/`, selectednetworks),
       ]);
       const responsedata = await mapdetailresponse?.json();
-   
+
+      if (!mount) {
+        const alarmsdata: alarmtype[] = await allalarmsresponse?.json();
+        const filteredData =
+          selectedregion.length > 0
+            ? alarmsdata.filter(item =>
+                item.regions.some(
+                  region => selectedregion.indexOf(region.region_id) > -1,
+                ),
+              )
+            : alarmsdata;
+        setAlarms(filteredData);
+      }
+
       
-if(!mount){
-  const alarmsdata: alarmtype[] = await allalarmsresponse?.json();
-  const filteredData =
-    selectedregion.length > 0
-      ? alarmsdata.filter(item =>
-          item.regions.some(
-            region => selectedregion.indexOf(region.region_id) > -1,
-          ),
-        )
-      : alarmsdata;
-  setAlarms(filteredData);
-}
-
-
       let regiondata: any = [];
       let stationdata: Stationtype[] = [];
       let linksdata = [];
@@ -503,7 +519,15 @@ if(!mount){
         }
 
         for (let d = 0; d < responsedata[i].links.length; d++) {
-          allpoints.push(...responsedata[i].links[d].link_points.map((dataa:{latitude:number,longitude:number})=>({latitude:dataa.latitude,longitude:dataa.longitude,linkdetail:responsedata[i].links[d]})))
+          allpoints.push(
+            ...responsedata[i].links[d].link_points.map(
+              (dataa: {latitude: number; longitude: number}) => ({
+                latitude: dataa.latitude,
+                longitude: dataa.longitude,
+                linkdetail: responsedata[i].links[d],
+              }),
+            ),
+          );
           const findstationdata = linksdata.findIndex(
             data => data.id == responsedata[i].links[d].id,
           );
@@ -512,16 +536,31 @@ if(!mount){
           }
         }
       }
-      if(stationdata.length >0){
-setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdata.length-1].latitude])
-
-      }else{
-        setMapcenter([35.6892, 51.3890])
-    
+      if (stationdata.length > 0) {
+        if(lastselectednetwork.length == 0){
+          setMapcenter([
+            stationdata[stationdata.length - 1].longitude,
+            stationdata[stationdata.length - 1].latitude,
+          ]);
+        }else{
+          const findnetowrks=responsedata.findIndex((data:any) => data.id == lastselectednetwork)
+          
+          if(findnetowrks > -1 && responsedata[findnetowrks].stations.length > 0){
+            const findedlongitude=responsedata[findnetowrks].stations[0].longitude
+            const findedlatitude=responsedata[findnetowrks].stations[0].latitude
+            setMapcenter([findedlongitude, findedlatitude]);
+          } else{
+            setMapcenter([
+              stationdata[stationdata.length - 1].longitude,
+              stationdata[stationdata.length - 1].latitude,
+            ]);
+          }
+        }
+       
+      } else {
+        setMapcenter([35.6892, 51.389]);
       }
-      console.log("stationdata",stationdata);
-      
-      setAllLinkpoints(allpoints)
+      setAllLinkpoints(allpoints);
       setRegions(regiondata);
       setStaations(stationdata);
       setLinks(linksdata);
@@ -532,14 +571,19 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
       console.log('getmapdetailerror', error);
     } finally {
       setLoading(false);
+  
     }
   };
 
   useEffect(() => {
     getalldetail();
+    setTimeout(()=>{
+      setShowUpdateMapCenter(false)
+    },10000)
+  
   }, [selectednetworks]);
 
- console.log('mapcenter', mapcenter);
+
 
   const MapClickAlert = () => {
     useMapEvents({
@@ -609,6 +653,9 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
   };
 
   const selectrange = (data: {name: string; id: number}[]) => {
+    
+    setLastselectednetwork(data[data.length-1]?.id?.toString() || "")
+    setShowUpdateMapCenter(true)
     const dataa: string[] = [];
 
     for (let j = 0; j < data.length; j++) {
@@ -650,9 +697,6 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
     }
   };
 
-  // console.log("💪",Stations);
-  // console.log("selectednetworks",selectednetworks);
-
   async function getallalarms() {
     try {
       const getalarmsresponse = await $Post(
@@ -666,6 +710,8 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
       console.log(`get alarms error:${error}`);
     }
   }
+
+
   const highSeverityEvents: serverity[] = useMemo(() => {
     if (redalarms) {
       return alarms.flatMap(item =>
@@ -676,7 +722,8 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
         ),
       );
     } else return [];
-  }, [alarms,redalarms]);
+  }, [alarms, redalarms]);
+
 
   const LowSeverityEvents: serverity[] = useMemo(() => {
     if (yellowalarms) {
@@ -688,7 +735,9 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
         ),
       );
     } else return [];
-  }, [alarms,yellowalarms]);
+  }, [alarms, yellowalarms]);
+
+
   const MediumSeverityEvents: serverity[] = useMemo(() => {
     if (orangealarms) {
       return alarms.flatMap(item =>
@@ -699,9 +748,9 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
         ),
       );
     } else return [];
-  }, [alarms,orangealarms]);
-  // console.log('highSeverityEvents', highSeverityEvents);
-  // console.log("gggggggresponsedatagggggg",allLinkpoints);
+  }, [alarms, orangealarms]);
+
+
   // ******************** return ****************** return ************************** return *******************************
   return (
     <>
@@ -884,7 +933,7 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
 
               <div className="ml-[-10px] h-[1px] w-[330px] bg-[#ffffff]"></div>
               {leftbarstate ? (
-                <div className='w-full flex flex-col h-[250px]'>
+                <div className="flex h-[250px] w-full flex-col">
                   <button className="mt-[30px] h-[40px] w-[290px] rounded-[10px] bg-gradient-to-b from-[#BAC2ED]  to-[#B3BDF2] text-[20px] font-light leading-[25.2px] text-[black]">
                     Add Station
                   </button>
@@ -903,23 +952,23 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
           {/* ---------------reightbars------------------------reightbars-------------------------reightbars--------- */}
           {rightbarstate == 'station' ? (
             <RightbarStation
-            
-            Hightalaems={countStationSeverityAlarms(
-              alarms,
-              selectedStation!.id,
-              'High',
-            )}
-            Lowalarms={countStationSeverityAlarms(
-              alarms,
-              selectedStation!.id,
-              'Low',
-            )}
-            Mediumalarms={countStationSeverityAlarms(
-              alarms,
-              selectedStation!.id,
-              'Medium',
-            )}
-            data={selectedStation!} />
+              Hightalaems={countStationSeverityAlarms(
+                alarms,
+                selectedStation!.id,
+                'High',
+              )}
+              Lowalarms={countStationSeverityAlarms(
+                alarms,
+                selectedStation!.id,
+                'Low',
+              )}
+              Mediumalarms={countStationSeverityAlarms(
+                alarms,
+                selectedStation!.id,
+                'Medium',
+              )}
+              data={selectedStation!}
+            />
           ) : rightbarstate == 'link' ? (
             <RightbarLink
               data={selectedLink}
@@ -951,7 +1000,12 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
             scrollWheelZoom={true}
             zoomControl={false}
             className={`h-full w-full`}>
-              {/* <UpdateMapCenter center={mapcenter} /> */}
+              {showUpdateMapCenter?
+                 <UpdateMapCenter center={mapcenter} />
+            
+            :
+            null}
+         
             {loading ? (
               <Mainloading classname="w-full h-full absolute left-0 right-0 top-0 z-[100] items-center justify-center bg-neutral-400 opacity-10" />
             ) : null}
@@ -1134,8 +1188,8 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
                             },
                           }}
                           position={[
-                             sumlongitude/ data.stations.length,
-                             sumlatitude / data.stations.length,
+                            sumlongitude / data.stations.length,
+                            sumlatitude / data.stations.length,
                           ]}
                           icon={MapgroupServerIcon}>
                           <Tooltip
@@ -1148,13 +1202,28 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
                                 {data?.name}
                               </span>
                               <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                                High Severity: {countSeverityAlarmsInArray(alarms,data.id,"High")}
+                                High Severity:{' '}
+                                {countSeverityAlarmsInArray(
+                                  alarms,
+                                  data.id,
+                                  'High',
+                                )}
                               </span>
                               <span className="mb-[12px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                                Medium Severity:{countSeverityAlarmsInArray(alarms,data.id,"Medium")}
+                                Medium Severity:
+                                {countSeverityAlarmsInArray(
+                                  alarms,
+                                  data.id,
+                                  'Medium',
+                                )}
                               </span>
                               <span className="mb-[4px] ml-[8px] text-[20px] font-light leading-[25.2px] text-[black]">
-                                Low Severity: {countSeverityAlarmsInArray(alarms,data.id,"Low")}
+                                Low Severity:{' '}
+                                {countSeverityAlarmsInArray(
+                                  alarms,
+                                  data.id,
+                                  'Low',
+                                )}
                               </span>
                             </div>
                           </Tooltip>
@@ -1170,15 +1239,15 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
 
             {yellowalarms ? (
               <>
-                {LowSeverityEvents.map((data,index) => (
+                {LowSeverityEvents.map((data, index) => (
                   <Marker
-                  key={`${data.longitude}${index}`}
+                    key={`${data.longitude}${index}`}
                     eventHandlers={{
                       click: e => {
                         setRightbarState('alarm');
                       },
                     }}
-                    position={[data.longitude,data.latitude]}
+                    position={[data.longitude, data.latitude]}
                     icon={NoYellow}>
                     <Tooltip
                       opacity={1}
@@ -1218,7 +1287,7 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
                           setRightbarState('alarm');
                         },
                       }}
-                      position={[data?.longitude,data?.latitude]}
+                      position={[data?.longitude, data?.latitude]}
                       icon={NoRed}>
                       <Tooltip
                         opacity={1}
@@ -1433,65 +1502,75 @@ setMapcenter([stationdata[stationdata.length-1].longitude,stationdata[stationdat
                   //   })}
                   // </>
                   <>
-                  {allLinkpoints.map((pointdata,index) => {
-                      const prevPointData = index > 0 ? allLinkpoints[index - 1] : pointdata;
-                    return(
-                      <>
-                      <Polyline
-                        key={`${pointdata.latitude}${index}`}
-                        eventHandlers={{
-                          click: e => {
-                            setRightbarState('link');
-                            setSelectedLink(pointdata.linkdetail);
-                          },
-                          mouseover: e => {
-                            setShowlinltoolkit(true);
-                            setSelectedLink(pointdata.linkdetail);
-                          },
-                          mouseout: e => {
-                            setShowlinltoolkit(false);
-                            // alert('dfdfd');
-                          },
-                        }}
-                        positions={[
-                          [ Number(prevPointData.longitude),Number(prevPointData.latitude)],
-                          [Number(pointdata.longitude),Number(pointdata.latitude)],
-                        ]}
-                        color="red"></Polyline>
+                    {allLinkpoints.map((pointdata, index) => {
+                      const prevPointData =
+                        index > 0 ? allLinkpoints[index - 1] : pointdata;
+                      return (
+                        <>
+                          <Polyline
+                            key={`${pointdata.latitude}${index}`}
+                            eventHandlers={{
+                              click: e => {
+                                setRightbarState('link');
+                                setSelectedLink(pointdata.linkdetail);
+                              },
+                              mouseover: e => {
+                                setShowlinltoolkit(true);
+                                setSelectedLink(pointdata.linkdetail);
+                              },
+                              mouseout: e => {
+                                setShowlinltoolkit(false);
+                                // alert('dfdfd');
+                              },
+                            }}
+                            positions={[
+                              [
+                                Number(prevPointData.longitude),
+                                Number(prevPointData.latitude),
+                              ],
+                              [
+                                Number(pointdata.longitude),
+                                Number(pointdata.latitude),
+                              ],
+                            ]}
+                            color="red"></Polyline>
 
-                      <Polyline
-                        key={index}
-                        weight={5}
-                        eventHandlers={{
-                          click: e => {
-                            setRightbarState('link');
-                            setSelectedLink(pointdata.linkdetail);
-                          },
-                          mouseover: e => {
-                            setShowlinltoolkit(true);
-                            setSelectedLink(pointdata.linkdetail);
-                          },
-                          mouseout: e => {
-                            setShowlinltoolkit(false);
-                          },
-                        }}
-                        positions={[
-                          [Number(prevPointData.longitude),Number(prevPointData.latitude)],
-                          [Number(pointdata.longitude),Number(pointdata.latitude)],
-                        ]}
-                        pathOptions={{
-                          color: 'black',
-                          weight: 20,
-                          opacity: 0,
-                        }}
-                        // color="black"
-                      ></Polyline>
-                    </>
-                    )
-                  }
-
-                      
-                  )}
+                          <Polyline
+                            key={index}
+                            weight={5}
+                            eventHandlers={{
+                              click: e => {
+                                setRightbarState('link');
+                                setSelectedLink(pointdata.linkdetail);
+                              },
+                              mouseover: e => {
+                                setShowlinltoolkit(true);
+                                setSelectedLink(pointdata.linkdetail);
+                              },
+                              mouseout: e => {
+                                setShowlinltoolkit(false);
+                              },
+                            }}
+                            positions={[
+                              [
+                                Number(prevPointData.longitude),
+                                Number(prevPointData.latitude),
+                              ],
+                              [
+                                Number(pointdata.longitude),
+                                Number(pointdata.latitude),
+                              ],
+                            ]}
+                            pathOptions={{
+                              color: 'black',
+                              weight: 20,
+                              opacity: 0,
+                            }}
+                            // color="black"
+                          ></Polyline>
+                        </>
+                      );
+                    })}
                   </>
                 ) : null}
               </>
