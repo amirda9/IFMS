@@ -4,7 +4,6 @@ import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {useParams, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
-import ChartComponent from '~/components/chart/chartcomponent';
 import {deepcopy} from '~/util';
 import {$Delete, $Get} from '~/util/requestapi';
 
@@ -200,13 +199,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
 
   return (
     <>
-      {showchart ? (
-        <ChartComponent
-          measurement_id={measurement_id}
-          onclose={() => setShowchart(false)}
-          opticalrout_id={params.opticalRouteId!}
-        />
-      ) : null}
+
 
       <div className={`flex-col ${showchart ? 'hidden' : 'flex flex-grow'}`}>
         <div className="flex flex-grow flex-col gap-y-4 pr-16">
