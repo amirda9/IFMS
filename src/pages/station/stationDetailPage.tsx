@@ -168,7 +168,7 @@ const StationDetailPage = () => {
       validationSchema={stationSchema}>
       <Form>
         <div className="relative  flex flex-col justify-between">
-          <div className="flex flex-col gap-y-4">
+          <div className="flex flex-col gap-y-4 h-[calc(100vh-240px)]">
             <Description label="Name" items="start">
               <InputFormik
                 name="name"

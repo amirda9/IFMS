@@ -255,6 +255,7 @@ const LinkDetailPage = () => {
   }
   return (
     <div className="relative flex  w-full flex-col">
+      <div className='h-[calc(100vh-250px)]'>
       <div className="relative flex w-[70%] flex-row items-center justify-between">
         <div className="w-[130px] text-sm text-black">Name</div>
         <input
@@ -386,6 +387,8 @@ const LinkDetailPage = () => {
       <Description label="Last Modified" className="mt-6">
         {getPrettyDateTime(linkDetails?.time_updated)}
       </Description>
+      </div>
+  
 
       <div className="mr-4 flex flex-row gap-x-4 self-end pb-4 ">
         {loggedInUser.role === UserRole.SUPER_USER ||
