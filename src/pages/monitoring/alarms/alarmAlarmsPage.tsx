@@ -24,7 +24,7 @@ const AlarmRow = ({
     <div className="mt-8 flex flex-row items-center justify-between">
       <span className="text-[20px]  font-normal leading-[24.2px]">{title}</span>
       <TextInput
-       onChange={onchange}
+        onChange={onchange}
         value={data}
         className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
       />
@@ -45,7 +45,7 @@ function AlarmAlarmsPage() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [searchparams] = useSearchParams();
-  const [updateloading,setUpdateloading]=useState(false)
+  const [updateloading, setUpdateloading] = useState(false);
   const idLisString = searchparams.get('id_lis');
   const idLisArray = idLisString && idLisString.split(',');
   const [allupdateallarms, setAllupdateallarms] = useState<
@@ -62,6 +62,8 @@ function AlarmAlarmsPage() {
 
       if (response?.status == 200) {
         const responsedata = await response?.json();
+        console.log('responsedyyyyyyataresponsedata', responsedata);
+
         dispatch(changealarmstatus(true));
         dispatch(setAllalarmdata(responsedata));
       }
@@ -83,7 +85,7 @@ function AlarmAlarmsPage() {
 
   const updatealarms = async () => {
     try {
-      setUpdateloading(true)
+      setUpdateloading(true);
       const response = await $Put(
         `otdr/alarm/events/update_status/`,
         allupdateallarms,
@@ -100,8 +102,8 @@ function AlarmAlarmsPage() {
       }
     } catch (error) {
       console.log(`update error is:${error}`);
-    } finally{
-      setUpdateloading(false)
+    } finally {
+      setUpdateloading(false);
     }
   };
 
@@ -109,20 +111,39 @@ function AlarmAlarmsPage() {
     return <h1>Loading...</h1>;
   }
 
- console.log("allalarmdata?.alarms",allalarmdata?.alarms);
- 
+  console.log('allalarmdata?.alarms', allalarmdata?.alarms);
 
   return (
     <div className="w-full px-6 pb-8 pt-4">
       {allalarmdata?.alarms &&
         allalarmdata?.alarms.map(data => {
-          let checkescalation=(data?.to_escalation?.days == 0 && data?.to_escalation?.minutes == 0 && data?.to_escalation?.hours == 0)?false:true
-          let checketimeout=(data?.to_time_out?.days == 0 && data?.to_time_out?.minutes == 0 && data?.to_time_out?.hours == 0)?false:true
+          let checkescalation =
+            data?.to_escalation?.days == 0 &&
+            data?.to_escalation?.minutes == 0 &&
+            data?.to_escalation?.hours == 0
+              ? false
+              : true;
+          let checketimeout =
+            data?.to_time_out?.days == 0 &&
+            data?.to_time_out?.minutes == 0 &&
+            data?.to_time_out?.hours == 0
+              ? false
+              : true;
 
-          return(
-            <div className={`mt-4 flex w-full flex-row justify-between  rounded-[10px] ${!checketimeout?"bg-[#F48F8F]":!checkescalation?"bg-[#FCC483]":"bg-[#C0E7F2]"}  p-8 pt-[0px]`}>
+          return (
+            <div
+              className={`mt-4 flex w-full flex-row justify-between  rounded-[10px] ${
+                !checketimeout
+                  ? 'bg-[#F48F8F]'
+                  : !checkescalation
+                  ? 'bg-[#FCC483]'
+                  : 'bg-[#C0E7F2]'
+              }  p-8 pt-[0px]`}>
               <div className="w-[46%]">
-                <AlarmRow title="Secondary Source" data={data.secondary_source} />
+                <AlarmRow
+                  title="Secondary Source"
+                  data={data.secondary_source}
+                />
                 <div className="mt-8 w-full text-center text-[20px] font-normal leading-[24.2px]">
                   Alarm Detail
                 </div>
@@ -142,7 +163,7 @@ function AlarmAlarmsPage() {
                   } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
                 />
               </div>
-  
+
               <div className="flex w-[46%]  flex-col">
                 <div className="mt-8 flex flex-row items-center justify-between">
                   <span className="text-[20px]  font-normal leading-[24.2px]">
@@ -178,23 +199,26 @@ function AlarmAlarmsPage() {
                       Value
                     </div>
                   </div>
-  
+
                   {data.contributing_conditions.map(data => (
                     <>
                       {data.coef ? (
                         <div className="mt-8 flex w-full flex-row items-center justify-between">
                           <TextInput
+                            onChange={() => {}}
                             value={data.parameter}
                             className="h-[40px] w-[40%]"
                           />
                           <div className="flex w-[50%] flex-row justify-between">
                             <TextInput
+                              onChange={() => {}}
                               value={data.coef}
                               className="h-[40px] w-[20%]"
                             />
                             <span className="mt-2">x</span>
-  
+
                             <TextInput
+                              onChange={() => {}}
                               value={data.value}
                               className="h-[40px] w-[70%]"
                             />
@@ -203,10 +227,12 @@ function AlarmAlarmsPage() {
                       ) : (
                         <div className="mt-8 flex w-full flex-row justify-between">
                           <TextInput
+                            onChange={() => {}}
                             value={data.parameter}
                             className="h-[40px] w-[40%]"
                           />
                           <TextInput
+                            onChange={() => {}}
                             value={data.value}
                             className="h-[40px] w-[50%]"
                           />
@@ -217,8 +243,8 @@ function AlarmAlarmsPage() {
                 </div>
               </div>
             </div>
-          )
-        } )}
+          );
+        })}
 
       <div className="mt-8 flex flex-row justify-end gap-x-4">
         <SimpleBtn loading={updateloading} onClick={updatealarms} type="submit">

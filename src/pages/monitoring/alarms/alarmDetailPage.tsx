@@ -40,6 +40,8 @@ function AlarmDetailPage() {
 
           if (response?.status == 200) {
             const responsedata = await response?.json();
+            console.log("responsedataresponsedataresponsedata",responsedata);
+            
             dispatch(changealarmstatus(true));
             dispatch(setAllalarmdata(responsedata));
           }

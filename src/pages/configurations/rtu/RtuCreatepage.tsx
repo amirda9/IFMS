@@ -143,14 +143,14 @@ const RtuCreatePage: FC = () => {
     validationSchema: rtuSchema,
     initialValues: {
       name: '',
-      OTDRSECEND: '',
-      OTDRFIRST: '',
-      SWITCHSECEND: '',
-      SWITCHFIRST: '',
-      SubnetMask: '',
-      model: '',
+      OTDRSECEND: '8000',
+      OTDRFIRST: '192.168.0.252',
+      SWITCHSECEND: '2000',
+      SWITCHFIRST: '10.1.60.17',
+      SubnetMask: 'subnet_mask',
+      model: 'ArioRTU-A-L-16P',
       ContactPerson: '',
-      DefaultGateway: '',
+      DefaultGateway: '192.168.0.1',
     },
 
     onSubmit: async values => {
