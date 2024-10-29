@@ -67,7 +67,7 @@ const RtuDetailsPage: FC = () => {
     request,
   } = useHttpRequest({
     selector: state => ({
-      rtuDetail: state.http.rtuDetail,
+      // rtuDetail: state.http.rtuDetail,
       users: state.http.userList,
     }),
     initialRequests: request => {
@@ -75,7 +75,8 @@ const RtuDetailsPage: FC = () => {
     },
   });
 
-  console.log('rtuDetail?.httpRequestStatus', rtuDetail?.httpRequestStatus);
+  // console.log('rtuDetail?.httpRequestStatus', rtuDetail?.httpRequestStatus);
+console.log("rtuDetailrtuDetail",rtuDetail);
 
   const getrtudetail = async () => {
     try {
@@ -318,7 +319,7 @@ const RtuDetailsPage: FC = () => {
                 Connection
               </span>
               <span className="ml-[65px] text-[18px] font-light leading-[24.2px] text-[#0E9836]">
-                Online
+                {rtuDetail?.connection}
               </span>
               <Checkbox
                 onclick={() => {}}

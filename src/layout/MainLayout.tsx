@@ -125,22 +125,22 @@ const MainLayout: FC = () => {
         <Outlet />
       </div>
       <div className="fixed bottom-0 left-0 right-0 z-[1000] flex h-[25px] flex-row bg-[#006BBC]">
-        <span className="ml-6 text-[16px] text-white">
+        <span className="ml-6 text-[14px] text-white">
           Total Alarms: {randomdata + 25}
         </span>
-        <span className="ml-6 text-[16px] text-white">
+        <span className="ml-6 text-[14px] text-white">
           High Severity Alarms: {randomdata}
         </span>
-        <span className="ml-6 text-[16px] text-white">
+        <span className="ml-6 text-[14px] text-white">
           Medium Severity Alarms: {randomdata + 7}
         </span>
-        <span className="ml-6 text-[16px] text-white">
+        <span className="ml-6 text-[14px] text-white">
           Low Severity Alarms: {randomdata + 7}
         </span>
-        <span className="ml-6 text-[16px] text-white">
+        <span className="ml-6 text-[14px] text-white">
           Effected Stations: {randomdata2}
         </span>
-        <span className="ml-6 text-[16px] text-white">
+        <span className="ml-6 text-[14px] text-white">
           Effected Links: {randomdata2 + 4}
         </span>
       </div>
