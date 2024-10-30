@@ -219,6 +219,8 @@ const LinkDetailPage = () => {
         );
         if (getstationdetail?.status == 200) {
           const getstationdetaildata = await getstationdetail?.json();
+          console.log("getstationdetaildata",getstationdetaildata);
+          
           const response = await $Get(`otdr/network`);
           if (response?.status == 200) {
             const responsedata = await response?.json();
@@ -373,6 +375,11 @@ const LinkDetailPage = () => {
           </div>
         ) : null}
       </div>
+
+
+      <Description label="Region" items="start" className="mt-6">
+        {linkDetails?.region?.name}
+      </Description>
 
       <Description label="Owner" items="start" className="mt-6">
         {linkDetails?.versions?.find(

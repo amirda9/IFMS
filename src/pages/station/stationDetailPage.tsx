@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams, useSearchParams} from 'react-router-dom';
 import {Description, SimpleBtn} from '~/components';
 import {Field, Form, Formik} from 'formik';
 import {InputFormik, TextareaFormik} from '~/container';
@@ -51,6 +51,8 @@ const StationDetailPage = () => {
   const [selectenetwork, setSelectednetwork] = useState(
     params.networkId!
   );
+
+
 
   const {networkidadmin, regionidadmin} = useSelector(
     (state: any) => state.networktree,

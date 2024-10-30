@@ -768,7 +768,7 @@ console.log("showAllnetworks",showAllnetworks);
                                                   (stationsdata, index) => (
                                                     <Items
                                                       key={stationsdata.id}
-                                                      to={`/stations/${stationsdata.id}/${regionsdata.id}/${networkdata.id}`}
+                                                      to={`/stations/${stationsdata.id}/${regionsdata.id}/${networkdata.id}?stationname=${stationsdata.name}`}
                                                       selected={false}
                                                       canDelete={true}
                                                       onDelete={() =>
@@ -1062,7 +1062,7 @@ console.log("showAllnetworks",showAllnetworks);
                                       (stationsdata, index) => (
                                         <Items
                                           key={`${stationsdata.id}${stationsdata.id}`}
-                                          to={`/stations/${stationsdata.id}/${networkdata.id}/defaultstationDetailPage`}
+                                          to={`/stations/${stationsdata.id}/${networkdata.id}/defaultstationDetailPage?stationname=${stationsdata.name}`}
                                           canAdd={false}
                                           disabledcheckbox={
                                             loggedInUser.role !==

@@ -1,6 +1,6 @@
 import {useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useParams} from 'react-router-dom';
+import {useLocation, useParams,useSearchParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {Select, SimpleBtn, Table} from '~/components';
 import {UserRole} from '~/constant/users';
@@ -27,6 +27,11 @@ const StationAccessPage = () => {
   const {regionidadmin, networkidadmin} = useSelector(
     (state: any) => state.networktree,
   );
+  // const searchparams=useLocation()
+
+  const [searchparams] = useSearchParams();
+  const stationname = searchparams.get('stationname');
+  
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const [loading, setLoading] = useState(false);
   const [updateloading, setUpdateloading] = useState(false);
@@ -217,7 +222,7 @@ const StationAccessPage = () => {
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map(user => (
                     <option value={user.id} key={user.id}>
-                      {user.username}
+                      {stationname}_{user.username}
                     </option>
                   ))}
               </Select>

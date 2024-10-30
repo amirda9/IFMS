@@ -1,12 +1,13 @@
 
 import {TabItem} from '~/components';
-import {Outlet, useLocation, useParams} from 'react-router-dom';
+import {Outlet, useLocation, useParams, useSearchParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 const StationEmptyPage = () => {
   const params = useParams<{stationId: string}>();
   const path = useLocation();
   const {datadetailStatus} = useSelector((state: any) => state.networktree);
-
+  const [searchparams] = useSearchParams();
+  const stationname = searchparams.get('stationname');
   return (
     <div className="flex h-full w-full flex-col">
       <div className="mb-6 flex h-fit  [&_*]:mx-[0.5px]">
@@ -22,8 +23,8 @@ const StationEmptyPage = () => {
           <TabItem
             to={`${
               path.pathname.includes(`defaultstationDetailPage`)
-                ? 'access/defaultstationDetailPage'
-                : 'access'
+                ? `access/defaultstationDetailPage?stationname=${stationname}`
+                : `access?stationname=${stationname}`
             }`}
             name="Access"
           />
