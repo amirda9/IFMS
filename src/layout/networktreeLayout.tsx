@@ -536,9 +536,9 @@ function NetworktreeLayout({children}: Iprops) {
       }
     });
   };
-console.log("loadingdata",loadingdata);
-console.log("loadingid",loadingid);
-console.log("showAllnetworks",showAllnetworks);
+// console.log("loadingdata",loadingdata);
+// console.log("loadingid",loadingid);
+console.log("regionLinks",regionLinks);
 
   return (
     <>
