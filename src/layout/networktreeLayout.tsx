@@ -769,7 +769,7 @@ console.log("regionLinks",regionLinks);
                                                     <Items
                                                       key={stationsdata.id}
                                                       to={`/stations/${stationsdata.id}/${regionsdata.id}/${networkdata.id}?stationname=${stationsdata.name}`}
-                                                      selected={false}
+                                                      selected={true}
                                                       canDelete={true}
                                                       onDelete={() =>
                                                         deletegroupsationds(

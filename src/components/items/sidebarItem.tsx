@@ -50,7 +50,9 @@ const SidebarItem: FC<PropsType> = ({
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
   const match = matchPath(to, location.pathname);
-  var result = location.pathname.search(to);
+  var result = location.pathname.search(to.split("?")[0]);
+  console.log('resultresult',result);
+  
   const navigate = useNavigate();
   return (
     <div className={'relative my-1 flex flex-row ' + className}>
