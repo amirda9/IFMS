@@ -163,7 +163,7 @@ const LinkAccessPage = () => {
             className="w-[70%] text-sm">
             {userList.map(user => (
               <option onClick={() => alert('kk')} value={user.id} key={user.id}>
-                {user.username}
+                {user?.station?.name || ""} {user.username}
               </option>
             ))}
           </Select>
