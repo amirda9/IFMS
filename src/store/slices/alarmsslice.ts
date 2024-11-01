@@ -44,7 +44,9 @@ export type alldataType = {
       status: string;
       region_name: string;
       region_admin: string;
-      station_name: string;
+      station_name: string;  
+      time_created:string;
+      time_modified:string;
       to_escalation: {
         days: number;
         hours: number;

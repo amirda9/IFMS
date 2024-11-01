@@ -50,9 +50,7 @@ const SidebarItem: FC<PropsType> = ({
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
   const match = matchPath(to, location.pathname);
-
   var result = location.pathname.search(to);
-
   const navigate = useNavigate();
   return (
     <div className={'relative my-1 flex flex-row ' + className}>
@@ -66,9 +64,7 @@ const SidebarItem: FC<PropsType> = ({
           className={({isActive}) =>
             ` flex h-10 flex-grow  items-center rounded-lg ${
               enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
-            } ${
-              isActive && selected ? 'bg-[#C0E7F2] font-bold' : 'font-normal'
-            } ${navclassname}`
+            } ${isActive && selected ? 'bg-[#C0E7F2] font-bold' : 'font-normal'} ${navclassname}`
           }>
           {name}
         </NavLink>

@@ -11,6 +11,7 @@ import {
 import Selectbox from '~/components/selectbox/selectbox';
 import {$Get, $PUT, $Post, $Put} from '~/util/requestapi';
 import {toast} from 'react-toastify';
+import {getPrettyDateTime} from '~/util/time';
 const AlarmRow = ({
   title,
   data,
@@ -150,6 +151,17 @@ function AlarmAlarmsPage() {
                 <AlarmRow title="Region Name" data={data.region_name} />
                 <AlarmRow title="Region Admin" data={data.region_admin} />
                 <AlarmRow title="Station Name" data={data.station_name} />
+
+                <AlarmRow
+                  title="Time Created"
+                  data={getPrettyDateTime(data?.time_created) || ''}
+                />
+                <AlarmRow
+                  title="Time Modified"
+                  data={getPrettyDateTime(data?.time_modified) || ''}
+                />
+                <AlarmRow title="Severity" data={`${data?.severity}` || ''} />
+
                 <AlarmRow
                   title="To Escalation"
                   data={`${data?.to_escalation?.days || 0} Day - ${

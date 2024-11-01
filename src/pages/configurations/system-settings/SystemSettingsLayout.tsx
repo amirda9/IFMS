@@ -10,19 +10,22 @@ const SystemSettingsPage = () => {
   }
   return (
     <SidebarLayout createTitle="System Settings">
-      <SidebarItem name="Optical Route" to="optical-route" className="mr-6" />
-      <SidebarItem name="System" to="system" className="mr-6" />
+      <SidebarItem selected={true} name="Optical Route" to="optical-route" className="mr-6" />
+      <SidebarItem selected={true} name="System" to="system" className="mr-6" />
       <SidebarItem
+      selected={true}
         name="Threshold Settings"
         to="threshold-settings"
         className="mr-6"
       />
       <SidebarItem
+      selected={true}
         name="Monitoring Test"
         to="monitoring-test"
         className="mr-6"
       />
       <SidebarItem
+      selected={true}
         name="Proactive Maintenance Test"
         to="proactive-maintenance-test"
         className="mr-6"
