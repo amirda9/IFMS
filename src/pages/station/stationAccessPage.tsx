@@ -222,7 +222,7 @@ const StationAccessPage = () => {
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map(user => (
                     <option value={user.id} key={user.id}>
-                      {stationname}_{user.username}
+                      {user?.station?.name} {user.username}
                     </option>
                   ))}
               </Select>
