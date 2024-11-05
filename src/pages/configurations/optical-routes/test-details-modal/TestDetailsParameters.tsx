@@ -74,6 +74,9 @@ const TestDetailsParameters: FC = () => {
             );
             const gettestSetupParameters =
               await gettestSetupParametersresponse?.json();
+
+              console.log("gettestSetupParameters",gettestSetupParameters);
+              
             const testSetupParametCopy = deepcopy(gettestSetupParameters);
 
             let checkstartend = Number(

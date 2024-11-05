@@ -366,7 +366,9 @@ function App() {
                 />
               </Route>
             </Route>
+
             <Route path="chart" Component={pages.Chart} />
+            <Route path="CurrentReference" Component={pages.CurrentReference} />
 
             <Route path="remote-test-units" Component={pages.RtuLayout}>
               <Route
