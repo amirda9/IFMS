@@ -583,7 +583,7 @@ console.log("regionLinks",regionLinks);
                   showAllnetworks && location.pathname == '/networks'
                     ? 'font-bold'
                     : 'font-normal'
-                } text-[20px]`}>
+                } text-sm`}>
                 Networks
               </span>
               {showAllnetworks && loggedInUser.role === UserRole.SUPER_USER ? (

@@ -64,7 +64,7 @@ const SidebarItem: FC<PropsType> = ({
           }}
           to={to}
           className={({isActive}) =>
-            ` flex h-10 flex-grow  items-center rounded-lg ${
+            ` flex h-10 flex-grow text-sm  items-center rounded-lg ${
               enabelcheck ? 'pl-[30px]' : 'pl-[5px]'
             } ${isActive && selected ? 'bg-[#C0E7F2] font-bold' : 'font-normal'} ${navclassname}`
           }>
