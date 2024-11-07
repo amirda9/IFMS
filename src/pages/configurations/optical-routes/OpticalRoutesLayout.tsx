@@ -104,7 +104,7 @@ const OpticalRouteLayout: FC = () => {
           onClick={() => {
             opennetworkopticallist(id), setSelectedId(id), setLoadingid(id);
           }}
-          className={`${
+          className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
@@ -316,7 +316,7 @@ const OpticalRouteLayout: FC = () => {
             onClick={() => {
               dispatch(setopenall(!openall)), setLoadingid('allnetworks');
             }}>
-            <span>Optical Routes</span>
+            <span className='text-sm'>Optical Routes</span>
           </button>
         </div>
 
