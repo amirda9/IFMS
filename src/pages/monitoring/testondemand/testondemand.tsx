@@ -163,7 +163,7 @@ function Testondemand() {
           onClick={() => {
             opennetworkopticallist(id), dispatch(setSelectedId(id)),setLoadingid(id);
           }}
-          className={`${
+          className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
@@ -498,7 +498,7 @@ function Testondemand() {
                   onClick={() => {
                     dispatch(setOpenall(!openall)), setLoadingid('all');
                   }}>
-                  <span>Networks</span>
+                  <span className='text-sm'>Networks</span>
                 </button>
               </div>
 
@@ -588,7 +588,7 @@ function Testondemand() {
                                         networkdata.id,
                                       )
                                     }
-                                    className="ml-[5px] mt-[10px] w-[calc(100%-50px)]"
+                                    className="ml-[5px] text-sm mt-[10px] w-[calc(100%-50px)]"
                                     name={data.name}
                                     to={'#'}
                                   />

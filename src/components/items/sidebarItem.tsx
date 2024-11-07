@@ -44,8 +44,8 @@ const SidebarItem: FC<PropsType> = ({
   id,
   disabledcheckbox = false,
   isLink = true,
-  navclassname = 'text-[20px]',
-  buttonclickname = 'text-[20px]',
+  navclassname = 'text-sm',
+  buttonclickname = 'text-sm',
 }) => {
   const location = useLocation(); // get the current location
   // check if the current location matches the to prop
