@@ -416,7 +416,7 @@ const RtuLayout: FC = () => {
             setSelectedtabid(id);
             opennetworkopticallist(id), onclick();
           }}
-          className={`${
+          className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
@@ -470,7 +470,7 @@ const RtuLayout: FC = () => {
             setSelectedtabid(id);
             opennetworkopticallist(id), onclick();
           }}
-          className={`${
+          className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           } w-[120px] text-left`}>
           {name}
@@ -527,7 +527,7 @@ const RtuLayout: FC = () => {
           }}
           className={`${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
-          } w-[95px] text-left`}>
+          } w-[95px] text-left text-sm`}>
           {name}
         </button>
 
@@ -833,7 +833,7 @@ const RtuLayout: FC = () => {
             onClick={() => {
               setOpenall(!openall), setLoadingid('allrtues');
             }}>
-            <span>Rtu</span>
+            <span className='text-sm'>Rtu</span>
           </button>
         </div>
 
