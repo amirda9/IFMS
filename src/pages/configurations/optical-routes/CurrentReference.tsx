@@ -1948,7 +1948,7 @@ function CurrentReference() {
               
              
             </div>
-            <SimpleBtn className='w-full' onClick={()=>{}}>Save As New Reference</SimpleBtn>
+            <SimpleBtn className='w-full mt-4' onClick={()=>{}}>Save As New Reference</SimpleBtn>
             </div>
          
           </div>
