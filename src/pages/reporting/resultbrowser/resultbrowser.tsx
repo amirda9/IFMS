@@ -338,7 +338,7 @@ function Resultbrowser() {
               setSelectedIdopt(id),
               setLoadingopticalid(id);
           }}
-          className={`${
+          className={`text-sm ${
             resultnetworkselectedlist.indexOf(id) > -1
               ? 'font-bold'
               : 'font-light'
@@ -449,7 +449,7 @@ function Resultbrowser() {
             opennetworkrtullist(id);
             onclick();
           }}
-          className={`${
+          className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           }`}>
           {name}
@@ -482,7 +482,7 @@ function Resultbrowser() {
 
             opennetworkrtullist(id), onclick();
           }}
-          className={`${
+          className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           } w-[120px] text-left`}>
           {name}
@@ -515,7 +515,7 @@ function Resultbrowser() {
             setSelectedtabid(id);
             opennetworkrtullist(id), onclick();
           }}
-          className={`${
+          className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
           } w-[95px] text-left`}>
           {name}
@@ -812,7 +812,7 @@ function Resultbrowser() {
                     dispatch(setOppenallrtu(openallrtu));
                     setOpenall(!openall), setLoadingid('allrtues');
                   }}>
-                  <span>Rtu</span>
+                  <span className='text-sm'>Rtu</span>
                 </button>
               </div>
 
@@ -1388,7 +1388,7 @@ function Resultbrowser() {
                     dispatch(setopenallopt(!openallopt)),
                       setLoadingopticalid('allnetworks');
                   }}>
-                  <span>Optical Routes</span>
+                  <span className='text-sm'>Optical Routes</span>
                 </button>
               </div>
 
