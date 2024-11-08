@@ -152,6 +152,8 @@ type resultdata = {
   status: string;
   test_len: number;
   event_loss: number;
+  type:string
+
 };
 
 type tabeltype = {
@@ -162,6 +164,7 @@ type tabeltype = {
   opticalRoute: string;
   opticalRouteId: string;
   testSetup: string;
+  testType: string;
   alarms: number;
   state: string;
   length: number;
@@ -173,10 +176,11 @@ const topcolumns = {
   index: {label: 'Index', size: 'w-[2%]'},
   date: {label: 'Test Date', size: 'w-[16%]'},
   rtu: {label: 'RTU', size: 'w-[10%]'},
-  opticalRoute: {label: 'Optical Route', size: 'w-[16%]'},
+  opticalRoute: {label: 'Optical Route', size: 'w-[13%]'},
   testSetup: {label: 'Test Setup', size: 'w-[16%]'},
-  alarms: {label: '# Alarms', size: 'w-[9%]'},
-  state: {label: 'State', size: 'w-[11%]'},
+  testType: {label: 'Test Type', size: 'w-[12%]'},
+  alarms: {label: '# Alarms', size: 'w-[5%]'},
+  state: {label: 'State', size: 'w-[9%]'},
   length: {label: 'Length (km)', size: 'w-[11%]'},
   loss: {label: 'Loss (dB)', size: 'w-[6%]'},
   detail: {label: 'Detail', size: 'w-[2%]'},
@@ -646,7 +650,6 @@ function Resultbrowser() {
       const response = await $Get(url);
       if (response?.status == 200) {
         const responsedata: resultdata[] = await response.json();
-
         const newresponsedata = responsedata.map((data, index) => ({
           index: index,
           opticalRouteId: data?.optical_route?.id,
@@ -655,6 +658,7 @@ function Resultbrowser() {
           rtu: data?.rtu?.name,
           opticalRoute: data?.optical_route?.name,
           testSetup: data?.test_setup?.name,
+          testType: data?.type,
           alarms: data?.alarm_cnt,
           state: data?.status,
           length: data?.test_len,
