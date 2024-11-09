@@ -237,6 +237,7 @@ function App() {
 
           <Route path="/reporting">
             <Route path="dashboard" Component={pages.dashboard} />
+            <Route path="ReportDetailtable" Component={pages.ReportDetailtable} />
             <Route path="reports" Component={pages.reportsRoutesLayout}>
               <Route path="CreateReportset" Component={pages.CreateReportset} />
 

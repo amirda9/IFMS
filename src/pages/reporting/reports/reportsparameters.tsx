@@ -861,7 +861,7 @@ function Createreportsparameters() {
         </div>
       </div>
       <div className="flex w-full flex-row justify-end">
-        <SimpleBtn>Open Report</SimpleBtn>
+        <SimpleBtn to="/reporting/ReportDetailtable" link={true}>Open Report</SimpleBtn>
         <SimpleBtn onClick={updatereport} className="mx-[9px]">
           Save
         </SimpleBtn>

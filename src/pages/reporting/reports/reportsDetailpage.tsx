@@ -602,7 +602,7 @@ function ReportsDetailpage() {
             <span className="w-[720px]">2023-12-30 20:18:43</span>
           </div>
           <div className="absolute bottom-0 right-0 flex flex-row items-center">
-            <SimpleBtn>Open Report</SimpleBtn>
+            <SimpleBtn to="/reporting/ReportDetailtable" link={true}>Open Report</SimpleBtn>
 
             <SimpleBtn
               onClick={() => updatereport()}
