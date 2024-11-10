@@ -19,7 +19,7 @@ const AlarmEmpty = () => {
         <div className="mb-8 flex h-fit w-[300px]  [&_*]:mx-[0.5px]">
           <TabItem
             to={`/monitoring/alarms/alarmdetail?id_lis=${idLisArray}`}
-            name="Detail"
+            name="Summary"
           />
           {/* {datadetailStatus ? ( */}
           <>

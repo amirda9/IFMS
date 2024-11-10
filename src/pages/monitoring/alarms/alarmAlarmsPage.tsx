@@ -112,10 +112,9 @@ function AlarmAlarmsPage() {
     return <h1>Loading...</h1>;
   }
 
-  console.log('allalarmdata?.alarms', allalarmdata?.alarms);
 
   return (
-    <div className="w-full px-6 pb-8 pt-4">
+    <div className="w-full px-2 pb-8 pt-4">
       {allalarmdata?.alarms &&
         allalarmdata?.alarms.map(data => {
           let checkescalation =
@@ -139,41 +138,44 @@ function AlarmAlarmsPage() {
                   : !checkescalation
                   ? 'bg-[#FCC483]'
                   : 'bg-[#C0E7F2]'
-              }  p-8 pt-[0px]`}>
+              }  p-8 pt-[0px] pb-4`}>
               <div className="w-[46%]">
                 <AlarmRow
                   title="Secondary Source"
                   data={data.secondary_source}
                 />
-                <div className="mt-8 w-full text-center text-[20px] font-normal leading-[24.2px]">
+                {/* <div className="mt-8 w-full text-center text-[20px] font-normal leading-[24.2px]">
                   Alarm Detail
-                </div>
-                <AlarmRow title="Region Name" data={data.region_name} />
-                <AlarmRow title="Region Admin" data={data.region_admin} />
-                <AlarmRow title="Station Name" data={data.station_name} />
+                </div> */}
 
+                <AlarmRow title="Network" data={""} />
+                <AlarmRow title="Station" data={data.station_name} />
                 <AlarmRow
-                  title="Time Created"
-                  data={getPrettyDateTime(data?.time_created) || ''}
-                />
-                <AlarmRow
-                  title="Time Modified"
+                  title="Last Modified"
                   data={getPrettyDateTime(data?.time_modified) || ''}
                 />
-                <AlarmRow title="Severity" data={`${data?.severity}` || ''} />
-
                 <AlarmRow
                   title="To Escalation"
                   data={`${data?.to_escalation?.days || 0} Day - ${
                     data?.to_escalation?.hours || 0
                   } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
                 />
+
+                {/* <AlarmRow title="Region Admin" data={data.region_admin} />
+
+                <AlarmRow
+                  title="Time Created"
+                  data={getPrettyDateTime(data?.time_created) || ''}
+                />
+
+                <AlarmRow title="Severity" data={`${data?.severity}` || ''} />
+
                 <AlarmRow
                   title="To Time Out"
                   data={`${data?.to_escalation?.days || 0} Day - ${
                     data?.to_escalation?.hours || 0
                   } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
-                />
+                /> */}
               </div>
 
               <div className="flex w-[46%]  flex-col">
@@ -193,7 +195,7 @@ function AlarmAlarmsPage() {
                     }}
                     options={options}
                     classname={
-                      'h-[40px] w-[calc(100%-150px)] rounded-[10px] bg-white'
+                      'h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white'
                     }
                   />
                   {/* <TextInput
@@ -202,7 +204,20 @@ function AlarmAlarmsPage() {
                     className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
                   /> */}
                 </div>
-                <div className="ml-[80px]  w-[calc(100%-80px)]">
+                <AlarmRow title="Region" data={data?.region_name}/>
+                <AlarmRow title="Region Admin" data={data.region_admin} />
+                <AlarmRow
+                  title="Alarm Time"
+                  data={getPrettyDateTime(data?.time_created) || ''}
+                />
+                   <AlarmRow
+                  title="To Time Out"
+                  data={`${data?.to_escalation?.days || 0} Day - ${
+                    data?.to_escalation?.hours || 0
+                  } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
+                />
+                <SimpleBtn className='ml-[calc(100%-130px)] mt-4'>Parameters</SimpleBtn>
+                {/* <div className="ml-[80px]  w-[calc(100%-80px)]">
                   <div className="mt-8 flex w-full flex-row justify-between">
                     <div className="w-[40%] text-center text-[20px] font-normal leading-[24.2px]">
                       Parameter
@@ -252,7 +267,7 @@ function AlarmAlarmsPage() {
                       )}
                     </>
                   ))}
-                </div>
+                </div> */}
               </div>
             </div>
           );
