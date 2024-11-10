@@ -49,7 +49,7 @@ const AppDialog: FC<Props> = ({
           leave="ease-in duration-200"
           leaveFrom="opacity-100"
           leaveTo="opacity-0">
-          <div className="fixed inset-0 bg-black bg-opacity-40" />
+          <div className="fixed inset-0  opacity-40" />
         </Transition.Child>
 
         <div className="fixed inset-0 flex flex-col justify-center">

@@ -1,8 +1,9 @@
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useSearchParams} from 'react-router-dom';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 import {SimpleBtn, TextInput} from '~/components';
 import {RootState} from '~/store';
+import AppDialog from '~/components/modals/AppDialog';
 import {
   changealarmstatus,
   changestate,
@@ -43,12 +44,14 @@ function AlarmAlarmsPage() {
   const {allalarmdata, alarmstatus} = useSelector(
     (state: RootState) => state.alarmsslice,
   );
+  const [showmodal,setShowmodal]=useState(false)
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [searchparams] = useSearchParams();
   const [updateloading, setUpdateloading] = useState(false);
   const idLisString = searchparams.get('id_lis');
   const idLisArray = idLisString && idLisString.split(',');
+  const navigate=useNavigate()
   const [allupdateallarms, setAllupdateallarms] = useState<
     {
       alarm_id: string;
@@ -112,7 +115,6 @@ function AlarmAlarmsPage() {
     return <h1>Loading...</h1>;
   }
 
-
   return (
     <div className="w-full px-2 pb-8 pt-4">
       {allalarmdata?.alarms &&
@@ -138,7 +140,68 @@ function AlarmAlarmsPage() {
                   : !checkescalation
                   ? 'bg-[#FCC483]'
                   : 'bg-[#C0E7F2]'
-              }  p-8 pt-[0px] pb-4`}>
+              }  p-8 pb-4 pt-[0px]`}>
+                {showmodal?
+                <AppDialog
+               closefunc={()=>setShowmodal(false)}
+              >
+                
+                <div className="ml-[80px]  w-[calc(100%-80px)]">
+                  <div className="mt-8 flex w-full flex-row justify-between">
+                    <div className="w-[40%] text-center text-[20px] font-normal leading-[24.2px]">
+                      Parameter
+                    </div>
+                    <div className="w-[50%] text-center text-[20px] font-normal leading-[24.2px]">
+                      Value
+                    </div>
+                  </div>
+
+                  {data.contributing_conditions.map(data => (
+                    <>
+                      {data.coef ? (
+                        <div className="mt-8 flex w-full flex-row items-center justify-between">
+                          <TextInput
+                            onChange={() => {}}
+                            value={data.parameter}
+                            className="h-[40px] w-[40%]"
+                          />
+                          <div className="flex w-[50%] flex-row justify-between">
+                            <TextInput
+                              onChange={() => {}}
+                              value={data.coef}
+                              className="h-[40px] w-[20%]"
+                            />
+                            <span className="mt-2">x</span>
+
+                            <TextInput
+                              onChange={() => {}}
+                              value={data.value}
+                              className="h-[40px] w-[70%]"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-8 flex w-full flex-row justify-between">
+                          <TextInput
+                            onChange={() => {}}
+                            value={data.parameter}
+                            className="h-[40px] w-[40%]"
+                          />
+                          <TextInput
+                            onChange={() => {}}
+                            value={data.value}
+                            className="h-[40px] w-[50%]"
+                          />
+                        </div>
+                      )}
+                    </>
+                  ))}
+                </div>
+              </AppDialog>
+              :
+              null
+              }
+            
               <div className="w-[46%]">
                 <AlarmRow
                   title="Secondary Source"
@@ -148,7 +211,7 @@ function AlarmAlarmsPage() {
                   Alarm Detail
                 </div> */}
 
-                <AlarmRow title="Network" data={""} />
+                <AlarmRow title="Network" data={''} />
                 <AlarmRow title="Station" data={data.station_name} />
                 <AlarmRow
                   title="Last Modified"
@@ -204,19 +267,21 @@ function AlarmAlarmsPage() {
                     className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
                   /> */}
                 </div>
-                <AlarmRow title="Region" data={data?.region_name}/>
+                <AlarmRow title="Region" data={data?.region_name} />
                 <AlarmRow title="Region Admin" data={data.region_admin} />
                 <AlarmRow
                   title="Alarm Time"
                   data={getPrettyDateTime(data?.time_created) || ''}
                 />
-                   <AlarmRow
+                <AlarmRow
                   title="To Time Out"
                   data={`${data?.to_escalation?.days || 0} Day - ${
                     data?.to_escalation?.hours || 0
                   } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
                 />
-                <SimpleBtn className='ml-[calc(100%-130px)] mt-4'>Parameters</SimpleBtn>
+                <SimpleBtn onClick={()=> setShowmodal(true)} className="ml-[calc(100%-130px)] mt-4">
+                  Parameters
+                </SimpleBtn>
                 {/* <div className="ml-[80px]  w-[calc(100%-80px)]">
                   <div className="mt-8 flex w-full flex-row justify-between">
                     <div className="w-[40%] text-center text-[20px] font-normal leading-[24.2px]">
