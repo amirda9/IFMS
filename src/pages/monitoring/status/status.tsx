@@ -16,8 +16,9 @@ const topcolumns = {
   testtype: {label: 'Test Type', size: 'w-[18%]'},
   opticalroute: {label: 'Optical Route', size: 'w-[18%]'},
   testsetup: {label: 'Test Setup', size: 'w-[17%]'},
-  user: {label: 'User', size: 'w-[18%]'},
+  station: {label: 'Station', size: 'w-[14%]'},
   status: {label: 'Status', size: 'w-[6%]'},
+  params: {label: 'Params', size: 'w-[2%]'},
   detail: {label: 'Detail', size: 'w-[2%]'},
   delete: {label: 'Delete', size: 'w-[2%]'},
 };
@@ -29,8 +30,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -40,8 +42,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -51,8 +54,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -62,8 +66,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -73,8 +78,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -84,8 +90,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -96,8 +103,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -107,8 +115,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -118,8 +127,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -129,8 +139,9 @@ const topitems = [
     testtype: 'Scheduled - Monitoring',
     opticalroute: 'Optical Route 1',
     testsetup: 'Test Setup 1',
-    user: 'Station1',
+    station: 'Station1',
     status: 'Pending',
+    params: '',
     detail: '',
     delete: '',
   },
@@ -141,8 +152,8 @@ function Status() {
   const secenddateref: any = useRef(null);
 
   return (
-    <div className="flex w-full flex-col p-[20px]">
-      <h1 className="my-6 mt-14 font-bold text-[red] text-[20px]">
+    <div className="flex w-full flex-col p-[20px] pt-[80px]">
+      <h1 className="my-6 mt-14 text-[20px] font-bold text-[red]">
         This page requires a Full-Access license to view the content
       </h1>
 
@@ -195,31 +206,28 @@ function Status() {
       {/* ***************tabel ****************** tabel ************ tabel ********* tabel ***************************** */}
       <div className="min-h-[calc(100%-90px)] w-full">
         <Table
-          // loading={state.regionstationlist?.httpRequestStatus !== 'success'}
-          // onclicktitle={(tabname: string, sortalfabet: boolean) => {
-          //   const dataa = [...reightstationsorted];
-          //   if (sortalfabet) {
-          //     dataa.sort((a, b) => -a.name.localeCompare(b.name, 'en-US'));
-          //   } else {
-          //     dataa.sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
-          //   }
-          //   setReightstationssorted(dataa);
-          // }}
           bordered={true}
           cols={topcolumns}
           tabicon={'Name'}
           items={topitems}
           thclassname="pl-2 text-left"
           tdclassname="pl-2 text-left"
-          containerClassName="w-full text-left min-h-[72px]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
-          dynamicColumns={['detail', 'delete']}
+          containerClassName="w-full text-left max-h-[calc(100%-50px)]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
+          dynamicColumns={['params','detail', 'delete']}
           renderDynamicColumn={({key, value}) => {
-            if (key === 'detail')
+            if (key === 'params')
+              return (
+                <Link to={value.params}>
+                  <IoOpenOutline size={22} className="mx-auto" />
+                </Link>
+              );
+            else  if (key === 'detail')
               return (
                 <Link to={value.detail}>
                   <IoOpenOutline size={22} className="mx-auto" />
                 </Link>
               );
+           
             else if (key === 'delete')
               return (
                 <IoTrashOutline
