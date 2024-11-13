@@ -69,6 +69,7 @@ function Testondemand() {
   const [networklist, setNetworklist] = useState<NetworkType[]>([]);
   const [alltestondemand, setAlltestondemand] = useState<tabelrow[]>([]);
   const [getmeasurmentloading, setGetmeasurmentloading] = useState(false);
+  const [usertablesorte, setUsertablesort] = useState(false);
   const {
     networkselectedlist,
     starttestdate,
@@ -161,7 +162,9 @@ function Testondemand() {
 
         <button
           onClick={() => {
-            opennetworkopticallist(id), dispatch(setSelectedId(id)),setLoadingid(id);
+            opennetworkopticallist(id),
+              dispatch(setSelectedId(id)),
+              setLoadingid(id);
           }}
           className={`text-sm ${
             networkselectedlist.indexOf(id) > -1 ? 'font-bold' : 'font-light'
@@ -259,9 +262,8 @@ function Testondemand() {
   };
 
   const opennetworkopticallist = async (id: string) => {
-
     try {
-      setLoadingdata(true)
+      setLoadingdata(true);
       const findnetwork = networkselectedlist.findIndex(data => data == id);
       //We first check whether network has been clicked before or not.
       if (findnetwork > -1) {
@@ -278,7 +280,7 @@ function Testondemand() {
       const opticals = await $Get(`otdr/optical-route/?network_id=${id}`);
       if (opticals?.status == 200) {
         const opticalslist = await opticals?.json();
-  
+
         //Here we add or remove the opticalroutes related to this network to the list.
         if (findopt > -1) {
           let old = [...networkoptical];
@@ -292,11 +294,9 @@ function Testondemand() {
         }
       }
     } catch (error) {
-      
     } finally {
-      setLoadingdata(false)
+      setLoadingdata(false);
     }
-
   };
   const navigate = useNavigate();
   const firstdateref: any = useRef(null);
@@ -314,7 +314,6 @@ function Testondemand() {
     detail: {label: 'Detail', size: 'w-[2%]'},
     delete: {label: 'Delete', size: 'w-[2%]'},
   };
-
 
   const onclickoptical = async (id: string, networkid: string) => {
     dispatch(setSelectedId(id));
@@ -452,6 +451,8 @@ function Testondemand() {
     getmeasurments();
   }, []);
 
+
+
   const deletehistory = async (id: string) => {
     try {
       const deleteonehistory = await $Delete(
@@ -498,17 +499,14 @@ function Testondemand() {
                   onClick={() => {
                     dispatch(setOpenall(!openall)), setLoadingid('all');
                   }}>
-                  <span className='text-sm'>Networks</span>
+                  <span className="text-sm">Networks</span>
                 </button>
               </div>
 
               {openall ? (
                 <>
                   {loadingid == 'all' && loadingdata ? (
-                    <GeneralLoadingSpinner
-                      size="w-8 h-8"
-                      className="ml-8"
-                    />
+                    <GeneralLoadingSpinner size="w-8 h-8" className="ml-8" />
                   ) : (
                     <>
                       {networklist.map((networkdata, index) => (
@@ -539,65 +537,69 @@ function Testondemand() {
                             {networkselectedlist.indexOf(networkdata.id) >
                             -1 ? (
                               <>
-                              {loadingid == networkdata.id && loadingdata?
-                               <GeneralLoadingSpinner
-                               size="w-8 h-8"
-                               className="ml-8 mt-2"
-                             />
-                            :
-                            <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
-                            <div className="absolute left-[-.8px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
-                            {networkoptical
-                              ?.find(
-                                dataa => dataa.networkid == networkdata.id,
-                              )
-                              ?.opticalrouts.map((data, index: number) => (
-                                <div
-                                  key={index}
-                                  className="flex w-full flex-row items-center">
-                                  <span className="w-[15px] text-[12px]">
-                                    .....
-                                  </span>
-
-                                  <SidebarItem
-                                    selected={
-                                      selectedId == data.id ? true : false
-                                    }
-                                    enabelcheck={false}
-                                    isLink={false}
-                                    onclick={() =>
-                                      onclickoptical(
-                                        data.id,
-                                        networkdata.id,
-                                      )
-                                    }
-                                    onclickcheckbox={e =>
-                                      onclickopticalchecbox(
-                                        e,
-                                        data.id,
-                                        networkdata.id,
-                                      )
-                                    }
-                                    checkstatus={findoptical(
-                                      networkdata.id,
-                                      data.id,
-                                    )}
-                                    onDelete={() =>
-                                      deleteoneopticalroute(
-                                        data.id,
-                                        networkdata.id,
-                                      )
-                                    }
-                                    className="ml-[5px] text-sm mt-[10px] w-[calc(100%-50px)]"
-                                    name={data.name}
-                                    to={'#'}
+                                {loadingid == networkdata.id && loadingdata ? (
+                                  <GeneralLoadingSpinner
+                                    size="w-8 h-8"
+                                    className="ml-8 mt-2"
                                   />
-                                </div>
-                              ))}
-                          </div>
-                            }
+                                ) : (
+                                  <div className="relative ml-[18px] flex flex-col border-l-[1px] border-dotted border-[#000000]">
+                                    <div className="absolute left-[-.8px] top-[-20px] h-[18px] border-l-[1px] border-dotted border-[#000000]"></div>
+                                    {networkoptical
+                                      ?.find(
+                                        dataa =>
+                                          dataa.networkid == networkdata.id,
+                                      )
+                                      ?.opticalrouts.map(
+                                        (data, index: number) => (
+                                          <div
+                                            key={index}
+                                            className="flex w-full flex-row items-center">
+                                            <span className="w-[15px] text-[12px]">
+                                              .....
+                                            </span>
+
+                                            <SidebarItem
+                                              selected={
+                                                selectedId == data.id
+                                                  ? true
+                                                  : false
+                                              }
+                                              enabelcheck={false}
+                                              isLink={false}
+                                              onclick={() =>
+                                                onclickoptical(
+                                                  data.id,
+                                                  networkdata.id,
+                                                )
+                                              }
+                                              onclickcheckbox={e =>
+                                                onclickopticalchecbox(
+                                                  e,
+                                                  data.id,
+                                                  networkdata.id,
+                                                )
+                                              }
+                                              checkstatus={findoptical(
+                                                networkdata.id,
+                                                data.id,
+                                              )}
+                                              onDelete={() =>
+                                                deleteoneopticalroute(
+                                                  data.id,
+                                                  networkdata.id,
+                                                )
+                                              }
+                                              className="ml-[5px] mt-[10px] w-[calc(100%-50px)] text-sm"
+                                              name={data.name}
+                                              to={'#'}
+                                            />
+                                          </div>
+                                        ),
+                                      )}
+                                  </div>
+                                )}
                               </>
-                           
                             ) : null}
                           </div>
                         </div>
@@ -610,8 +612,8 @@ function Testondemand() {
           </div>
 
           <div className="mt-4 flex w-full flex-row items-center">
-            <span className="text-[20px] font-normal leading-6">From</span>
-            <input
+            {/* <span className="text-[20px] font-normal leading-6">From</span> */}
+            {/* <input
               ref={firstdateref}
               onChange={e => dispatch(setStarttestdate(e.target.value))}
               value={starttestdate}
@@ -622,9 +624,9 @@ function Testondemand() {
               src={dateicon}
               onClick={() => firstdateref.current.showPicker()}
               className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
-            />
+            /> */}
 
-            <span className="ml-10 text-[20px] font-normal leading-6">to</span>
+            {/* <span className="ml-10 text-[20px] font-normal leading-6">to</span>
             <input
               ref={secenddateref}
               onChange={e => dispatch(setEndtestdate(e.target.value))}
@@ -636,11 +638,11 @@ function Testondemand() {
               src={dateicon}
               onClick={() => secenddateref.current.showPicker()}
               className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
-            />
+            /> */}
           </div>
         </div>
 
-        <div className="flex w-[calc(50%-100px)] flex-col">
+        <div className="flex w-[calc(50%-150px)] flex-col">
           <span className="mb-[10px] text-[20px] font-normal leading-[24.2px]">
             Test Setup
           </span>
@@ -668,8 +670,8 @@ function Testondemand() {
               ))
             )}
           </div>
-          <div className="mt-4 flex w-full flex-row items-center space-between">
-            <div className='w-[90%] flex flex-row'>
+          <div className="space-between mt-4 flex w-full flex-row items-center">
+            {/* <div className='w-[90%] flex flex-row'>
             <Checkbox
               checkstatus={showCompletedTestsFrom}
               onclick={() =>
@@ -696,39 +698,77 @@ function Testondemand() {
               onClick={() => Thirdref.current.showPicker()}
               className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
             />
-            </div>
-         
+            </div> */}
 
-<SimpleBtn onClick={getmeasurments} className="mb-1 px-[30px] ml-4">
+            {/* <SimpleBtn onClick={getmeasurments} className="mb-1 px-[30px] ml-4">
             refresh
-          </SimpleBtn>
+          </SimpleBtn> */}
           </div>
         </div>
 
-        <div className="flex  w-[134px] flex-col justify-between pt-[34px]">
-          <div className="flex flex-col ">
+        <div className="flex w-[194px] flex-col justify-between pt-[34px]">
+          <div className="flex flex-col">
             <SimpleBtn onClick={onclickParameters} className="mb-[30px]">
               Parameters
             </SimpleBtn>
-            <div className={`${testid.length>0?"opacity-100":"opacity-40"}`}>
-            <SimpleBtn  onClick={getallmeasurements} className="px-[34px]">
-              Start Test
-            </SimpleBtn>
+            <div
+              className={`${testid.length > 0 ? 'opacity-100' : 'opacity-40'}`}>
+              <SimpleBtn onClick={getallmeasurements} className="px-[34px]">
+                Start Test
+              </SimpleBtn>
             </div>
-            
           </div>
+
+          <div className="flex w-auto mb-[20px] flex-col">
+            <div className="flex flex-row mb-6">
+              <Checkbox
+                checkstatus={showCompletedTestsFrom}
+                onclick={() =>
+                  dispatch(setShowCompletedTestsFrom(!showCompletedTestsFrom))
+                }
+                iconclassnam="w-[15px] h-[15px] ml-[1px] mt-[1px]"
+                classname={
+                  'w-[20px] h-[20px] mr-[4px] mt-[5px] border-[1px] border-[#000000]'
+                }
+              />
+              <span className="text-[20px] font-normal leading-6">
+                Show Tests From
+              </span>
+            </div>
+
+            <div className="flex flex-row w-full justify-between">
+            <input
+                disabled={!showCompletedTestsFrom}
+                ref={Thirdref}
+                onChange={e => dispatch(setFromtimeupdated(e.target.value))}
+                value={fromtimeupdated}
+                type="date"
+                className="w-30  h-8 rounded-md border border-black px-2"
+              />
+              <img
+                src={dateicon}
+                onClick={() => Thirdref.current.showPicker()}
+                className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
+              />
        
-        
+            </div>
+          </div>
+
+          {/*         
           <SimpleBtn onClick={getmeasurments} className="mb-1 px-[47px]">
             Apply
-          </SimpleBtn>
+          </SimpleBtn> */}
         </div>
       </div>
       <Table
         loading={getmeasurmentloading}
         bordered={true}
         cols={topcolumns}
-        tabicon={'Name'}
+        tabicon={'Date'}
+        onclicktitle={(tabname: string, sortalfabet: boolean) => {
+       setUsertablesort(!usertablesorte);
+        }}
+        //usertablesorte ? alltestondemand.sort((a, b) => new Date(a.date) - new Date(b.date)):alltestondemand
         items={alltestondemand}
         thclassname="pl-2 text-left"
         tdclassname="pl-2 text-left"
@@ -738,8 +778,8 @@ function Testondemand() {
           if (key === 'detail')
             return (
               <IoOpenOutline
-                onClick={() =>
-                  
+                onClick={
+                  () =>
                     window.open(
                       `/config/chart?opticalrout_id=${value.opticalrouteid!}&measurement_id=${
                         value.id
@@ -761,11 +801,9 @@ function Testondemand() {
           else if (key === 'delete')
             return (
               <IoTrashOutline
-                onClick={
-                  async () => {
-                    deletehistory(value.measurmenttestid);
-                  }
-                }
+                onClick={async () => {
+                  deletehistory(value.measurmenttestid);
+                }}
                 className="mx-auto cursor-pointer text-red-500"
                 size={22}
               />
