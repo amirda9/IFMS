@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import {FC} from 'react';
 import {IoOpenOutline} from 'react-icons/io5';
+import { Link, useParams } from 'react-router-dom';
+import { SimpleBtn } from '~/components';
 import Selectbox from '~/components/selectbox/selectbox';
 type Rowtext = {
   name: string;
@@ -20,12 +22,23 @@ const Rowtext = ({name, value}: Rowtext) => {
 };
 
 const TestDetailsStatus: FC = () => {
+  const params=useParams()
+  console.log('paramsppppppppppp',params);
+  
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">
         <Rowtext name="Current Learning Cycle" value={'1'} />
 
-        <Rowtext name="On Learning" value={'No'} />
+<div
+className='flex flex-row'
+>
+<Rowtext name="On Learning" value={'No'} />
+<SimpleBtn className='ml-48'>
+Test Now
+</SimpleBtn>
+</div>
+        
 
         <Rowtext
           name="Current Cycle Start"
@@ -51,11 +64,30 @@ const TestDetailsStatus: FC = () => {
           <span className="w-[250px] text-[20px] font-light leading-[24.2px]">
             Current Reference
           </span>
-          <IoOpenOutline size={25} />
+          <IoOpenOutline   
+          
+          onClick={
+            () =>
+              window.open(
+                `/config/CurrentReference?opticalrout_id=${params?.opticalRouteId}&test_setup_id=${params?.testId}`,
+                '_blank',
+                'noopener,noreferrer',
+              )
+            // navigate(`../../../chart`, {
+            //   state: {
+            //     opticalrout_id: params.opticalRouteId!,
+            //     measurement_id: value.measurement_id,
+            //   },
+            // })
+          }
+          
+          size={25} />
+    
+        
         </div>
 
         <div className="flex flex-row items-center">
-          <span className="w-[250px] text-[20px] font-light leading-[24.2px]">
+          <span >
             Reference Status
           </span>
           <Selectbox onclickItem={()=>{}} options={options} classname="w-[123px] rounded-[10px] h-[40px]" />
