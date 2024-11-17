@@ -30,6 +30,7 @@ import {NetworkType} from '~/types/NetworkType';
 import {getPrettyDateTime} from '~/util/time';
 import {toast} from 'react-toastify';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
+import { BiChevronLeft, BiChevronRight, BiChevronsLeft, BiChevronsRight } from 'react-icons/bi';
 type Itembtntype = {
   name: string;
   id: string;
@@ -811,6 +812,41 @@ function Testondemand() {
           else return <></>;
         }}
       />
+
+
+<div className="relative mt-2 flex h-[40px] w-full flex-row justify-center">
+        <div className="mt-[20px] flex flex-row  items-center">
+          <SimpleBtn className="px-[2px] py-[5px]" type="button">
+            <BiChevronsLeft size={20} />
+          </SimpleBtn>
+          <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
+            <BiChevronLeft size={20} />
+          </SimpleBtn>
+          <span className="ml-[20px] text-[20px] font-normal leading-6">
+            page
+          </span>
+          <input
+            type="number"
+            className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+          />
+          <span className="ml-2">/5</span>
+          <SimpleBtn className="ml-[20px] px-[2px] py-[5px]" type="button">
+            <BiChevronRight size={20} />
+          </SimpleBtn>
+          <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
+            <BiChevronsRight size={20} />
+          </SimpleBtn>
+        </div>
+        <div className="absolute right-0 top-[12px] flex flex-row items-center">
+          <span className="text-[20px] font-normal leading-6">
+            Rows Per Page
+          </span>
+          <input
+            type="number"
+            className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
+          />
+        </div>
+      </div>
     </div>
   );
 }
