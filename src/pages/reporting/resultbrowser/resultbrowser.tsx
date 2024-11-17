@@ -1633,7 +1633,7 @@ function Resultbrowser() {
               </div>
             </div>
           </div>
-          <SimpleBtn onClick={Applayresult} className="ml-[calc(100%-100px)]">
+          <SimpleBtn onClick={Applayresult} className="w-full mt-[-90px]">
             Apply
           </SimpleBtn>
         </div>
