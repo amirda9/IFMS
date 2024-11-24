@@ -6,7 +6,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Form, FormikProvider, useFormik} from 'formik';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
+import { useNavigate } from 'react-router-dom';
 const TestDetailsLearning: FC = () => {
+  const navigate=useNavigate()
   //This function changes the period that comes from the backend, for example, it changes month to Monthly
   const convertperiod = (str: string) => {
     let firstLetter = str.charAt(0);
@@ -16,7 +18,7 @@ const TestDetailsLearning: FC = () => {
     return result;
   };
   const dispatch = useDispatch();
-  const {opticalroutUpdateTestsetupDetail,modalloading} = useSelector(
+  const {opticalroutUpdateTestsetupDetail,modalloading,gettestsetupdetaildata} = useSelector(
     (state: any) => state.opticalroute,
   );
 
@@ -24,6 +26,12 @@ const TestDetailsLearning: FC = () => {
   const [selectedradio2, setSelectedradio2] = useState('On');
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
+
+  useEffect(()=>{
+    if (!gettestsetupdetaildata) {
+      navigate(-1)
+    }
+  },[])
   useEffect(() => {
     const incresetype =
       opticalroutUpdateTestsetupDetail?.learning_data?.increase_count_options

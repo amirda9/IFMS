@@ -140,82 +140,168 @@ export type opticalrouteUpdateTestSetupDetailtype = {
         value: number,
         period_time: string
       }
+    },
+    status:{
+      reference_status: string,
+      current_learning_cycle: number,
+      on_learning: boolean,
+      current_reference_id: string,
+      current_cycle_start: string,
+      next_cycle_start: string,
+      first_reference_time: string,
+      last_reference_time: string,
+      last_learning_count: number
     }
-
 }
 
+
 export type opticalrouteTestSetupDetail = {
-  id: string;
-  name: string;
-  station: {
-    id: string;
-    name: string;
-  };
-  rtu: {
-    id: string;
-    name: string;
-  };
+  name: string,
+  station_id: string,
+  station_name: string,
+  init_rtu_id: string,
+  init_rtu_name: string,
+  startdatePart:string,
+  starttimePart:string,
+  enddatePart:string,
+ endtimePart:string,
   parameters: {
-    enabled: boolean;
-    type: string;
-    wavelength: string;
-    break_strategy: string;
-    date_save_policy: string;
-    test_mode: string;
-    run_mode: string;
-    distance_mode: string;
-    range: number;
-    pulse_width_mode: string;
-    pulse_width: number;
-    sampling_mode: string;
-    sampling_duration: number;
-    IOR: number;
-    RBS: number;
-    event_loss_threshold: number;
-    event_reflection_threshold: number;
-    fiber_end_threshold: number;
-    total_loss_threshold: number;
-    section_loss_threshold: number;
-    injection_level_threshold: number;
-  };
+    enabled: boolean,
+    type: string,
+    wavelength: string,
+    break_strategy: string,
+    date_save_policy: string,
+    test_mode: string,
+    run_mode:string,
+    distance_mode: string,
+    range: number,
+    pulse_width_mode: string,
+    pulse_width: number,
+    sampling_mode: string,
+    sampling_duration: number,
+    IOR:number,
+    RBS: number,
+    event_loss_threshold: number,
+    event_reflection_threshold: number,
+    fiber_end_threshold: number,
+    total_loss_threshold: number,
+    section_loss_threshold: number,
+    injection_level_threshold: number
+  },
   learning_data: {
-    targeted_count_per_cycle: number;
+    targeted_count_per_cycle: number,
     start_cycle_time: {
-      type: string;
-      time: string;
+      type: string,
+      time: string,
       periodic_options: {
-        value: number;
-        period_time: number;
-      };
-    };
+        value: number,
+        period_time: string
+      }
+    },
     increase_count_options: {
-      count: number;
+      count: 2,
       timing: {
-        type: string;
-        time: string;
+        type: string,
+        time: string,
         periodic_options: {
-          value: number;
-          period_time: string;
-        };
-      };
-      maximum_count: number;
-    };
-  };
+          value: number,
+          period_time: string
+        }
+      },
+      maximum_count: number
+    }
+  },
   test_program: {
     starting_date: {
-      start: string;
-      immediately: boolean;
-    };
+      start?:string,
+      immediately: false
+    },
     end_date: {
-      end: string;
-      indefinite: boolean;
-    };
+      end?:string,
+      indefinite: true
+    },
     period_time: {
-      value: number;
-      period_time: string;
-    };
-  };
-};
+      value: number,
+      period_time: string
+    }
+  },
+  status:any
+}
+
+
+// export type opticalrouteTestSetupDetail = {
+//   id: string;
+//   name: string;
+//   station: {
+//     id: string;
+//     name: string;
+//   };
+//   rtu: {
+//     id: string;
+//     name: string;
+//   };
+//   parameters: {
+//     enabled: boolean;
+//     type: string;
+//     wavelength: string;
+//     break_strategy: string;
+//     date_save_policy: string;
+//     test_mode: string;
+//     run_mode: string;
+//     distance_mode: string;
+//     range: number;
+//     pulse_width_mode: string;
+//     pulse_width: number;
+//     sampling_mode: string;
+//     sampling_duration: number;
+//     IOR: number;
+//     RBS: number;
+//     event_loss_threshold: number;
+//     event_reflection_threshold: number;
+//     fiber_end_threshold: number;
+//     total_loss_threshold: number;
+//     section_loss_threshold: number;
+//     injection_level_threshold: number;
+//   };
+//   learning_data: {
+//     targeted_count_per_cycle: number;
+//     start_cycle_time: {
+//       type: string;
+//       time: string;
+//       periodic_options: {
+//         value: number;
+//         period_time: number;
+//       };
+//     };
+//     increase_count_options: {
+//       count: number;
+//       timing: {
+//         type: string;
+//         time: string;
+//         periodic_options: {
+//           value: number;
+//           period_time: string;
+//         };
+//       };
+//       maximum_count: number;
+//     };
+//   };
+//   test_program: {
+//     starting_date: {
+//       start: string;
+//       immediately: boolean;
+//     };
+//     end_date: {
+//       end: string;
+//       indefinite: boolean;
+//     };
+//     period_time: {
+//       value: number;
+//       period_time: string;
+//     };
+//   };
+//   status:any
+// };
 
 export type opticalrouteDetailType = {
   name: string;

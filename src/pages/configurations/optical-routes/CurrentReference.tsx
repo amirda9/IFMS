@@ -7,7 +7,9 @@ import Group from './../../../assets/icons/Group 29.png';
 import nonereflective from '~/assets/icons/Group 23.png';
 import reflecive from '~/assets/icons/Group 27.png';
 import startoffibeer from '~/assets/icons/startoffibeer.png';
+import Swal from 'sweetalert2';
 import Alarms from '~/components/chart/alarms';
+import {toast} from 'react-toastify';
 import arrowupchart from '~/assets/icons/arrowupchart.png';
 import hand from '~/assets/icons/hand.png';
 import ZoomArea from '~/assets/icons/ZoomArea.png';
@@ -24,11 +26,12 @@ import {deepcopy} from '~/util';
 import {BiPlus} from 'react-icons/bi';
 import {JSX} from 'react/jsx-runtime';
 import {useLocation} from 'react-router-dom';
-import {$Get} from '~/util/requestapi';
+import {$Delete, $Get, $Put} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useSearchParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
+import { all } from 'axios';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -178,24 +181,72 @@ const columns = {
   Cumulative: {label: 'Cumulative Loss (dB)', size: 'w-[13%]'},
 };
 
+type allmeasurmentsrtype = {
+  id: string;
+  time_created: string;
+  optical_route: {
+    id: string;
+    name: string;
+  };
+  test_setup: {
+    id: string;
+    name: string;
+    station: {
+      id: string;
+      name: string;
+    };
+  };
+  status: string;
+  type: string;
+}[];
 // -----------main --------------main ---------------- main ------------------- main --------------
 function CurrentReference() {
   const plotref: any = useRef();
   let location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
+   const [allchartdatapoints,setAllchartdatapoints]=useState<any>([])
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>(['Cur']);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [fakeevents, setfakeEvents] = useState<any>([]);
+  const [tabelloading,setTableloading]=useState(false)
   const [arrowevents, setArrowevents] = useState<any>([]);
+  const [measurments, setMeasurments] = useState<allmeasurmentsrtype>([]);
   const [loading, setLoading] = useState(false);
   const [mousecursor, setMousecursor] = useState(false);
   const [fixedyaxies, setFixedyaxies] = useState(false);
   const [selectedevents, setSelectedEvents] = useState<any>(null);
   const [allalarms, setAllalarms] = useState<alllalarmsType | []>([]);
   const [allchartdata, setAllchartdata] = useState<allchartdataype | []>([]);
-  const [selectedradio, setSelectedradio] = useState('On');
+  const [allselectedmesuement, setAllselectedmesuement] = useState<string[]>(
+    [],
+  );
+
+  const onclickmesurment = (id: string) => {
+    const findmesurmentindex = allselectedmesuement.findIndex(
+      data => data == id,
+    );
+    if (findmesurmentindex > -1) {
+      const newchartdata=allchartdatapoints.filter((data:any) => data.id != id)
+      setAllchartdatapoints(newchartdata)
+      const newdata = allselectedmesuement.filter(data => data != id);
+      setAllselectedmesuement(newdata);
+    } else {
+      let newdata = [...allselectedmesuement, id];
+      setAllselectedmesuement(newdata);
+      // getchartdata(id)
+      getonclictmeasurmentdata(id)
+    }
+  };
+  console.log('allselectedmesuementallselectedmesuement', allselectedmesuement);
+
+  const query = useQuery();
+  const currentReference_id = query.get('current_reference_id');
+  // const [selectedradio, setSelectedradio] = useState('On');
+  const [current_reference_id, setCurrent_reference_id] =
+    useState(currentReference_id!);
   const [allcurveline, setAllcurveline] = useState<
     {
       id: string;
@@ -224,16 +275,37 @@ function CurrentReference() {
     }
   }
 
+
+  const swalsetting: any = {
+    title: 'Are you sure you want to change refrece?',
+    // text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+  };
+
+  const swalsettingdel: any = {
+    title: 'Are you sure you want to delete this measurement?',
+    // text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+  };
+
+
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
-
-  const query = useQuery();
 
   const opticalRouteId = query.get('opticalrout_id');
   const test_setup_id = query.get('test_setup_id');
 
   useEffect(() => {
+    // setCurrent_reference_id(currentReference_id!)
     const Getmeasermentsalarms = async () => {
       try {
         const response = await $Get(
@@ -242,8 +314,6 @@ function CurrentReference() {
 
         if (response?.status == 200 || response?.status == 201) {
           const resonsedata: alllalarmsType = await response.json();
-          console.log("resonsedataresonsedata",resonsedata);
-          
           setAllalarms(resonsedata);
         }
       } catch (error) {}
@@ -251,8 +321,6 @@ function CurrentReference() {
 
     Getmeasermentsalarms();
   }, []);
-
-
 
   // useEffect(() => {
   //   const Getmeasermentsalarms = async () => {
@@ -283,380 +351,441 @@ function CurrentReference() {
 
   const [autotick, setAutodic] = useState(true);
 
-  // useEffect(() => {
-  //   // let data:any;
-  //   setLoading(true);
-  //   const getchartdata = async () => {
-  //     try {
-  //       const getdata = await $Get(
-  //         `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}`,
-  //       );
-  //       let datass = await getdata?.json();
+  function getRandomColor(x: number) {
+    let letters = '0123456789ABCDEF';
+    let color = '#';
 
-  //       let allpointsdata = datass?.datapoints?.data_points?.map(
-  //         (data: [number, number]) => ({x: data[0], y: data[1]}),
-  //       );
+    color += letters[Math.floor(Math.random() * 16)];
 
-  //       setChartdata(datass);
-  //       setAllcurveline([
-  //         {
-  //           id: 'Cur',
-  //           data: allpointsdata,
-  //         },
-  //       ]);
-  //       const max_x =
-  //         allpointsdata &&
-  //         Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.x));
-  //       setMaxx(max_x);
-  //       const max_y =
-  //         allpointsdata &&
-  //         Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.y));
-  //       setMaxy(max_y);
-  //       // -----------------------
+    return color;
+  }
 
-  //       // -----------------------------
-  //       let Arrowevents = [];
-  //       for (let i = 0; i < datass?.key_events?.events?.length; i++) {
-  //         if (datass?.key_events?.events[i]?.event_code == 'Start of fiber') {
-  //           Arrowevents.push({
-  //             x: datass?.key_events.events[i]?.event_location,
-  //             y: datass.key_events.events[i].event_y,
-  //             type: 'arrowevent',
-  //             location: 'start',
-  //             event_number: datass.key_events.events[i].event_number,
-  //           });
-  //         } else if (datass.key_events.events[i].event_code == 'End of fiber') {
-  //           Arrowevents.push({
-  //             x: datass.key_events.events[i].event_location,
-  //             y: datass.key_events.events[i].event_y,
-  //             type: 'arrowevent',
-  //             location: 'end',
-  //             event_number: datass.key_events.events[i].event_number,
-  //           });
-  //         }
-  //       }
+  const getonclictmeasurmentdata=async(id:string)=>{
+    setLoading(true);
+    try {
+      const getdata = await $Get(
+        `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${id}`,
+      );
+      if(getdata?.status == 201){
+        let datass = await getdata?.json();
+        // let allpointsdata = datass?.datapoints?.data_points?.map(
+        //   (data: [number, number]) => ({x: data[0], y: data[1]}),
+        // );
+        let allchartdatapointsCopy:any=deepcopy(allchartdatapoints)
+        setAllchartdatapoints([...allchartdatapointsCopy,datass])
+      }else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    
+  }catch{
+    toast('Encountered an error', {type: 'error', autoClose: 1000});
+  } finally{
+    setLoading(false);
+  }
+}
 
-  //       // ###################################################################################################
-  //       let allshapesCopy = deepcopy(allshapes);
-  //       let elements: JSX.Element[] = [];
-  //       // if (!showeventdetail) {
 
-  //       Arrowevents?.forEach((point, index) => {
-  //         const X = point.x;
-  //         const Y = point.y!;
+  const getchartdata = async (id: string) => {
+    setTableloading(true);
+    try {
+      const getdata = await $Get(
+        `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${id}`,
+      );
+      let datass = await getdata?.json();
+      let allpointsdata = datass?.datapoints?.data_points?.map(
+        (data: [number, number]) => ({x: data[0], y: data[1]}),
+      );
+      // let allchartdatapointsCopy:any=deepcopy(allchartdatapoints)
+      // setAllchartdatapoints([...allchartdatapointsCopy,datass])
+      setChartdata(datass);
+      setAllcurveline([
+        {
+          id: 'Cur',
+          data: allpointsdata,
+        },
+      ]);
+      const max_x =
+        allpointsdata &&
+        Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.x));
+      setMaxx(max_x);
+      const max_y =
+        allpointsdata &&
+        Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.y));
+      setMaxy(max_y);
 
-  //         if (point.location == 'start') {
-  //           allshapesCopy.push(
-  //             {
-  //               type: 'line',
-  //               x0: X, // x coordinate of the first point
-  //               y0: Y + 10, // y coordinate of the first point
-  //               x1: X, // x coordinate of the second point
-  //               y1: Y - 10, // y coordinate of the second point
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000', // color of the line
-  //                 width: 3, // width of the line
-  //                 zIndex: -1,
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X + 70, // x coordinate of the first point
-  //               y0: Y + 10, // y coordinate of the first point
-  //               x1: X, // x coordinate of the second point
-  //               y1: Y + 10, // y coordinate of the second point
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000', // color of the line
-  //                 width: 3, // width of the line
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X + 70, // x coordinate of the first point
-  //               y0: Y - 10, // y coordinate of the first point
-  //               x1: X, // x coordinate of the second point
-  //               y1: Y - 10, // y coordinate of the second point
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000', // color of the line
-  //                 width: 3, // width of the line
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X + 70, // x coordinate of the first point
-  //               y0: Y - 10, // y coordinate of the first point
-  //               x1: X + 15, // x coordinate of the second point
-  //               y1: Y - 11, // y coordinate of the second point
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000', // color of the line
-  //                 width: 1, // width of the line
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X + 70, // x coordinate of the first point
-  //               y0: Y - 10, // y coordinate of the first point
-  //               x1: X + 15, // x coordinate of the second point
-  //               y1: Y - 9, // y coordinate of the second point
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000', // color of the line
-  //                 width: 1, // width of the line
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X + 70, // x coordinate of the first point
-  //               y0: Y + 10, // y coordinate of the first point
-  //               x1: X + 15, // x coordinate of the second point
-  //               y1: Y + 9, // y coordinate of the second point
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000', // color of the line
-  //                 width: 1, // width of the line
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X + 70, // x coordinate of the first point
-  //               y0: Y + 10, // y coordinate of the first point
-  //               x1: X + 15, // x coordinate of the second point
-  //               y1: Y + 11, // y coordinate of the second point
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000', // color of the line
-  //                 width: 1, // width of the line
-  //               },
-  //             },
-  //           );
-  //         } else {
-  //           allshapesCopy.push(
-  //             {
-  //               type: 'line',
-  //               x0: X,
-  //               y0: Y + 10,
-  //               x1: X,
-  //               y1: Y - 10,
+      let Arrowevents = [];
+      for (let i = 0; i < datass?.key_events?.events?.length; i++) {
+        if (datass?.key_events?.events[i]?.event_code == 'Start of fiber') {
+          Arrowevents.push({
+            x: datass?.key_events.events[i]?.event_location,
+            y: datass.key_events.events[i].event_y,
+            type: 'arrowevent',
+            location: 'start',
+            event_number: datass.key_events.events[i].event_number,
+          });
+        } else if (datass.key_events.events[i].event_code == 'End of fiber') {
+          Arrowevents.push({
+            x: datass.key_events.events[i].event_location,
+            y: datass.key_events.events[i].event_y,
+            type: 'arrowevent',
+            location: 'end',
+            event_number: datass.key_events.events[i].event_number,
+          });
+        }
+      }
 
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000',
-  //                 width: 3,
-  //                 zindex: 10,
-  //                 // layer: 'below',
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X - 70,
-  //               y0: Y + 10,
-  //               x1: X,
-  //               y1: Y + 10,
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000',
-  //                 width: 3,
-  //                 zindex: 10,
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X - 70,
-  //               y0: Y - 10,
-  //               x1: X,
-  //               y1: Y - 10,
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000',
-  //                 width: 3,
-  //                 zindex: 10,
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X - 70,
-  //               y0: Y - 10,
-  //               x1: X - 15,
-  //               y1: Y - 11,
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000',
-  //                 width: 1,
-  //                 zindex: 10,
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X - 70,
-  //               y0: Y - 10,
-  //               x1: X - 15,
-  //               y1: Y - 9,
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000',
-  //                 width: 1,
-  //                 zindex: 10,
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X - 70,
-  //               y0: Y + 10,
-  //               x1: X - 15,
-  //               y1: Y + 9,
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000',
-  //                 width: 1,
-  //                 zindex: 10,
-  //               },
-  //             },
-  //             {
-  //               type: 'line',
-  //               x0: X - 70,
-  //               y0: Y + 10,
-  //               x1: X - 15,
-  //               y1: Y + 11,
-  //               editable: false,
-  //               line: {
-  //                 color: '#A80000',
-  //                 width: 1,
-  //                 zindex: 10,
-  //               },
-  //             },
-  //           );
-  //         }
-  //       });
-  //       setAllshapes(allshapesCopy);
-  //       // }
+      let allshapesCopy = deepcopy(allshapes);
+      let elements: JSX.Element[] = [];
 
-  //       // ###################################################################################################
-  //       // --------------------------------
-  //       const Allevents = datass?.key_events?.events;
-  //       let items = [];
-  //       let sumloss = 0;
-  //       for (let c = 0; c < Allevents?.length; c++) {
-  //         sumloss += Allevents[c].event_loss;
-  //         items.push({
-  //           index: c + 1,
-  //           Position: (Allevents[c].event_location / 1000)
-  //             .toString()
-  //             .substring(0, 7),
-  //           Loss:
-  //             Math.abs(
-  //               Number(Allevents[c]?.event_loss?.toString().substring(0, 7)),
-  //             ).toString() || '',
-  //           Reflectance: checkNumber(
-  //             Number(Allevents[c].event_reflectance.toString().substring(0, 7)),
-  //           ).toString(),
-  //           Peak: '',
-  //           Attenuation: '',
-  //           Cumulative: sumloss.toString().substring(0, 7),
-  //           event_code: Allevents[c].event_code || undefined,
+      Arrowevents?.forEach((point, index) => {
+        const X = point.x;
+        const Y = point.y!;
 
-  //           // tabbodybg: [{name: "Position", onclick: ()=>alert("Position")}],
-  //         });
-  //         if (c < Allevents.length - 1) {
-  //           sumloss += Allevents[c + 1]?.event_y - Allevents[c]?.event_y || 0;
-  //           items.push({
-  //             index: '',
-  //             Position: (
-  //               (Allevents[c + 1].event_location -
-  //                 Allevents[c].event_location) /
-  //               1000
-  //             )
-  //               .toString()
-  //               .substring(0, 7),
-  //             Loss:
-  //               Math.abs(
-  //                 Number(
-  //                   (Allevents[c + 1]?.event_y - Allevents[c]?.event_y)
-  //                     ?.toString()
-  //                     .substring(0, 7),
-  //                 ),
-  //               ).toString() || '---',
-  //             Reflectance: '',
-  //             Peak: '',
-  //             Attenuation: (
-  //               (Allevents[c + 1]?.event_y - Allevents[c]?.event_y) /
-  //               ((Allevents[c + 1].event_location -
-  //                 Allevents[c].event_location) /
-  //                 1000)
-  //             )
-  //               .toString()
-  //               .substring(0, 7),
-  //             Cumulative: sumloss.toString().substring(0, 7),
-  //             event_code: undefined,
-  //             tabrowbg: '#C6DFF8',
-  //           });
-  //         }
-  //       }
-  //       setTabelitems(items);
+        if (point.location == 'start') {
+          allshapesCopy.push(
+            {
+              type: 'line',
+              x0: X,
+              y0: Y + 10,
+              x1: X,
+              y1: Y - 10,
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 3,
+                zIndex: -1,
+              },
+            },
+            {
+              type: 'line',
+              x0: X + 70, // x coordinate of the first point
+              y0: Y + 10, // y coordinate of the first point
+              x1: X, // x coordinate of the second point
+              y1: Y + 10, // y coordinate of the second point
+              editable: false,
+              line: {
+                color: '#A80000', // color of the line
+                width: 3, // width of the line
+              },
+            },
+            {
+              type: 'line',
+              x0: X + 70, // x coordinate of the first point
+              y0: Y - 10, // y coordinate of the first point
+              x1: X, // x coordinate of the second point
+              y1: Y - 10, // y coordinate of the second point
+              editable: false,
+              line: {
+                color: '#A80000', // color of the line
+                width: 3, // width of the line
+              },
+            },
+            {
+              type: 'line',
+              x0: X + 70, // x coordinate of the first point
+              y0: Y - 10, // y coordinate of the first point
+              x1: X + 15, // x coordinate of the second point
+              y1: Y - 11, // y coordinate of the second point
+              editable: false,
+              line: {
+                color: '#A80000', // color of the line
+                width: 1, // width of the line
+              },
+            },
+            {
+              type: 'line',
+              x0: X + 70, // x coordinate of the first point
+              y0: Y - 10, // y coordinate of the first point
+              x1: X + 15, // x coordinate of the second point
+              y1: Y - 9, // y coordinate of the second point
+              editable: false,
+              line: {
+                color: '#A80000', // color of the line
+                width: 1, // width of the line
+              },
+            },
+            {
+              type: 'line',
+              x0: X + 70, // x coordinate of the first point
+              y0: Y + 10, // y coordinate of the first point
+              x1: X + 15, // x coordinate of the second point
+              y1: Y + 9, // y coordinate of the second point
+              editable: false,
+              line: {
+                color: '#A80000', // color of the line
+                width: 1, // width of the line
+              },
+            },
+            {
+              type: 'line',
+              x0: X + 70, // x coordinate of the first point
+              y0: Y + 10, // y coordinate of the first point
+              x1: X + 15, // x coordinate of the second point
+              y1: Y + 11, // y coordinate of the second point
+              editable: false,
+              line: {
+                color: '#A80000', // color of the line
+                width: 1, // width of the line
+              },
+            },
+          );
+        } else {
+          allshapesCopy.push(
+            {
+              type: 'line',
+              x0: X,
+              y0: Y + 10,
+              x1: X,
+              y1: Y - 10,
 
-  //       // get optical route links and segment
-  //       const getopticalroteRoute = async () => {
-  //         const getopticalroteRouteResponse = await $Get(
-  //           `otdr/optical-route/${opticalRouteId}/routes`,
-  //         );
-  //         const getopticalroteRoutedata =
-  //           await getopticalroteRouteResponse?.json();
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 3,
+                zindex: 10,
+                // layer: 'below',
+              },
+            },
+            {
+              type: 'line',
+              x0: X - 70,
+              y0: Y + 10,
+              x1: X,
+              y1: Y + 10,
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 3,
+                zindex: 10,
+              },
+            },
+            {
+              type: 'line',
+              x0: X - 70,
+              y0: Y - 10,
+              x1: X,
+              y1: Y - 10,
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 3,
+                zindex: 10,
+              },
+            },
+            {
+              type: 'line',
+              x0: X - 70,
+              y0: Y - 10,
+              x1: X - 15,
+              y1: Y - 11,
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 1,
+                zindex: 10,
+              },
+            },
+            {
+              type: 'line',
+              x0: X - 70,
+              y0: Y - 10,
+              x1: X - 15,
+              y1: Y - 9,
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 1,
+                zindex: 10,
+              },
+            },
+            {
+              type: 'line',
+              x0: X - 70,
+              y0: Y + 10,
+              x1: X - 15,
+              y1: Y + 9,
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 1,
+                zindex: 10,
+              },
+            },
+            {
+              type: 'line',
+              x0: X - 70,
+              y0: Y + 10,
+              x1: X - 15,
+              y1: Y + 11,
+              editable: false,
+              line: {
+                color: '#A80000',
+                width: 1,
+                zindex: 10,
+              },
+            },
+          );
+        }
+      });
+      setAllshapes(allshapesCopy);
+      // }
 
-  //         const promises = getopticalroteRoutedata.map((data: any) =>
-  //           $Get(`otdr/link/${data.link_id}`),
-  //         );
+      // ###################################################################################################
+      // --------------------------------
+      const Allevents = datass?.key_events?.events;
+      let items = [];
+      let sumloss = 0;
+      for (let c = 0; c < Allevents?.length; c++) {
+        sumloss += Allevents[c].event_loss;
+        items.push({
+          index: c + 1,
+          Position: (Allevents[c].event_location / 1000)
+            .toString()
+            .substring(0, 7),
+          Loss:
+            Math.abs(
+              Number(Allevents[c]?.event_loss?.toString().substring(0, 7)),
+            ).toString() || '',
+          Reflectance: checkNumber(
+            Number(Allevents[c].event_reflectance.toString().substring(0, 7)),
+          ).toString(),
+          Peak: '',
+          Attenuation: '',
+          Cumulative: sumloss.toString().substring(0, 7),
+          event_code: Allevents[c].event_code || undefined,
 
-  //         const alllinksdata = await Promise.all(promises);
-  //         const results = await Promise.all(
-  //           alllinksdata.map(response => response?.json()),
-  //         );
+          // tabbodybg: [{name: "Position", onclick: ()=>alert("Position")}],
+        });
+        if (c < Allevents.length - 1) {
+          sumloss += Allevents[c + 1]?.event_y - Allevents[c]?.event_y || 0;
+          items.push({
+            index: '',
+            Position: (
+              (Allevents[c + 1].event_location - Allevents[c].event_location) /
+              1000
+            )
+              .toString()
+              .substring(0, 7),
+            Loss:
+              Math.abs(
+                Number(
+                  (Allevents[c + 1]?.event_y - Allevents[c]?.event_y)
+                    ?.toString()
+                    .substring(0, 7),
+                ),
+              ).toString() || '---',
+            Reflectance: '',
+            Peak: '',
+            Attenuation: (
+              (Allevents[c + 1]?.event_y - Allevents[c]?.event_y) /
+              ((Allevents[c + 1].event_location - Allevents[c].event_location) /
+                1000)
+            )
+              .toString()
+              .substring(0, 7),
+            Cumulative: sumloss.toString().substring(0, 7),
+            event_code: undefined,
+            tabrowbg: '#C6DFF8',
+          });
+        }
+      }
+      setTabelitems(items);
 
-  //         let allLinkdata: linklengthtype = [];
-  //         let alloffset = 0;
-  //         for (let i = 0; i < results.length; i++) {
-  //           let sementsdata =
-  //             results[i].current_version.type == 'cable'
-  //               ? results[i]?.data?.cables
-  //               : results[i]?.data?.ducts;
+      // get optical route links and segment
+      const getopticalroteRoute = async () => {
+        const getopticalroteRouteResponse = await $Get(
+          `otdr/optical-route/${opticalRouteId}/routes`,
+        );
+        const getopticalroteRoutedata =
+          await getopticalroteRouteResponse?.json();
 
-  //           // for(let j=0;j<sementsdata.length;j++){
-  //           let data = [];
-  //           for (let c = 0; c < sementsdata[0].segments.length; c++) {
-  //             (alloffset += sementsdata[0].segments[c].offset),
-  //               data.push({
-  //                 Length: sementsdata[0].segments[c].length,
-  //                 offset: sementsdata[0].segments[c].offset,
-  //                 position:
-  //                   sementsdata[0].segments[c].start +
-  //                   sementsdata[0].segments[c].length +
-  //                   sementsdata[0].segments[c].offset,
-  //               });
-  //           }
+        const promises = getopticalroteRoutedata.map((data: any) =>
+          $Get(`otdr/link/${data.link_id}`),
+        );
 
-  //           // }
-  //           allLinkdata.push({
-  //             id: results[i].id,
-  //             Length: results[i].current_version.length + alloffset,
-  //             segments: data,
-  //           });
-  //         }
-  //         setLinkslengthdata(allLinkdata);
-  //       };
-  //       getopticalroteRoute();
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   // try {
-  //   getchartdata();
-  //   // } catch (error) {}
-  //   // *******************************************************************
-  // }, []);
+        const alllinksdata = await Promise.all(promises);
+        const results = await Promise.all(
+          alllinksdata.map(response => response?.json()),
+        );
+
+        let allLinkdata: linklengthtype = [];
+        let alloffset = 0;
+        for (let i = 0; i < results.length; i++) {
+          let sementsdata =
+            results[i].current_version.type == 'cable'
+              ? results[i]?.data?.cables
+              : results[i]?.data?.ducts;
+
+          // for(let j=0;j<sementsdata.length;j++){
+          let data = [];
+          for (
+            let c = 0;
+            (c < sementsdata && sementsdata[0]?.segments?.length) || 0;
+            c++
+          ) {
+            (alloffset += sementsdata[0].segments[c].offset),
+              data.push({
+                Length: sementsdata[0].segments[c].length,
+                offset: sementsdata[0].segments[c].offset,
+                position:
+                  sementsdata[0].segments[c].start +
+                  sementsdata[0].segments[c].length +
+                  sementsdata[0].segments[c].offset,
+              });
+          }
+
+          // }
+          allLinkdata.push({
+            id: results[i].id,
+            Length: results[i].current_version.length + alloffset,
+            segments: data,
+          });
+        }
+        setLinkslengthdata(allLinkdata);
+      };
+      getopticalroteRoute();
+    } catch (error) {
+      console.log(`get chart data error is:${error}`);
+    } finally {
+      setTableloading(false);
+    }
+  };
+
+
+  console.log("allchartdatapointsallchartdatapoints",allchartdatapoints);
+  
+  useEffect(() => {
+    // let data:any;
+
+    const getdata = async () => {
+      setLoading(true);
+      try {
+        const allmeasurmentsresponse = await $Get(
+          `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&measurement_type=learning`,
+        );
+        if (allmeasurmentsresponse?.status == 200) {
+          const allmeasurmentsresponseData: allmeasurmentsrtype =
+            await allmeasurmentsresponse?.json();
+          setMeasurments(allmeasurmentsresponseData);
+          const findmeasurment = allmeasurmentsresponseData.find(
+            data => data.id == current_reference_id,
+          );
+          if (findmeasurment) {
+            getchartdata(findmeasurment?.id);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    // try {
+    getdata();
+
+    // } catch (error) {}
+    // *******************************************************************
+  }, []);
 
   const [reightbar, setReightbar] = useState('Result');
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
@@ -1002,6 +1131,22 @@ function CurrentReference() {
     setLeftverticaltab('LinkView');
   };
 
+const deletemeasurment=async(id:string)=>{
+  Swal.fire(swalsettingdel).then(async result => {
+    
+    if (result.isConfirmed) {
+      const response=await $Delete(`otdr/optical-route/${opticalRouteId}/measurements`,[id])
+      if(response?.status == 201){
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
+      }
+    }else{
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+    }
+  }
+)
+
+}
+
   const showcurveline = async (name: string) => {
     if (name != 'Cur') {
       const find3 = allchart.findIndex(data => data == name);
@@ -1046,7 +1191,7 @@ function CurrentReference() {
                 y: data[1],
               })) || [],
             );
-            setAllchartdata(allcurvresponsedata);
+            // setAllchartdata(allcurvresponsedata);
           }
         } catch (error) {
           console.log(`error is :${error}`);
@@ -1454,24 +1599,54 @@ function CurrentReference() {
     }
   };
 
-  function RadioButton({name}: any) {
-    let data = name == 'On' ? 'fixed' : 'periodic';
+const savenewrefrence=async()=>{
+  Swal.fire(swalsetting).then(async result => {
+    if (result.isConfirmed) {
+      try {
+        const updateresponse = await $Put(
+          `otdr/optical-route/${opticalRouteId}/test-setups/${test_setup_id}/reference?reference_id=${current_reference_id}`,
+          {},
+        );
+        if (updateresponse?.status == 201) {
+         getchartdata(current_reference_id);
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
+        }
+      } catch (error) {
+     
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        
+      }
+    }
+  })}
+ 
+
+
+  function RadioButton({
+    id,
+    testId,
+    opticalid,
+  }: {
+    id: string;
+    testId: string;
+    opticalid: string;
+  }) {
     return (
       <div className="flex flex-row items-center">
         <button
-          onClick={() => {
-            setSelectedradio(name);
-            //   formik.setFieldValue('startcycletype', data);
-            // let dataa: any = JSON.parse(
-            //   JSON.stringify(opticalroutUpdateTestsetupDetail),
-            // );
-            // dataa.learning_data.start_cycle_time.type = data;
-            // dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+          onClick={async () => {
+        getchartdata(id)
+            setCurrent_reference_id(id);
+            setSearchParams({
+              opticalrout_id: opticalid,
+              test_setup_id: testId,
+              current_reference_id: id,
+            });
+         
           }}
           className="flex h-[20px] w-[20px] items-center justify-center rounded-[10px] bg-[#ffffff]">
           <div
             className={`h-[10px] w-[10px] rounded-[5px] ${
-              selectedradio == name ? 'bg-[#0E9836]' : 'bg-[#ffffff]'
+              current_reference_id == id ? 'bg-[#0E9836]' : 'bg-[#ffffff]'
             } `}></div>
         </button>
       </div>
@@ -1480,6 +1655,23 @@ function CurrentReference() {
 
   const plotwidth = window.innerWidth - 510;
   const ratio = plotwidth / maxx;
+
+const alldataaa=[...allchartdatapoints.filter((data: any) => data?.datapoints).map((data:any)=>(
+  data?.datapoints &&  {
+    showlegend: false,
+    x: data?.datapoints?.data_points?.map(
+      (dataa: [number, number]) => dataa[0]),
+    y:data?.datapoints?.data_points?.map(
+      (dataa: [number, number]) => dataa[1]),
+    type: 'scatter',
+    mode: 'lines',
+    line: {width: 2},
+    marker: {color: '#273746'},
+  }
+)
+)]
+console.log("alldataaaalldataaa",alldataaa);
+
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
       {loading ? (
@@ -1576,69 +1768,81 @@ function CurrentReference() {
                   })
                 }
                 onClick={e => onclickshap()}
-                data={[
-                  {
+                data={[...allchartdatapoints.filter((data: any) => data?.datapoints).map((data:any,index:number)=>(
+                {
                     showlegend: false,
-                    x: allcurveline[0]?.data?.map(dat => dat.x),
-                    y: allcurveline[0]?.data?.map(dat => dat.y),
+                    x: data?.datapoints?.data_points?.map(
+                      (dataa: [number, number]) => dataa[0]),
+                    y:data?.datapoints?.data_points?.map(
+                      (dataa: [number, number]) => dataa[1]),
                     type: 'scatter',
                     mode: 'lines',
                     line: {width: 2},
-                    marker: {color: '#273746'},
-                  },
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Max') > -1 &&
-                      max_data_point?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Max') > -1 &&
-                      max_data_point?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#A93226'},
-                  },
+                    marker: {color: `hsl(${(index* 25)}, 100%, 50%)`},
+                  }
+                )),
+                  // {
+                  //   showlegend: false,
+                  //   x: allcurveline[0]?.data?.map(dat => dat.x),
+                  //   y: allcurveline[0]?.data?.map(dat => dat.y),
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line: {width: 2},
+                  //   marker: {color: '#273746'},
+                  // },
+                  // {
+                  //   showlegend: false,
+                  //   x:
+                  //     allchart.indexOf('Max') > -1 &&
+                  //     max_data_point?.map(data => data.x),
+                  //   y:
+                  //     allchart.indexOf('Max') > -1 &&
+                  //     max_data_point?.map(data => data.y),
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line: {width: 2},
+                  //   marker: {color: '#A93226'},
+                  // },
 
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Min') > -1 &&
-                      min_data_points?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Min') > -1 &&
-                      min_data_points?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#2471A3'},
-                  },
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Ref') > -1 &&
-                      reference_data_points?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Ref') > -1 &&
-                      reference_data_points?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#229954'},
-                  },
-                  {
-                    showlegend: false,
-                    x:
-                      allchart.indexOf('Avg') > -1 &&
-                      avg_data_points?.map(data => data.x),
-                    y:
-                      allchart.indexOf('Avg') > -1 &&
-                      avg_data_points?.map(data => data.y),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: '#D4AC0D'},
-                  },
+                  // {
+                  //   showlegend: false,
+                  //   x:
+                  //     allchart.indexOf('Min') > -1 &&
+                  //     min_data_points?.map(data => data.x),
+                  //   y:
+                  //     allchart.indexOf('Min') > -1 &&
+                  //     min_data_points?.map(data => data.y),
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line: {width: 2},
+                  //   marker: {color: '#2471A3'},
+                  // },
+                  // {
+                  //   showlegend: false,
+                  //   x:
+                  //     allchart.indexOf('Ref') > -1 &&
+                  //     reference_data_points?.map(data => data.x),
+                  //   y:
+                  //     allchart.indexOf('Ref') > -1 &&
+                  //     reference_data_points?.map(data => data.y),
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line: {width: 2},
+                  //   marker: {color: '#229954'},
+                  // },
+                  // {
+                  //   showlegend: false,
+                  //   x:
+                  //     allchart.indexOf('Avg') > -1 &&
+                  //     avg_data_points?.map(data => data.x),
+                  //   y:
+                  //     allchart.indexOf('Avg') > -1 &&
+                  //     avg_data_points?.map(data => data.y),
+                  //   type: 'scatter',
+                  //   mode: 'lines',
+                  //   line: {width: 2},
+                  //   marker: {color: '#D4AC0D'},
+                  // },
                   ...fakeevents,
                 ]}
                 config={{
@@ -1871,6 +2075,7 @@ function CurrentReference() {
         ) : (
           <div className="flex w-full flex-row justify-between">
             <Table
+            loading={tabelloading}
               bordered={true}
               onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
               tabicon={'Name'}
@@ -1946,35 +2151,43 @@ function CurrentReference() {
               }}
               containerClassName="w-[calc(100vw-504px)] ml-[80px] mt-[20px]"
             />
-
-            <div className='flex flex-col'>
-            <div className="mr-[-2px] overflow-y-auto mt-[-60px] h-[460px] w-[350px] rounded-[10px] bg-[#C6DFF8] px-2">
-            { [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,].map((data,index)=>
-             <div className="flex w-full flex-row items-center mb-2 justify-between">
-             <RadioButton name="On" />  
-             <div className="flex h-[40px] w-[299px] flex-row justify-between items-center">
-             <img src={Cur} className="mt-[0px] ml-6 h-[20px] w-[17px]" />
-             <span className="text-right  w-[50px] pr-6">{index+1}</span>
-               <span className="w-[177px] text-[20px] leading-[24.2px]">
-                 2024-10-15 20:45
-               </span>
-             </div>
-             <IoTrashOutline
-               onClick={() => {}}
-               className="cursor-pointer text-red-500"
-               size={35}
-             />
-           </div>
-            )}
-              
-             
-            </div>
-            <SimpleBtn className='w-full mt-4' onClick={()=>{}}>Save As New Reference</SimpleBtn>
-            </div>
-         
           </div>
         )}
-
+        <div className="flex flex-col">
+          <div className="mr-[-2px] mt-[-60px] h-[460px] w-[350px] pt-2 overflow-y-auto rounded-[10px] bg-[#C6DFF8] px-2">
+            {measurments.map((data, index) => (
+              <div className="mb-2 flex w-full flex-row items-center justify-between">
+                <RadioButton
+                  id={data.id}
+                  testId={data.test_setup.id}
+                  opticalid={data.optical_route.id}
+                />
+                <button
+                  onClick={() => onclickmesurment(data.id)}
+                  className={`ml-2 flex h-[40px] w-[259px] flex-row items-center justify-between ${
+                    allselectedmesuement.indexOf(data.id) > -1
+                      ? 'bg-[#7EB2E5]'
+                      : 'bg-none'
+                  }`}>
+                  <img src={Cur} className=" mt-[0px] h-[20px] w-[17px]" />
+                  <span className="w-[50px]  pr-6 text-right">{index + 1}</span>
+                  <span className="w-[177px] text-[20px] leading-[24.2px]">
+                    {getPrettyDateTime(data.time_created).slice(0, -3)}
+                    {/* 2024-10-15 20:45 */}
+                  </span>
+                </button>
+                <IoTrashOutline
+                  onClick={current_reference_id == data.id?() => {}:()=>deletemeasurment(data.id)}
+                  className={`cursor-pointer ${current_reference_id == data.id?"opacity-30":"opacity-100"} text-red-500`}
+                  size={35}
+                />
+              </div>
+            ))}
+          </div>
+          <SimpleBtn className="mt-4 w-full" onClick={()=>savenewrefrence()}>
+            Save As New Reference
+          </SimpleBtn>
+        </div>
         {/* -------------------------------- */}
         {/* <div className={`flex flex-col `}>
           <div

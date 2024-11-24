@@ -145,7 +145,7 @@ const TestDetailsParameters: FC = () => {
             testSetupParametCopy.enddatePart = seperatedate(
               testSetupParametCopy?.test_program?.end_date?.end,
             ).datePart;
-
+    
             delete testSetupParametCopy['station'];
 
             delete testSetupParametCopy['rtu'];

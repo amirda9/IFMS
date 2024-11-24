@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
-import {FC} from 'react';
+import {FC, useEffect} from 'react';
 import {IoOpenOutline} from 'react-icons/io5';
-import { Link, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { SimpleBtn } from '~/components';
 import Selectbox from '~/components/selectbox/selectbox';
+import { RootState } from '~/store';
 type Rowtext = {
   name: string;
   value: string;
@@ -23,8 +25,18 @@ const Rowtext = ({name, value}: Rowtext) => {
 
 const TestDetailsStatus: FC = () => {
   const params=useParams()
+  const navigate=useNavigate()
   console.log('paramsppppppppppp',params);
-  
+  const {opticalroutUpdateTestsetupDetail,modalloading,gettestsetupdetaildata} = useSelector(
+    (state: RootState) => state.opticalroute,
+  );
+
+  useEffect(()=>{
+    if (!gettestsetupdetaildata) {
+      navigate(-1)
+    }
+  },[])
+
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">
@@ -69,7 +81,7 @@ Test Now
           onClick={
             () =>
               window.open(
-                `/config/CurrentReference?opticalrout_id=${params?.opticalRouteId}&test_setup_id=${params?.testId}`,
+                `/config/CurrentReference?opticalrout_id=${params?.opticalRouteId}&test_setup_id=${params?.testId}&current_reference_id=${opticalroutUpdateTestsetupDetail?.status?.current_reference_id || ""}`,
                 '_blank',
                 'noopener,noreferrer',
               )
