@@ -31,7 +31,8 @@ import {getPrettyDateTime} from '~/util/time';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useSearchParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
-import { all } from 'axios';
+import axios, {all} from 'axios';
+import InfiniteScroll from 'react-infinite-scroll-component';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -204,14 +205,15 @@ function CurrentReference() {
   const plotref: any = useRef();
   let location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  // const [limit,setLimit]=useState(20)
   const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
-   const [allchartdatapoints,setAllchartdatapoints]=useState<any>([])
+  const [allchartdatapoints, setAllchartdatapoints] = useState<any>([]);
   const [leftverticaltab, setLeftverticaltab] = useState<string>('Trace');
   const [allchart, setAllchart] = useState<string[]>(['Cur']);
   const [allshapes, setAllshapes] = useState<any>([]);
   const [fakeevents, setfakeEvents] = useState<any>([]);
-  const [tabelloading,setTableloading]=useState(false)
+  const [tabelloading, setTableloading] = useState(false);
   const [arrowevents, setArrowevents] = useState<any>([]);
   const [measurments, setMeasurments] = useState<allmeasurmentsrtype>([]);
   const [loading, setLoading] = useState(false);
@@ -224,29 +226,63 @@ function CurrentReference() {
     [],
   );
 
+  console.log('allchartdatapoints', allchartdatapoints);
+
+
+  const getonclictmeasurmentdata = async (id: string) => {
+    setLoading(true);
+    try {
+      const getdata = await $Get(
+        `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${id}`,
+      );
+      if (getdata?.status == 201) {
+        let datass = await getdata?.json();
+        // let allpointsdata = datass?.datapoints?.data_points?.map(
+        //   (data: [number, number]) => ({x: data[0], y: data[1]}),
+        // );
+        let allchartdatapointsCopy: any = deepcopy(allchartdatapoints);
+        setAllchartdatapoints([...allchartdatapointsCopy, datass]);
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch {
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const onclickmesurment = (id: string) => {
     const findmesurmentindex = allselectedmesuement.findIndex(
       data => data == id,
     );
     if (findmesurmentindex > -1) {
-      const newchartdata=allchartdatapoints.filter((data:any) => data.id != id)
-      setAllchartdatapoints(newchartdata)
+      if(id == current_reference_id){
+        setfakeEvents([])
+      }
+      const newchartdata = allchartdatapoints.filter(
+        (data: any) => data.id != id,
+      );
+      setAllchartdatapoints(newchartdata);
       const newdata = allselectedmesuement.filter(data => data != id);
       setAllselectedmesuement(newdata);
     } else {
       let newdata = [...allselectedmesuement, id];
       setAllselectedmesuement(newdata);
-      // getchartdata(id)
-      getonclictmeasurmentdata(id)
+        getonclictmeasurmentdata(id);
+    
     }
   };
+
   console.log('allselectedmesuementallselectedmesuement', allselectedmesuement);
 
   const query = useQuery();
   const currentReference_id = query.get('current_reference_id');
   // const [selectedradio, setSelectedradio] = useState('On');
-  const [current_reference_id, setCurrent_reference_id] =
-    useState(currentReference_id!);
+  const [current_reference_id, setCurrent_reference_id] = useState(
+    currentReference_id!,
+  );
   const [allcurveline, setAllcurveline] = useState<
     {
       id: string;
@@ -275,7 +311,6 @@ function CurrentReference() {
     }
   }
 
-
   const swalsetting: any = {
     title: 'Are you sure you want to change refrece?',
     // text: "You won't be able to revert this!",
@@ -295,7 +330,6 @@ function CurrentReference() {
     cancelButtonColor: '#d33',
     confirmButtonText: 'Yes, delete it!',
   };
-
 
   function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -321,7 +355,20 @@ function CurrentReference() {
 
     Getmeasermentsalarms();
   }, []);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [items, setItems] = useState<string[]>([]);
+const fetchItems = async () => {
 
+  const response = await axios.get(`https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=${limit}`);
+   setItems([...items,...response.data.map((data:any)=> data.title)]);
+   setLimit(prev => prev+10)
+   setPage(prev => prev+1)
+}
+
+useEffect(()=>{
+  fetchItems()
+},[])
   // useEffect(() => {
   //   const Getmeasermentsalarms = async () => {
   //     try {
@@ -360,50 +407,39 @@ function CurrentReference() {
     return color;
   }
 
-  const getonclictmeasurmentdata=async(id:string)=>{
-    setLoading(true);
-    try {
-      const getdata = await $Get(
-        `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${id}`,
-      );
-      if(getdata?.status == 201){
-        let datass = await getdata?.json();
-        // let allpointsdata = datass?.datapoints?.data_points?.map(
-        //   (data: [number, number]) => ({x: data[0], y: data[1]}),
-        // );
-        let allchartdatapointsCopy:any=deepcopy(allchartdatapoints)
-        setAllchartdatapoints([...allchartdatapointsCopy,datass])
-      }else{
-        toast('Encountered an error', {type: 'error', autoClose: 1000});
-      }
-    
-  }catch{
-    toast('Encountered an error', {type: 'error', autoClose: 1000});
-  } finally{
-    setLoading(false);
-  }
-}
 
 
   const getchartdata = async (id: string) => {
+    const findmeasurments = allselectedmesuement.findIndex(data => data == id);
+
     setTableloading(true);
+    let datass;
     try {
-      const getdata = await $Get(
-        `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${id}`,
-      );
-      let datass = await getdata?.json();
+      if (findmeasurments > -1) {
+        datass = allchartdatapoints.find((data: any) => data.id == id);
+      }
+      {
+        const getdata = await $Get(
+          `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${id}`,
+        );
+        datass = await getdata?.json();
+      }
+
       let allpointsdata = datass?.datapoints?.data_points?.map(
         (data: [number, number]) => ({x: data[0], y: data[1]}),
       );
       // let allchartdatapointsCopy:any=deepcopy(allchartdatapoints)
       // setAllchartdatapoints([...allchartdatapointsCopy,datass])
-      setChartdata(datass);
+
       setAllcurveline([
         {
           id: 'Cur',
           data: allpointsdata,
         },
       ]);
+
+      setChartdata(datass);
+
       const max_x =
         allpointsdata &&
         Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.x));
@@ -751,9 +787,25 @@ function CurrentReference() {
     }
   };
 
+  console.log('allchartdatapointsallchartdatapoints', allchartdatapoints);
 
-  console.log("allchartdatapointsallchartdatapoints",allchartdatapoints);
-  
+
+const fetchMoreData=async()=>{
+  try {
+    const allmeasurmentsresponse = await $Get(
+      `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&measurement_type=learning&limit=${limit+20}`,
+    );
+    if (allmeasurmentsresponse?.status == 200) {
+      const allmeasurmentsresponseData: allmeasurmentsrtype =
+        await allmeasurmentsresponse?.json();
+      setMeasurments([...measurments,...allmeasurmentsresponseData]);
+       setLimit(prev => prev+20)
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
   useEffect(() => {
     // let data:any;
 
@@ -766,11 +818,13 @@ function CurrentReference() {
         if (allmeasurmentsresponse?.status == 200) {
           const allmeasurmentsresponseData: allmeasurmentsrtype =
             await allmeasurmentsresponse?.json();
-          setMeasurments(allmeasurmentsresponseData);
+          setMeasurments([...measurments,...allmeasurmentsresponseData]);
           const findmeasurment = allmeasurmentsresponseData.find(
             data => data.id == current_reference_id,
           );
           if (findmeasurment) {
+            console.log("okayyy");
+            
             getchartdata(findmeasurment?.id);
           }
         }
@@ -1131,21 +1185,21 @@ function CurrentReference() {
     setLeftverticaltab('LinkView');
   };
 
-const deletemeasurment=async(id:string)=>{
-  Swal.fire(swalsettingdel).then(async result => {
-    
-    if (result.isConfirmed) {
-      const response=await $Delete(`otdr/optical-route/${opticalRouteId}/measurements`,[id])
-      if(response?.status == 201){
-        toast('It was done successfully', {type: 'success', autoClose: 1000});
+  const deletemeasurment = async (id: string) => {
+    Swal.fire(swalsettingdel).then(async result => {
+      if (result.isConfirmed) {
+        const response = await $Delete(
+          `otdr/optical-route/${opticalRouteId}/measurements`,
+          [id],
+        );
+        if (response?.status == 201) {
+          toast('It was done successfully', {type: 'success', autoClose: 1000});
+        }
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
-    }else{
-      toast('Encountered an error', {type: 'error', autoClose: 1000});
-    }
-  }
-)
-
-}
+    });
+  };
 
   const showcurveline = async (name: string) => {
     if (name != 'Cur') {
@@ -1599,27 +1653,27 @@ const deletemeasurment=async(id:string)=>{
     }
   };
 
-const savenewrefrence=async()=>{
-  Swal.fire(swalsetting).then(async result => {
-    if (result.isConfirmed) {
-      try {
-        const updateresponse = await $Put(
-          `otdr/optical-route/${opticalRouteId}/test-setups/${test_setup_id}/reference?reference_id=${current_reference_id}`,
-          {},
-        );
-        if (updateresponse?.status == 201) {
-         getchartdata(current_reference_id);
-          toast('It was done successfully', {type: 'success', autoClose: 1000});
-        }
-      } catch (error) {
-     
+  const savenewrefrence = async () => {
+    Swal.fire(swalsetting).then(async result => {
+      if (result.isConfirmed) {
+        try {
+          const updateresponse = await $Put(
+            `otdr/optical-route/${opticalRouteId}/test-setups/${test_setup_id}/reference?reference_id=${current_reference_id}`,
+            {},
+          );
+          if (updateresponse?.status == 201) {
+            getchartdata(current_reference_id);
+            toast('It was done successfully', {
+              type: 'success',
+              autoClose: 1000,
+            });
+          }
+        } catch (error) {
           toast('Encountered an error', {type: 'error', autoClose: 1000});
-        
+        }
       }
-    }
-  })}
- 
-
+    });
+  };
 
   function RadioButton({
     id,
@@ -1634,14 +1688,15 @@ const savenewrefrence=async()=>{
       <div className="flex flex-row items-center">
         <button
           onClick={async () => {
-        getchartdata(id)
+            setfakeEvents([])
+            setLeftverticaltab('Trace');
+            getchartdata(id);
             setCurrent_reference_id(id);
             setSearchParams({
               opticalrout_id: opticalid,
               test_setup_id: testId,
               current_reference_id: id,
             });
-         
           }}
           className="flex h-[20px] w-[20px] items-center justify-center rounded-[10px] bg-[#ffffff]">
           <div
@@ -1656,21 +1711,27 @@ const savenewrefrence=async()=>{
   const plotwidth = window.innerWidth - 510;
   const ratio = plotwidth / maxx;
 
-const alldataaa=[...allchartdatapoints.filter((data: any) => data?.datapoints).map((data:any)=>(
-  data?.datapoints &&  {
-    showlegend: false,
-    x: data?.datapoints?.data_points?.map(
-      (dataa: [number, number]) => dataa[0]),
-    y:data?.datapoints?.data_points?.map(
-      (dataa: [number, number]) => dataa[1]),
-    type: 'scatter',
-    mode: 'lines',
-    line: {width: 2},
-    marker: {color: '#273746'},
-  }
-)
-)]
-console.log("alldataaaalldataaa",alldataaa);
+  const alldataaa = [
+    ...allchartdatapoints
+      .filter((data: any) => data?.datapoints)
+      .map(
+        (data: any) =>
+          data?.datapoints && {
+            showlegend: false,
+            x: data?.datapoints?.data_points?.map(
+              (dataa: [number, number]) => dataa[0],
+            ),
+            y: data?.datapoints?.data_points?.map(
+              (dataa: [number, number]) => dataa[1],
+            ),
+            type: 'scatter',
+            mode: 'lines',
+            line: {width: 2},
+            marker: {color: '#273746'},
+          },
+      ),
+  ];
+  console.log('alldataaaalldataaa', alldataaa);
 
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
@@ -1684,11 +1745,11 @@ console.log("alldataaaalldataaa",alldataaa);
         <div className="flex h-full w-[108px] flex-col">
           <div className="flex  w-full flex-row">
             <div className="flex w-auto flex-col">
-              <Verticalbotton onClick={() => Trace()} name="Trace" />
-              <Verticalbotton onClick={() => Events()} name="Events" />
-              <Verticalbotton onClick={() => Measure()} name="Measure" />
+              <Verticalbotton onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => Trace():()=>{}} name="Trace" />
+              <Verticalbotton onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => Events():()=>{}} name="Events" />
+              <Verticalbotton onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => Measure():()=>{}} name="Measure" />
               <Verticalbotton
-                onClick={() => LinkView()}
+                onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => LinkView():()=>{}}
                 name={`Link${''}View`}
               />
 
@@ -1768,19 +1829,22 @@ console.log("alldataaaalldataaa",alldataaa);
                   })
                 }
                 onClick={e => onclickshap()}
-                data={[...allchartdatapoints.filter((data: any) => data?.datapoints).map((data:any,index:number)=>(
-                {
-                    showlegend: false,
-                    x: data?.datapoints?.data_points?.map(
-                      (dataa: [number, number]) => dataa[0]),
-                    y:data?.datapoints?.data_points?.map(
-                      (dataa: [number, number]) => dataa[1]),
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {width: 2},
-                    marker: {color: `hsl(${(index* 25)}, 100%, 50%)`},
-                  }
-                )),
+                data={[
+                  ...allchartdatapoints
+                    .filter((data: any) => data?.datapoints)
+                    .map((data: any, index: number) => ({
+                      showlegend: false,
+                      x: data?.datapoints?.data_points?.map(
+                        (dataa: [number, number]) => dataa[0],
+                      ),
+                      y: data?.datapoints?.data_points?.map(
+                        (dataa: [number, number]) => dataa[1],
+                      ),
+                      type: 'scatter',
+                      mode: 'lines',
+                      line: {width: 2},
+                      marker: {color: `hsl(${index * 25}, 100%, 50%)`},
+                    })),
                   // {
                   //   showlegend: false,
                   //   x: allcurveline[0]?.data?.map(dat => dat.x),
@@ -2075,7 +2139,7 @@ console.log("alldataaaalldataaa",alldataaa);
         ) : (
           <div className="flex w-full flex-row justify-between">
             <Table
-            loading={tabelloading}
+              loading={tabelloading}
               bordered={true}
               onclicktitle={(tabname: string, sortalfabet: boolean) => () => {}}
               tabicon={'Name'}
@@ -2154,37 +2218,22 @@ console.log("alldataaaalldataaa",alldataaa);
           </div>
         )}
         <div className="flex flex-col">
-          <div className="mr-[-2px] mt-[-60px] h-[460px] w-[350px] pt-2 overflow-y-auto rounded-[10px] bg-[#C6DFF8] px-2">
-            {measurments.map((data, index) => (
-              <div className="mb-2 flex w-full flex-row items-center justify-between">
-                <RadioButton
-                  id={data.id}
-                  testId={data.test_setup.id}
-                  opticalid={data.optical_route.id}
-                />
-                <button
-                  onClick={() => onclickmesurment(data.id)}
-                  className={`ml-2 flex h-[40px] w-[259px] flex-row items-center justify-between ${
-                    allselectedmesuement.indexOf(data.id) > -1
-                      ? 'bg-[#7EB2E5]'
-                      : 'bg-none'
-                  }`}>
-                  <img src={Cur} className=" mt-[0px] h-[20px] w-[17px]" />
-                  <span className="w-[50px]  pr-6 text-right">{index + 1}</span>
-                  <span className="w-[177px] text-[20px] leading-[24.2px]">
-                    {getPrettyDateTime(data.time_created).slice(0, -3)}
-                    {/* 2024-10-15 20:45 */}
-                  </span>
-                </button>
-                <IoTrashOutline
-                  onClick={current_reference_id == data.id?() => {}:()=>deletemeasurment(data.id)}
-                  className={`cursor-pointer ${current_reference_id == data.id?"opacity-30":"opacity-100"} text-red-500`}
-                  size={35}
-                />
-              </div>
-            ))}
+          <div id="scrollableDiv" className="mr-[-2px] mt-[-60px] h-[160px] w-[350px] overflow-y-auto rounded-[10px] bg-[#C6DFF8] px-2 pt-2">
+          <InfiniteScroll
+    dataLength={limit}
+    next={fetchMoreData}
+    style={{ display: 'flex', flexDirection: 'column' }} //To put endMessage and loader to the top.
+    // inverse={true} 
+     hasMore={true}
+    loader={<h4  className='text-[red]'>Loading...</h4>}
+    scrollableTarget="scrollableDiv"
+  >
+         {items.map((data)=>
+        <div >{data}</div>)} 
+
+            </InfiniteScroll>
           </div>
-          <SimpleBtn className="mt-4 w-full" onClick={()=>savenewrefrence()}>
+          <SimpleBtn className="mt-4 w-full" onClick={() => savenewrefrence()}>
             Save As New Reference
           </SimpleBtn>
         </div>
