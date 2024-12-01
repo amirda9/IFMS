@@ -7,6 +7,7 @@ import Group from './../../../assets/icons/Group 29.png';
 import nonereflective from '~/assets/icons/Group 23.png';
 import reflecive from '~/assets/icons/Group 27.png';
 import startoffibeer from '~/assets/icons/startoffibeer.png';
+import {MdOutlineShowChart} from 'react-icons/md';
 import Swal from 'sweetalert2';
 import Alarms from '~/components/chart/alarms';
 import {toast} from 'react-toastify';
@@ -94,6 +95,11 @@ type allchartdataype = {
   min_data_points: [number, number][];
   reference_data_points: [number, number][];
 };
+
+
+
+const colors=["#54a0ff","#ee5253","#10ac84","#f368e0","#8395a7","#55E6C1","#fd9644","#25CCF7","#218c74","#6D214F","#BDC581","#EAB543","#BDC581"]
+
 
 const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
   {
@@ -200,6 +206,13 @@ type allmeasurmentsrtype = {
   status: string;
   type: string;
 }[];
+
+type mesurmentsresponsetyp = {
+  page_count: 0;
+  has_next_page: true;
+  items: allmeasurmentsrtype;
+};
+
 // -----------main --------------main ---------------- main ------------------- main --------------
 function CurrentReference() {
   const plotref: any = useRef();
@@ -225,11 +238,10 @@ function CurrentReference() {
   const [allselectedmesuement, setAllselectedmesuement] = useState<string[]>(
     [],
   );
+  const [chartcolor,setChartcolor]=useState<{id:string,colorcode:string}[]>([])
+  console.log('measurmentsmeasurments', measurments);
 
-  console.log('allchartdatapoints', allchartdatapoints);
-
-
-  const getonclictmeasurmentdata = async (id: string) => {
+  const getonclictmeasurmentdata = async (id: string,colorcode:string) => {
     setLoading(true);
     try {
       const getdata = await $Get(
@@ -241,7 +253,7 @@ function CurrentReference() {
         //   (data: [number, number]) => ({x: data[0], y: data[1]}),
         // );
         let allchartdatapointsCopy: any = deepcopy(allchartdatapoints);
-        setAllchartdatapoints([...allchartdatapointsCopy, datass]);
+        setAllchartdatapoints([...allchartdatapointsCopy, {colorcode:colorcode,alldata:datass}]);
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
@@ -252,26 +264,26 @@ function CurrentReference() {
     }
   };
 
-
-  const onclickmesurment = (id: string) => {
+  const onclickmesurment = (id: string,colorcode:string) => {
     const findmesurmentindex = allselectedmesuement.findIndex(
       data => data == id,
     );
     if (findmesurmentindex > -1) {
-      if(id == current_reference_id){
-        setfakeEvents([])
+      if (id == current_reference_id) {
+        setfakeEvents([]);
       }
       const newchartdata = allchartdatapoints.filter(
-        (data: any) => data.id != id,
+        (data: any) => data.alldata.id != id,
       );
       setAllchartdatapoints(newchartdata);
       const newdata = allselectedmesuement.filter(data => data != id);
       setAllselectedmesuement(newdata);
+
     } else {
+
       let newdata = [...allselectedmesuement, id];
       setAllselectedmesuement(newdata);
-        getonclictmeasurmentdata(id);
-    
+      getonclictmeasurmentdata(id,colorcode);
     }
   };
 
@@ -358,17 +370,7 @@ function CurrentReference() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [items, setItems] = useState<string[]>([]);
-const fetchItems = async () => {
 
-  const response = await axios.get(`https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=${limit}`);
-   setItems([...items,...response.data.map((data:any)=> data.title)]);
-   setLimit(prev => prev+10)
-   setPage(prev => prev+1)
-}
-
-useEffect(()=>{
-  fetchItems()
-},[])
   // useEffect(() => {
   //   const Getmeasermentsalarms = async () => {
   //     try {
@@ -406,8 +408,6 @@ useEffect(()=>{
 
     return color;
   }
-
-
 
   const getchartdata = async (id: string) => {
     const findmeasurments = allselectedmesuement.findIndex(data => data == id);
@@ -787,24 +787,23 @@ useEffect(()=>{
     }
   };
 
-  console.log('allchartdatapointsallchartdatapoints', allchartdatapoints);
-
-
-const fetchMoreData=async()=>{
-  try {
-    const allmeasurmentsresponse = await $Get(
-      `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&measurement_type=learning&limit=${limit+20}`,
-    );
-    if (allmeasurmentsresponse?.status == 200) {
-      const allmeasurmentsresponseData: allmeasurmentsrtype =
-        await allmeasurmentsresponse?.json();
-      setMeasurments([...measurments,...allmeasurmentsresponseData]);
-       setLimit(prev => prev+20)
+  const fetchMoreData = async () => {
+    try {
+      const allmeasurmentsresponse = await $Get(
+        `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&measurement_type=learning&limit=${
+          limit + 20
+        }`,
+      );
+      if (allmeasurmentsresponse?.status == 200) {
+        const allmeasurmentsresponseData: mesurmentsresponsetyp =
+          await allmeasurmentsresponse?.json();
+        setMeasurments(allmeasurmentsresponseData.items);
+        setLimit(prev => prev + 20);
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
-}
+  };
 
   useEffect(() => {
     // let data:any;
@@ -813,18 +812,18 @@ const fetchMoreData=async()=>{
       setLoading(true);
       try {
         const allmeasurmentsresponse = await $Get(
-          `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&measurement_type=learning`,
+          `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&limit=20&measurement_type=learning`,
         );
         if (allmeasurmentsresponse?.status == 200) {
-          const allmeasurmentsresponseData: allmeasurmentsrtype =
+          const allmeasurmentsresponseData: mesurmentsresponsetyp =
             await allmeasurmentsresponse?.json();
-          setMeasurments([...measurments,...allmeasurmentsresponseData]);
-          const findmeasurment = allmeasurmentsresponseData.find(
+
+
+          setMeasurments(allmeasurmentsresponseData.items);
+          const findmeasurment = allmeasurmentsresponseData.items.find(
             data => data.id == current_reference_id,
           );
           if (findmeasurment) {
-            console.log("okayyy");
-            
             getchartdata(findmeasurment?.id);
           }
         }
@@ -840,6 +839,8 @@ const fetchMoreData=async()=>{
     // } catch (error) {}
     // *******************************************************************
   }, []);
+
+  console.log("allmeasurmentsresponseDataallmeasurmentsresponseData",measurments);
 
   const [reightbar, setReightbar] = useState('Result');
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
@@ -1185,7 +1186,7 @@ const fetchMoreData=async()=>{
     setLeftverticaltab('LinkView');
   };
 
-  const deletemeasurment = async (id: string) => {
+  const deletemeasurment = async (id: string,colorcode:string) => {
     Swal.fire(swalsettingdel).then(async result => {
       if (result.isConfirmed) {
         const response = await $Delete(
@@ -1193,7 +1194,24 @@ const fetchMoreData=async()=>{
           [id],
         );
         if (response?.status == 201) {
+
           toast('It was done successfully', {type: 'success', autoClose: 1000});
+          const findmesurmentindex = allselectedmesuement.findIndex(
+            data => data == id,
+          );
+          if (findmesurmentindex > -1) {
+            if (id == current_reference_id) {
+              setfakeEvents([]);
+            }
+            const newchartdata = allchartdatapoints.filter(
+              (data: any) => data.alldata.id != id,
+            );
+            setAllchartdatapoints(newchartdata);
+            const newdata = allselectedmesuement.filter(data => data != id);
+            setAllselectedmesuement(newdata);
+          }
+     
+          fetchMoreData()
         }
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
@@ -1688,7 +1706,7 @@ const fetchMoreData=async()=>{
       <div className="flex flex-row items-center">
         <button
           onClick={async () => {
-            setfakeEvents([])
+            setfakeEvents([]);
             setLeftverticaltab('Trace');
             getchartdata(id);
             setCurrent_reference_id(id);
@@ -1731,7 +1749,6 @@ const fetchMoreData=async()=>{
           },
       ),
   ];
-  console.log('alldataaaalldataaa', alldataaa);
 
   return (
     <div className="relative box-border flex h-auto w-full flex-col p-[10px] pb-[200px] pt-[100px]">
@@ -1745,11 +1762,40 @@ const fetchMoreData=async()=>{
         <div className="flex h-full w-[108px] flex-col">
           <div className="flex  w-full flex-row">
             <div className="flex w-auto flex-col">
-              <Verticalbotton onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => Trace():()=>{}} name="Trace" />
-              <Verticalbotton onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => Events():()=>{}} name="Events" />
-              <Verticalbotton onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => Measure():()=>{}} name="Measure" />
               <Verticalbotton
-                onClick={allselectedmesuement.indexOf(current_reference_id)>-1 && !tabelloading?() => LinkView():()=>{}}
+                onClick={
+                  allselectedmesuement.indexOf(current_reference_id) > -1 &&
+                  !tabelloading
+                    ? () => Trace()
+                    : () => {}
+                }
+                name="Trace"
+              />
+              <Verticalbotton
+                onClick={
+                  allselectedmesuement.indexOf(current_reference_id) > -1 &&
+                  !tabelloading
+                    ? () => Events()
+                    : () => {}
+                }
+                name="Events"
+              />
+              <Verticalbotton
+                onClick={
+                  allselectedmesuement.indexOf(current_reference_id) > -1 &&
+                  !tabelloading
+                    ? () => Measure()
+                    : () => {}
+                }
+                name="Measure"
+              />
+              <Verticalbotton
+                onClick={
+                  allselectedmesuement.indexOf(current_reference_id) > -1 &&
+                  !tabelloading
+                    ? () => LinkView()
+                    : () => {}
+                }
                 name={`Link${''}View`}
               />
 
@@ -1831,20 +1877,28 @@ const fetchMoreData=async()=>{
                 onClick={e => onclickshap()}
                 data={[
                   ...allchartdatapoints
-                    .filter((data: any) => data?.datapoints)
-                    .map((data: any, index: number) => ({
-                      showlegend: false,
-                      x: data?.datapoints?.data_points?.map(
-                        (dataa: [number, number]) => dataa[0],
-                      ),
-                      y: data?.datapoints?.data_points?.map(
-                        (dataa: [number, number]) => dataa[1],
-                      ),
-                      type: 'scatter',
-                      mode: 'lines',
-                      line: {width: 2},
-                      marker: {color: `hsl(${index * 25}, 100%, 50%)`},
-                    })),
+                    // .filter((data: any) => data?.datapoints)
+                    .map((data: any, index: number) => {
+                      let points=data.alldata?.datapoints || {data_points:[]}
+                      return(
+                  
+                      {
+                        showlegend: false,
+                        x:points?.data_points?.map(
+                          (dataa: [number, number]) => dataa[0],
+                        ),
+                        y: points?.data_points?.map(
+                          (dataa: [number, number]) => dataa[1],
+                        ),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {width: 2},
+                        marker: {color: data.colorcode},
+                      }
+                    )}),
+                   
+                      
+                   
                   // {
                   //   showlegend: false,
                   //   x: allcurveline[0]?.data?.map(dat => dat.x),
@@ -2218,19 +2272,60 @@ const fetchMoreData=async()=>{
           </div>
         )}
         <div className="flex flex-col">
-          <div id="scrollableDiv" className="mr-[-2px] mt-[-60px] h-[160px] w-[350px] overflow-y-auto rounded-[10px] bg-[#C6DFF8] px-2 pt-2">
-          <InfiniteScroll
-    dataLength={limit}
-    next={fetchMoreData}
-    style={{ display: 'flex', flexDirection: 'column' }} //To put endMessage and loader to the top.
-    // inverse={true} 
-     hasMore={true}
-    loader={<h4  className='text-[red]'>Loading...</h4>}
-    scrollableTarget="scrollableDiv"
-  >
-         {items.map((data)=>
-        <div >{data}</div>)} 
-
+          <div
+            id="scrollableDiv"
+            className="mr-[-2px] mt-[-60px] h-[460px] w-[350px] overflow-y-auto rounded-[10px] bg-[#C6DFF8] px-2 pt-2">
+            <InfiniteScroll
+              dataLength={measurments.length}
+              next={fetchMoreData}
+              style={{display: 'flex', flexDirection: 'column'}} //To put endMessage and loader to the top.
+              // inverse={true}
+              hasMore={true}
+              loader={<h4 className="text-[red]">Loading...</h4>}
+              scrollableTarget="scrollableDiv">
+              {measurments.map((data, index) => 
+    
+                  <div className="mb-2 flex w-full flex-row items-center justify-between">
+                  <RadioButton
+                    id={data.id}
+                    testId={data.test_setup.id}
+                    opticalid={data.optical_route.id}
+                  />
+                  <button
+                    onClick={() => onclickmesurment(data.id,`${index<13?colors[index]:index>12 && index <26?colors[index-13]:index >25 && index < 40?colors[index-25]:index > 38?`hsl(${index*30}, 100%, 50%)`:colors[index-38]}`)}
+                    className={`ml-2 flex h-[40px] w-[259px] flex-row items-center justify-between ${
+                      allselectedmesuement.indexOf(data.id) > -1
+                        ? 'bg-[#7EB2E5]'
+                        : 'bg-none'
+                    }`}>
+                      <MdOutlineShowChart size={25} color={`${index<13?colors[index]:index>12 && index <26?colors[index-13]:index >25 && index < 40?colors[index-25]:index > 38?`hsl(${index*30}, 100%, 50%)`:colors[index-38]}`}/>
+                    {/* <img src={Cur} className=" mt-[0px] h-[20px] w-[17px]" /> */}
+                    <span className="w-[50px]  pr-6 text-right">
+                      {index + 1}
+                    </span>
+                    <span className="w-[177px] text-[20px] leading-[24.2px]">
+                      {getPrettyDateTime(data.time_created).slice(0, -3)}
+                      {/* 2024-10-15 20:45 */}
+                    </span>
+                  </button>
+                  <IoTrashOutline
+                    onClick={
+                      current_reference_id == data.id
+                        ? () => {}
+                        : () => deletemeasurment(data.id,`${index<13?colors[index]:index>12 && index <26?colors[index-13]:index >25 && index < 40?colors[index-25]:index > 38?`hsl(${index*30}, 100%, 50%)`:colors[index-38]}`)
+                    }
+                    className={`cursor-pointer ${
+                      current_reference_id == data.id
+                        ? 'opacity-30'
+                        : 'opacity-100'
+                    } text-red-500`}
+                    size={35}
+                  />
+                </div>
+                
+              
+               
+              )}
             </InfiniteScroll>
           </div>
           <SimpleBtn className="mt-4 w-full" onClick={() => savenewrefrence()}>
