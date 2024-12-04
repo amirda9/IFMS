@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useFormik} from 'formik';
 import { deepcopy } from '~/util';
 import Checkbox from '~/components/checkbox/checkbox';
+import { useNavigate } from 'react-router-dom';
 
 const seperatedate = (time: string) => {
   //The function below takes a date and separates its time and date
@@ -27,16 +28,20 @@ type RadioButton = {
 };
 const TestDetailsTestProgram: FC = () => {
   const dispatch = useDispatch();
-
+  const navigate=useNavigate()
   const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
-  const {opticalroutUpdateTestsetupDetail,modalloading} = useSelector(
+  const {opticalroutUpdateTestsetupDetail,modalloading,gettestsetupdetaildata} = useSelector(
     (state: any) => state.opticalroute,
   );
   const [selectedradio, setSelectedradio] = useState<string[]>(["Indefinite"]);
   const [selectedradio2, setSelectedradio2] = useState('');
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
-
+  useEffect(()=>{
+    if (!gettestsetupdetaildata) {
+      navigate(-1)
+    }
+  },[])
   useEffect(() => {
     if (
       opticalroutUpdateTestsetupDetail?.test_program?.starting_date?.immediately

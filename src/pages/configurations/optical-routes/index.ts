@@ -7,5 +7,6 @@ export {default as TestSetupDetailsModal} from './TestSetupDetailsModal';
 export {default as OpticalRouteTestHistoryPage} from './OpticalRouteTestHistoryPage';
 export {default as OpticalRouteCreatePage} from './OpticalRouteCreatePage';
 export {default as Chart} from './chart';
+export {default as CurrentReference} from './CurrentReference';
 
 export * from './test-details-modal';

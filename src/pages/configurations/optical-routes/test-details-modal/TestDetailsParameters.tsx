@@ -74,6 +74,9 @@ const TestDetailsParameters: FC = () => {
             );
             const gettestSetupParameters =
               await gettestSetupParametersresponse?.json();
+
+              console.log("gettestSetupParameters",gettestSetupParameters);
+              
             const testSetupParametCopy = deepcopy(gettestSetupParameters);
 
             let checkstartend = Number(
@@ -142,7 +145,7 @@ const TestDetailsParameters: FC = () => {
             testSetupParametCopy.enddatePart = seperatedate(
               testSetupParametCopy?.test_program?.end_date?.end,
             ).datePart;
-
+    
             delete testSetupParametCopy['station'];
 
             delete testSetupParametCopy['rtu'];

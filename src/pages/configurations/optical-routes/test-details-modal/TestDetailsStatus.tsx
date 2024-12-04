@@ -1,13 +1,20 @@
 import dayjs from 'dayjs';
-import {FC} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline} from 'react-icons/io5';
+import {useSelector} from 'react-redux';
+import {Link, useNavigate, useParams} from 'react-router-dom';
+import {SimpleBtn} from '~/components';
+
+import {toast} from 'react-toastify';
 import Selectbox from '~/components/selectbox/selectbox';
+import {RootState} from '~/store';
+import {$Get, $Post} from '~/util/requestapi';
 type Rowtext = {
   name: string;
   value: string;
 };
 
-const options=[{label:"Valid",value:"Valid"}]
+const options = [{label: 'Valid', value: 'Valid'}];
 const Rowtext = ({name, value}: Rowtext) => {
   return (
     <div className="mb-[4px] flex flex-row">
@@ -20,12 +27,71 @@ const Rowtext = ({name, value}: Rowtext) => {
 };
 
 const TestDetailsStatus: FC = () => {
+  const params = useParams();
+  const [testnowloading, setTestnowloading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const {
+    opticalroutUpdateTestsetupDetail,
+    modalloading,
+    gettestsetupdetaildata,
+  } = useSelector((state: RootState) => state.opticalroute);
+
+  const testnow = async () => {
+    try {
+      setTestnowloading(true);
+      const testnowresponse = await $Post(
+        `otdr/optical-route/${params?.opticalRouteId}/single-measurement?test_setup_id=${params?.testId}&measurement_type=learning `,
+        {},
+      );
+      if (testnowresponse?.status == 201) {
+        const responsjeson = await testnowresponse.json();
+        const intervalId = setInterval(async () => {
+          const checkstatusresponse = await $Get(
+            `otdr/optical-route/${params?.opticalRouteId}/check-status/${responsjeson}`,
+          );
+
+          if (checkstatusresponse?.status == 200) {
+            setTestnowloading(false);
+            clearInterval(intervalId);
+            toast('It was done successfully', {
+              type: 'success',
+              autoClose: 1000,
+            });
+          }
+        }, 1000);
+        // toast('It was done successfully', {type: 'success', autoClose: 1000})
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      console.log(`the test now error is:${error}`);
+    } finally {
+      setTestnowloading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!gettestsetupdetaildata) {
+      navigate(-1);
+    }
+  }, []);
+
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">
         <Rowtext name="Current Learning Cycle" value={'1'} />
 
-        <Rowtext name="On Learning" value={'No'} />
+        <div className="flex flex-row">
+          <Rowtext name="On Learning" value={'No'} />
+          <SimpleBtn
+            loading={testnowloading}
+            onClick={testnow}
+            className="ml-48">
+            Test Now
+          </SimpleBtn>
+        </div>
 
         <Rowtext
           name="Current Cycle Start"
@@ -51,14 +117,36 @@ const TestDetailsStatus: FC = () => {
           <span className="w-[250px] text-[20px] font-light leading-[24.2px]">
             Current Reference
           </span>
-          <IoOpenOutline size={25} />
+          <IoOpenOutline
+            className="cursor-pointer"
+            onClick={
+              () =>
+                window.open(
+                  `/config/CurrentReference?opticalrout_id=${params?.opticalRouteId}&test_setup_id=${params?.testId}&current_reference_id=${
+                    opticalroutUpdateTestsetupDetail?.status
+                      ?.current_reference_id || ''
+                  }`,
+                  '_blank',
+                  'noopener,noreferrer',
+                )
+              // navigate(`../../../chart`, {
+              //   state: {
+              //     opticalrout_id: params.opticalRouteId!,
+              //     measurement_id: value.measurement_id,
+              //   },
+              // })
+            }
+            size={25}
+          />
         </div>
 
         <div className="flex flex-row items-center">
-          <span className="w-[250px] text-[20px] font-light leading-[24.2px]">
-            Reference Status
-          </span>
-          <Selectbox onclickItem={()=>{}} options={options} classname="w-[123px] rounded-[10px] h-[40px]" />
+          <span>Reference Status</span>
+          <Selectbox
+            onclickItem={() => {}}
+            options={options}
+            classname="w-[123px] rounded-[10px] h-[40px]"
+          />
         </div>
 
         <Rowtext name="Last Learning Count" value={'24'} />
