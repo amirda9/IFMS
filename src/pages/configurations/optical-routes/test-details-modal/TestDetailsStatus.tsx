@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {FC, useEffect} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline} from 'react-icons/io5';
 import {useSelector} from 'react-redux';
 import {Link, useNavigate, useParams} from 'react-router-dom';
@@ -8,7 +8,7 @@ import {SimpleBtn} from '~/components';
 import {toast} from 'react-toastify';
 import Selectbox from '~/components/selectbox/selectbox';
 import {RootState} from '~/store';
-import {$Post} from '~/util/requestapi';
+import {$Get, $Post} from '~/util/requestapi';
 type Rowtext = {
   name: string;
   value: string;
@@ -28,25 +28,47 @@ const Rowtext = ({name, value}: Rowtext) => {
 
 const TestDetailsStatus: FC = () => {
   const params = useParams();
-
-
-
-
+  const [testnowloading, setTestnowloading] = useState(false);
 
   const navigate = useNavigate();
-  console.log('paramsppppppppppp', params);
+
   const {
     opticalroutUpdateTestsetupDetail,
     modalloading,
     gettestsetupdetaildata,
   } = useSelector((state: RootState) => state.opticalroute);
 
-  const testnow = async() => {
-    const response =await $Post(`otdr/optical-route/${params?.opticalRouteId}/single-measurement?test_setup_id=${params?.testId}&measurement_type=learning `,{});
-    if(response?.status == 201){
-      toast('It was done successfully', {type: 'success', autoClose: 1000})
-        }else{
-      toast('Encountered an error', {type: 'error', autoClose: 1000});
+  const testnow = async () => {
+    try {
+      setTestnowloading(true);
+      const testnowresponse = await $Post(
+        `otdr/optical-route/${params?.opticalRouteId}/single-measurement?test_setup_id=${params?.testId}&measurement_type=learning `,
+        {},
+      );
+      if (testnowresponse?.status == 201) {
+        const responsjeson = await testnowresponse.json();
+        const intervalId = setInterval(async () => {
+          const checkstatusresponse = await $Get(
+            `otdr/optical-route/${params?.opticalRouteId}/check-status/${responsjeson}`,
+          );
+
+          if (checkstatusresponse?.status == 200) {
+            setTestnowloading(false);
+            clearInterval(intervalId);
+            toast('It was done successfully', {
+              type: 'success',
+              autoClose: 1000,
+            });
+          }
+        }, 1000);
+        // toast('It was done successfully', {type: 'success', autoClose: 1000})
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      console.log(`the test now error is:${error}`);
+    } finally {
+      setTestnowloading(false);
     }
   };
 
@@ -63,7 +85,10 @@ const TestDetailsStatus: FC = () => {
 
         <div className="flex flex-row">
           <Rowtext name="On Learning" value={'No'} />
-          <SimpleBtn onClick={testnow} className="ml-48">
+          <SimpleBtn
+            loading={testnowloading}
+            onClick={testnow}
+            className="ml-48">
             Test Now
           </SimpleBtn>
         </div>
@@ -129,6 +154,5 @@ const TestDetailsStatus: FC = () => {
     </div>
   );
 };
-
 
 export default TestDetailsStatus;
