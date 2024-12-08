@@ -29,7 +29,7 @@ const Rowtext = ({name, value}: Rowtext) => {
 const TestDetailsStatus: FC = () => {
   const params = useParams();
   const [testnowloading, setTestnowloading] = useState(false);
-
+  const [errorcount,setErrorcount]=useState(0)
   const navigate = useNavigate();
 
   const {
@@ -58,6 +58,17 @@ const TestDetailsStatus: FC = () => {
             toast('It was done successfully', {
               type: 'success',
               autoClose: 1000,
+            });
+          } else{
+            setErrorcount(prev => {
+              const newCount = prev + 1;
+              if (newCount === 4) {
+                clearInterval(intervalId);
+                toast('An error was encountered', {type: 'error', autoClose: 1000});
+                setErrorcount(0);
+                setTestnowloading(false);
+              }
+              return newCount;
             });
           }
         }, 1000);

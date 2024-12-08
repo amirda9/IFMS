@@ -70,6 +70,7 @@ function Testondemand() {
   const [networklist, setNetworklist] = useState<NetworkType[]>([]);
   const [alltestondemand, setAlltestondemand] = useState<tabelrow[]>([]);
   const [getmeasurmentloading, setGetmeasurmentloading] = useState(false);
+  const [errorcount,setErrorcount]=useState(0)
   const [usertablesorte, setUsertablesort] = useState(false);
   const {
     networkselectedlist,
@@ -437,9 +438,30 @@ function Testondemand() {
             },
           );
           if (createondemandmeasurmentresponse?.status == 201) {
-            const createondemandmeasurmentresponseData =
-              await createondemandmeasurmentresponse?.json();
-            getmeasurments();
+            const createondemandmeasurmentresponseData =await createondemandmeasurmentresponse?.json();
+            console.log("createondemandmeasurmentresponseData",createondemandmeasurmentresponseData);
+            const intervalId = setInterval(async () => {
+              const checkstatusresponse = await $Get(
+                `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`,
+              );
+    
+              if (checkstatusresponse?.status == 200) {
+                clearInterval(intervalId);
+                getmeasurments();
+              }else {
+                setErrorcount(prev => {
+                  const newCount = prev + 1;
+                  if (newCount === 4) {
+                    clearInterval(intervalId);
+                    toast('An error was encountered', {type: 'error', autoClose: 1000});
+                    setGetmeasurmentloading(false);
+                    setErrorcount(0);
+                  }
+                  return newCount;
+                });              
+              }
+            }, 1000);
+            // getmeasurments();
           }
         }
       } catch (error) {
@@ -448,9 +470,9 @@ function Testondemand() {
     }
   };
 
-  useEffect(() => {
-    getmeasurments();
-  }, []);
+  // useEffect(() => {
+  //    getmeasurments();
+  // }, []);
 
 
 
@@ -714,7 +736,7 @@ function Testondemand() {
             </SimpleBtn>
             <div
               className={`${testid.length > 0 ? 'opacity-100' : 'opacity-40'}`}>
-              <SimpleBtn onClick={getallmeasurements} className="px-[34px]">
+              <SimpleBtn  loading={getmeasurmentloading} onClick={getallmeasurements} className="px-[34px]">
                 Start Test
               </SimpleBtn>
             </div>

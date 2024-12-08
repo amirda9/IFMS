@@ -129,9 +129,9 @@ type Radiotype = {
   onclick: () => void;
 };
 
-type  resultdata= {
-  page_count: number,
-  has_next_page: true,
+type resultdata = {
+  page_count: number;
+  has_next_page: true;
   items: [
     {
       id: string;
@@ -211,7 +211,7 @@ const topitems = [
 function Resultbrowser() {
   const fromdateref: any = useRef(null);
   const lastdateref: any = useRef(null);
-  const [rowsPerPage,setRowsPerPage]=useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(0);
   const [fromdate, setFromdate] = useState('');
   const [lastdate, setLastdate] = useState('');
   const [filterByTime, setFilterByTime] = useState(false);
@@ -225,8 +225,8 @@ function Resultbrowser() {
   const [loadingdata, setLoadingdata] = useState(false);
   const [selectedtabId, setSelectedtabid] = useState('');
   const [list, setList] = useState<networklisttype[]>();
-  const [pageinationpage,setPageinationpage]=useState(1)
-  const [limit,setLimit]=useState(20)
+  const [pageinationpage, setPageinationpage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [last, setLast] = useState(0);
   const [selectdate, setSelectdate] = useState('');
   const [selectedIdopt, setSelectedIdopt] = useState('');
@@ -635,7 +635,7 @@ function Resultbrowser() {
     return formattedTime;
   };
 
-  const Applayresult = async (limit:number,pagenumber:number) => {
+  const Applayresult = async (pagenumber: number) => {
     const now = new Date();
     const formattedTime = now.toISOString().slice(0, 16);
     const calculatelasttime =
@@ -646,7 +646,7 @@ function Resultbrowser() {
         : getTimeMinusFiveMinutes(last);
     const fromDate = selectedradiotime == 'Last' ? calculatelasttime : fromdate;
     const lastDate = selectedradiotime == 'Last' ? formattedTime : lastdate;
-    const url = `otdr/optical-route/measurement/result-browser?limit=${limit}&page=${pagenumber}&${
+    const url = `otdr/optical-route/measurement/result-browser?limit=20&page=${pagenumber}&${
       filterByTime ? `from_time=${fromDate}&` : ''
     }${
       selectedradio === 'Filter By Optical Route'
@@ -658,10 +658,10 @@ function Resultbrowser() {
       const response = await $Get(url);
       if (response?.status == 200) {
         const responsedata: resultdata = await response.json();
-        console.log("responsedata",responsedata);
-        setRowsPerPage(responsedata.page_count)
+        console.log('responsedata', responsedata);
+        setRowsPerPage(responsedata.page_count);
         const newresponsedata = responsedata.items.map((data, index) => ({
-          index: index,
+          index: index+1,
           opticalRouteId: data?.optical_route?.id,
           id: data.id,
           date: data?.test_date,
@@ -826,7 +826,7 @@ function Resultbrowser() {
                     dispatch(setOppenallrtu(openallrtu));
                     setOpenall(!openall), setLoadingid('allrtues');
                   }}>
-                  <span className='text-sm'>Rtu</span>
+                  <span className="text-sm">Rtu</span>
                 </button>
               </div>
 
@@ -1402,7 +1402,7 @@ function Resultbrowser() {
                     dispatch(setopenallopt(!openallopt)),
                       setLoadingopticalid('allnetworks');
                   }}>
-                  <span className='text-sm'>Optical Routes</span>
+                  <span className="text-sm">Optical Routes</span>
                 </button>
               </div>
 
@@ -1643,7 +1643,9 @@ function Resultbrowser() {
               </div>
             </div>
           </div>
-          <SimpleBtn onClick={()=>Applayresult(20,1)} className="w-full mt-[-90px]">
+          <SimpleBtn
+            onClick={() => Applayresult(1)}
+            className="mt-[-90px] w-full">
             Apply
           </SimpleBtn>
         </div>
@@ -1691,7 +1693,7 @@ function Resultbrowser() {
             return (
               <IoTrashOutline
                 onClick={() =>
-                  deleteREsult(value.opticalRouteId, value.id, value.index)
+                  deleteREsult(value.opticalRouteId, value.id, value.index-1)
                 }
                 className="mx-auto cursor-pointer text-red-500"
                 size={22}
@@ -1702,25 +1704,67 @@ function Resultbrowser() {
       />
       <div className="relative flex h-[40px] w-full flex-row justify-center">
         <div className="mt-[20px] flex flex-row  items-center">
-          <SimpleBtn onClick={pageinationpage == 1?()=>{}:()=>{Applayresult(limit-20,pageinationpage-1),setLimit(prev => prev-20),setPageinationpage(prev => prev-1)}} className="px-[2px] py-[5px]" type="button">
+          <SimpleBtn
+            onClick={
+              pageinationpage - 2 < 1
+                ? () => {}
+                : () => {
+                    Applayresult(pageinationpage - 2),
+                      setPageinationpage(prev => prev - 2);
+                  }
+            }
+            className="px-[2px] py-[5px]"
+            type="button">
             <BiChevronsLeft size={20} />
           </SimpleBtn>
-          <SimpleBtn onClick={pageinationpage-2 < 1?()=>{}:()=>{Applayresult(limit-40,pageinationpage-2),setLimit(prev => prev-40),setPageinationpage(prev => prev-2)}} className="ml-2 px-[2px] py-[5px]" type="button">
+          <SimpleBtn
+           onClick={
+            pageinationpage == 1
+              ? () => {}
+              : () => {
+                  Applayresult(pageinationpage - 1),
+                    setPageinationpage(prev => prev - 1);
+                }
+          }
+           
+            className="ml-2 px-[2px] py-[5px]"
+            type="button">
             <BiChevronLeft size={20} />
           </SimpleBtn>
           <span className="ml-[20px] text-[20px] font-normal leading-6">
             page
           </span>
           <input
-          value={pageinationpage}
+            value={pageinationpage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
-          <span className="ml-2">/5</span>
-          <SimpleBtn onClick={pageinationpage == rowsPerPage?()=>{}:()=>{Applayresult(limit+20,pageinationpage+1),setLimit(prev => prev+20),setPageinationpage(prev => prev+1)}} className="ml-[20px] bg-[red] px-[2px] py-[5px]" type="button">
+          <span className="ml-2">/{rowsPerPage}</span>
+          <SimpleBtn
+            onClick={
+              pageinationpage == rowsPerPage
+                ? () => {}
+                : () => {
+                    Applayresult(pageinationpage + 1),
+                      setLimit(prev => prev + 20),
+                      setPageinationpage(prev => prev + 1);
+                  }
+            }
+            className="ml-[20px] bg-[red] px-[2px] py-[5px]"
+            type="button">
             <BiChevronRight size={20} />
           </SimpleBtn>
-          <SimpleBtn onClick={pageinationpage+2 > rowsPerPage?()=>{}:()=>{Applayresult(limit+40,pageinationpage+2),setLimit(prev => prev+40),setPageinationpage(prev => prev+2)}} className="ml-2 px-[2px] py-[5px]" type="button">
+          <SimpleBtn
+            onClick={
+              pageinationpage + 2 > rowsPerPage
+                ? () => {}
+                : () => {
+                    Applayresult(pageinationpage + 2),
+                      setPageinationpage(prev => prev + 2);
+                  }
+            }
+            className="ml-2 px-[2px] py-[5px]"
+            type="button">
             <BiChevronsRight size={20} />
           </SimpleBtn>
         </div>
@@ -1729,7 +1773,7 @@ function Resultbrowser() {
             Rows Per Page
           </span>
           <input
-          value={rowsPerPage}
+            value={rowsPerPage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
