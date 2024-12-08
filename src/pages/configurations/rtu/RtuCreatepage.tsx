@@ -1,7 +1,10 @@
 import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from 'yup';
-import {setdefaultStationsrtu, setStationsrtu} from './../../../store/slices/rtu';
-import {FC, useState} from 'react';
+import {
+  setdefaultStationsrtu,
+  setStationsrtu,
+} from './../../../store/slices/rtu';
+import {FC, useMemo, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import {Description, SimpleBtn, Select} from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
@@ -125,7 +128,9 @@ const RtuCreatePage: FC = () => {
   const params = useParams<Iprops>();
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const {stationsrtu,defaultstationsrtu} = useSelector((state: RootState) => state.rtu);
+  const {stationsrtu, defaultstationsrtu} = useSelector(
+    (state: RootState) => state.rtu,
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
@@ -175,58 +180,57 @@ const RtuCreatePage: FC = () => {
           const stationsrtuCopy = deepcopy(stationsrtu);
           const defaultstationsrtuCopy = deepcopy(defaultstationsrtu);
 
-         
           //Then we update the list of rtus of the station so that we can see the updated list of rtus in the left bar.
- if(params!.regionId != "1111"){
-  const findrtu = stationsrtu.findIndex(
-    (data: any) => data.stationid == params.stationId!,
-  );
-  if (findrtu > -1) {
-    stationsrtuCopy[findrtu].rtues.push({
-      name: getdata.name,
-      id: getdata.id,
-    });
-  } else {
-    stationsrtuCopy.push({
-      stationid: params!.stationId!,
-      networkid: params!.networkId!,
-      regionid: params!.regionId!,
-      rtues: [{name: getdata.name, id: getdata.id}],
-      deletertues: [],
-    });
-  }
-  setLoading(false);
-  dispatch(setStationsrtu(stationsrtuCopy));
-  navigate(
-    `../../remote-test-units/${getdata.id}/${params!.stationId!}/${
-      params!.regionId
-    }/${params!.networkId!}`,
-  );
- } else{
-  const finddefaultstationrtu = defaultstationsrtu.findIndex(
-    (data: any) => data.stationid == params.stationId!,
-  );
-  if (finddefaultstationrtu > -1) {
-    defaultstationsrtuCopy[finddefaultstationrtu].rtues.push({
-      name: getdata.name,
-      id: getdata.id,
-    });
-  } else{
-    defaultstationsrtuCopy.push({
-      stationid: params!.stationId!,
-      networkid: params!.networkId!,
-      rtues: [{name: getdata.name, id: getdata.id}],
-      deletertues: [],
-    });
- 
-  }
-  setLoading(false);
-  dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
-  navigate(
-   `/config/remote-test-units/${getdata.id}/${params!.stationId}/${params!.networkId}/${params!.networkId}`
-  );
- }
-       
+          if (params!.regionId != '1111') {
+            const findrtu = stationsrtu.findIndex(
+              (data: any) => data.stationid == params.stationId!,
+            );
+            if (findrtu > -1) {
+              stationsrtuCopy[findrtu].rtues.push({
+                name: getdata.name,
+                id: getdata.id,
+              });
+            } else {
+              stationsrtuCopy.push({
+                stationid: params!.stationId!,
+                networkid: params!.networkId!,
+                regionid: params!.regionId!,
+                rtues: [{name: getdata.name, id: getdata.id}],
+                deletertues: [],
+              });
+            }
+            setLoading(false);
+            dispatch(setStationsrtu(stationsrtuCopy));
+            navigate(
+              `../../remote-test-units/${getdata.id}/${params!.stationId!}/${
+                params!.regionId
+              }/${params!.networkId!}`,
+            );
+          } else {
+            const finddefaultstationrtu = defaultstationsrtu.findIndex(
+              (data: any) => data.stationid == params.stationId!,
+            );
+            if (finddefaultstationrtu > -1) {
+              defaultstationsrtuCopy[finddefaultstationrtu].rtues.push({
+                name: getdata.name,
+                id: getdata.id,
+              });
+            } else {
+              defaultstationsrtuCopy.push({
+                stationid: params!.stationId!,
+                networkid: params!.networkId!,
+                rtues: [{name: getdata.name, id: getdata.id}],
+                deletertues: [],
+              });
+            }
+            setLoading(false);
+            dispatch(setdefaultStationsrtu(defaultstationsrtuCopy));
+            navigate(
+              `/config/remote-test-units/${getdata.id}/${params!.stationId}/${
+                params!.networkId
+              }/${params!.networkId}`,
+            );
+          }
         } else {
           setErrortext(getdata.detail[0].msg);
         }
@@ -236,9 +240,11 @@ const RtuCreatePage: FC = () => {
     },
   });
 
+  const allusers = useMemo(() => {
+    return [...users?.data!] || [];
+  }, [users?.data]);
+  console.log('params!.regionId', params!.regionId);
 
-  console.log("params!.regionId",params!.regionId);
-  
   return (
     <div className="relative flex w-full flex-col">
       <span className="mb-6 mt-2 font-bold">Create rtu</span>
@@ -283,8 +289,11 @@ const RtuCreatePage: FC = () => {
                 className="w-[400px]">
                 <option value="select" label="" className="hidden" />
                 <option value={undefined} label="select" className="hidden" />
-                {users &&
-                  users.data?.map((data, index) => (
+                {allusers
+                  ?.sort((a: any, b: any) =>
+                    a.username.localeCompare(b.username),
+                  )
+                  .map((data, index) => (
                     <option
                       key={index}
                       value={data.id}
