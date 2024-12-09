@@ -270,6 +270,23 @@ function ProactiveMaintenanceTestPage() {
       sampling_mode: 'duration',
       test_mode: 'fast',
     });
+    request('SettingsUpdatesetmaintenance_test_setting', {
+      data: {maintenance_test_setting: {
+        ior: 1.54321,
+        rbs: -79,
+        distance_mode: 'manual',
+        event_loss_threshold: 0.05,
+        event_reflection_threshold: -40,
+        fiber_end_threshold: 5,
+        pulse_width: 3,
+        pulse_width_mode: 'manual',
+        range: 3,
+        run_mode: 'average',
+        sampling_duration: 4,
+        sampling_mode: 'duration',
+        test_mode: 'fast',
+      }},
+    })
   };
 
   if(SettingsUpdatesetmaintenance_test_setting?.httpRequestStatus ===

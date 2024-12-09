@@ -1,8 +1,9 @@
-import {ReactNode, useState} from 'react';
+import {ReactNode, useEffect, useState} from 'react';
 import {FormLayout} from '~/layout';
 import {Select, SimpleBtn, TextInput} from '~/components';
 import {useHttpRequest} from '~/hooks';
 import { toast } from 'react-toastify';
+import SystemSettingsMain from '../SystemSettingsMain';
 
 type Rowinputtype = {
   name: string;
@@ -52,7 +53,6 @@ const ThresholdSettingsPage = () => {
       }
     },
   });
-
   const [threshold_setting, setThreshold_setting] = useState<thresholdsetting>(
     SettingsGet?.data?.threshold_setting || {
       event_loss: 0,
@@ -63,6 +63,8 @@ const ThresholdSettingsPage = () => {
       wavelength: '',
     },
   );
+
+ 
   const onSaveButtonClick = () => {
     request('SettingsUpdatethreshold_setting', {
       data: {threshold_setting: threshold_setting},
@@ -70,6 +72,17 @@ const ThresholdSettingsPage = () => {
   };
 
   const onResetButtonClick = () => {
+
+    request('SettingsUpdatethreshold_setting', {
+      data: {threshold_setting: {
+        event_loss: 0.1,
+        event_reflectance: 1,
+        injection_level: 1,
+        section_loss: 0.1,
+        total_loss: 1,
+        wavelength: '1550',
+      }},
+    });
     setThreshold_setting({
       event_loss: 0.1,
       event_reflectance: 1,
@@ -95,7 +108,9 @@ const ThresholdSettingsPage = () => {
     return <h1>loading ...</h1>
   }
   return (
-    <FormLayout buttons={buttons}>
+    <SystemSettingsMain
+      onResetButtonClick={onResetButtonClick}
+      onSaveButtonClick={onSaveButtonClick}>
       <div className="flex flex-col gap-y-4">
         <Rowinput name="Wavelength">
           <Select
@@ -195,7 +210,7 @@ const ThresholdSettingsPage = () => {
           />
         </Rowinput>
       </div>
-    </FormLayout>
+    </SystemSettingsMain>
   );
 };
 

@@ -116,10 +116,22 @@ const OpticalRoutePage = () => {
 
 
   const onResetButtonClick = () => {
-    setHelixfactor(1.02);
+    (1.02);
     setFiberType('G.656');
     setIor({1310: 1.4678, 1490: 1.4679, 1550: 1.468, 1625: 1.4681});
     setRbs({1310: -79.01, 1490: -79.02, 1550: -79.03, 1625: -79.04});
+    request('SettingsUpdateopticalroute', {
+      data: {
+        optical_route: {
+          fiber_type: 'G.656',
+          helix_factor: 1.02,
+          wavelengths: {
+            IOR: {1310: 1.4678, 1490: 1.4679, 1550: 1.468, 1625: 1.4681},
+            RBS: {1310: -79.01, 1490: -79.02, 1550: -79.03, 1625: -79.04},
+          },
+        },
+      },
+    });
   };
 
   if(SettingsGet?.httpRequestStatus == "loading" || SettingsUpdateopticalroute?.httpRequestStatus == "loading"){

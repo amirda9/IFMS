@@ -86,6 +86,12 @@ const SystemPage = () => {
       data_save_policy: 'do_not_save',
       test_type: 'monitoring',
     });
+    request('SettingsUpdatesystem', {data: {system: {
+      break_strategy: 'skip',
+      fiber_test_setup_definition_strategy: 'both',
+      data_save_policy: 'do_not_save',
+      test_type: 'monitoring',
+    }}});
   };
   
   if(state?.SettingsUpdatesystem?.httpRequestStatus === 'loading' || loading){
