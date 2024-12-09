@@ -1750,7 +1750,7 @@ function Resultbrowser() {
                       setPageinationpage(prev => prev + 1);
                   }
             }
-            className="ml-[20px] bg-[red] px-[2px] py-[5px]"
+            className="ml-[20px] px-[2px] py-[5px]"
             type="button">
             <BiChevronRight size={20} />
           </SimpleBtn>

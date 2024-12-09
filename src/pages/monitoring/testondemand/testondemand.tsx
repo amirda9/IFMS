@@ -30,7 +30,12 @@ import {NetworkType} from '~/types/NetworkType';
 import {getPrettyDateTime} from '~/util/time';
 import {toast} from 'react-toastify';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-import { BiChevronLeft, BiChevronRight, BiChevronsLeft, BiChevronsRight } from 'react-icons/bi';
+import {
+  BiChevronLeft,
+  BiChevronRight,
+  BiChevronsLeft,
+  BiChevronsRight,
+} from 'react-icons/bi';
 type Itembtntype = {
   name: string;
   id: string;
@@ -39,15 +44,25 @@ type Itembtntype = {
 };
 
 type testondemand = {
-  id: string;
-  time_created: string;
-  optical_route: {
-    id: string;
-    name: string;
-  };
-  test_setup: {id: string; name: string; station: {id: string; name: string}};
-  status: string;
-  type: string;
+  page_count: 0;
+  has_next_page: true;
+  items: [
+    {
+      id: string;
+      time_created: string;
+      optical_route: {
+        id: string;
+        name: string;
+      };
+      test_setup: {
+        id: string;
+        name: string;
+        station: {id: string; name: string};
+      };
+      status: string;
+      type: string;
+    },
+  ];
 };
 
 type tabelrow = {
@@ -69,8 +84,10 @@ function Testondemand() {
   const [setuploading, setSetuploading] = useState(false);
   const [networklist, setNetworklist] = useState<NetworkType[]>([]);
   const [alltestondemand, setAlltestondemand] = useState<tabelrow[]>([]);
+  const [rowsPerPage, setRowsPerPage] = useState(0);
   const [getmeasurmentloading, setGetmeasurmentloading] = useState(false);
-  const [errorcount,setErrorcount]=useState(0)
+  const [errorcount, setErrorcount] = useState(0);
+  const [pageinationpage, setPageinationpage] = useState(1);
   const [usertablesorte, setUsertablesort] = useState(false);
   const {
     networkselectedlist,
@@ -300,6 +317,7 @@ function Testondemand() {
       setLoadingdata(false);
     }
   };
+
   const navigate = useNavigate();
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
@@ -349,7 +367,7 @@ function Testondemand() {
   };
   const lastnetwork = networklist[networklist.length - 1]?.id || '';
 
-  const getmeasurments = async () => {
+  const getmeasurments = async (pagenumber: number) => {
     try {
       setGetmeasurmentloading(true);
       let allpathes = `${
@@ -360,40 +378,42 @@ function Testondemand() {
           : ''
       }`;
       const response = await $Get(
-        `otdr/optical-route/measurement/measurements?measurement_type=on_demand${allpathes}&status=SUCCESS`,
+        `otdr/optical-route/measurement/measurements?limit=20&page=${pagenumber}&measurement_type=on_demand${allpathes}&status=SUCCESS`,
       );
-
-      const responsedata: testondemand[] = await response?.json();
-
-      setAlltestondemand(
-        responsedata.map((data, index) => ({
-          tabbodybg: [
-            {
-              name: 'status',
-              bg:
-                data?.status == 'PENDING'
-                  ? '#FFE600'
-                  : data?.status == 'SUCCESS'
-                  ? '#18C047'
-                  : data?.status == 'STARTED'
-                  ? '#4296FF'
-                  : 'white',
-            },
-          ],
-          id: data.id,
-          index: index + 1,
-          date: getPrettyDateTime(data.time_created),
-          opticalroute: data.optical_route.name,
-          opticalrouteid: data.optical_route.id,
-          measurmenttestid: data.id,
-          testsetup: data?.test_setup?.name || null,
-          station: data?.test_setup?.station?.name || null,
-          status: data?.status,
-          detail: '',
-          delete: '',
-        })),
-      );
+      if (response?.status == 200) {
+        const responsedata: testondemand = await response?.json();
+        setRowsPerPage(responsedata.page_count);
+        setAlltestondemand(
+          responsedata.items.map((data, index) => ({
+            tabbodybg: [
+              {
+                name: 'status',
+                bg:
+                  data?.status == 'PENDING'
+                    ? '#FFE600'
+                    : data?.status == 'SUCCESS'
+                    ? '#18C047'
+                    : data?.status == 'STARTED'
+                    ? '#4296FF'
+                    : 'white',
+              },
+            ],
+            id: data.id,
+            index: index + 1,
+            date: getPrettyDateTime(data.time_created),
+            opticalroute: data.optical_route.name,
+            opticalrouteid: data.optical_route.id,
+            measurmenttestid: data.id,
+            testsetup: data?.test_setup?.name || null,
+            station: data?.test_setup?.station?.name || null,
+            status: data?.status,
+            detail: '',
+            delete: '',
+          })),
+        );
+      }
     } catch (error) {
+      console.log(`getmeasurments error is:${error}`);
       toast('An error was encountered', {type: 'error', autoClose: 1000});
     } finally {
       setGetmeasurmentloading(false);
@@ -439,32 +459,37 @@ function Testondemand() {
           );
           if (createondemandmeasurmentresponse?.status == 201) {
             const createondemandmeasurmentresponseData =await createondemandmeasurmentresponse?.json();
-            console.log("createondemandmeasurmentresponseData",createondemandmeasurmentresponseData);
             const intervalId = setInterval(async () => {
               const checkstatusresponse = await $Get(
                 `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`,
               );
-    
+
               if (checkstatusresponse?.status == 200) {
                 clearInterval(intervalId);
-                getmeasurments();
-              }else {
+                console.log(`okayyyyyy`);
+                setErrorcount(0);
+                getmeasurments(1);
+              } else {
                 setErrorcount(prev => {
                   const newCount = prev + 1;
                   if (newCount === 4) {
+                    console.log(`error is: hhhhh`);
                     clearInterval(intervalId);
-                    toast('An error was encountered', {type: 'error', autoClose: 1000});
+                    toast('An error was encountered', {
+                      type: 'error',
+                      autoClose: 1000,
+                    });
                     setGetmeasurmentloading(false);
                     setErrorcount(0);
                   }
                   return newCount;
-                });              
+                });
               }
             }, 1000);
-            // getmeasurments();
           }
         }
       } catch (error) {
+        console.log(`error is: ${error}`);
         toast('An error was encountered', {type: 'error', autoClose: 1000});
       }
     }
@@ -474,8 +499,6 @@ function Testondemand() {
   //    getmeasurments();
   // }, []);
 
-
-
   const deletehistory = async (id: string) => {
     try {
       const deleteonehistory = await $Delete(
@@ -484,7 +507,7 @@ function Testondemand() {
       );
 
       if (deleteonehistory?.status == 201) {
-        getmeasurments();
+        pageinationpage;
       }
       toast('It was done successfully', {type: 'success', autoClose: 1000});
     } catch (error) {
@@ -736,14 +759,17 @@ function Testondemand() {
             </SimpleBtn>
             <div
               className={`${testid.length > 0 ? 'opacity-100' : 'opacity-40'}`}>
-              <SimpleBtn  loading={getmeasurmentloading} onClick={getallmeasurements} className="px-[34px]">
+              <SimpleBtn
+                loading={getmeasurmentloading}
+                onClick={getallmeasurements}
+                className="px-[34px]">
                 Start Test
               </SimpleBtn>
             </div>
           </div>
 
-          <div className="flex w-auto mb-[20px] flex-col">
-            <div className="flex flex-row mb-6">
+          <div className="mb-[20px] flex w-auto flex-col">
+            <div className="mb-6 flex flex-row">
               <Checkbox
                 checkstatus={showCompletedTestsFrom}
                 onclick={() =>
@@ -759,8 +785,8 @@ function Testondemand() {
               </span>
             </div>
 
-            <div className="flex flex-row w-full justify-between">
-            <input
+            <div className="flex w-full flex-row justify-between">
+              <input
                 disabled={!showCompletedTestsFrom}
                 ref={Thirdref}
                 onChange={e => dispatch(setFromtimeupdated(e.target.value))}
@@ -773,7 +799,6 @@ function Testondemand() {
                 onClick={() => Thirdref.current.showPicker()}
                 className="ml-[5px] h-[35px] w-[35px] cursor-pointer"
               />
-       
             </div>
           </div>
 
@@ -789,7 +814,7 @@ function Testondemand() {
         cols={topcolumns}
         tabicon={'Date'}
         onclicktitle={(tabname: string, sortalfabet: boolean) => {
-       setUsertablesort(!usertablesorte);
+          setUsertablesort(!usertablesorte);
         }}
         //usertablesorte ? alltestondemand.sort((a, b) => new Date(a.date) - new Date(b.date)):alltestondemand
         items={alltestondemand}
@@ -835,27 +860,67 @@ function Testondemand() {
         }}
       />
 
-
-<div className="relative mt-2 flex h-[40px] w-full flex-row justify-center">
+      <div className="relative flex h-[40px] w-full flex-row justify-center">
         <div className="mt-[20px] flex flex-row  items-center">
-          <SimpleBtn className="px-[2px] py-[5px]" type="button">
+          <SimpleBtn
+            onClick={
+              pageinationpage - 2 < 1
+                ? () => {}
+                : () => {
+                    getmeasurments(pageinationpage - 2),
+                      setPageinationpage(prev => prev - 2);
+                  }
+            }
+            className="px-[2px] py-[5px]"
+            type="button">
             <BiChevronsLeft size={20} />
           </SimpleBtn>
-          <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
+          <SimpleBtn
+            onClick={
+              pageinationpage == 1
+                ? () => {}
+                : () => {
+                    getmeasurments(pageinationpage - 1),
+                      setPageinationpage(prev => prev - 1);
+                  }
+            }
+            className="ml-2 px-[2px] py-[5px]"
+            type="button">
             <BiChevronLeft size={20} />
           </SimpleBtn>
           <span className="ml-[20px] text-[20px] font-normal leading-6">
             page
           </span>
           <input
+            value={pageinationpage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
-          <span className="ml-2">/5</span>
-          <SimpleBtn className="ml-[20px] px-[2px] py-[5px]" type="button">
+          <span className="ml-2">/{rowsPerPage}</span>
+          <SimpleBtn
+            onClick={
+              pageinationpage == rowsPerPage
+                ? () => {}
+                : () => {
+                    getmeasurments(pageinationpage + 1),
+                      setPageinationpage(prev => prev + 1);
+                  }
+            }
+            className="ml-[20px] px-[2px] py-[5px]"
+            type="button">
             <BiChevronRight size={20} />
           </SimpleBtn>
-          <SimpleBtn className="ml-2 px-[2px] py-[5px]" type="button">
+          <SimpleBtn
+            onClick={
+              pageinationpage + 2 > rowsPerPage
+                ? () => {}
+                : () => {
+                    getmeasurments(pageinationpage + 2),
+                      setPageinationpage(prev => prev + 2);
+                  }
+            }
+            className="ml-2 px-[2px] py-[5px]"
+            type="button">
             <BiChevronsRight size={20} />
           </SimpleBtn>
         </div>
@@ -864,6 +929,7 @@ function Testondemand() {
             Rows Per Page
           </span>
           <input
+            value={rowsPerPage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
