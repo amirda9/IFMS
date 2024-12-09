@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Plot from 'react-plotly.js';
-import {GoZoomIn, GoZoomOut} from 'react-icons/go';
 import Resultdata from '~/components/chart/result';
 import Opticalroute from '~/components/chart/opticalroute';
 import Group from './../../../assets/icons/Group 29.png';
@@ -11,16 +10,6 @@ import {MdOutlineShowChart} from 'react-icons/md';
 import Swal from 'sweetalert2';
 import Alarms from '~/components/chart/alarms';
 import {toast} from 'react-toastify';
-import arrowupchart from '~/assets/icons/arrowupchart.png';
-import hand from '~/assets/icons/hand.png';
-import ZoomArea from '~/assets/icons/ZoomArea.png';
-import Vector1 from '~/assets/icons/Vector1.png';
-import print from '~/assets/icons/print.png';
-import Cur from '~/assets/icons/Cur.png';
-import Ref from '~/assets/icons/Ref.png';
-import Max from '~/assets/icons/Max.png';
-import Min from '~/assets/icons/Min.png';
-import Avg from '~/assets/icons/Avg.png';
 import {SimpleBtn, Table} from '~/components';
 import {MdOutlineArrowBackIos} from 'react-icons/md';
 import {deepcopy} from '~/util';
@@ -239,7 +228,6 @@ function CurrentReference() {
     [],
   );
   const [chartcolor,setChartcolor]=useState<{id:string,colorcode:string}[]>([])
-  console.log('measurmentsmeasurments', measurments);
 
   const getonclictmeasurmentdata = async (id: string,colorcode:string) => {
     setLoading(true);
@@ -287,7 +275,6 @@ function CurrentReference() {
     }
   };
 
-  console.log('allselectedmesuementallselectedmesuement', allselectedmesuement);
 
   const query = useQuery();
   const currentReference_id = query.get('current_reference_id');
@@ -840,7 +827,7 @@ function CurrentReference() {
     // *******************************************************************
   }, []);
 
-  console.log("allmeasurmentsresponseDataallmeasurmentsresponseData",measurments);
+
 
   const [reightbar, setReightbar] = useState('Result');
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
@@ -1098,6 +1085,7 @@ function CurrentReference() {
 
   const Events = () => {
     if (showevents) {
+      alert("ll")
     } else {
       setfakeEvents([
         {
@@ -1279,6 +1267,8 @@ function CurrentReference() {
     // console.log("fakeevents",fakeevents);
 
     const verticalLinesCopy = deepcopy(verticalLines);
+
+    
     const findverticalindex = verticalLines.findIndex(
       data => data.name && data.name == name,
     );
@@ -1706,6 +1696,8 @@ function CurrentReference() {
       <div className="flex flex-row items-center">
         <button
           onClick={async () => {
+            setShowEwents(false)
+            setAllshapes([])
             setfakeEvents([]);
             setLeftverticaltab('Trace');
             getchartdata(id);
