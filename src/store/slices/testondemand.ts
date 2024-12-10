@@ -50,7 +50,8 @@ const initialState:initialStatetype = {
   selectedId:'',
   showCompletedTestsFrom:false,
   fromtimeupdated:"",
-  opticalroutUpdateTestsetupDetail:{    name: "",
+  opticalroutUpdateTestsetupDetail:{  
+      name: "",
     station_id: "",
     station_name: "",
     init_rtu_id: "",
@@ -118,7 +119,20 @@ const initialState:initialStatetype = {
         value: 0,
         period_time: "secondly"
       }
-    }},
+    },
+    status:{
+      reference_status: '',
+      current_learning_cycle: 1,
+      on_learning: false,
+      current_reference_id: '',
+      current_cycle_start: '',
+      next_cycle_start: '',
+      first_reference_time: '',
+      last_reference_time: '',
+      last_learning_count: 0
+    }
+  },
+
     networkselectedlist:[],
     networkoptical:[],
     alldeleteopticalroute:[],
@@ -126,7 +140,8 @@ const initialState:initialStatetype = {
     setuplist:[],
     selectedtest:'',
     selectednetworkid:'',
-    openall:false
+    openall:false,
+    
 };
 
 const testondemand = createSlice({

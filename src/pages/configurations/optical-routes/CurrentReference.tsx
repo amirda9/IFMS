@@ -1084,72 +1084,76 @@ function CurrentReference() {
   };
 
   const Events = () => {
-    if (showevents) {
-      alert("ll")
-    } else {
-      setfakeEvents([
-        {
-          x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[0]?.event_location,
-          ),
-          y: [...Array(41).keys()].map(
-            (dat, index) =>
-              chartdata?.key_events?.events[0]?.event_y + index / 2 - 10,
-          ),
-          type: 'lines',
-          text: [chartdata?.key_events?.events[0]?.event_number],
-          textfont: {color: ['#A80000']},
-          showlegend: false,
-          textposition: 'bottom',
-          mode: 'lines+text',
-          line: {width: 6, zindex: 100, color: '#A80000'},
-          event_number: chartdata?.key_events?.events[0]?.event_number,
-          name: 'events',
-          layer: 'above',
-        },
-        {
-          x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[1]?.event_location,
-          ),
-          y: [...Array(41).keys()].map(
-            (dat, index) =>
-              chartdata?.key_events?.events[1]?.event_y + index / 2 - 10,
-          ),
-          type: 'lines',
-          text: [chartdata?.key_events?.events[1]?.event_number],
-          textfont: {color: ['#A80000']},
-          showlegend: false,
-          textposition: 'bottom',
-          mode: 'lines+text',
-          line: {width: 6, zindex: 100, color: '#A80000'},
-          event_number: chartdata?.key_events?.events[1]?.event_number,
-          name: 'events',
-          layer: 'above',
-        },
-        {
-          x: [...Array(41).keys()].map(
-            dataa => chartdata?.key_events?.events[2]?.event_location,
-          ),
-          y: [...Array(41).keys()].map(
-            (dat, index) =>
-              chartdata?.key_events?.events[2]?.event_y + index / 2 - 10,
-          ),
+console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
 
-          type: 'lines',
-          text: [chartdata?.key_events?.events[2]?.event_number],
-          textfont: {color: ['#A80000']},
-          showlegend: false,
-          textposition: 'bottom',
-          mode: 'lines+text',
-          line: {width: 6, zindex: 100, color: '#A80000'},
-          name: 'events',
-          event_number: chartdata?.key_events?.events[2]?.event_number,
-          layer: 'above',
-        },
-      ]);
-      setSelectedEvents(null);
-      addarowevents();
-      setShowEwents(true);
+    if (showevents) {
+    } else {
+      if(chartdata?.key_events?.events){
+        setfakeEvents([
+          {
+         x: [...Array(41).keys()].map(
+           dataa => chartdata?.key_events?.events[0]?.event_location,
+         ),
+         y: [...Array(41).keys()].map(
+           (dat, index) =>
+             chartdata?.key_events?.events[0]?.event_y + index / 2 - 10,
+         ),
+         type: 'lines',
+         text: [chartdata?.key_events?.events[0]?.event_number],
+         textfont: {color: ['#A80000']},
+         showlegend: false,
+         textposition: 'bottom',
+         mode: 'lines+text',
+         line: {width: 6, zindex: 100, color: '#A80000'},
+         event_number: chartdata?.key_events?.events[0]?.event_number,
+         name: 'events',
+         layer: 'above',
+       },
+       {
+         x: [...Array(41).keys()].map(
+           dataa => chartdata?.key_events?.events[1]?.event_location,
+         ),
+         y: [...Array(41).keys()].map(
+           (dat, index) =>
+             chartdata?.key_events?.events[1]?.event_y + index / 2 - 10,
+         ),
+         type: 'lines',
+         text: [chartdata?.key_events?.events[1]?.event_number],
+         textfont: {color: ['#A80000']},
+         showlegend: false,
+         textposition: 'bottom',
+         mode: 'lines+text',
+         line: {width: 6, zindex: 100, color: '#A80000'},
+         event_number: chartdata?.key_events?.events[1]?.event_number,
+         name: 'events',
+         layer: 'above',
+       },
+       {
+         x: [...Array(41).keys()].map(
+           dataa => chartdata?.key_events?.events[2]?.event_location,
+         ),
+         y: [...Array(41).keys()].map(
+           (dat, index) =>
+             chartdata?.key_events?.events[2]?.event_y + index / 2 - 10,
+         ),
+
+         type: 'lines',
+         text: [chartdata?.key_events?.events[2]?.event_number],
+         textfont: {color: ['#A80000']},
+         showlegend: false,
+         textposition: 'bottom',
+         mode: 'lines+text',
+         line: {width: 6, zindex: 100, color: '#A80000'},
+         name: 'events',
+         event_number: chartdata?.key_events?.events[2]?.event_number,
+         layer: 'above',
+       },
+     ]);
+     setSelectedEvents(null);
+     addarowevents();
+     setShowEwents(true);
+      }
+  
     }
 
     setLeftverticaltab('Events');
@@ -1291,6 +1295,8 @@ function CurrentReference() {
     // setfakeEvents(fakeeventsCopy);
   };
 
+  console.log("fakeeventsfakeeventsfakeevents",fakeevents);
+  
   // ------ component --------- component ------------ component --------------- component ------------------
   const Chatrtabtype = ({name, src, ...props}: chatrtabtype) => {
     return (
@@ -1695,10 +1701,11 @@ function CurrentReference() {
     return (
       <div className="flex flex-row items-center">
         <button
-          onClick={async () => {
+          onClick={ () => {
             setShowEwents(false)
             setAllshapes([])
             setfakeEvents([]);
+            setChartdata([])
             setLeftverticaltab('Trace');
             getchartdata(id);
             setCurrent_reference_id(id);

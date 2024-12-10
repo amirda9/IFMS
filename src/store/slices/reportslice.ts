@@ -181,6 +181,17 @@ const initialState: initialStatetype = {
         period_time: 'hourly',
       },
     },
+    status:{
+      reference_status: '',
+      current_learning_cycle: 1,
+      on_learning: false,
+      current_reference_id: '',
+      current_cycle_start: '',
+      next_cycle_start: '',
+      first_reference_time: '',
+      last_reference_time: '',
+      last_learning_count: 0
+    }
   },
   networkselectedlist: [],
   reportselectedlist: [],
