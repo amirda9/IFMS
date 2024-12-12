@@ -72,10 +72,11 @@ type RequestKeys =
   | 'stationUpdate'
   | 'stationAccessUpdate'
   | 'linkAccessUpdate'
+  | 'linkAddadmin'
   | 'networkStationList'
   | 'stationAccessList'
   | 'linkAccessList'
-  | 'linkAddadmin'
+
   | 'stationAddadmin'
   | 'stationViewerUpdate'
   | 'stationAdminUpdate'

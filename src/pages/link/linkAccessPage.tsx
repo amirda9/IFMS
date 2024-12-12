@@ -9,22 +9,27 @@ import {
   setlinkviewersstatus,
   setlinkviewers,
 } from './../../store/slices/networkslice';
-import { UserRole } from '~/constant/users';
+import {UserRole} from '~/constant/users';
+import {toast} from 'react-toastify';
 const columns = {
   index: {label: 'Index', size: 'w-[10%]'},
   user: {label: 'User', size: 'w-[30%]', sort: true},
   region: {label: 'Region', size: 'w-[30%]'},
   station: {label: 'Station', size: 'w-[30%]'},
 };
-type Iprops={
-  regionId:string,networkId:string,linkId:string
-  }
+type Iprops = {
+  regionId: string;
+  networkId: string;
+  linkId: string;
+};
 const LinkAccessPage = () => {
   const params = useParams<Iprops>();
   const {network} = useSelector((state: any) => state);
   const [tabname, setTabname] = useState('User');
   const dispatch = useDispatch();
-  const {networkidadmin,regionidadmin} = useSelector((state: any) => state.networktree);
+  const {networkidadmin, regionidadmin} = useSelector(
+    (state: any) => state.networktree,
+  );
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
   const [itemssorted, setItemssorted] = useState<
     {
@@ -36,7 +41,7 @@ const LinkAccessPage = () => {
   >([]);
 
   const [userAdmin, setUserAdmin] = useState<string | undefined>();
- 
+
   const {
     request,
     state: {viewers, users},
@@ -45,17 +50,55 @@ const LinkAccessPage = () => {
       viewers: state.http.linkAccessList,
       users: state.http.userList,
       update: state.http.linkAccessUpdate,
+      linkAddadmin: state.http.linkAddadmin,
     }),
     initialRequests: request => {
       request('linkAccessList', {params: {link_id: params.linkId!}});
       request('userList', undefined);
     },
     onUpdate: (lastState, state) => {
+      console.log('linkAddadmin', state.linkAddadmin!.httpRequestStatus);
+      console.log('update', state.update!.httpRequestStatus);
+
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
-        request('linkAccessList', {params: {link_id:params.linkId!}});
+        toast('Updating the link viewer was successful', {
+          type: 'success',
+          autoClose: 1000,
+        });
+        request('linkAccessList', {params: {link_id: params.linkId!}});
+      }
+
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'error'
+      ) {
+        toast('Updating the link viewer encountered an error', {
+          type: 'error',
+          autoClose: 1000,
+        });
+      }
+
+      if (
+        lastState.linkAddadmin?.httpRequestStatus === 'loading' &&
+        state.linkAddadmin!.httpRequestStatus === 'success'
+      ) {
+        toast('Updating the link Admin was successful', {
+          type: 'success',
+          autoClose: 1000,
+        });
+      }
+
+      if (
+        lastState.linkAddadmin?.httpRequestStatus === 'loading' &&
+        state.linkAddadmin!.httpRequestStatus === 'error'
+      ) {
+        toast('Updating the link admin encountered an error', {
+          type: 'error',
+          autoClose: 1000,
+        });
       }
     },
   });
@@ -97,7 +140,6 @@ const LinkAccessPage = () => {
   if (!ifUserExist && admin) {
     userList.push({...admin.user});
   }
-
 
   const saveAdmin = () => {
     const viewerWithoutAdmin =
@@ -157,18 +199,18 @@ const LinkAccessPage = () => {
             value={userAdmin || admin?.user.id}
             disabled={
               loggedInUser.role !== UserRole.SUPER_USER &&
-              !networkidadmin.includes(params.networkId!) && !regionidadmin.includes(params.regionId!)
+              !networkidadmin.includes(params.networkId!) &&
+              !regionidadmin.includes(params.regionId!)
             }
             onChange={e => setUserAdmin(e.target.value)}
             className="w-[70%] text-sm">
             {userList.map(user => (
               <option onClick={() => alert('kk')} value={user.id} key={user.id}>
-                {user?.station?.name || ""} {user.username}
+                {user?.station?.name || ''} {user.username}
               </option>
             ))}
           </Select>
         </div>
-  
 
         <div className="mb-6 flex flex-col">
           <span className="mb-[15px] text-[20px] font-normal leading-[24.2px]">
@@ -187,16 +229,13 @@ const LinkAccessPage = () => {
             containerClassName="w-full mt-[-5px]"
           />
         </div>
-       
       </div>
       <div className="mr-4 flex flex-row gap-x-4 self-end">
-  
-          <SimpleBtn link to="../edit-access">
-            Edit Link Viewer(s)
-          </SimpleBtn>
-   
-          <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
-  
+        <SimpleBtn link to="../edit-access">
+          Edit Link Viewer(s)
+        </SimpleBtn>
+
+        <SimpleBtn onClick={saveAdmin}>Save</SimpleBtn>
 
         <SimpleBtn
           onClick={() => {
