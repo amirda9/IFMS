@@ -8,6 +8,7 @@ import {useSelector} from 'react-redux';
 import {deepcopy} from '~/util';
 import {useAppSelector} from '~/hooks';
 import {UserRole} from '~/constant/users';
+import {toast} from 'react-toastify';
 type Iprops = {
   classname: string;
   onclick: Function;
@@ -54,9 +55,17 @@ const LinkCablesAndSegmentsPage = () => {
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
       ) {
+        toast('It was done successfully', {type: 'success', autoClose: 1000});
         request('linkDetail', {
           params: {link_id: params.linkId!},
         });
+      }
+
+      if (
+        lastState.update?.httpRequestStatus === 'loading' &&
+        state.update!.httpRequestStatus === 'error'
+      ) {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     },
   });
