@@ -3,7 +3,7 @@ import SystemSettingsMain from '../SystemSettingsMain';
 import {ReactNode, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {$Get} from '~/util/requestapi';
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -23,7 +23,7 @@ const Rowinput = ({name, children}: Rowinputtype) => {
 // -------------------- main --------------------------- main ---------------------- main --------------------- main --------
 
 const SystemPage = () => {
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const {request, state} = useHttpRequest({
     selector: state => ({
       SettingsGet: state.http.SettingsGet,
@@ -44,7 +44,7 @@ const SystemPage = () => {
         request('SettingsGet', undefined);
       }
 
-      if(state?.SettingsUpdatesystem?.error){
+      if (state?.SettingsUpdatesystem?.error) {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     },
@@ -62,18 +62,16 @@ const SystemPage = () => {
   };
   const getAppsettingsdata = async () => {
     try {
-      setLoading(true)
-    const appsettings = await $Get(`otdr/settings/app-settings`);
-    if (appsettings?.status == 200) {
-      let appsettingsdata = await appsettings?.json();
-      setSystem(appsettingsdata?.system);
-    }
+      setLoading(true);
+      const appsettings = await $Get(`otdr/settings/app-settings`);
+      if (appsettings?.status == 200) {
+        let appsettingsdata = await appsettings?.json();
+        setSystem(appsettingsdata?.system);
+      }
     } catch (error) {
-      
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-    
   };
 
   useEffect(() => {
@@ -86,16 +84,20 @@ const SystemPage = () => {
       data_save_policy: 'do_not_save',
       test_type: 'monitoring',
     });
-    request('SettingsUpdatesystem', {data: {system: {
-      break_strategy: 'skip',
-      fiber_test_setup_definition_strategy: 'both',
-      data_save_policy: 'do_not_save',
-      test_type: 'monitoring',
-    }}});
+    request('SettingsUpdatesystem', {
+      data: {
+        system: {
+          break_strategy: 'skip',
+          fiber_test_setup_definition_strategy: 'both',
+          data_save_policy: 'do_not_save',
+          test_type: 'monitoring',
+        },
+      },
+    });
   };
-  
-  if(state?.SettingsUpdatesystem?.httpRequestStatus === 'loading' || loading){
-    return <h1>loading ...</h1>
+
+  if (state?.SettingsUpdatesystem?.httpRequestStatus === 'loading' || loading) {
+    return <h1>loading ...</h1>;
   }
   return (
     <SystemSettingsMain
@@ -160,7 +162,7 @@ const SystemPage = () => {
               {system?.data_save_policy}
             </option>
 
-            <option>do_not_save</option>
+            <option>do not save</option>
             <option>save</option>
           </Select>
         </Rowinput>
