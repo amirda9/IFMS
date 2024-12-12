@@ -53,7 +53,7 @@ type maintenance_test_settingtype = {
 const Rowinput = ({name, children, display}: Rowinputtype) => {
   return (
     <div className={`${display} mt-2 w-[800px] flex-row justify-between`}>
-      <span className="w-[320px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+      <span className="w-[320px] text-sm font-light leading-[24.2px] text-[#000000]">
         {name}
       </span>
       <div className="flex w-[350px]">{children}</div>
@@ -310,7 +310,7 @@ function ProactiveMaintenanceTestPage() {
                 old[input.name] = e.target.value;
                 setmaintenance_test_setting(old);
               }}
-              className="w-[350px] flex-grow text-[20px] font-light leading-[24.2px] text-[#000000]">
+              className="w-[350px] flex-grow text-sm font-light leading-[24.2px] text-[#000000]">
               {input.options.map(opt => (
                 <option key={'OPT__' + opt}>{opt}</option>
               ))}
@@ -329,7 +329,7 @@ function ProactiveMaintenanceTestPage() {
                 old[input.name] = Number(e.target.value);
                 setmaintenance_test_setting(old);
               }}
-              className="flex-grow"
+              className="flex-grow text-sm"
               max={input.maxValue}
               min={input.minValue}
             />

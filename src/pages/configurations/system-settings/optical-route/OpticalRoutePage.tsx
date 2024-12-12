@@ -12,7 +12,7 @@ type Rowinputtype = {
 const FiberTypeoptions = ['G.652', 'G.653', 'G.654', 'G.655', 'G.656', 'G.657'];
 const Rowinput = ({name, children}: Rowinputtype) => {
   return (
-    <div className="mb-[6px] flex w-[700px] flex-row justify-between text-[20px] font-light leading-[24.2px] text-[#000000]">
+    <div className="mb-[6px] flex w-[700px] flex-row justify-between text-sm font-light leading-[24.2px] text-[#000000]">
       <span className="w-[400px] ">{name}</span>
       <div className="flex w-[350px]">{children}</div>
     </div>
@@ -150,7 +150,7 @@ const OpticalRoutePage = () => {
             {fiberType}
           </option>
           {FiberTypeoptions.map((data, index) => (
-            <option key={index} className="text-[20px] font-light leading-[24.2px] text-[#000000]">
+            <option key={index} className="text-sm font-light leading-[24.2px] text-[#000000]">
               {data}
             </option>
           ))}
@@ -163,7 +163,7 @@ const OpticalRoutePage = () => {
           max={1.5}
           step={0.01}
           onChange={e => setHelixfactor(Number(e.target.value))}
-          className="w-full"
+          className="w-full text-sm"
           type="number"
           defaultValue={SettingsGet?.data?.optical_route?.helix_factor || 1.01}
         />
@@ -179,7 +179,7 @@ const OpticalRoutePage = () => {
             old[1310] = Number(e.target.value);
             setIor(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1310]
@@ -196,7 +196,7 @@ const OpticalRoutePage = () => {
             old[1490] = Number(e.target.value);
             setIor(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1490]
@@ -211,7 +211,7 @@ const OpticalRoutePage = () => {
             old[1550] = Number(e.target.value);
             setIor(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1550]
@@ -226,7 +226,7 @@ const OpticalRoutePage = () => {
             old[1625] = Number(e.target.value);
             setIor(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.IOR?.[1625]
@@ -241,7 +241,7 @@ const OpticalRoutePage = () => {
             old[1310] = Number(e.target.value);
             setRbs(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1310]
@@ -256,7 +256,7 @@ const OpticalRoutePage = () => {
             old[1490] = Number(e.target.value);
             setRbs(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1490]
@@ -271,7 +271,7 @@ const OpticalRoutePage = () => {
             old[1550] = Number(e.target.value);
             setRbs(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1550]
@@ -285,7 +285,7 @@ const OpticalRoutePage = () => {
             old[1625] = Number(e.target.value);
             setRbs(old);
           }}
-          className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]"
+          className="w-full text-sm font-light leading-[24.2px] text-[#000000]"
           type="number"
           defaultValue={
             SettingsGet?.data?.optical_route?.wavelengths?.RBS?.[1625]
@@ -293,7 +293,7 @@ const OpticalRoutePage = () => {
         />
       </Rowinput>
       {errortext.length > 0 ? (
-        <span className="text-[20px] text-[red]">{errortext}</span>
+        <span className="text-sm text-[red]">{errortext}</span>
       ) : null}
     </SystemSettingsMain>
   );

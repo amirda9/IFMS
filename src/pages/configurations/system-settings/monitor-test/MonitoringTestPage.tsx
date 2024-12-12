@@ -51,7 +51,7 @@ type NumberInputType = {
 const Rowinput = ({name, children, display}: Rowinputtype) => {
   return (
     <div className={`${display} w-[800px] flex-row justify-between`}>
-      <span className="w-[400px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+      <span className="w-[400px] text-sm font-light leading-[24.2px] text-[#000000]">
         {name}
       </span>
       <div className="flex w-[350px]">{children}</div>
@@ -311,7 +311,7 @@ const MonitoringTestPage: FC = () => {
                 old[input.name] = e.target.value;
                 setMonitoring_test_setting(old);
               }}
-              className={`w-[350px]  flex-grow text-[20px] font-light leading-[24.2px] text-[#000000]`}>
+              className={`w-[350px]  flex-grow text-sm font-light leading-[24.2px] text-[#000000]`}>
               {input.options.map(opt => (
                 <option key={'OPT__' + opt}>{opt}</option>
               ))}
@@ -332,7 +332,7 @@ const MonitoringTestPage: FC = () => {
                 old[input.name] = Number(e.target.value);
                 setMonitoring_test_setting(old);
               }}
-              className={`w-[350px] flex-grow text-[20px] font-light leading-[24.2px] text-[#000000]`}
+              className={`w-[350px] flex-grow text-sm font-light leading-[24.2px] text-[#000000]`}
               max={input.maxValue}
               min={input.minValue}
             />

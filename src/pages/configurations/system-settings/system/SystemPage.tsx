@@ -12,7 +12,7 @@ type Rowinputtype = {
 const Rowinput = ({name, children}: Rowinputtype) => {
   return (
     <div className="mb-[6px] flex w-[700px] flex-row justify-between">
-      <span className="w-[400px] text-[20px] font-light leading-[24.2px] text-[#000000]">
+      <span className="w-[400px] text-sm font-light leading-[24.2px] text-[#000000]">
         {name}
       </span>
       <div className="flex w-[350px]">{children}</div>
@@ -110,7 +110,7 @@ const SystemPage = () => {
               old.break_strategy = e.target.value.toLowerCase();
               setSystem(old);
             }}
-            className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
+            className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden ">
               {system?.break_strategy}
             </option>
@@ -131,7 +131,7 @@ const SystemPage = () => {
                 e.target.value.toLowerCase();
               setSystem(old);
             }}
-            className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
+            className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden ">
               {system?.fiber_test_setup_definition_strategy}
             </option>
@@ -152,7 +152,7 @@ const SystemPage = () => {
               old.data_save_policy = e.target.value.toLowerCase();
               setSystem(old);
             }}
-            className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
+            className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden">
               {system?.data_save_policy}
             </option>
@@ -173,7 +173,7 @@ const SystemPage = () => {
               old.test_type = e.target.value.toLowerCase();
               setSystem(old);
             }}
-            className="w-full text-[20px] font-light leading-[24.2px] text-[#000000]">
+            className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
             <option value="" className="hidden">
               {system?.test_type}
             </option>

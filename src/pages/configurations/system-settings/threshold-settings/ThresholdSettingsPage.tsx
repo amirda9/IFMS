@@ -19,7 +19,7 @@ type thresholdsetting = {
 };
 const Rowinput = ({name, children}: Rowinputtype) => {
   return (
-    <div className="flex w-[700px] flex-row justify-between text-[20px] font-light leading-[24.2px] text-[#000000]">
+    <div className="flex w-[700px] flex-row justify-between text-sm font-light leading-[24.2px] text-[#000000]">
       <span className="w-[400px] ">{name}</span>
       <div className="flex w-[350px]">{children}</div>
     </div>
@@ -120,7 +120,7 @@ const ThresholdSettingsPage = () => {
               old.wavelength = e.target.value;
               setThreshold_setting(old);
             }}
-            className="w-full">
+            className="w-full text-sm">
             <option value="" className="hidden">
               Select
             </option>
@@ -145,7 +145,7 @@ const ThresholdSettingsPage = () => {
               setThreshold_setting(old);
             }}
             type="number"
-            className="w-full"
+            className="w-full text-sm"
           />
         </Rowinput>
 
@@ -161,7 +161,7 @@ const ThresholdSettingsPage = () => {
               setThreshold_setting(old);
             }}
             type="number"
-            className="w-full"
+            className="w-full text-sm"
           />
         </Rowinput>
         <Rowinput name="Event Loss (dB)">
@@ -176,7 +176,7 @@ const ThresholdSettingsPage = () => {
               setThreshold_setting(old);
             }}
             type="number"
-            className="w-full"
+            className="w-full text-sm"
          
           />
         </Rowinput>
@@ -192,7 +192,7 @@ const ThresholdSettingsPage = () => {
               setThreshold_setting(old);
             }}
             type="number"
-            className="w-full"
+            className="w-full text-sm"
           />
         </Rowinput>
         <Rowinput name="Injection Level (dB)">
@@ -206,7 +206,7 @@ const ThresholdSettingsPage = () => {
               setThreshold_setting(old);
             }}
             type="number"
-            className="w-full"
+            className="w-full text-sm"
           />
         </Rowinput>
       </div>
