@@ -57,9 +57,6 @@ const LinkAccessPage = () => {
       request('userList', undefined);
     },
     onUpdate: (lastState, state) => {
-      console.log('linkAddadmin', state.linkAddadmin!.httpRequestStatus);
-      console.log('update', state.update!.httpRequestStatus);
-
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'success'
@@ -204,8 +201,10 @@ const LinkAccessPage = () => {
             }
             onChange={e => setUserAdmin(e.target.value)}
             className="w-[70%] text-sm">
-            {userList.map(user => (
-              <option onClick={() => alert('kk')} value={user.id} key={user.id}>
+            {userList.sort((a: any, b: any) =>
+                    a.username.localeCompare(b.username),
+                  ).map(user => (
+              <option  value={user.id} key={user.id}>
                 {user?.station?.name || ''} {user.username}
               </option>
             ))}
