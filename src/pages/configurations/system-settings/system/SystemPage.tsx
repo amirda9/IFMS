@@ -4,6 +4,7 @@ import {ReactNode, useEffect, useState} from 'react';
 import {useHttpRequest} from '~/hooks';
 import {$Get} from '~/util/requestapi';
 import {toast} from 'react-toastify';
+import { deepcopy } from '~/util';
 type Rowinputtype = {
   name: string;
   children: ReactNode;
@@ -57,9 +58,21 @@ const SystemPage = () => {
     test_type: string;
   }>();
 
+  
   const onSaveButtonClick = () => {
-    request('SettingsUpdatesystem', {data: {system: system!}});
+    const systemCopy=deepcopy(system)
+    if(system?.fiber_test_setup_definition_strategy == "monitoring only"){
+      systemCopy.fiber_test_setup_definition_strategy = "monitoring_only"
+    }
+
+    if(system?.data_save_policy == "do not save"){
+      systemCopy.data_save_policy = "do_not_save"
+    }
+    request('SettingsUpdatesystem', {data: {system: systemCopy!}});
   };
+
+
+
   const getAppsettingsdata = async () => {
     try {
       setLoading(true);
@@ -141,7 +154,7 @@ const SystemPage = () => {
               {system?.fiber_test_setup_definition_strategy}
             </option>
             <option>none</option>
-            <option>monitoring_only</option>
+            <option>monitoring only</option>
             <option>both</option>
           </Select>
         </Rowinput>

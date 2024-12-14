@@ -198,6 +198,7 @@ const ThresholdSettingsPage = () => {
         <Rowinput name="Injection Level (dB)">
           <TextInput
              min={0}
+             max={10}
              step={0.01}
              defaultValue={SettingsGet?.data?.threshold_setting.injection_level}
             onChange={e => {

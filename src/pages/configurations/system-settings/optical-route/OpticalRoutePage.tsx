@@ -188,9 +188,9 @@ const OpticalRoutePage = () => {
       </Rowinput>
       <Rowinput name={`IOR for 1490 nm wavelength`}>
         <TextInput
-          min={-90}
-          max={-40}
-          step={0.01}
+           min={1.3}
+           max={1.8}
+           step={0.000001}
           onChange={e => {
             const old = {...ior};
             old[1490] = Number(e.target.value);
@@ -206,6 +206,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name={`IOR for 1550 nm wavelength`}>
         <TextInput
+         min={1.3}
+         max={1.8}
+         step={0.000001}
           onChange={e => {
             const old = {...ior};
             old[1550] = Number(e.target.value);
@@ -221,6 +224,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name={`IOR for 1625 nm wavelength`}>
         <TextInput
+         min={1.3}
+         max={1.8}
+         step={0.000001}
           onChange={e => {
             const old = {...ior};
             old[1625] = Number(e.target.value);
@@ -251,6 +257,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name={`RBS for 1490 nm wavelength`}>
         <TextInput
+         min={-90}
+         max={-40}
+         step={0.01}
           onChange={e => {
             const old = {...rbs};
             old[1490] = Number(e.target.value);
@@ -266,6 +275,9 @@ const OpticalRoutePage = () => {
 
       <Rowinput name={`RBS for 1550 nm wavelength`}>
         <TextInput
+           min={-90}
+           max={-40}
+           step={0.01}
           onChange={e => {
             const old = {...rbs};
             old[1550] = Number(e.target.value);
@@ -280,6 +292,9 @@ const OpticalRoutePage = () => {
       </Rowinput>
       <Rowinput name={`RBS for 1625 nm wavelength`}>
         <TextInput
+           min={-90}
+           max={-40}
+           step={0.01}
           onChange={e => {
             const old = {...rbs};
             old[1625] = Number(e.target.value);
