@@ -4,16 +4,17 @@ import {
   setdefaultStationsrtu,
   setStationsrtu,
 } from './../../../store/slices/rtu';
-import {FC, useMemo, useState} from 'react';
+import {FC, useEffect, useMemo, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import {Description, SimpleBtn, Select} from '~/components';
 import Checkbox from '~/components/checkbox/checkbox';
 import {InputFormik, SelectFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
-import {$Post} from '~/util/requestapi';
+import {$Get, $Post} from '~/util/requestapi';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 import {deepcopy} from '~/util';
+import { toast } from 'react-toastify';
 // ----- type ----------- type --------------- type ------------
 type Rowtext = {
   name: string;
@@ -111,7 +112,15 @@ const Rowtext = ({name, value}: Rowtext) => {
     </div>
   );
 };
-
+type userlisttype = {
+  email: string;
+  id: string;
+  name: string;
+  region: string;
+  role: string;
+  station: string;
+  username: string;
+};
 const rtuSchema = Yup.object().shape({
   name: Yup.string().required('Please enter name'),
   OTDRSECEND: Yup.string().required('Please enter Port'),
@@ -128,21 +137,22 @@ const RtuCreatePage: FC = () => {
   const params = useParams<Iprops>();
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<userlisttype[]>([]);
   const {stationsrtu, defaultstationsrtu} = useSelector(
     (state: RootState) => state.rtu,
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
-    state: {users},
+    // state: {users},
     request,
   } = useHttpRequest({
     selector: state => ({
       users: state.http.userList,
     }),
-    initialRequests: request => {
-      request('userList', undefined);
-    },
+    // initialRequests: request => {
+    //   request('userList', undefined);
+    // },
   });
   const formik = useFormik({
     validationSchema: rtuSchema,
@@ -240,10 +250,34 @@ const RtuCreatePage: FC = () => {
     },
   });
 
-  const allusers = useMemo(() => {
-    return [...users?.data!] || [];
-  }, [users?.data]);
-  console.log('params!.regionId', params!.regionId);
+
+  const getusers = async () => {
+    try {
+      setLoading(true);
+      const [ userlistresponse] = await Promise.all([
+        
+        await $Get(`auth/users/`),
+      ]);
+  
+      if (userlistresponse?.status == 200) {
+        const userlistresponsedata = await userlistresponse.json();
+        setUsers(userlistresponsedata);
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+    } catch (error) {
+      console.log(`error is :${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getusers();
+  }, []);
+
+if(loading){
+  return <h1>loading ....</h1>
+}
 
   return (
     <div className="relative flex w-full flex-col">
@@ -289,7 +323,7 @@ const RtuCreatePage: FC = () => {
                 className="w-[400px]">
                 <option value="select" label="" className="hidden" />
                 <option value={undefined} label="select" className="hidden" />
-                {allusers
+                {users
                   ?.sort((a: any, b: any) =>
                     a.username.localeCompare(b.username),
                   )
