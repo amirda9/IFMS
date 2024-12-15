@@ -124,8 +124,15 @@ const TestSetupDetailsModal: FC = () => {
         setvalidateeror(true);
       } else {
         setvalidateeror(false);
+
+
+        console.log("newdatappp",newdata);
+        
         //We first check whether we want to create a testsetup or update it
         if (params.testId == 'create') {
+          newdata.status={
+            reference_status: "invalid"
+          }
           request('opticalrouteCreateTestSetup', {
             params: {
               optical_route_id: params.opticalRouteId!.split('_')[0] || '',

@@ -159,6 +159,8 @@ const TestDetailsTestProgram: FC = () => {
           <input
             onChange={e => {
               let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
+           
+              
               formik.setFieldValue('startingdateStart', e.target.value);
               dataa.startdatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
@@ -177,6 +179,7 @@ const TestDetailsTestProgram: FC = () => {
           <TextInput
             onChange={e => {
               formik.setFieldValue('startingdateStarttime', e.target.value);
+              console.log("e.target.value",e.target.value);
               let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
               dataa.starttimePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));

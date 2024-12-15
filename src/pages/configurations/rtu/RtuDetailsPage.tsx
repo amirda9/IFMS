@@ -44,6 +44,15 @@ const Rowtext = ({name, value}: Rowtext) => {
     </div>
   );
 };
+type userlisttype = {
+  email: string;
+  id: string;
+  name: string;
+  region: string;
+  role: string;
+  station: string;
+  username: string;
+};
 // ------------- type ------------------------  type ----------------------- type -------------------
 
 let modallist = [
@@ -127,39 +136,50 @@ const RtuDetailsPage: FC = () => {
   const params = useParams<Iprops>();
   const [loading, setLoading] = useState(false);
   const [rtuDetail, setRtuDetail] = useState<any>([]);
+  const [users, setUsers] = useState<userlisttype[]>([]);
   const {stationsrtu, rtunetworkidadmin, rturegionidadmin, rtustationidadmin} =
     useSelector((state: RootState) => state.rtu);
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
 
   const {
-    state: {users},
+    // state: {users},
     request,
   } = useHttpRequest({
     selector: state => ({
-      // rtuDetail: state.http.rtuDetail,
       users: state.http.userList,
     }),
-    initialRequests: request => {
-      request('userList', undefined);
-    },
+    // initialRequests: request => {
+    //   request('userList', undefined);
+    // },
   });
 
-  const allusers = useMemo(() => {
-    return [...users?.data!] || [];
-  }, [users?.data]);
 
   const getrtudetail = async () => {
     try {
       setLoading(true);
-      const getrturesponse = await $Get(`otdr/rtu/${params?.rtuId!}`);
+      const [getrturesponse, userlistresponse] = await Promise.all([
+        $Get(`otdr/rtu/${params?.rtuId!}`),
+        await $Get(`auth/users/`),
+      ]);
+      // const getrturesponse = await $Get(`otdr/rtu/${params?.rtuId!}`);
       if (getrturesponse?.status == 200) {
         dispatch(setrtugetdetailStatus(true));
-        setLoading(false);
         const responsedata = await getrturesponse.json();
         setRtuDetail(responsedata);
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      }
+
+      if (userlistresponse?.status == 200) {
+        const userlistresponsedata = await userlistresponse.json();
+        setUsers(userlistresponsedata);
+      } else {
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
     } catch (error) {
       console.log(`error is :${error}`);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -245,7 +265,7 @@ const RtuDetailsPage: FC = () => {
     },
   });
 
-  if (loading || users?.httpRequestStatus == 'loading') {
+  if (loading) {
     return <h1>Loading...</h1>;
   }
 
@@ -300,8 +320,8 @@ const RtuDetailsPage: FC = () => {
                 <option value={undefined} className="hidden">
                   {rtuDetail?.contact_person?.username || ''}
                 </option>
-                {allusers
-                  .sort((a: any, b: any) =>
+                {users
+                  ?.sort((a: any, b: any) =>
                     a.username.localeCompare(b.username),
                   )
                   .map((data, index) => (
