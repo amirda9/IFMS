@@ -23,6 +23,8 @@ import {useSearchParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
 import axios, {all} from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useDispatch, useSelector } from 'react-redux';
+import { setopticalroutUpdateTestsetupDetail } from '~/store/slices/opticalroutslice';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -206,7 +208,13 @@ type mesurmentsresponsetyp = {
 function CurrentReference() {
   const plotref: any = useRef();
   let location = useLocation();
+  const dispatch=useDispatch()
   const [searchParams, setSearchParams] = useSearchParams();
+  const {
+    opticalroutUpdateTestsetupDetail,
+    gettestsetupdetaildata,
+    modalloading,
+  } = useSelector((state: any) => state.opticalroute);
   // const [limit,setLimit]=useState(20)
   const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
@@ -801,9 +809,12 @@ function CurrentReference() {
         const allmeasurmentsresponse = await $Get(
           `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&limit=20&measurement_type=learning`,
         );
+        console.log("allmeasurmentsresponse",allmeasurmentsresponse);
+        
         if (allmeasurmentsresponse?.status == 200) {
           const allmeasurmentsresponseData: mesurmentsresponsetyp =
             await allmeasurmentsresponse?.json();
+            console.log("allmeasurmentsresponsedata",allmeasurmentsresponseData);
 
 
           setMeasurments(allmeasurmentsresponseData.items);
@@ -1670,6 +1681,11 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
   const savenewrefrence = async () => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
+        const newdata=deepcopy(opticalroutUpdateTestsetupDetail)
+        newdata.status.current_reference_id=current_reference_id
+        console.log("newdatanewdata",newdata);
+        
+        dispatch(setopticalroutUpdateTestsetupDetail(newdata))
         try {
           const updateresponse = await $Put(
             `otdr/optical-route/${opticalRouteId}/test-setups/${test_setup_id}/reference?reference_id=${current_reference_id}`,

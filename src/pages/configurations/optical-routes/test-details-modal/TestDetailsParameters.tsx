@@ -76,7 +76,7 @@ const TestDetailsParameters: FC = () => {
               await gettestSetupParametersresponse?.json();
 
               console.log("gettestSetupParameters",gettestSetupParameters);
-              
+              console.log("testSetupParametCopytestSetupParametCopy",gettestSetupParameters);
             const testSetupParametCopy = deepcopy(gettestSetupParameters);
 
             let checkstartend = Number(
@@ -149,6 +149,7 @@ const TestDetailsParameters: FC = () => {
             delete testSetupParametCopy['station'];
 
             delete testSetupParametCopy['rtu'];
+
 
             dispatch(setopticalroutUpdateTestsetupDetail(testSetupParametCopy));
             dispatch(setgettestsetupdetaildata(true));
