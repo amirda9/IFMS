@@ -27,9 +27,8 @@ const TestSetupDetailsModal: FC = () => {
     (state: any) => state.opticalroute,
   );
 
+  console.log('🔥', params);
 
-  console.log("🔥",params);
-  
   const {request, state} = useHttpRequest({
     selector: state => ({
       stationrtulist: state.http.stationrtuList,
@@ -82,8 +81,11 @@ const TestSetupDetailsModal: FC = () => {
       ) {
         delete newdata?.parameters?.sampling_duration;
       }
-      newdata.test_program.starting_date.start = `${newdata?.startdatePart} ${newdata?.starttimePart}`;
-      newdata.test_program.end_date.end = `${newdata?.enddatePart} ${newdata?.endtimePart}`;
+      newdata.test_program.starting_date.start =
+        newdata?.starttimePart.split(':').length == 3
+          ? `${newdata?.startdatePart} ${newdata?.starttimePart}`
+          : `${newdata?.startdatePart} ${newdata?.starttimePart}:33`;
+      newdata.test_program.end_date.end =newdata?.endtimePart.split(":").length == 3? `${newdata?.enddatePart} ${newdata?.endtimePart}`:`${newdata?.enddatePart} ${newdata?.endtimePart}:33`;
 
       delete newdata.station_name;
       delete newdata.init_rtu_name;
@@ -125,9 +127,8 @@ const TestSetupDetailsModal: FC = () => {
       } else {
         setvalidateeror(false);
 
+        console.log('newdatappp', newdata);
 
-        console.log("newdatappp",newdata);
-        
         //We first check whether we want to create a testsetup or update it
         if (params.testId == 'create') {
           newdata.status={
@@ -140,6 +141,9 @@ const TestSetupDetailsModal: FC = () => {
             data: newdata,
           });
         } else {
+          newdata.status={
+            reference_status:opticalroutUpdateTestsetupDetail?.status?.reference_status
+          }
           request('opticalrouteUpdateTestSetup', {
             params: {
               optical_route_id: params.opticalRouteId! || '',
@@ -158,14 +162,13 @@ const TestSetupDetailsModal: FC = () => {
         location.pathname.indexOf('monitoring') > -1
           ? navigate('/monitoring/test-on-demand')
           : navigate(
-              `/config/optical-routes/${
-                params.opticalRouteId!
-              }/${params.networkId}/test-setup`,
+              `/config/optical-routes/${params.opticalRouteId!}/${
+                params.networkId
+              }/test-setup`,
             );
       }, 3000);
     }
   };
-
 
   return (
     <AppDialog
@@ -200,8 +203,7 @@ const TestSetupDetailsModal: FC = () => {
                         navigate('..');
                     }
               }
-              type="button"
-            >
+              type="button">
               Cancel
             </SimpleBtn>
           </div>

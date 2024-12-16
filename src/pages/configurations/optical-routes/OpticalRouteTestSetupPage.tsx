@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom';
 import {SimpleBtn, Table} from '~/components';
 import {useHttpRequest} from '~/hooks';
-import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
+import {setgettestsetupdetaildata, setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 import {deepcopy} from '~/util';
 import {$Get} from '~/util/requestapi';
 
@@ -263,7 +263,7 @@ const OpticalRouteTestSetupPage: FC = () => {
           renderDynamicColumn={({key, value}) => {
             if (key === 'details')
               return (
-                <Link to={value.detail}>
+                <Link to={value.detail} onClick={()=> dispatch(setgettestsetupdetaildata(false))}>
                   <IoOpenOutline size={22} className="mx-auto" />
                 </Link>
               );

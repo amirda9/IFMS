@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline} from 'react-icons/io5';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 
@@ -9,12 +9,17 @@ import {toast} from 'react-toastify';
 import Selectbox from '~/components/selectbox/selectbox';
 import {RootState} from '~/store';
 import {$Get, $Post} from '~/util/requestapi';
+import {deepcopy} from '~/util/deepcopy';
+import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 type Rowtext = {
   name: string;
   value: string;
 };
 
-const options = [{label: 'Valid', value: 'Valid'}];
+const options = [
+  {label: 'Valid', value: 'valid'},
+  {label: 'InValid', value: 'invalid'},
+];
 const Rowtext = ({name, value}: Rowtext) => {
   return (
     <div className="mb-[4px] flex flex-row">
@@ -29,9 +34,9 @@ const Rowtext = ({name, value}: Rowtext) => {
 const TestDetailsStatus: FC = () => {
   const params = useParams();
   const [testnowloading, setTestnowloading] = useState(false);
-  const [errorcount,setErrorcount]=useState(0)
+  const [errorcount, setErrorcount] = useState(0);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const {
     opticalroutUpdateTestsetupDetail,
     modalloading,
@@ -59,12 +64,15 @@ const TestDetailsStatus: FC = () => {
               type: 'success',
               autoClose: 1000,
             });
-          } else{
+          } else {
             setErrorcount(prev => {
               const newCount = prev + 1;
               if (newCount === 4) {
                 clearInterval(intervalId);
-                toast('An error was encountered', {type: 'error', autoClose: 1000});
+                toast('An error was encountered', {
+                  type: 'error',
+                  autoClose: 1000,
+                });
                 setErrorcount(0);
                 setTestnowloading(false);
               }
@@ -154,7 +162,14 @@ const TestDetailsStatus: FC = () => {
         <div className="flex flex-row items-center">
           <span>Reference Status</span>
           <Selectbox
-            onclickItem={() => {}}
+            defaultvalue={
+              opticalroutUpdateTestsetupDetail.status.reference_status
+            }
+            onclickItem={(e: {lable: string; value: string}) => {
+              let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
+              dataa.status.reference_status = e.value;
+              dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+            }}
             options={options}
             classname="w-[123px] rounded-[10px] h-[40px]"
           />

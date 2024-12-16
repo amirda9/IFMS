@@ -181,7 +181,7 @@ const TestDetailsTestProgram: FC = () => {
               formik.setFieldValue('startingdateStarttime', e.target.value);
               console.log("e.target.value",e.target.value);
               let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
-              dataa.starttimePart = e.target.value;
+              dataa.starttimePart = `${e.target.value}`;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
             value={opticalroutUpdateTestsetupDetail.starttimePart}
