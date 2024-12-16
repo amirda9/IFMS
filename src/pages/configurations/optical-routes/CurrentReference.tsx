@@ -23,8 +23,8 @@ import {useSearchParams} from 'react-router-dom';
 import {IoTrashOutline} from 'react-icons/io5';
 import axios, {all} from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useDispatch, useSelector } from 'react-redux';
-import { setopticalroutUpdateTestsetupDetail } from '~/store/slices/opticalroutslice';
+import {useDispatch, useSelector} from 'react-redux';
+import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -87,10 +87,21 @@ type allchartdataype = {
   reference_data_points: [number, number][];
 };
 
-
-
-const colors=["#54a0ff","#ee5253","#10ac84","#f368e0","#8395a7","#55E6C1","#fd9644","#25CCF7","#218c74","#6D214F","#BDC581","#EAB543","#BDC581"]
-
+const colors = [
+  '#54a0ff',
+  '#ee5253',
+  '#10ac84',
+  '#f368e0',
+  '#8395a7',
+  '#55E6C1',
+  '#fd9644',
+  '#25CCF7',
+  '#218c74',
+  '#6D214F',
+  '#BDC581',
+  '#EAB543',
+  '#BDC581',
+];
 
 const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
   {
@@ -206,16 +217,17 @@ type mesurmentsresponsetyp = {
 
 // -----------main --------------main ---------------- main ------------------- main --------------
 function CurrentReference() {
+  const channel = new BroadcastChannel('redux_sync_channel');
   const plotref: any = useRef();
   let location = useLocation();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const {
     opticalroutUpdateTestsetupDetail,
     gettestsetupdetaildata,
     modalloading,
   } = useSelector((state: any) => state.opticalroute);
-  // const [limit,setLimit]=useState(20)
+
   const [linkslengthdata, setLinkslengthdata] = useState<linklengthtype>([]);
   const [chartdata, setChartdata] = useState<any>({});
   const [allchartdatapoints, setAllchartdatapoints] = useState<any>([]);
@@ -235,9 +247,11 @@ function CurrentReference() {
   const [allselectedmesuement, setAllselectedmesuement] = useState<string[]>(
     [],
   );
-  const [chartcolor,setChartcolor]=useState<{id:string,colorcode:string}[]>([])
+  const [chartcolor, setChartcolor] = useState<
+    {id: string; colorcode: string}[]
+  >([]);
 
-  const getonclictmeasurmentdata = async (id: string,colorcode:string) => {
+  const getonclictmeasurmentdata = async (id: string, colorcode: string) => {
     setLoading(true);
     try {
       const getdata = await $Get(
@@ -249,7 +263,10 @@ function CurrentReference() {
         //   (data: [number, number]) => ({x: data[0], y: data[1]}),
         // );
         let allchartdatapointsCopy: any = deepcopy(allchartdatapoints);
-        setAllchartdatapoints([...allchartdatapointsCopy, {colorcode:colorcode,alldata:datass}]);
+        setAllchartdatapoints([
+          ...allchartdatapointsCopy,
+          {colorcode: colorcode, alldata: datass},
+        ]);
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
       }
@@ -260,7 +277,7 @@ function CurrentReference() {
     }
   };
 
-  const onclickmesurment = (id: string,colorcode:string) => {
+  const onclickmesurment = (id: string, colorcode: string) => {
     const findmesurmentindex = allselectedmesuement.findIndex(
       data => data == id,
     );
@@ -274,15 +291,12 @@ function CurrentReference() {
       setAllchartdatapoints(newchartdata);
       const newdata = allselectedmesuement.filter(data => data != id);
       setAllselectedmesuement(newdata);
-
     } else {
-
       let newdata = [...allselectedmesuement, id];
       setAllselectedmesuement(newdata);
-      getonclictmeasurmentdata(id,colorcode);
+      getonclictmeasurmentdata(id, colorcode);
     }
   };
-
 
   const query = useQuery();
   const currentReference_id = query.get('current_reference_id');
@@ -809,13 +823,12 @@ function CurrentReference() {
         const allmeasurmentsresponse = await $Get(
           `otdr/optical-route/measurement/measurements?optical_route_id=${opticalRouteId}&test_setup_id=${test_setup_id}&limit=20&measurement_type=learning`,
         );
-        console.log("allmeasurmentsresponse",allmeasurmentsresponse);
-        
+        console.log('allmeasurmentsresponse', allmeasurmentsresponse);
+
         if (allmeasurmentsresponse?.status == 200) {
           const allmeasurmentsresponseData: mesurmentsresponsetyp =
             await allmeasurmentsresponse?.json();
-            console.log("allmeasurmentsresponsedata",allmeasurmentsresponseData);
-
+          console.log('allmeasurmentsresponsedata', allmeasurmentsresponseData);
 
           setMeasurments(allmeasurmentsresponseData.items);
           const findmeasurment = allmeasurmentsresponseData.items.find(
@@ -837,8 +850,6 @@ function CurrentReference() {
     // } catch (error) {}
     // *******************************************************************
   }, []);
-
-
 
   const [reightbar, setReightbar] = useState('Result');
   const [mousecoordinate, setMousecoordinate] = useState({x: 0, y: 0});
@@ -1095,76 +1106,78 @@ function CurrentReference() {
   };
 
   const Events = () => {
-console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
+    console.log(
+      'chartdata?.key_events?.events[0]',
+      chartdata?.key_events?.events,
+    );
 
     if (showevents) {
     } else {
-      if(chartdata?.key_events?.events){
+      if (chartdata?.key_events?.events) {
         setfakeEvents([
           {
-         x: [...Array(41).keys()].map(
-           dataa => chartdata?.key_events?.events[0]?.event_location,
-         ),
-         y: [...Array(41).keys()].map(
-           (dat, index) =>
-             chartdata?.key_events?.events[0]?.event_y + index / 2 - 10,
-         ),
-         type: 'lines',
-         text: [chartdata?.key_events?.events[0]?.event_number],
-         textfont: {color: ['#A80000']},
-         showlegend: false,
-         textposition: 'bottom',
-         mode: 'lines+text',
-         line: {width: 6, zindex: 100, color: '#A80000'},
-         event_number: chartdata?.key_events?.events[0]?.event_number,
-         name: 'events',
-         layer: 'above',
-       },
-       {
-         x: [...Array(41).keys()].map(
-           dataa => chartdata?.key_events?.events[1]?.event_location,
-         ),
-         y: [...Array(41).keys()].map(
-           (dat, index) =>
-             chartdata?.key_events?.events[1]?.event_y + index / 2 - 10,
-         ),
-         type: 'lines',
-         text: [chartdata?.key_events?.events[1]?.event_number],
-         textfont: {color: ['#A80000']},
-         showlegend: false,
-         textposition: 'bottom',
-         mode: 'lines+text',
-         line: {width: 6, zindex: 100, color: '#A80000'},
-         event_number: chartdata?.key_events?.events[1]?.event_number,
-         name: 'events',
-         layer: 'above',
-       },
-       {
-         x: [...Array(41).keys()].map(
-           dataa => chartdata?.key_events?.events[2]?.event_location,
-         ),
-         y: [...Array(41).keys()].map(
-           (dat, index) =>
-             chartdata?.key_events?.events[2]?.event_y + index / 2 - 10,
-         ),
+            x: [...Array(41).keys()].map(
+              dataa => chartdata?.key_events?.events[0]?.event_location,
+            ),
+            y: [...Array(41).keys()].map(
+              (dat, index) =>
+                chartdata?.key_events?.events[0]?.event_y + index / 2 - 10,
+            ),
+            type: 'lines',
+            text: [chartdata?.key_events?.events[0]?.event_number],
+            textfont: {color: ['#A80000']},
+            showlegend: false,
+            textposition: 'bottom',
+            mode: 'lines+text',
+            line: {width: 6, zindex: 100, color: '#A80000'},
+            event_number: chartdata?.key_events?.events[0]?.event_number,
+            name: 'events',
+            layer: 'above',
+          },
+          {
+            x: [...Array(41).keys()].map(
+              dataa => chartdata?.key_events?.events[1]?.event_location,
+            ),
+            y: [...Array(41).keys()].map(
+              (dat, index) =>
+                chartdata?.key_events?.events[1]?.event_y + index / 2 - 10,
+            ),
+            type: 'lines',
+            text: [chartdata?.key_events?.events[1]?.event_number],
+            textfont: {color: ['#A80000']},
+            showlegend: false,
+            textposition: 'bottom',
+            mode: 'lines+text',
+            line: {width: 6, zindex: 100, color: '#A80000'},
+            event_number: chartdata?.key_events?.events[1]?.event_number,
+            name: 'events',
+            layer: 'above',
+          },
+          {
+            x: [...Array(41).keys()].map(
+              dataa => chartdata?.key_events?.events[2]?.event_location,
+            ),
+            y: [...Array(41).keys()].map(
+              (dat, index) =>
+                chartdata?.key_events?.events[2]?.event_y + index / 2 - 10,
+            ),
 
-         type: 'lines',
-         text: [chartdata?.key_events?.events[2]?.event_number],
-         textfont: {color: ['#A80000']},
-         showlegend: false,
-         textposition: 'bottom',
-         mode: 'lines+text',
-         line: {width: 6, zindex: 100, color: '#A80000'},
-         name: 'events',
-         event_number: chartdata?.key_events?.events[2]?.event_number,
-         layer: 'above',
-       },
-     ]);
-     setSelectedEvents(null);
-     addarowevents();
-     setShowEwents(true);
+            type: 'lines',
+            text: [chartdata?.key_events?.events[2]?.event_number],
+            textfont: {color: ['#A80000']},
+            showlegend: false,
+            textposition: 'bottom',
+            mode: 'lines+text',
+            line: {width: 6, zindex: 100, color: '#A80000'},
+            name: 'events',
+            event_number: chartdata?.key_events?.events[2]?.event_number,
+            layer: 'above',
+          },
+        ]);
+        setSelectedEvents(null);
+        addarowevents();
+        setShowEwents(true);
       }
-  
     }
 
     setLeftverticaltab('Events');
@@ -1189,7 +1202,7 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
     setLeftverticaltab('LinkView');
   };
 
-  const deletemeasurment = async (id: string,colorcode:string) => {
+  const deletemeasurment = async (id: string, colorcode: string) => {
     Swal.fire(swalsettingdel).then(async result => {
       if (result.isConfirmed) {
         const response = await $Delete(
@@ -1197,7 +1210,6 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
           [id],
         );
         if (response?.status == 201) {
-
           toast('It was done successfully', {type: 'success', autoClose: 1000});
           const findmesurmentindex = allselectedmesuement.findIndex(
             data => data == id,
@@ -1213,8 +1225,8 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
             const newdata = allselectedmesuement.filter(data => data != id);
             setAllselectedmesuement(newdata);
           }
-     
-          fetchMoreData()
+
+          fetchMoreData();
         }
       } else {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
@@ -1283,7 +1295,6 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
 
     const verticalLinesCopy = deepcopy(verticalLines);
 
-    
     const findverticalindex = verticalLines.findIndex(
       data => data.name && data.name == name,
     );
@@ -1306,8 +1317,8 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
     // setfakeEvents(fakeeventsCopy);
   };
 
-  console.log("fakeeventsfakeeventsfakeevents",fakeevents);
-  
+  console.log('fakeeventsfakeeventsfakeevents', fakeevents);
+
   // ------ component --------- component ------------ component --------------- component ------------------
   const Chatrtabtype = ({name, src, ...props}: chatrtabtype) => {
     return (
@@ -1681,11 +1692,11 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
   const savenewrefrence = async () => {
     Swal.fire(swalsetting).then(async result => {
       if (result.isConfirmed) {
-        const newdata=deepcopy(opticalroutUpdateTestsetupDetail)
-        newdata.status.current_reference_id=current_reference_id
-        console.log("newdatanewdata",newdata);
-        
-        dispatch(setopticalroutUpdateTestsetupDetail(newdata))
+        const newdata = deepcopy(opticalroutUpdateTestsetupDetail);
+        newdata.status.current_reference_id = current_reference_id;
+        console.log('newdatanewdata', newdata);
+        channel.postMessage(newdata);
+        dispatch(setopticalroutUpdateTestsetupDetail(newdata));
         try {
           const updateresponse = await $Put(
             `otdr/optical-route/${opticalRouteId}/test-setups/${test_setup_id}/reference?reference_id=${current_reference_id}`,
@@ -1717,11 +1728,11 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
     return (
       <div className="flex flex-row items-center">
         <button
-          onClick={ () => {
-            setShowEwents(false)
-            setAllshapes([])
+          onClick={() => {
+            setShowEwents(false);
+            setAllshapes([]);
             setfakeEvents([]);
-            setChartdata([])
+            setChartdata([]);
             setLeftverticaltab('Trace');
             getchartdata(id);
             setCurrent_reference_id(id);
@@ -1894,12 +1905,12 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
                   ...allchartdatapoints
                     // .filter((data: any) => data?.datapoints)
                     .map((data: any, index: number) => {
-                      let points=data.alldata?.datapoints || {data_points:[]}
-                      return(
-                  
-                      {
+                      let points = data.alldata?.datapoints || {
+                        data_points: [],
+                      };
+                      return {
                         showlegend: false,
-                        x:points?.data_points?.map(
+                        x: points?.data_points?.map(
                           (dataa: [number, number]) => dataa[0],
                         ),
                         y: points?.data_points?.map(
@@ -1909,11 +1920,9 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
                         mode: 'lines',
                         line: {width: 2},
                         marker: {color: data.colorcode},
-                      }
-                    )}),
-                   
-                      
-                   
+                      };
+                    }),
+
                   // {
                   //   showlegend: false,
                   //   x: allcurveline[0]?.data?.map(dat => dat.x),
@@ -2298,22 +2307,49 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
               hasMore={true}
               loader={<h4 className="text-[red]">Loading...</h4>}
               scrollableTarget="scrollableDiv">
-              {measurments.map((data, index) => 
-    
-                  <div className="mb-2 flex w-full flex-row items-center justify-between">
+              {measurments.map((data, index) => (
+                <div className="mb-2 flex w-full flex-row items-center justify-between">
                   <RadioButton
                     id={data.id}
                     testId={data.test_setup.id}
                     opticalid={data.optical_route.id}
                   />
                   <button
-                    onClick={() => onclickmesurment(data.id,`${index<13?colors[index]:index>12 && index <26?colors[index-13]:index >25 && index < 40?colors[index-25]:index > 38?`hsl(${index*30}, 100%, 50%)`:colors[index-38]}`)}
+                    onClick={() =>
+                      onclickmesurment(
+                        data.id,
+                        `${
+                          index < 13
+                            ? colors[index]
+                            : index > 12 && index < 26
+                            ? colors[index - 13]
+                            : index > 25 && index < 40
+                            ? colors[index - 25]
+                            : index > 38
+                            ? `hsl(${index * 30}, 100%, 50%)`
+                            : colors[index - 38]
+                        }`,
+                      )
+                    }
                     className={`ml-2 flex h-[40px] w-[259px] flex-row items-center justify-between ${
                       allselectedmesuement.indexOf(data.id) > -1
                         ? 'bg-[#7EB2E5]'
                         : 'bg-none'
                     }`}>
-                      <MdOutlineShowChart size={25} color={`${index<13?colors[index]:index>12 && index <26?colors[index-13]:index >25 && index < 40?colors[index-25]:index > 38?`hsl(${index*30}, 100%, 50%)`:colors[index-38]}`}/>
+                    <MdOutlineShowChart
+                      size={25}
+                      color={`${
+                        index < 13
+                          ? colors[index]
+                          : index > 12 && index < 26
+                          ? colors[index - 13]
+                          : index > 25 && index < 40
+                          ? colors[index - 25]
+                          : index > 38
+                          ? `hsl(${index * 30}, 100%, 50%)`
+                          : colors[index - 38]
+                      }`}
+                    />
                     {/* <img src={Cur} className=" mt-[0px] h-[20px] w-[17px]" /> */}
                     <span className="w-[50px]  pr-6 text-right">
                       {index + 1}
@@ -2327,7 +2363,21 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
                     onClick={
                       current_reference_id == data.id
                         ? () => {}
-                        : () => deletemeasurment(data.id,`${index<13?colors[index]:index>12 && index <26?colors[index-13]:index >25 && index < 40?colors[index-25]:index > 38?`hsl(${index*30}, 100%, 50%)`:colors[index-38]}`)
+                        : () =>
+                            deletemeasurment(
+                              data.id,
+                              `${
+                                index < 13
+                                  ? colors[index]
+                                  : index > 12 && index < 26
+                                  ? colors[index - 13]
+                                  : index > 25 && index < 40
+                                  ? colors[index - 25]
+                                  : index > 38
+                                  ? `hsl(${index * 30}, 100%, 50%)`
+                                  : colors[index - 38]
+                              }`,
+                            )
                     }
                     className={`cursor-pointer ${
                       current_reference_id == data.id
@@ -2337,10 +2387,7 @@ console.log("chartdata?.key_events?.events[0]",chartdata?.key_events?.events);
                     size={35}
                   />
                 </div>
-                
-              
-               
-              )}
+              ))}
             </InfiniteScroll>
           </div>
           <SimpleBtn className="mt-4 w-full" onClick={() => savenewrefrence()}>

@@ -10,15 +10,21 @@ import {toast} from 'react-toastify';
 import {
   setgettestsetupdetaildata,
   setmodalloading,
+  setopticalroutUpdateTestsetupDetail,
 } from '~/store/slices/opticalroutslice';
 //this function get full date and time then produce full date
 
 const TestSetupDetailsModal: FC = () => {
+  const channel = new BroadcastChannel('redux_sync_channel');
   const dispatch = useDispatch();
   const params = useParams();
   const {gettestsetupdetaildata} = useSelector(
     (state: any) => state.opticalroute,
   );
+
+  channel.onmessage = event => {
+    dispatch(setopticalroutUpdateTestsetupDetail(event.data)); // آپدیت ریداکس
+  };
   const location = useLocation();
   console.log('params88', params);
   const navigate = useNavigate();
@@ -26,8 +32,6 @@ const TestSetupDetailsModal: FC = () => {
   const {opticalroutUpdateTestsetupDetail} = useSelector(
     (state: any) => state.opticalroute,
   );
-
-  console.log('🔥', params);
 
   const {request, state} = useHttpRequest({
     selector: state => ({
@@ -85,7 +89,10 @@ const TestSetupDetailsModal: FC = () => {
         newdata?.starttimePart.split(':').length == 3
           ? `${newdata?.startdatePart} ${newdata?.starttimePart}`
           : `${newdata?.startdatePart} ${newdata?.starttimePart}:33`;
-      newdata.test_program.end_date.end =newdata?.endtimePart.split(":").length == 3? `${newdata?.enddatePart} ${newdata?.endtimePart}`:`${newdata?.enddatePart} ${newdata?.endtimePart}:33`;
+      newdata.test_program.end_date.end =
+        newdata?.endtimePart.split(':').length == 3
+          ? `${newdata?.enddatePart} ${newdata?.endtimePart}`
+          : `${newdata?.enddatePart} ${newdata?.endtimePart}:33`;
 
       delete newdata.station_name;
       delete newdata.init_rtu_name;
@@ -131,9 +138,9 @@ const TestSetupDetailsModal: FC = () => {
 
         //We first check whether we want to create a testsetup or update it
         if (params.testId == 'create') {
-          newdata.status={
-            reference_status: "invalid"
-          }
+          newdata.status = {
+            reference_status: 'invalid',
+          };
           request('opticalrouteCreateTestSetup', {
             params: {
               optical_route_id: params.opticalRouteId!.split('_')[0] || '',
@@ -141,9 +148,10 @@ const TestSetupDetailsModal: FC = () => {
             data: newdata,
           });
         } else {
-          newdata.status={
-            reference_status:opticalroutUpdateTestsetupDetail?.status?.reference_status
-          }
+          newdata.status = {
+            reference_status:
+              opticalroutUpdateTestsetupDetail?.status?.reference_status,
+          };
           request('opticalrouteUpdateTestSetup', {
             params: {
               optical_route_id: params.opticalRouteId! || '',
