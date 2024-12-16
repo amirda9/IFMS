@@ -84,7 +84,8 @@ function Testondemand() {
   const [setuploading, setSetuploading] = useState(false);
   const [networklist, setNetworklist] = useState<NetworkType[]>([]);
   const [alltestondemand, setAlltestondemand] = useState<tabelrow[]>([]);
-  const [rowsPerPage, setRowsPerPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [allpages, setAllpages] = useState(0);
   const [getmeasurmentloading, setGetmeasurmentloading] = useState(false);
   const [errorcount, setErrorcount] = useState(0);
   const [pageinationpage, setPageinationpage] = useState(1);
@@ -367,7 +368,7 @@ function Testondemand() {
   };
   const lastnetwork = networklist[networklist.length - 1]?.id || '';
 
-  const getmeasurments = async (pagenumber: number) => {
+  const getmeasurments = async (pagenumber: number, row = rowsPerPage) => {
     try {
       setGetmeasurmentloading(true);
       let allpathes = `${
@@ -378,11 +379,11 @@ function Testondemand() {
           : ''
       }`;
       const response = await $Get(
-        `otdr/optical-route/measurement/measurements?limit=20&page=${pagenumber}&measurement_type=on_demand${allpathes}&status=SUCCESS`,
+        `otdr/optical-route/measurement/measurements?limit=${row}&page=${pagenumber}&measurement_type=on_demand${allpathes}&status=SUCCESS`,
       );
       if (response?.status == 200) {
         const responsedata: testondemand = await response?.json();
-        setRowsPerPage(responsedata.page_count);
+        setAllpages(responsedata.page_count);
         setAlltestondemand(
           responsedata.items.map((data, index) => ({
             tabbodybg: [
@@ -458,7 +459,8 @@ function Testondemand() {
             },
           );
           if (createondemandmeasurmentresponse?.status == 201) {
-            const createondemandmeasurmentresponseData =await createondemandmeasurmentresponse?.json();
+            const createondemandmeasurmentresponseData =
+              await createondemandmeasurmentresponse?.json();
             const intervalId = setInterval(async () => {
               const checkstatusresponse = await $Get(
                 `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`,
@@ -468,7 +470,7 @@ function Testondemand() {
                 clearInterval(intervalId);
                 console.log(`okayyyyyy`);
                 setErrorcount(0);
-                getmeasurments(1);
+                getmeasurments(pageinationpage);
               } else {
                 setErrorcount(prev => {
                   const newCount = prev + 1;
@@ -896,10 +898,10 @@ function Testondemand() {
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
-          <span className="ml-2">/{rowsPerPage}</span>
+          <span className="ml-2">/{allpages}</span>
           <SimpleBtn
             onClick={
-              pageinationpage == rowsPerPage
+              pageinationpage == allpages
                 ? () => {}
                 : () => {
                     getmeasurments(pageinationpage + 1),
@@ -912,7 +914,7 @@ function Testondemand() {
           </SimpleBtn>
           <SimpleBtn
             onClick={
-              pageinationpage + 2 > rowsPerPage
+              pageinationpage + 2 > allpages
                 ? () => {}
                 : () => {
                     getmeasurments(pageinationpage + 2),
@@ -929,6 +931,10 @@ function Testondemand() {
             Rows Per Page
           </span>
           <input
+            onChange={e => {
+              setRowsPerPage(Number(e.target.value)),
+                getmeasurments(pageinationpage, Number(e.target.value));
+            }}
             value={rowsPerPage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
