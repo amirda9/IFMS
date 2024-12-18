@@ -1,52 +1,44 @@
 import {useParams} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {useNavigate} from 'react-router-dom';
-import {networkExplored} from '~/constant';
 import Selectbox from './../../components/selectbox/selectbox';
-import Cookies from 'js-cookie';
 import {useDispatch, useSelector} from 'react-redux';
-import {changegetdatadetailStatus, createdefaultRegionLinks} from './../../store/slices/networktreeslice';
+import {
+  changegetdatadetailStatus,
+  createdefaultRegionLinks,
+} from './../../store/slices/networktreeslice';
 import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
-import {$Post} from '~/util/requestapi';
+import {$Get, $Post} from '~/util/requestapi';
 import {deepcopy} from '~/util';
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 
 const typeoptions = [
   {value: 'cable', label: 'Cable'},
   {value: 'duct', label: 'duct'},
 ];
 
-  type mainprops={
-     networkId:string
-    }
+type mainprops = {
+  networkId: string;
+};
 const LinkCreatePage = () => {
   const params = useParams<mainprops>();
   const navigate = useNavigate();
-  const {
-    state: {stations},
-    request,
-  } = useHttpRequest({
-    selector: state => ({
-      stations: state.http.allStations,
-    }),
-    initialRequests: request => {
-        request('allStations', undefined);
-    },
-  });
+ 
 
-  const {allStations} = useSelector((state: any) => state.http);
+  // const {allStations} = useSelector((state: any) => state.http);
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [types, setType] = useState('');
   const [typeerror, setTypeerror] = useState('');
-  const [createloading,setCreateloading]=useState(false)
+  const [createloading, setCreateloading] = useState(false);
   const [nameerror, setNameerror] = useState('');
   const [commenerror, setCommmenerror] = useState('');
   const [selectedstations, setSelectedstations] = useState([]);
   const [allsource, setAllsource] = useState<{value: string; label: string}[]>(
     [],
   );
+ 
   const [soueceerror, setSourcerror] = useState('');
   const [destenationerror, setDestinationerror] = useState('');
   const [alldestinaton, setAlldestination] = useState([]);
@@ -54,22 +46,25 @@ const LinkCreatePage = () => {
   const [destinationid, setDestinationid] = useState<string>('');
   const dispatch = useDispatch();
 
-  useEffect(()=>{
-    dispatch(changegetdatadetailStatus(false))
-  },[])
-
   useEffect(() => {
-    let data: any = [];
-    if (allStations) {
-      let all = allStations?.data || [];
-      for (let i = 0; i < all.length; i++) {
-        data.push({value: all[i].id, label: all[i].name});
+    dispatch(changegetdatadetailStatus(false));
+    const getnetworkstatons = async () => {
+      const response = await $Get(`otdr/station/network/${params.networkId!}`);
+      if (response?.status == 200) {
+        let data: any = [];
+        const responsedata = await response.json();
+        // let all = allStations?.data || [];
+        for (let i = 0; i < responsedata.length; i++) {
+          data.push({value: responsedata[i].id, label: responsedata[i].name});
+        }
+        setAllsource(data);
+        setAlldestination(data);
+        setSelectedstations(data);
       }
-      setAllsource(data);
-      setAlldestination(data);
-      setSelectedstations(data);
-    }
-  }, [stations]);
+    };
+
+    getnetworkstatons();
+  }, []);
 
   const changesource = (id: string) => {
     setSourcerror('');
@@ -111,7 +106,7 @@ const LinkCreatePage = () => {
       setSourcerror('');
       setDestinationerror('');
       try {
-        setCreateloading(true)
+        setCreateloading(true);
         const response = await $Post(`otdr/link/`, {
           name: name,
           network_id: params.networkId!,
@@ -140,7 +135,9 @@ const LinkCreatePage = () => {
             }),
           );
           navigate(
-            `/links/${responsedata.link_id}/${params.networkId!}/defaultregionlinkdetailpage`
+            `/links/${
+              responsedata.link_id
+            }/${params.networkId!}/defaultregionlinkdetailpage`,
           );
         } else {
           toast('Encountered an error', {type: 'error', autoClose: 1000});
@@ -149,11 +146,10 @@ const LinkCreatePage = () => {
         toast('Encountered an error', {type: 'error', autoClose: 1000});
         console.log(`create error is :${error}`);
       } finally {
-        setCreateloading(false)
+        setCreateloading(false);
       }
     }
   };
-
 
   return (
     <div className="relative flex min-h-[calc(100%-80px)] w-full flex-col">

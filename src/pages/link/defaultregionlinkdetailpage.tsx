@@ -77,7 +77,7 @@ const LinkDetailPage = () => {
     try {
       setLoading(true);
       let linkdetailurl = `otdr/link/${params?.linkId!}`;
-      let regionstationurl = `otdr/station`;
+      let regionstationurl = `otdr/station/network/${params.networkId!}`;
 
       const [linkdetailresponse, networkstation] = await Promise.all([
         $Get(linkdetailurl),
@@ -152,6 +152,7 @@ const LinkDetailPage = () => {
     getlinkdetail();
   }, []);
 
+ 
   const changesource = (id: string) => {
     setSourcerror('');
     setSource(id);
