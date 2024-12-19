@@ -421,82 +421,81 @@ function Testondemand() {
     }
   };
 
-  const getallmeasurements = async () => {
-    if (selectedId != '' && testid != '') {
+  const getallmeasurements = async (): Promise<void> => {
+    if (selectedId !== '' && testid !== '') {
       try {
         setGetmeasurmentloading(true);
+  
         const testsetupresponse = await $Get(
-          `otdr/optical-route/${selectedId}/test-setups/${testid}`,
+          `otdr/optical-route/${selectedId}/test-setups/${testid}`
         );
-        if (testsetupresponse?.status == 200) {
-          const testsetupresponseData = await testsetupresponse?.json();
+  
+        if (testsetupresponse?.status === 200) {
+          const testsetupresponseData = await testsetupresponse.json();
+  
           const createondemandmeasurmentresponse = await $Post(
             `otdr/optical-route/${selectedId}/on-demand-measurements?measurement_type=on_demand`,
             {
               optical_route_id: selectedId,
               rtu_id: testsetupresponseData.rtu.id,
-              parameters: {
-                distance_mode: testsetupresponseData.parameters.distance_mode,
-                range: testsetupresponseData.parameters.range,
-                pulse_width_mode:
-                  testsetupresponseData.parameters.pulse_width_mode,
-                pulse_width: testsetupresponseData.parameters.pulse_width,
-                test_mode: testsetupresponseData.parameters.test_mode,
-                IOR: testsetupresponseData.parameters.IOR,
-                RBS: testsetupresponseData.parameters.RBS,
-                wavelength: testsetupresponseData.parameters.wavelength,
-                event_reflection_threshold:
-                  testsetupresponseData.parameters.event_reflection_threshold,
-                fiber_end_threshold:
-                  testsetupresponseData.parameters.fiber_end_threshold,
-                event_loss_threshold:
-                  testsetupresponseData.parameters.event_loss_threshold,
-                sampling_mode: testsetupresponseData.parameters.sampling_mode,
-                sampling_duration:
-                  testsetupresponseData.parameters.sampling_duration,
-                run_mode: testsetupresponseData.parameters.run_mode,
-              },
-            },
+              parameters: { ...testsetupresponseData.parameters },
+            }
           );
-          if (createondemandmeasurmentresponse?.status == 201) {
+  
+          if (createondemandmeasurmentresponse?.status === 201) {
             const createondemandmeasurmentresponseData =
-              await createondemandmeasurmentresponse?.json();
-            const intervalId = setInterval(async () => {
-              const checkstatusresponse = await $Get(
-                `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`,
-              );
-              
-              if (checkstatusresponse?.status == 200) {
-                const resultstatus=await checkstatusresponse?.json()
-                if(resultstatus == "SUCCESS"){
-                  clearInterval(intervalId);
-                  console.log(`okayyyyyy`);
-                  setErrorcount(0);
-                  getmeasurments(pageinationpage);
-                }
-            
-              } else {
-                setErrorcount(prev => {
-                  const newCount = prev + 1;
-                  if (newCount === 4) {
-                    console.log(`error is: hhhhh`);
-                    clearInterval(intervalId);
-                    toast('An error was encountered', {
-                      type: 'error',
-                      autoClose: 1000,
+              await createondemandmeasurmentresponse.json();
+  
+            // استفاده از Promise برای مدیریت setInterval
+            await new Promise<void>((resolve, reject) => {
+              const intervalId = setInterval(async () => {
+                try {
+                  const checkstatusresponse = await $Get(
+                    `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`
+                  );
+  
+                  if (checkstatusresponse?.status === 200) {
+                    const resultstatus = await checkstatusresponse.json();
+  
+                    if (resultstatus === "SUCCESS") {
+                      clearInterval(intervalId);
+                      toast('It was done successfully', {
+                        type: 'success',
+                        autoClose: 1000,
+                      });
+                      setErrorcount(0);
+                      getmeasurments(pageinationpage);
+                      resolve(); // پایان عملیات
+                    }
+                  } else {
+                    setErrorcount((prev) => {
+                      const newCount = prev + 1;
+                      if (newCount === 4) {
+                        clearInterval(intervalId);
+                        toast('An error was encountered', {
+                          type: 'error',
+                          autoClose: 1000,
+                        });
+                        setGetmeasurmentloading(false);
+                        setErrorcount(0);
+                        reject(new Error('Max retries reached'));
+                      }
+                      return newCount;
                     });
-                    setGetmeasurmentloading(false);
-                    setErrorcount(0);
                   }
-                  return newCount;
-                });
-              }
-            }, 1000);
+                } catch (err) {
+                  clearInterval(intervalId);
+                  reject(err);
+                }
+              }, 1000);
+            });
           }
         }
       } catch (error) {
-        console.log(`error is: ${error}`);
-        toast('An error was encountered', {type: 'error', autoClose: 1000});
+        console.log(`Error: ${error}`);
+        toast('An error was encountered', { type: 'error', autoClose: 1000 });
+      } finally {
+        setGetmeasurmentloading(false);
       }
     }
   };

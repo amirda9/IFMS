@@ -47,42 +47,55 @@ const TestDetailsStatus: FC = () => {
     try {
       setTestnowloading(true);
       const testnowresponse = await $Post(
-        `otdr/optical-route/${params?.opticalRouteId}/single-measurement?test_setup_id=${params?.testId}&measurement_type=learning `,
+        `otdr/optical-route/${params?.opticalRouteId}/single-measurement?test_setup_id=${params?.testId}&measurement_type=learning`,
         {},
       );
+  
       if (testnowresponse?.status == 201) {
         const responsjeson = await testnowresponse.json();
-        const intervalId = setInterval(async () => {
-          const checkstatusresponse = await $Get(
-            `otdr/optical-route/${params?.opticalRouteId}/check-status/${responsjeson}`,
-          );
-
-          if (checkstatusresponse?.status == 200) {
-            setTestnowloading(false);
-            clearInterval(intervalId);
-            toast('It was done successfully', {
-              type: 'success',
-              autoClose: 1000,
-            });
-          } else {
-            setErrorcount(prev => {
-              const newCount = prev + 1;
-              if (newCount === 4) {
-                clearInterval(intervalId);
-                toast('An error was encountered', {
-                  type: 'error',
-                  autoClose: 1000,
+  
+        await new Promise<void>((resolve, reject) => {
+          const intervalId = setInterval(async () => {
+            try {
+              const checkstatusresponse = await $Get(
+                `otdr/optical-route/${params?.opticalRouteId}/check-status/${responsjeson}`,
+              );
+  
+              if (checkstatusresponse?.status == 200) {
+                const resultstatus = await checkstatusresponse?.json();
+                if (resultstatus == "SUCCESS") {
+                  setTestnowloading(false);
+                  clearInterval(intervalId);
+                  toast('It was done successfully', {
+                    type: 'success',
+                    autoClose: 1000,
+                  });
+                  resolve(); // پایان عملیات
+                }
+              } else {
+                setErrorcount((prev) => {
+                  const newCount = prev + 1;
+                  if (newCount === 4) {
+                    clearInterval(intervalId);
+                    toast('An error was encountered', {
+                      type: 'error',
+                      autoClose: 1000,
+                    });
+                    setErrorcount(0);
+                    setTestnowloading(false);
+                    reject(new Error('Max retries reached'));
+                  }
+                  return newCount;
                 });
-                setErrorcount(0);
-                setTestnowloading(false);
               }
-              return newCount;
-            });
-          }
-        }, 1000);
-        // toast('It was done successfully', {type: 'success', autoClose: 1000})
+            } catch (err) {
+              clearInterval(intervalId);
+              reject(err);
+            }
+          }, 1000);
+        });
       } else {
-        toast('Encountered an error', {type: 'error', autoClose: 1000});
+        toast('Encountered an error', { type: 'error', autoClose: 1000 });
       }
     } catch (error) {
       console.log(`the test now error is:${error}`);
@@ -97,6 +110,8 @@ const TestDetailsStatus: FC = () => {
     }
   }, []);
 
+  console.log("testnowloadingtestnowloading",testnowloading);
+  
   return (
     <div className="flex flex-grow flex-col gap-y-8">
       <div className="flex flex-grow flex-col gap-y-4">
