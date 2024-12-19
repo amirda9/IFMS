@@ -465,12 +465,16 @@ function Testondemand() {
               const checkstatusresponse = await $Get(
                 `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`,
               );
-
+              
               if (checkstatusresponse?.status == 200) {
-                clearInterval(intervalId);
-                console.log(`okayyyyyy`);
-                setErrorcount(0);
-                getmeasurments(pageinationpage);
+                const resultstatus=await checkstatusresponse?.json()
+                if(resultstatus == "SUCCESS"){
+                  clearInterval(intervalId);
+                  console.log(`okayyyyyy`);
+                  setErrorcount(0);
+                  getmeasurments(pageinationpage);
+                }
+            
               } else {
                 setErrorcount(prev => {
                   const newCount = prev + 1;
@@ -497,9 +501,9 @@ function Testondemand() {
     }
   };
 
-  // useEffect(() => {
-  //    getmeasurments();
-  // }, []);
+  useEffect(() => {
+     getmeasurments(1,20);
+  }, []);
 
   const deletehistory = async (id: string) => {
     try {

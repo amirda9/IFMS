@@ -486,6 +486,7 @@ const MapPage = () => {
         setAlarms(filteredData);
       }
 
+ 
       
       let regiondata: any = [];
       let stationdata: Stationtype[] = [];
