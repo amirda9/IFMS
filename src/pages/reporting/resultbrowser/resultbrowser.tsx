@@ -66,6 +66,7 @@ import Swal from 'sweetalert2';
 import {UserRole} from '~/constant/users';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {toast} from 'react-toastify';
+import { getPrettyDateTime } from '~/util/time';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -665,7 +666,7 @@ function Resultbrowser() {
           index: index + 1,
           opticalRouteId: data?.optical_route?.id,
           id: data.id,
-          date: data?.test_date,
+          date: getPrettyDateTime(data?.test_date),
           rtu: data?.rtu?.name,
           opticalRoute: data?.optical_route?.name,
           testSetup: data?.test_setup?.name,
