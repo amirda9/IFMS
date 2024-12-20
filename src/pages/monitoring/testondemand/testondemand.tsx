@@ -434,7 +434,7 @@ function Testondemand() {
           const testsetupresponseData = await testsetupresponse.json();
   
           const createondemandmeasurmentresponse = await $Post(
-            `otdr/optical-route/${selectedId}/on-demand-measurements?measurement_type=on_demand`,
+            `otdr/optical-route/${selectedId}/on-demand-measurements?measurement_type=on_demand&test_setup_id=${testid}`,
             {
               optical_route_id: selectedId,
               rtu_id: testsetupresponseData.rtu.id,

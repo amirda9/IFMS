@@ -6,6 +6,7 @@ import {toast} from 'react-toastify';
 import {SimpleBtn, Table} from '~/components';
 import {deepcopy} from '~/util';
 import {$Delete, $Get} from '~/util/requestapi';
+import { getPrettyDateTime } from '~/util/time';
 
 const columns = {
   index: {label: 'Index', size: 'w-[7%]'},
@@ -99,7 +100,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
       }[] = await getdata?.json();
 
       if (getdata?.status == 200) {
-        setHistorydata(data.map(prev => ({...prev, details: '', delete: ''})));
+        setHistorydata(data.map(prev => ({...prev,date:getPrettyDateTime(prev.date),details: '', delete: ''})));
       }
     } catch (error) {
     } finally {
@@ -245,6 +246,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
                     className="mx-auto cursor-pointer"
                   />
                 );
+         
               else if (key === 'delete')
                 return (
                   <IoTrashOutline
