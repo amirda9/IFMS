@@ -168,6 +168,7 @@ const allcurve: {id: string; data: {x: number; y: number}[]}[] = [
     ],
   },
 ];
+
 const columns = {
   index: {label: 'Index', size: 'w-[9%]'},
   Position: {label: 'Position/Length (km)', size: 'w-[14%]', sort: true},
@@ -994,9 +995,12 @@ function Chart() {
         try {
           setLoading(true);
           const allcurvresponse = await $Get(
-            `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
+            // `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
+            `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${measurementId}`
           );
 
+          console.log("allcurvresponse",allcurvresponse);
+          
           if (allcurvresponse?.status == 200) {
             const allcurvresponsedata: allchartdataype =
               await allcurvresponse?.json();
