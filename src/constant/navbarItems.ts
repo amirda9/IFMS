@@ -4,12 +4,6 @@ export const navbarItems = [
     to: '/networks',
     items: [
       {label: 'Networks', to: '/networks'},
-      {
-        label: 'Regions',
-        to: '/regions',
-      },
-      {label: 'Stations', to: '/stations'},
-      {label: 'Links', to: '/links'},
       {label: 'Map View', to: '/map'},
     ],
   },
