@@ -61,13 +61,19 @@ const SystemPage = () => {
   
   const onSaveButtonClick = () => {
     const systemCopy=deepcopy(system)
-    if(system?.fiber_test_setup_definition_strategy == "monitoring only"){
-      systemCopy.fiber_test_setup_definition_strategy = "monitoring_only"
-    }
+    // if(system?.fiber_test_setup_definition_strategy.toLocaleLowerCase() == "monitoring only"){
+    //   systemCopy.fiber_test_setup_definition_strategy = "monitoring_only"
+    // }
 
-    if(system?.data_save_policy == "do not save"){
-      systemCopy.data_save_policy = "do_not_save"
-    }
+    // if(system?.data_save_policy.toLocaleLowerCase() == "Save Trace File"){
+    //   systemCopy.data_save_policy = "save"
+    // }
+
+    // if(system?.data_save_policy.toLocaleLowerCase() == "Dont Save Trace File"){
+    //   systemCopy.data_save_policy = "do_not_save"
+    // }
+
+    systemCopy.fiber_test_setup_definition_strategy=system?.fiber_test_setup_definition_strategy.toLocaleLowerCase()
     request('SettingsUpdatesystem', {data: {system: systemCopy!}});
   };
 
@@ -153,9 +159,9 @@ const SystemPage = () => {
             <option value={undefined} className="hidden">
               {system?.fiber_test_setup_definition_strategy}
             </option>
-            <option>none</option>
-            <option>monitoring only</option>
-            <option>both</option>
+            <option>None</option>
+            <option>Monitoring only</option>
+            <option>Both</option>
           </Select>
         </Rowinput>
 
@@ -175,8 +181,8 @@ const SystemPage = () => {
               {system?.data_save_policy}
             </option>
 
-            <option>do not save</option>
-            <option>save</option>
+            <option>Save Trace File</option>
+            <option>Dont Save Trace File</option>
           </Select>
         </Rowinput>
 
@@ -195,8 +201,8 @@ const SystemPage = () => {
             <option value={undefined} className="hidden">
               {system?.test_type}
             </option>
-            <option>monitoring</option>
-            <option>maintenance</option>
+            <option>Monitoring</option>
+            <option>Maintenance</option>
           </Select>
         </Rowinput>
       </div>
