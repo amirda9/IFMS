@@ -1,3 +1,4 @@
+import { Label } from '@headlessui/react/dist/components/label/label';
 import dayjs from 'dayjs';
 import {FC, useEffect, useState} from 'react';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
@@ -28,6 +29,7 @@ type historydatatype = {
   rtu: string;
   station: string;
   details: string;
+  test_setup_fk:string;
   delete: string;
 }[];
 
@@ -97,7 +99,9 @@ const OpticalRouteTestHistoryPage: FC = () => {
         alarms: number;
         rtu: string;
         station: string;
+        test_setup_fk:string
       }[] = await getdata?.json();
+console.log("datadatadata",data);
 
       if (getdata?.status == 200) {
         setHistorydata(data.map(prev => ({...prev,date:getPrettyDateTime(prev.date),details: '', delete: ''})));
@@ -174,6 +178,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
           type: string;
           alarms: number;
           rtu: string;
+          test_setup_fk:string;
           station: string;
         }[] = await getdata?.json();
         if (getdata?.status == 200) {
@@ -223,7 +228,7 @@ const OpticalRouteTestHistoryPage: FC = () => {
                         window.open(
                           `/config/chart?opticalrout_id=${params.opticalRouteId!}&measurement_id=${
                             value.measurement_id
-                          }`,
+                          }&test_setup_fk=${value.test_setup_fk}`,
                           '_blank',
                           'noopener,noreferrer',
                         )

@@ -30,9 +30,9 @@ const OpticalRouteDetailsPage: FC = () => {
       opticalrouteDetail: state.http.opticalrouteDetail,
     }),
     initialRequests: request => {
-      request('opticalrouteDetail', {
-        params: {optical_route_id: params.opticalRouteId! || ''},
-      });
+      // request('opticalrouteDetail', {
+      //   params: {optical_route_id: params.opticalRouteId! || ''},
+      // });
     },
   });
 

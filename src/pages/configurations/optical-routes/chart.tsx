@@ -232,6 +232,7 @@ function Chart() {
 
   const opticalRouteId = query.get('opticalrout_id');
   const measurementId = query.get('measurement_id');
+  const test_setup_fk = query.get('test_setup_fk');
 
   useEffect(() => {
     const Getmeasermentsalarms = async () => {
@@ -996,7 +997,7 @@ function Chart() {
           setLoading(true);
           const allcurvresponse = await $Get(
             // `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
-            `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${measurementId}`
+            `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${test_setup_fk}`
           );
 
           console.log("allcurvresponse",allcurvresponse);

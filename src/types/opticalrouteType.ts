@@ -134,7 +134,7 @@ export type opticalrouteUpdateTestSetupDetailtype = {
       },
       end_date: {
         end?:string,
-        indefinite: true
+        indefinite: boolean
       },
       period_time: {
         value: number,

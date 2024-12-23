@@ -33,7 +33,7 @@ const TestDetailsTestProgram: FC = () => {
   const {opticalroutUpdateTestsetupDetail,modalloading,gettestsetupdetaildata} = useSelector(
     (state: any) => state.opticalroute,
   );
-  const [selectedradio, setSelectedradio] = useState<string[]>(["Indefinite"]);
+  const [selectedradio, setSelectedradio] = useState<string[]>([]);
   const [selectedradio2, setSelectedradio2] = useState('');
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
@@ -49,6 +49,7 @@ const TestDetailsTestProgram: FC = () => {
       setSelectedradio(prev => [...prev, 'As Soon As Possible']);
     }
     if (opticalrouteTestSetupDetail?.data?.test_program?.end_date?.indefinite) {
+      alert("kjj")
       setSelectedradio(prev => [...prev, 'Indefinite']);
     }
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
@@ -57,6 +58,7 @@ const TestDetailsTestProgram: FC = () => {
 
   }, []);
 
+console.log("selectedradioselectedradio",selectedradio);
 
   const formik = useFormik({
     enableReinitialize:true,
@@ -79,42 +81,42 @@ const TestDetailsTestProgram: FC = () => {
     onSubmit: () => {},
   });
 
-  function RadioButton({name}: RadioButton) {
-    const onclickbtn = () => {
-      let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail)
+  // function RadioButton({name}: RadioButton) {
+  //   const onclickbtn = () => {
+  //     let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail)
 
-      if (selectedradio.indexOf(name) > -1) {
-      } else {
-        setSelectedradio(prev => [...prev, name]);
-      }
+  //     if (selectedradio.indexOf(name) > -1) {
+  //     } else {
+  //       setSelectedradio(prev => [...prev, name]);
+  //     }
 
-      if (name == 'As Soon As Possible') {
-        formik.setFieldValue('immediately', true);
+  //     if (name == 'As Soon As Possible') {
+  //       formik.setFieldValue('immediately', true);
 
-        dataa.test_program.starting_date.immediately = true;
-        dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-      } else {
-        formik.setFieldValue('enddateEnd', true);
-        dataa.test_program.end_date.indefinite = true;
-        dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-      }
-    };
-    return (
-      <div className="flex flex-row items-center">
-        <button
-          onClick={onclickbtn}
-          className="flex h-[20px] w-[20px] items-center justify-center rounded-[10px] bg-[#ffffff]">
-          <div
-            className={`h-[10px] w-[10px] rounded-[5px] ${
-              selectedradio.indexOf(name) > -1 ? 'bg-[#0E9836]' : 'bg-[#ffffff]'
-            } `}></div>
-        </button>
-        <span className="ml-[8px] text-[20px] font-light text-[#000000]">
-          {name}
-        </span>
-      </div>
-    );
-  }
+  //       dataa.test_program.starting_date.immediately = true;
+  //       dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+  //     } else {
+  //       formik.setFieldValue('enddateEnd', true);
+  //       dataa.test_program.end_date.indefinite = true;
+  //       dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+  //     }
+  //   };
+  //   return (
+  //     <div className="flex flex-row items-center">
+  //       <button
+  //         onClick={onclickbtn}
+  //         className="flex h-[20px] w-[20px] items-center justify-center rounded-[10px] bg-[#ffffff]">
+  //         <div
+  //           className={`h-[10px] w-[10px] rounded-[5px] ${
+  //             selectedradio.indexOf(name) > -1 ? 'bg-[#0E9836]' : 'bg-[#ffffff]'
+  //           } `}></div>
+  //       </button>
+  //       <span className="ml-[8px] text-[20px] font-light text-[#000000]">
+  //         {name}
+  //       </span>
+  //     </div>
+  //   );
+  // }
 
   function RadioButton2({name}: RadioButton) {
     return (
@@ -189,6 +191,7 @@ const TestDetailsTestProgram: FC = () => {
             type="time"
           />
 
+<div className='flex flex-row items-center'>
 <Checkbox
           checkstatus={ selectedradio.indexOf("As Soon As Possible") > -1}
           onclick={()=>{
@@ -209,6 +212,11 @@ const TestDetailsTestProgram: FC = () => {
           iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
           classname={' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'}
         />
+<span className="ml-[8px] text-[20px] font-light text-[#000000]">
+As Soon As Possible
+        </span>
+</div>
+
 
           {/* <RadioButton name="As Soon As Possible" /> */}
         </div>
@@ -245,7 +253,7 @@ const TestDetailsTestProgram: FC = () => {
             className="mr-[30px]"
             type="time"
           />
-
+<div className='flex flex-row items-center'>
 <Checkbox
           checkstatus={ selectedradio.indexOf("Indefinite") > -1}
           onclick={()=>{
@@ -265,6 +273,12 @@ const TestDetailsTestProgram: FC = () => {
           iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
           classname={' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'}
         />
+
+<span className="ml-[8px] text-[20px] font-light text-[#000000]">
+Indefinite
+        </span>
+</div>
+
 
           {/* <RadioButton name="Indefinite" /> */}
         </div>

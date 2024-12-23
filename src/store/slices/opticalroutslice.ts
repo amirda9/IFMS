@@ -103,7 +103,7 @@ const initialState:initialStatetype = {
       },
       end_date: {
         end:"2023-11-28 22:26:02",
-        indefinite: true
+        indefinite: false
       },
       period_time: {
         value: 1,

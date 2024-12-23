@@ -1,12 +1,17 @@
 import {Form, FormikProvider, useFormik} from 'formik';
+
 import {FC, useEffect, useState} from 'react';
+
 import {useDispatch, useSelector} from 'react-redux';
+
 import {useParams} from 'react-router-dom';
+
 import {
   setopticalroutUpdateTestsetupDetail,
   setgettestsetupdetaildata,
   setmodalloading,
 } from './../../../../store/slices/opticalroutslice';
+
 import {Description, Select} from '~/components';
 import {InputFormik} from '~/container';
 import {useHttpRequest} from '~/hooks';
@@ -35,9 +40,13 @@ const seperatedate = (time: string) => {
 };
 
 const TestDetailsParameters: FC = () => {
+
   const [rtulist, setRtulist] = useState<{name: string; id: string}[]>([]);
+
   const params = useParams();
+
   const dispatch = useDispatch();
+
   const {
     opticalroutUpdateTestsetupDetail,
     gettestsetupdetaildata,
@@ -165,6 +174,7 @@ const TestDetailsParameters: FC = () => {
     }
   }, []);
 
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -215,6 +225,8 @@ const TestDetailsParameters: FC = () => {
 
     onSubmit: () => {},
   });
+
+
   const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
 
@@ -265,11 +277,11 @@ const TestDetailsParameters: FC = () => {
               value={formik.values.enabled || false}
               className="basis-96">
               <option value="" className="hidden">
-                {opticalrouteTestSetupDetail?.data?.parameters?.enabled ||
+                {opticalroutUpdateTestsetupDetail?.parameters?.enabled ||
                   false}
               </option>
               <option value={undefined} className="hidden">
-                {opticalrouteTestSetupDetail?.data?.parameters?.enabled ||
+                {opticalroutUpdateTestsetupDetail?.parameters?.enabled ||
                   false}
               </option>
 

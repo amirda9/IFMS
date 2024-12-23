@@ -34,20 +34,23 @@ const TestSetupDetailsModal: FC = () => {
   );
 
   const {request, state} = useHttpRequest({
-    selector: state => ({
-      stationrtulist: state.http.stationrtuList,
+    selector: state => ({ stationrtulist: state.http.stationrtuList,
       stations: state.http.allStations,
       opticalrouteUpdateTestSetup: state.http.opticalrouteUpdateTestSetup,
       opticalrouteTestSetupDetail: state.http.opticalrouteTestSetupDetail,
       opticalrouteCreateTestSetup: state.http.opticalrouteCreateTestSetup,
+     
     }),
     initialRequests: request => {
-      request('opticalrouteTestSetupDetail', {
-        params: {
-          optical_route_id: params.opticalRouteId! || '',
-          test_setup_id: params.testId || '',
-        },
-      });
+      if(params.testId != "create"){
+        request('opticalrouteTestSetupDetail', {
+          params: {
+            optical_route_id: params.opticalRouteId! || '',
+            test_setup_id: params.testId || '',
+          },
+        });
+      }
+   
     },
     onUpdate: (lastState, state) => {
       if (
