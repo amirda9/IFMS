@@ -72,6 +72,7 @@ type tabelrow = {
   opticalrouteid: string;
   opticalroute: string;
   testsetup: string | null;
+  testsetupId:string | null;
   station: string | null;
   measurmenttestid: string;
   status: string;
@@ -406,6 +407,7 @@ function Testondemand() {
             opticalrouteid: data.optical_route.id,
             measurmenttestid: data.id,
             testsetup: data?.test_setup?.name || null,
+            testsetupId: data?.test_setup?.id || null,
             station: data?.test_setup?.station?.name || null,
             status: data?.status,
             detail: '',
@@ -836,7 +838,7 @@ function Testondemand() {
                     window.open(
                       `/config/chart?opticalrout_id=${value.opticalrouteid!}&measurement_id=${
                         value.id
-                      }`,
+                      }&test_setup_fk=${value.testsetupId}`,
                       '_blank',
                       'noopener,noreferrer',
                     )
