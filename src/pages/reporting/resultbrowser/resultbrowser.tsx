@@ -170,6 +170,7 @@ type tabeltype = {
   opticalRoute: string;
   opticalRouteId: string;
   testSetup: string;
+  testSetupId: string;
   testType: string;
   alarms: number;
   state: string;
@@ -670,6 +671,7 @@ function Resultbrowser() {
           rtu: data?.rtu?.name,
           opticalRoute: data?.optical_route?.name,
           testSetup: data?.test_setup?.name,
+          testSetupId: data?.test_setup?.id,
           testType: data?.type,
           alarms: data?.alarm_cnt,
           state: data?.status,
