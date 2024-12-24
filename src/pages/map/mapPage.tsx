@@ -202,9 +202,9 @@ const MapPage = () => {
   const [selectedregion, setSelectedregion] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [selectednetworks, setSelectednetworks] = useState<string[]>([]);
-  const [lastselectednetwork,setLastselectednetwork]=useState("")
+  const [lastselectednetwork, setLastselectednetwork] = useState('');
   const [links, setLinks] = useState<linktype[]>([]);
-  const [showUpdateMapCenter,setShowUpdateMapCenter]=useState(false)
+  const [showUpdateMapCenter, setShowUpdateMapCenter] = useState(false);
   const [sumselectedregionlatitude, setSumSelectedregionlatitude] =
     useState<any>([]);
   const [sumselectedregionlongitude, setSumSelectedregionlongitude] =
@@ -213,7 +213,7 @@ const MapPage = () => {
     {value: string; label: string}[]
   >([]);
 
-  const UpdateMapCenter = ({ center }:any) => {
+  const UpdateMapCenter = ({center}: any) => {
     const map = useMap();
     const [userInteracted, setUserInteracted] = useState(false);
 
@@ -233,7 +233,6 @@ const MapPage = () => {
       if (!userInteracted && center) {
         map.setView(center); // حرکت نرم به مرکز جدید
       }
-  
     }, [center, userInteracted, map]);
 
     return null;
@@ -313,25 +312,7 @@ const MapPage = () => {
 
     return count;
   }
-  // console.log(Regions,'👄Regions');
-
-  // console.log('Regions', Regions);
-
-  // const Stations = state?.detail?.data?.stations;
-  // const Regions = state?.detail?.data?.regions || [];
-
-  // const regiondata = (id: string) => {
-  //   const find = Regions.find((data: any) => data.id == id);
-  //   let sumlatitude = 0;
-  //   let sumlongitude = 0;
-  //   for (let i = 0; i < find.stations.length; i++) {
-  //     sumlatitude += find.stations[i].latitude;
-  //     sumlongitude += find.stations[i].longitude;
-  //   }
-  //   setSumSelectedregionlatitude(sumlatitude);
-  //   setSumSelectedregionlongitude(sumlongitude);
-  //   setSelectedregion(find);
-  // };
+ 
 
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
@@ -363,99 +344,6 @@ const MapPage = () => {
     getallnetwork();
   }, []);
 
-  // const getmapdetail = async () => {
-  //   setSelectedregion([]);
-  //   setRegionname('');
-  //   try {
-  //     const response = await $Post(`otdr/map`, selectednetworks);
-  //     const responsedata = await response?.json();
-  //     let regiondata: any = [];
-  //     let stationdata: Stationtype[] = [];
-  //     let linksdata = [];
-  //     for (let i = 0; i < responsedata.length; i++) {
-  //       regiondata.push(...responsedata[i].regions);
-  //       for (let t = 0; t < responsedata[i].regions.length; t++) {
-  //         stationdata.push(
-  //           ...responsedata[i].regions[t].stations.map((data: any) => ({
-  //             ...data,
-  //             regionName: responsedata[i].regions[t].name || '',
-  //             regionId: responsedata[i].regions[t].id || '',
-  //           })),
-  //         );
-  //         linksdata.push(
-  //           ...responsedata[i].regions[t].links.map((data: any) => ({
-  //             ...data,
-  //             regionName: responsedata[i].regions[t].name || '',
-  //             regionId: responsedata[i].regions[t].id || '',
-  //           })),
-  //         );
-  //       }
-
-  //       for (let d = 0; d < responsedata[i].stations.length; d++) {
-  //         const findstationdata = stationdata.findIndex(
-  //           data => data.id == responsedata[i].stations[d].id,
-  //         );
-  //         if (findstationdata < 0) {
-  //           stationdata.push(responsedata[i].stations[d]);
-  //         }
-  //       }
-
-  //       for (let d = 0; d < responsedata[i].links.length; d++) {
-  //         const findstationdata = linksdata.findIndex(
-  //           data => data.id == responsedata[i].links[d].id,
-  //         );
-  //         if (findstationdata < 0) {
-  //           linksdata.push(responsedata[i].links[d]);
-  //         }
-  //       }
-  //     }
-  //     // console.log('stationdata', stationdata);
-  //     // console.log('linksdata', linksdata);
-  //     // console.log('regiondata', regiondata);
-  //     setRegions(regiondata);
-  //     setStaations(stationdata);
-  //     setLinks(linksdata);
-  //     setSelectboxregions(
-  //       regiondata.map((data: any) => ({id: data.id, name: data.name})),
-  //     );
-  //   } catch (error) {
-  //     console.log('getmapdetailerror', error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (mount) {
-  //     const getalarms = async () => {
-  //       try {
-  //         setLoading(true);
-  //         const [allalarmsresponse] = await Promise.all([
-  //           $Post(`otdr/map/map_alarms/`, selectednetworks),
-  //         ]);
-
-  //         const alarmsdata: alarmtype[] = await allalarmsresponse?.json();
-  //         const filteredData =
-  //           selectedregion.length > 0
-  //             ? alarmsdata.filter(item =>
-  //                 item.regions.some(
-  //                   region => selectedregion.indexOf(region.region_id) > -1,
-  //                 ),
-  //               )
-  //             : alarmsdata;
-  //         setAlarms(filteredData);
-  //       } catch (error) {
-  //         console.log(`get allalarms error is:${error}`);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
-  //     getalarms();
-  //   } else {
-  //     setMount(true);
-  //   }
-  // }, [redalarms, yellowalarms, orangealarms]);
-
-
-
 
   const getalldetail = async () => {
     setSelectedregion([]);
@@ -472,6 +360,7 @@ const MapPage = () => {
         mount ? null : $Post(`otdr/map/map_alarms/`, selectednetworks),
       ]);
       const responsedata = await mapdetailresponse?.json();
+      console.log('responsedatauuuu', responsedata);
 
       if (!mount) {
         const alarmsdata: alarmtype[] = await allalarmsresponse?.json();
@@ -486,8 +375,6 @@ const MapPage = () => {
         setAlarms(filteredData);
       }
 
- 
-      
       let regiondata: any = [];
       let stationdata: Stationtype[] = [];
       let linksdata = [];
@@ -518,17 +405,52 @@ const MapPage = () => {
             stationdata.push(responsedata[i].stations[d]);
           }
         }
-
+        let alldata = [];
         for (let d = 0; d < responsedata[i].links.length; d++) {
-          allpoints.push(
-            ...responsedata[i].links[d].link_points.map(
-              (dataa: {latitude: number; longitude: number}) => ({
+          const findsource=responsedata[i].links[d].link_points.find((data:any)=> data.latitude == responsedata[i].links[d].source.latitude)
+          const finddestination=responsedata[i].links[d].link_points.find((data:any)=> data.latitude == responsedata[i].links[d].destination.latitude);
+        
+        
+          
+          if (responsedata[i].links[d].link_points.length > 0) {
+            allpoints.push(
+              ...(findsource
+                ? []
+                : [
+                    {
+                      latitude: responsedata[i].links[d].source.latitude,
+                      longitude: responsedata[i].links[d].source.longitude,
+                      linkdetail: responsedata[i].links[d],
+                    },
+                  ]),
+              ...responsedata[i].links[d].link_points.map((dataa: { latitude: number; longitude: number }) => ({
                 latitude: dataa.latitude,
                 longitude: dataa.longitude,
                 linkdetail: responsedata[i].links[d],
-              }),
-            ),
-          );
+              })),
+              ...(finddestination
+                ? []
+                : [
+                    {
+                      latitude: responsedata[i].links[d].destination.latitude,
+                      longitude: responsedata[i].links[d].destination.longitude,
+                      linkdetail: responsedata[i].links[d],
+                    },
+                  ])
+            );
+          }
+         
+
+          // allpoints.push(
+          //   ...responsedata[i].links[d].link_points.map(
+          //     (dataa: {latitude: number; longitude: number}) => ({
+          //       latitude: dataa.latitude,
+          //       longitude: dataa.longitude,
+          //       linkdetail: responsedata[i].links[d],
+          //     }),
+          //   ))
+
+        
           const findstationdata = linksdata.findIndex(
             data => data.id == responsedata[i].links[d].id,
           );
@@ -538,26 +460,32 @@ const MapPage = () => {
         }
       }
       if (stationdata.length > 0) {
-        if(lastselectednetwork.length == 0){
+        if (lastselectednetwork.length == 0) {
           setMapcenter([
             stationdata[stationdata.length - 1].longitude,
             stationdata[stationdata.length - 1].latitude,
           ]);
-        }else{
-          const findnetowrks=responsedata.findIndex((data:any) => data.id == lastselectednetwork)
-          
-          if(findnetowrks > -1 && responsedata[findnetowrks].stations.length > 0){
-            const findedlongitude=responsedata[findnetowrks].stations[0].longitude
-            const findedlatitude=responsedata[findnetowrks].stations[0].latitude
+        } else {
+          const findnetowrks = responsedata.findIndex(
+            (data: any) => data.id == lastselectednetwork,
+          );
+
+          if (
+            findnetowrks > -1 &&
+            responsedata[findnetowrks].stations.length > 0
+          ) {
+            const findedlongitude =
+              responsedata[findnetowrks].stations[0].longitude;
+            const findedlatitude =
+              responsedata[findnetowrks].stations[0].latitude;
             setMapcenter([findedlongitude, findedlatitude]);
-          } else{
+          } else {
             setMapcenter([
               stationdata[stationdata.length - 1].longitude,
               stationdata[stationdata.length - 1].latitude,
             ]);
           }
         }
-       
       } else {
         setMapcenter([35.6892, 51.389]);
       }
@@ -572,19 +500,15 @@ const MapPage = () => {
       console.log('getmapdetailerror', error);
     } finally {
       setLoading(false);
-  
     }
   };
 
   useEffect(() => {
     getalldetail();
-    setTimeout(()=>{
-      setShowUpdateMapCenter(false)
-    },10000)
-  
+    setTimeout(() => {
+      setShowUpdateMapCenter(false);
+    }, 10000);
   }, [selectednetworks]);
-
-
 
   const MapClickAlert = () => {
     useMapEvents({
@@ -654,9 +578,8 @@ const MapPage = () => {
   };
 
   const selectrange = (data: {name: string; id: number}[]) => {
-    
-    setLastselectednetwork(data[data.length-1]?.id?.toString() || "")
-    setShowUpdateMapCenter(true)
+    setLastselectednetwork(data[data.length - 1]?.id?.toString() || '');
+    setShowUpdateMapCenter(true);
     const dataa: string[] = [];
 
     for (let j = 0; j < data.length; j++) {
@@ -712,7 +635,6 @@ const MapPage = () => {
     }
   }
 
-
   const highSeverityEvents: serverity[] = useMemo(() => {
     if (redalarms) {
       return alarms.flatMap(item =>
@@ -725,7 +647,6 @@ const MapPage = () => {
     } else return [];
   }, [alarms, redalarms]);
 
-
   const LowSeverityEvents: serverity[] = useMemo(() => {
     if (yellowalarms) {
       return alarms.flatMap(item =>
@@ -737,7 +658,6 @@ const MapPage = () => {
       );
     } else return [];
   }, [alarms, yellowalarms]);
-
 
   const MediumSeverityEvents: serverity[] = useMemo(() => {
     if (orangealarms) {
@@ -752,6 +672,8 @@ const MapPage = () => {
   }, [alarms, orangealarms]);
 
 
+  // console.log("allLinkpoints",allLinkpoints);
+  
   // ******************** return ****************** return ************************** return *******************************
   return (
     <>
@@ -1001,12 +923,10 @@ const MapPage = () => {
             scrollWheelZoom={true}
             zoomControl={false}
             className={`h-full w-full`}>
-              {showUpdateMapCenter?
-                 <UpdateMapCenter center={mapcenter} />
-            
-            :
-            null}
-         
+            {showUpdateMapCenter ? (
+              <UpdateMapCenter center={mapcenter} />
+            ) : null}
+
             {loading ? (
               <Mainloading classname="w-full h-full absolute left-0 right-0 top-0 z-[100] items-center justify-center bg-neutral-400 opacity-10" />
             ) : null}
