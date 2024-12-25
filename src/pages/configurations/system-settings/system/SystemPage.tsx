@@ -73,7 +73,7 @@ const SystemPage = () => {
     //   systemCopy.data_save_policy = "do_not_save"
     // }
 
-    systemCopy.fiber_test_setup_definition_strategy=system?.fiber_test_setup_definition_strategy.toLocaleLowerCase()
+    systemCopy.fiber_test_setup_definition_strategy=system?.fiber_test_setup_definition_strategy
     request('SettingsUpdatesystem', {data: {system: systemCopy!}});
   };
 
@@ -128,7 +128,7 @@ const SystemPage = () => {
             value={system?.break_strategy}
             onChange={e => {
               let old = {...system!};
-              old.break_strategy = e.target.value.toLowerCase();
+              old.break_strategy = e.target.value;
               setSystem(old);
             }}
             className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
@@ -149,7 +149,7 @@ const SystemPage = () => {
             onChange={e => {
               let old = {...system!};
               old.fiber_test_setup_definition_strategy =
-                e.target.value.toLowerCase();
+                e.target.value;
               setSystem(old);
             }}
             className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
@@ -170,7 +170,7 @@ const SystemPage = () => {
             value={system?.data_save_policy}
             onChange={e => {
               let old = {...system!};
-              old.data_save_policy = e.target.value.toLowerCase();
+              old.data_save_policy = e.target.value;
               setSystem(old);
             }}
             className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
@@ -191,7 +191,7 @@ const SystemPage = () => {
             value={system?.test_type}
             onChange={e => {
               let old = {...system!};
-              old.test_type = e.target.value.toLowerCase();
+              old.test_type = e.target.value;
               setSystem(old);
             }}
             className="w-full text-sm font-light leading-[24.2px] text-[#000000]">
