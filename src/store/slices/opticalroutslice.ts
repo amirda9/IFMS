@@ -52,10 +52,10 @@ const initialState:initialStatetype = {
    endtimePart:"22:26:02",
     parameters: {
       enabled: true,
-      type: "monitoring",
+      type: "Monitoring",
       wavelength: "1625",
-      break_strategy: "skip",
-      date_save_policy: "save",
+      break_strategy: "Skip",
+      date_save_policy: "Save Trace File",
       test_mode: "fast",
       run_mode:"average",
       distance_mode: "manual",

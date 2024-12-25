@@ -98,18 +98,18 @@ const SystemPage = () => {
   }, []);
   const onResetButtonClick = () => {
     setSystem({
-      break_strategy: 'skip',
-      fiber_test_setup_definition_strategy: 'both',
-      data_save_policy: 'do_not_save',
-      test_type: 'monitoring',
+      break_strategy: 'Skip',
+      fiber_test_setup_definition_strategy: 'Both',
+      data_save_policy: 'Dont Save Trace File',
+      test_type: 'Monitoring',
     });
     request('SettingsUpdatesystem', {
       data: {
         system: {
-          break_strategy: 'skip',
-          fiber_test_setup_definition_strategy: 'both',
-          data_save_policy: 'do_not_save',
-          test_type: 'monitoring',
+          break_strategy: 'Skip',
+          fiber_test_setup_definition_strategy: 'Both',
+          data_save_policy: 'Data Save Policy',
+          test_type: 'Monitoring',
         },
       },
     });

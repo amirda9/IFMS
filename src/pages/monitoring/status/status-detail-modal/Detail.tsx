@@ -101,10 +101,10 @@ const Detail: FC = () => {
             </option>
 
             <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              monitoring
+            Monitoring
             </option>
             <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              maintenance
+            Maintenance
             </option>
           </SelectFormik>
         </Row>
@@ -188,10 +188,10 @@ const Detail: FC = () => {
             </option>
 
             <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              skip
+              Skip
             </option>
             <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              continue
+            Continue
             </option>
           </SelectFormik>
         </Row>
@@ -209,10 +209,10 @@ const Detail: FC = () => {
             </option>
 
             <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              save
+            Save Trace File
             </option>
             <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              do_not_save
+            Dont Save Trace File
             </option>
           </SelectFormik>
         </Row>
