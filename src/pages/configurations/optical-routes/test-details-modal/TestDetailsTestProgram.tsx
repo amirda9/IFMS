@@ -4,9 +4,9 @@ import dateicon from '~/assets/images/dateicon.png';
 import {setopticalroutUpdateTestsetupDetail} from '~/store/slices/opticalroutslice';
 import {useDispatch, useSelector} from 'react-redux';
 import {useFormik} from 'formik';
-import { deepcopy } from '~/util';
+import {deepcopy} from '~/util';
 import Checkbox from '~/components/checkbox/checkbox';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 const seperatedate = (time: string) => {
   //The function below takes a date and separates its time and date
@@ -28,20 +28,22 @@ type RadioButton = {
 };
 const TestDetailsTestProgram: FC = () => {
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const {opticalrouteTestSetupDetail} = useSelector((state: any) => state.http);
-  const {opticalroutUpdateTestsetupDetail,modalloading,gettestsetupdetaildata} = useSelector(
-    (state: any) => state.opticalroute,
-  );
+  const {
+    opticalroutUpdateTestsetupDetail,
+    modalloading,
+    gettestsetupdetaildata,
+  } = useSelector((state: any) => state.opticalroute);
   const [selectedradio, setSelectedradio] = useState<string[]>([]);
   const [selectedradio2, setSelectedradio2] = useState('');
   const firstdateref: any = useRef(null);
   const secenddateref: any = useRef(null);
-  useEffect(()=>{
+  useEffect(() => {
     if (!gettestsetupdetaildata) {
-      navigate(-1)
+      navigate(-1);
     }
-  },[])
+  }, []);
   useEffect(() => {
     if (
       opticalroutUpdateTestsetupDetail?.test_program?.starting_date?.immediately
@@ -49,22 +51,22 @@ const TestDetailsTestProgram: FC = () => {
       setSelectedradio(prev => [...prev, 'As Soon As Possible']);
     }
     if (opticalrouteTestSetupDetail?.data?.test_program?.end_date?.indefinite) {
-      alert("kjj")
       setSelectedradio(prev => [...prev, 'Indefinite']);
     }
     //The information that comes from the backend is lowercase while we need the first letters of them to be uppercase
-    let a = opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time.toString() || 'hourly';
+    let a =
+      opticalroutUpdateTestsetupDetail?.test_program?.period_time?.period_time.toString() ||
+      'hourly';
     setSelectedradio2(a);
-
   }, []);
 
-console.log("selectedradioselectedradio",selectedradio);
+  console.log('selectedradioselectedradio', selectedradio);
 
   const formik = useFormik({
-    enableReinitialize:true,
+    enableReinitialize: true,
     initialValues: {
-      startingdateStart:opticalroutUpdateTestsetupDetail?.startdatePart,
-      startingdateStarttime:opticalroutUpdateTestsetupDetail?.starttimePart,
+      startingdateStart: opticalroutUpdateTestsetupDetail?.startdatePart,
+      startingdateStarttime: opticalroutUpdateTestsetupDetail?.starttimePart,
       immediately:
         opticalroutUpdateTestsetupDetail?.test_program?.starting_date
           ?.immediately,
@@ -123,14 +125,11 @@ console.log("selectedradioselectedradio",selectedradio);
       <div className="flex flex-row items-center">
         <button
           onClick={() => {
-            let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail);
+            let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
             setSelectedradio2(name),
-              formik.setFieldValue(
-                'periodtimePeriodtime',
-                name,
-              );
-              let newName=name
-           
+              formik.setFieldValue('periodtimePeriodtime', name);
+            let newName = name;
+
             dataa.test_program.period_time.period_time = newName;
 
             dispatch(setopticalroutUpdateTestsetupDetail(dataa));
@@ -148,27 +147,23 @@ console.log("selectedradioselectedradio",selectedradio);
     );
   }
 
-
-
   if (modalloading) {
     return <h1>Loading...</h1>;
   }
   return (
-    
     <div className="flex flex-col gap-y-8">
       <Description label="Starting Date">
         <div className="flex items-center">
           <input
             onChange={e => {
-              let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
-           
-              
+              let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
+
               formik.setFieldValue('startingdateStart', e.target.value);
               dataa.startdatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-          //  defaultValue={""}
-         value={opticalroutUpdateTestsetupDetail?.startdatePart}
+            //  defaultValue={""}
+            value={opticalroutUpdateTestsetupDetail?.startdatePart}
             ref={firstdateref}
             type="date"
             className="ml-6 h-8 w-48 rounded-md border border-black px-2"
@@ -181,7 +176,7 @@ console.log("selectedradioselectedradio",selectedradio);
           <TextInput
             onChange={e => {
               formik.setFieldValue('startingdateStarttime', e.target.value);
-              console.log("e.target.value",e.target.value);
+              console.log('e.target.value', e.target.value);
               let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
               dataa.starttimePart = `${e.target.value}`;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
@@ -191,32 +186,37 @@ console.log("selectedradioselectedradio",selectedradio);
             type="time"
           />
 
-<div className='flex flex-row items-center'>
-<Checkbox
-          checkstatus={ selectedradio.indexOf("As Soon As Possible") > -1}
-          onclick={()=>{
-            let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail)
-             const finddataindex=selectedradio.findIndex((data)=> data == "As Soon As Possible")
-            if (finddataindex> -1) {
-              const selectedradioCopy=deepcopy(selectedradio)
-              selectedradioCopy.splice(finddataindex,1)
-              setSelectedradio(selectedradioCopy);
-            } else {
-              setSelectedradio(prev => [...prev, "As Soon As Possible"]);
-            }
-            formik.setFieldValue('immediately', !formik.values.immediately);
+          <div className="flex flex-row items-center">
+            <Checkbox
+              checkstatus={selectedradio.indexOf('As Soon As Possible') > -1}
+              onclick={() => {
+                let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
+                const finddataindex = selectedradio.findIndex(
+                  data => data == 'As Soon As Possible',
+                );
+                if (finddataindex > -1) {
+                  const selectedradioCopy = deepcopy(selectedradio);
+                  selectedradioCopy.splice(finddataindex, 1);
+                  setSelectedradio(selectedradioCopy);
+                } else {
+                  setSelectedradio(prev => [...prev, 'As Soon As Possible']);
+                }
+                formik.setFieldValue('immediately', !formik.values.immediately);
 
-            dataa.test_program.starting_date.immediately = !opticalroutUpdateTestsetupDetail.test_program.starting_date.immediately;
-            dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-          }}
-          iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
-          classname={' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'}
-        />
-<span className="ml-[8px] text-[20px] font-light text-[#000000]">
-As Soon As Possible
-        </span>
-</div>
-
+                dataa.test_program.starting_date.immediately =
+                  !opticalroutUpdateTestsetupDetail.test_program.starting_date
+                    .immediately;
+                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+              }}
+              iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+              classname={
+                ' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'
+              }
+            />
+            <span className="ml-[8px] text-[20px] font-light text-[#000000]">
+              As Soon As Possible
+            </span>
+          </div>
 
           {/* <RadioButton name="As Soon As Possible" /> */}
         </div>
@@ -227,7 +227,7 @@ As Soon As Possible
             onChange={e => {
               formik.setFieldValue('enddateEnd', e.target.value);
               let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
-              
+
               dataa.enddatePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
@@ -244,8 +244,8 @@ As Soon As Possible
           <TextInput
             onChange={e => {
               formik.setFieldValue('enddateEndtime', e.target.value);
-              let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
-              
+              let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
+
               dataa.endtimePart = e.target.value;
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
@@ -253,32 +253,37 @@ As Soon As Possible
             className="mr-[30px]"
             type="time"
           />
-<div className='flex flex-row items-center'>
-<Checkbox
-          checkstatus={ selectedradio.indexOf("Indefinite") > -1}
-          onclick={()=>{
-            let dataa: any =deepcopy(opticalroutUpdateTestsetupDetail)
-             const finddataindex=selectedradio.findIndex((data)=> data == "Indefinite")
-            if (finddataindex> -1) {
-              const selectedradioCopy=deepcopy(selectedradio)
-              selectedradioCopy.splice(finddataindex,1)
-              setSelectedradio(selectedradioCopy);
-            } else {
-              setSelectedradio(prev => [...prev, "Indefinite"]);
-            }
-            formik.setFieldValue('enddateEnd', !formik.values.enddateEnd);
-        dataa.test_program.end_date.indefinite = !opticalroutUpdateTestsetupDetail.test_program.end_date.indefinite;
-        dispatch(setopticalroutUpdateTestsetupDetail(dataa));
-          }}
-          iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
-          classname={' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'}
-        />
+          <div className="flex flex-row items-center">
+            <Checkbox
+              checkstatus={selectedradio.indexOf('Indefinite') > -1}
+              onclick={() => {
+                let dataa: any = deepcopy(opticalroutUpdateTestsetupDetail);
+                const finddataindex = selectedradio.findIndex(
+                  data => data == 'Indefinite',
+                );
+                if (finddataindex > -1) {
+                  const selectedradioCopy = deepcopy(selectedradio);
+                  selectedradioCopy.splice(finddataindex, 1);
+                  setSelectedradio(selectedradioCopy);
+                } else {
+                  setSelectedradio(prev => [...prev, 'Indefinite']);
+                }
+                formik.setFieldValue('enddateEnd', !formik.values.enddateEnd);
+                dataa.test_program.end_date.indefinite =
+                  !opticalroutUpdateTestsetupDetail.test_program.end_date
+                    .indefinite;
+                dispatch(setopticalroutUpdateTestsetupDetail(dataa));
+              }}
+              iconclassnam="ml-[1px] mt-[1px] text-[#18C047]"
+              classname={
+                ' border-[1px] text-[#18C047] border-[#000000] mr-[7px]'
+              }
+            />
 
-<span className="ml-[8px] text-[20px] font-light text-[#000000]">
-Indefinite
-        </span>
-</div>
-
+            <span className="ml-[8px] text-[20px] font-light text-[#000000]">
+              Indefinite
+            </span>
+          </div>
 
           {/* <RadioButton name="Indefinite" /> */}
         </div>
@@ -289,19 +294,20 @@ Indefinite
           <RadioButton2 name={'daily'} />
           <RadioButton2 name={'monthly'} />
           <RadioButton2 name={'yearly'} />
-          
         </div>
         <div className="ml-16">
           <span>Every</span>
           <TextInput
             onChange={e => {
-              let dataa =deepcopy(opticalroutUpdateTestsetupDetail);
-              
+              let dataa = deepcopy(opticalroutUpdateTestsetupDetail);
+
               formik.setFieldValue('periodtimevalue', e.target.value);
-              dataa.test_program.period_time.value =Number(e.target.value) ;
+              dataa.test_program.period_time.value = Number(e.target.value);
               dispatch(setopticalroutUpdateTestsetupDetail(dataa));
             }}
-            value={opticalroutUpdateTestsetupDetail?.test_program?.period_time?.value}
+            value={
+              opticalroutUpdateTestsetupDetail?.test_program?.period_time?.value
+            }
             type="number"
             className="mx-4 w-16"
           />

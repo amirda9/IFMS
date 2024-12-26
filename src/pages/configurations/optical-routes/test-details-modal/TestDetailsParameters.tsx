@@ -14,7 +14,6 @@ import {
 
 import {Description, Select} from '~/components';
 import {InputFormik} from '~/container';
-import {useHttpRequest} from '~/hooks';
 import {$Get} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import {toast} from 'react-toastify';
@@ -39,12 +38,18 @@ const seperatedate = (time: string) => {
   return {datePart: datePart, timePart: timePart};
 };
 
+type stationsType = {
+  id: string
+  name: string
+  network_id: string
+  time_created: string
+  time_updated: string
+  region_id: string
+};
 const TestDetailsParameters: FC = () => {
-
+  const [stations, setStations] = useState<stationsType[]>([]);
   const [rtulist, setRtulist] = useState<{name: string; id: string}[]>([]);
-
   const params = useParams();
-
   const dispatch = useDispatch();
 
   const {
@@ -52,20 +57,6 @@ const TestDetailsParameters: FC = () => {
     gettestsetupdetaildata,
     modalloading,
   } = useSelector((state: any) => state.opticalroute);
-
-  const {
-    request,
-    state: {opticalrouteTestSetupDetail, stations},
-  } = useHttpRequest({
-    selector: state => ({
-      stationrtulist: state.http.stationrtuList,
-      stations: state.http.allStations,
-      opticalrouteTestSetupDetail: state.http.opticalrouteTestSetupDetail,
-    }),
-    initialRequests: request => {
-      request('allStations', undefined);
-    },
-  });
 
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
@@ -84,8 +75,11 @@ const TestDetailsParameters: FC = () => {
             const gettestSetupParameters =
               await gettestSetupParametersresponse?.json();
 
-              console.log("gettestSetupParameters",gettestSetupParameters);
-              console.log("testSetupParametCopytestSetupParametCopy",gettestSetupParameters);
+            console.log('gettestSetupParameters', gettestSetupParameters);
+            console.log(
+              'testSetupParametCopytestSetupParametCopy',
+              gettestSetupParameters,
+            );
             const testSetupParametCopy = deepcopy(gettestSetupParameters);
 
             let checkstartend = Number(
@@ -119,7 +113,7 @@ const TestDetailsParameters: FC = () => {
               // (testSetupParametCopy.init_rtu_name = rtulist.find(data => data.id == testSetupParametCopy?.rtu?.id)
               (testSetupParametCopy.init_rtu_name =
                 gettestSetupParameters?.rtu?.name);
-            testSetupParametCopy.station_name = stations?.data?.find(
+            testSetupParametCopy.station_name = stations?.find(
               stationdata =>
                 stationdata.id == testSetupParametCopy?.station?.id,
             )?.name;
@@ -154,11 +148,10 @@ const TestDetailsParameters: FC = () => {
             testSetupParametCopy.enddatePart = seperatedate(
               testSetupParametCopy?.test_program?.end_date?.end,
             ).datePart;
-    
+
             delete testSetupParametCopy['station'];
 
             delete testSetupParametCopy['rtu'];
-
 
             dispatch(setopticalroutUpdateTestsetupDetail(testSetupParametCopy));
             dispatch(setgettestsetupdetaildata(true));
@@ -174,6 +167,23 @@ const TestDetailsParameters: FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const getstations = async () => {
+      try {
+        const getnetworkstationsResponse = await $Get(
+          `otdr/station/network/${params.networkId!}`,
+        );
+        if (getnetworkstationsResponse?.status == 200) {
+          const getnetworkstationsResponsedata =
+            await getnetworkstationsResponse.json();
+          setStations(getnetworkstationsResponsedata);
+        }
+      } catch (error) {
+        console.log(`get stations error is:${error}`);
+      }
+    };
+    getstations();
+  }, []);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -226,7 +236,6 @@ const TestDetailsParameters: FC = () => {
     onSubmit: () => {},
   });
 
-
   const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
   const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
 
@@ -277,12 +286,10 @@ const TestDetailsParameters: FC = () => {
               value={formik.values.enabled || false}
               className="basis-96">
               <option value="" className="hidden">
-                {opticalroutUpdateTestsetupDetail?.parameters?.enabled ||
-                  false}
+                {opticalroutUpdateTestsetupDetail?.parameters?.enabled || false}
               </option>
               <option value={undefined} className="hidden">
-                {opticalroutUpdateTestsetupDetail?.parameters?.enabled ||
-                  false}
+                {opticalroutUpdateTestsetupDetail?.parameters?.enabled || false}
               </option>
 
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
@@ -319,10 +326,10 @@ const TestDetailsParameters: FC = () => {
               </option>
 
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Monitoring
+                Monitoring
               </option>
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Monitoring
+                Monitoring
               </option>
             </Select>
           </Description>
@@ -369,7 +376,7 @@ const TestDetailsParameters: FC = () => {
               className="basis-96">
               <option value="" className="hidden">
                 {
-                  stations?.data?.find(
+                  stations?.find(
                     (data: any) =>
                       data.id == opticalroutUpdateTestsetupDetail?.station_id,
                   )?.name
@@ -377,14 +384,14 @@ const TestDetailsParameters: FC = () => {
               </option>
               <option value={undefined} className="hidden">
                 {
-                  stations?.data?.find(
+                  stations?.find(
                     data =>
                       data.id == opticalroutUpdateTestsetupDetail?.station_id,
                   )?.name
                 }
               </option>
 
-              {stations?.data?.map((data, index: number) => (
+              {stations?.map((data, index: number) => (
                 <option
                   value={`${data.name}&_&${data.id}`}
                   key={index}
@@ -510,10 +517,10 @@ const TestDetailsParameters: FC = () => {
               </option>
 
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Skip
+                Skip
               </option>
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Continue
+                Continue
               </option>
             </Select>
           </Description>
@@ -546,10 +553,10 @@ const TestDetailsParameters: FC = () => {
               </option>
 
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Save Trace File
+                Save Trace File
               </option>
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Dont Save Trace File
+                Dont Save Trace File
               </option>
             </Select>
           </Description>
