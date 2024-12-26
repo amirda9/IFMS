@@ -100,7 +100,7 @@ const SystemPage = () => {
     setSystem({
       break_strategy: 'Skip',
       fiber_test_setup_definition_strategy: 'Both',
-      data_save_policy: 'Dont Save Trace File',
+      data_save_policy: `Don't Save Trace File`,
       test_type: 'Monitoring',
     });
     request('SettingsUpdatesystem', {
@@ -108,7 +108,7 @@ const SystemPage = () => {
         system: {
           break_strategy: 'Skip',
           fiber_test_setup_definition_strategy: 'Both',
-          data_save_policy: 'Data Save Policy',
+          data_save_policy: `Don't Save Trace File`,
           test_type: 'Monitoring',
         },
       },
@@ -182,7 +182,7 @@ const SystemPage = () => {
             </option>
 
             <option>Save Trace File</option>
-            <option>Dont Save Trace File</option>
+            <option>Don't Save Trace File</option>
           </Select>
         </Rowinput>
 

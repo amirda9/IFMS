@@ -212,7 +212,7 @@ const Detail: FC = () => {
             Save Trace File
             </option>
             <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-            Dont Save Trace File
+            Don't Save Trace File
             </option>
           </SelectFormik>
         </Row>
