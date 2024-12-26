@@ -64,6 +64,16 @@ const TestSetupDetailsModal: FC = () => {
           },
         });
       }
+      
+      if (
+        lastState.opticalrouteCreateTestSetup?.httpRequestStatus ===
+          'loading' &&
+        state.opticalrouteCreateTestSetup!.httpRequestStatus === 'error'
+      )   {
+        console.log("state.opticalrouteCreateTestSetup",state.opticalrouteCreateTestSetup);
+        
+        toast(`${state.opticalrouteCreateTestSetup?.error?.data?.detail}` || "An error was encountered", {type: 'error', autoClose: 1000});
+      }
     },
   });
 
