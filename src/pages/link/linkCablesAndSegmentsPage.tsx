@@ -109,12 +109,19 @@ const LinkCablesAndSegmentsPage = () => {
           params: {link_id: params.linkId!},
         });
       }
-
+      console.log("state.update",state.update);
       if (
         lastState.update?.httpRequestStatus === 'loading' &&
         state.update!.httpRequestStatus === 'error'
       ) {
-        toast('Encountered an error', {type: 'error', autoClose: 1000});
+      if(state.update?.error?.status == 422){
+     // @ts-ignore
+        toast(state.update?.error.data?.detail[0]?.msg || "Encountered an error", {type: 'error', autoClose: 1000});
+      }else{
+        toast('Encountered an error', {type: 'error', autoClose: 1000});  
+      }
+     
+        
       }
     },
   });
@@ -167,6 +174,9 @@ const LinkCablesAndSegmentsPage = () => {
         }
       }
     }
+
+
+
 
     request('linkupdatecables', {
       params: {link_id: params.linkId!},
