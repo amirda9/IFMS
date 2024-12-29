@@ -617,21 +617,20 @@ const LinkCablesAndSegmentsPage = () => {
                                     setcableslicecabsegment(
                                       data.id,
                                       dataa.id,
-                                      e.target.value,
+                                      e.target.value.split(" ").join("_"),
                                       'connection_type',
                                       index,
                                     )
                                   }
                                   className="w-[80%]">
                                   <option value="" className="hidden">
-                                    {dataa.connection_type}
-                                  </option>
+                                  {dataa.connection_type.split("_").join(" ")}                                  </option>
                                   <option value={undefined} className="hidden">
-                                    {dataa.connection_type}
+                                    {dataa.connection_type.split("_").join(" ")}
                                   </option>
                                   <option value="connector">connector</option>
                                   <option value="fusion_splice">
-                                    fusion_splice
+                                    fusion splice
                                   </option>
                                 </Select>
                               </div>

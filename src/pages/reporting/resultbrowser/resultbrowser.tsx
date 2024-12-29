@@ -1683,7 +1683,7 @@ function Resultbrowser() {
                   window.open(
                     `/config/chart?opticalrout_id=${value.opticalRouteId!}&measurement_id=${
                       value.id
-                    }`,
+                    }&test_setup_fk=${value.testSetupId}`,
                     '_blank',
                     'noopener,noreferrer',
                   )
