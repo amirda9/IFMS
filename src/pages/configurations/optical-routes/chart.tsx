@@ -28,6 +28,7 @@ import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {useSearchParams} from 'react-router-dom';
+import {toast} from 'react-toastify';
 type chatrtabtype = {
   name: string;
   src: string;
@@ -229,27 +230,26 @@ function Chart() {
   }
 
   const query = useQuery();
-
   const opticalRouteId = query.get('opticalrout_id');
   const measurementId = query.get('measurement_id');
   const test_setup_fk = query.get('test_setup_fk');
 
-  useEffect(() => {
-    const Getmeasermentsalarms = async () => {
-      try {
-        const response = await $Get(
-          `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}/alarms`,
-        );
+  // useEffect(() => {
+  //   const Getmeasermentsalarms = async () => {
+  //     try {
+  //       const response = await $Get(
+  //         `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}/alarms`,
+  //       );
 
-        if (response?.status == 200 || response?.status == 201) {
-          const resonsedata: alllalarmsType = await response.json();
-          setAllalarms(resonsedata);
-        }
-      } catch (error) {}
-    };
+  //       if (response?.status == 200 || response?.status == 201) {
+  //         const resonsedata: alllalarmsType = await response.json();
+  //         setAllalarms(resonsedata);
+  //       }
+  //     } catch (error) {}
+  //   };
 
-    Getmeasermentsalarms();
-  }, []);
+  //   Getmeasermentsalarms();
+  // }, []);
   const [dragmode, setDragmode] = useState<
     | false
     | 'select'
@@ -268,364 +268,429 @@ function Chart() {
     setLoading(true);
     const getchartdata = async () => {
       try {
-        const getdata = await $Get(
-          `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}`,
-        );
-        let datass = await getdata?.json();
-
-        let allpointsdata = datass?.datapoints?.data_points?.map(
-          (data: [number, number]) => ({x: data[0], y: data[1]}),
-        );
-
-        setChartdata(datass);
-        setAllcurveline([
-          {
-            id: 'Cur',
-            data: allpointsdata,
-          },
+        const [getdata, getalarmsdata, allcurvresponse] = await Promise.all([
+          $Get(
+            `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}`,
+          ),
+          $Get(
+            `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}/alarms`,
+          ),
+          $Get(
+            `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${test_setup_fk}`,
+          ),
         ]);
-        const max_x =
-          allpointsdata &&
-          Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.x));
-        setMaxx(max_x);
-        const max_y =
-          allpointsdata &&
-          Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.y));
-        setMaxy(max_y);
-        // -----------------------
 
-        // -----------------------------
-        let Arrowevents = [];
-        for (let i = 0; i < datass?.key_events?.events?.length; i++) {
-          if (datass?.key_events?.events[i]?.event_code == 'Start of fiber') {
-            Arrowevents.push({
-              x: datass?.key_events.events[i]?.event_location,
-              y: datass.key_events.events[i].event_y,
-              type: 'arrowevent',
-              location: 'start',
-              event_number: datass.key_events.events[i].event_number,
-            });
-          } else if (datass.key_events.events[i].event_code == 'End of fiber') {
-            Arrowevents.push({
-              x: datass.key_events.events[i].event_location,
-              y: datass.key_events.events[i].event_y,
-              type: 'arrowevent',
-              location: 'end',
-              event_number: datass.key_events.events[i].event_number,
-            });
-          }
+        // ########## alarms ################ alarms ############ alarms ########
+        if (getalarmsdata?.status == 200 || getalarmsdata?.status == 201) {
+          const resonsedata: alllalarmsType = await getalarmsdata.json();
+          setAllalarms(resonsedata);
+        } else {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
         }
 
-        // ###################################################################################################
-        let allshapesCopy = deepcopy(allshapes);
-        let elements: JSX.Element[] = [];
-        // if (!showeventdetail) {
+        // const getdata = await $Get(
+        //   `otdr/optical-route/${opticalRouteId}/test-setups/measurements/${measurementId}`,
+        // );
+        // ########## chartdata ################ chartdata ############ chartdata ########
+        if (getdata?.status == 200 || getdata?.status == 201) {
+          let datass = await getdata?.json();
 
-        Arrowevents?.forEach((point, index) => {
-          const X = point.x;
-          const Y = point.y!;
+          let allpointsdata = datass?.datapoints?.data_points?.map(
+            (data: [number, number]) => ({x: data[0], y: data[1]}),
+          );
 
-          if (point.location == 'start') {
-            allshapesCopy.push(
-              {
-                type: 'line',
-                x0: X, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X, // x coordinate of the second point
-                y1: Y - 10, // y coordinate of the second point
-                editable: false,
-                line: {
-                  color: '#A80000', // color of the line
-                  width: 3, // width of the line
-                  zIndex: -1,
-                },
-              },
-              {
-                type: 'line',
-                x0: X + 70, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X, // x coordinate of the second point
-                y1: Y + 10, // y coordinate of the second point
-                editable: false,
-                line: {
-                  color: '#A80000', // color of the line
-                  width: 3, // width of the line
-                },
-              },
-              {
-                type: 'line',
-                x0: X + 70, // x coordinate of the first point
-                y0: Y - 10, // y coordinate of the first point
-                x1: X, // x coordinate of the second point
-                y1: Y - 10, // y coordinate of the second point
-                editable: false,
-                line: {
-                  color: '#A80000', // color of the line
-                  width: 3, // width of the line
-                },
-              },
-              {
-                type: 'line',
-                x0: X + 70, // x coordinate of the first point
-                y0: Y - 10, // y coordinate of the first point
-                x1: X + 15, // x coordinate of the second point
-                y1: Y - 11, // y coordinate of the second point
-                editable: false,
-                line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
-                },
-              },
-              {
-                type: 'line',
-                x0: X + 70, // x coordinate of the first point
-                y0: Y - 10, // y coordinate of the first point
-                x1: X + 15, // x coordinate of the second point
-                y1: Y - 9, // y coordinate of the second point
-                editable: false,
-                line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
-                },
-              },
-              {
-                type: 'line',
-                x0: X + 70, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X + 15, // x coordinate of the second point
-                y1: Y + 9, // y coordinate of the second point
-                editable: false,
-                line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
-                },
-              },
-              {
-                type: 'line',
-                x0: X + 70, // x coordinate of the first point
-                y0: Y + 10, // y coordinate of the first point
-                x1: X + 15, // x coordinate of the second point
-                y1: Y + 11, // y coordinate of the second point
-                editable: false,
-                line: {
-                  color: '#A80000', // color of the line
-                  width: 1, // width of the line
-                },
-              },
-            );
-          } else {
-            allshapesCopy.push(
-              {
-                type: 'line',
-                x0: X,
-                y0: Y + 10,
-                x1: X,
-                y1: Y - 10,
+          setChartdata(datass);
+          setAllcurveline([
+            {
+              id: 'Cur',
+              data: allpointsdata,
+            },
+          ]);
+          const max_x =
+            allpointsdata &&
+            Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.x));
+          setMaxx(max_x);
+          const max_y =
+            allpointsdata &&
+            Math.max(...allpointsdata?.map((o: {x: number; y: number}) => o.y));
+          setMaxy(max_y);
+          // -----------------------
 
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 3,
-                  zindex: 10,
-                  // layer: 'below',
-                },
-              },
-              {
-                type: 'line',
-                x0: X - 70,
-                y0: Y + 10,
-                x1: X,
-                y1: Y + 10,
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 3,
-                  zindex: 10,
-                },
-              },
-              {
-                type: 'line',
-                x0: X - 70,
-                y0: Y - 10,
-                x1: X,
-                y1: Y - 10,
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 3,
-                  zindex: 10,
-                },
-              },
-              {
-                type: 'line',
-                x0: X - 70,
-                y0: Y - 10,
-                x1: X - 15,
-                y1: Y - 11,
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 1,
-                  zindex: 10,
-                },
-              },
-              {
-                type: 'line',
-                x0: X - 70,
-                y0: Y - 10,
-                x1: X - 15,
-                y1: Y - 9,
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 1,
-                  zindex: 10,
-                },
-              },
-              {
-                type: 'line',
-                x0: X - 70,
-                y0: Y + 10,
-                x1: X - 15,
-                y1: Y + 9,
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 1,
-                  zindex: 10,
-                },
-              },
-              {
-                type: 'line',
-                x0: X - 70,
-                y0: Y + 10,
-                x1: X - 15,
-                y1: Y + 11,
-                editable: false,
-                line: {
-                  color: '#A80000',
-                  width: 1,
-                  zindex: 10,
-                },
-              },
-            );
+          // -----------------------------
+          let Arrowevents = [];
+          for (let i = 0; i < datass?.key_events?.events?.length; i++) {
+            if (datass?.key_events?.events[i]?.event_code == 'Start of fiber') {
+              Arrowevents.push({
+                x: datass?.key_events.events[i]?.event_location,
+                y: datass.key_events.events[i].event_y,
+                type: 'arrowevent',
+                location: 'start',
+                event_number: datass.key_events.events[i].event_number,
+              });
+            } else if (
+              datass.key_events.events[i].event_code == 'End of fiber'
+            ) {
+              Arrowevents.push({
+                x: datass.key_events.events[i].event_location,
+                y: datass.key_events.events[i].event_y,
+                type: 'arrowevent',
+                location: 'end',
+                event_number: datass.key_events.events[i].event_number,
+              });
+            }
           }
-        });
-        setAllshapes(allshapesCopy);
-        // }
 
-        // ###################################################################################################
-        // --------------------------------
-        const Allevents = datass?.key_events?.events;
-        let items = [];
-        let sumloss = 0;
-        for (let c = 0; c < Allevents?.length; c++) {
-          sumloss += Allevents[c].event_loss;
-          items.push({
-            index: c + 1,
-            Position: (Allevents[c].event_location / 1000)
-              .toString()
-              .substring(0, 7),
-            Loss:
-              Math.abs(
-                Number(Allevents[c]?.event_loss?.toString().substring(0, 7)),
-              ).toString() || '',
-            Reflectance: checkNumber(
-              Number(Allevents[c].event_reflectance.toString().substring(0, 7)),
-            ).toString(),
-            Peak: '',
-            Attenuation: '',
-            Cumulative: sumloss.toString().substring(0, 7),
-            event_code: Allevents[c].event_code || undefined,
+          // ###################################################################################################
+          let allshapesCopy = deepcopy(allshapes);
+          let elements: JSX.Element[] = [];
+          // if (!showeventdetail) {
 
-            // tabbodybg: [{name: "Position", onclick: ()=>alert("Position")}],
+          Arrowevents?.forEach((point, index) => {
+            const X = point.x;
+            const Y = point.y!;
+
+            if (point.location == 'start') {
+              allshapesCopy.push(
+                {
+                  type: 'line',
+                  x0: X, // x coordinate of the first point
+                  y0: Y + 10, // y coordinate of the first point
+                  x1: X, // x coordinate of the second point
+                  y1: Y - 10, // y coordinate of the second point
+                  editable: false,
+                  line: {
+                    color: '#A80000', // color of the line
+                    width: 3, // width of the line
+                    zIndex: -1,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X + 70, // x coordinate of the first point
+                  y0: Y + 10, // y coordinate of the first point
+                  x1: X, // x coordinate of the second point
+                  y1: Y + 10, // y coordinate of the second point
+                  editable: false,
+                  line: {
+                    color: '#A80000', // color of the line
+                    width: 3, // width of the line
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X + 70, // x coordinate of the first point
+                  y0: Y - 10, // y coordinate of the first point
+                  x1: X, // x coordinate of the second point
+                  y1: Y - 10, // y coordinate of the second point
+                  editable: false,
+                  line: {
+                    color: '#A80000', // color of the line
+                    width: 3, // width of the line
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X + 70, // x coordinate of the first point
+                  y0: Y - 10, // y coordinate of the first point
+                  x1: X + 15, // x coordinate of the second point
+                  y1: Y - 11, // y coordinate of the second point
+                  editable: false,
+                  line: {
+                    color: '#A80000', // color of the line
+                    width: 1, // width of the line
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X + 70, // x coordinate of the first point
+                  y0: Y - 10, // y coordinate of the first point
+                  x1: X + 15, // x coordinate of the second point
+                  y1: Y - 9, // y coordinate of the second point
+                  editable: false,
+                  line: {
+                    color: '#A80000', // color of the line
+                    width: 1, // width of the line
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X + 70, // x coordinate of the first point
+                  y0: Y + 10, // y coordinate of the first point
+                  x1: X + 15, // x coordinate of the second point
+                  y1: Y + 9, // y coordinate of the second point
+                  editable: false,
+                  line: {
+                    color: '#A80000', // color of the line
+                    width: 1, // width of the line
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X + 70, // x coordinate of the first point
+                  y0: Y + 10, // y coordinate of the first point
+                  x1: X + 15, // x coordinate of the second point
+                  y1: Y + 11, // y coordinate of the second point
+                  editable: false,
+                  line: {
+                    color: '#A80000', // color of the line
+                    width: 1, // width of the line
+                  },
+                },
+              );
+            } else {
+              allshapesCopy.push(
+                {
+                  type: 'line',
+                  x0: X,
+                  y0: Y + 10,
+                  x1: X,
+                  y1: Y - 10,
+
+                  editable: false,
+                  line: {
+                    color: '#A80000',
+                    width: 3,
+                    zindex: 10,
+                    // layer: 'below',
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X - 70,
+                  y0: Y + 10,
+                  x1: X,
+                  y1: Y + 10,
+                  editable: false,
+                  line: {
+                    color: '#A80000',
+                    width: 3,
+                    zindex: 10,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X - 70,
+                  y0: Y - 10,
+                  x1: X,
+                  y1: Y - 10,
+                  editable: false,
+                  line: {
+                    color: '#A80000',
+                    width: 3,
+                    zindex: 10,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X - 70,
+                  y0: Y - 10,
+                  x1: X - 15,
+                  y1: Y - 11,
+                  editable: false,
+                  line: {
+                    color: '#A80000',
+                    width: 1,
+                    zindex: 10,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X - 70,
+                  y0: Y - 10,
+                  x1: X - 15,
+                  y1: Y - 9,
+                  editable: false,
+                  line: {
+                    color: '#A80000',
+                    width: 1,
+                    zindex: 10,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X - 70,
+                  y0: Y + 10,
+                  x1: X - 15,
+                  y1: Y + 9,
+                  editable: false,
+                  line: {
+                    color: '#A80000',
+                    width: 1,
+                    zindex: 10,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: X - 70,
+                  y0: Y + 10,
+                  x1: X - 15,
+                  y1: Y + 11,
+                  editable: false,
+                  line: {
+                    color: '#A80000',
+                    width: 1,
+                    zindex: 10,
+                  },
+                },
+              );
+            }
           });
-          if (c < Allevents.length - 1) {
-            sumloss += Allevents[c + 1]?.event_y - Allevents[c]?.event_y || 0;
+          setAllshapes(allshapesCopy);
+          // }
+
+          // ###################################################################################################
+          // --------------------------------
+          const Allevents = datass?.key_events?.events;
+          let items = [];
+          let sumloss = 0;
+          for (let c = 0; c < Allevents?.length; c++) {
+            sumloss += Allevents[c].event_loss;
             items.push({
-              index: '',
-              Position: (
-                (Allevents[c + 1].event_location -
-                  Allevents[c].event_location) /
-                1000
-              )
+              index: c + 1,
+              Position: (Allevents[c].event_location / 1000)
                 .toString()
                 .substring(0, 7),
               Loss:
                 Math.abs(
-                  Number(
-                    (Allevents[c + 1]?.event_y - Allevents[c]?.event_y)
-                      ?.toString()
-                      .substring(0, 7),
-                  ),
-                ).toString() || '---',
-              Reflectance: '',
+                  Number(Allevents[c]?.event_loss?.toString().substring(0, 7)),
+                ).toString() || '',
+              Reflectance: checkNumber(
+                Number(
+                  Allevents[c].event_reflectance.toString().substring(0, 7),
+                ),
+              ).toString(),
               Peak: '',
-              Attenuation: (
-                (Allevents[c + 1]?.event_y - Allevents[c]?.event_y) /
-                ((Allevents[c + 1].event_location -
-                  Allevents[c].event_location) /
-                  1000)
-              )
-                .toString()
-                .substring(0, 7),
+              Attenuation: '',
               Cumulative: sumloss.toString().substring(0, 7),
-              event_code: undefined,
-              tabrowbg: '#C6DFF8',
+              event_code: Allevents[c].event_code || undefined,
+
+              // tabbodybg: [{name: "Position", onclick: ()=>alert("Position")}],
             });
-          }
-        }
-        setTabelitems(items);
-
-        // get optical route links and segment
-        const getopticalroteRoute = async () => {
-          const getopticalroteRouteResponse = await $Get(
-            `otdr/optical-route/${opticalRouteId}/routes`,
-          );
-          const getopticalroteRoutedata =
-            await getopticalroteRouteResponse?.json();
-
-          const promises = getopticalroteRoutedata.map((data: any) =>
-            $Get(`otdr/link/${data.link_id}`),
-          );
-
-          const alllinksdata = await Promise.all(promises);
-          const results = await Promise.all(
-            alllinksdata.map(response => response?.json()),
-          );
-
-          let allLinkdata: linklengthtype = [];
-          let alloffset = 0;
-          for (let i = 0; i < results.length; i++) {
-            let sementsdata =
-              results[i].current_version.type == 'cable'
-                ? results[i]?.data?.cables
-                : results[i]?.data?.ducts;
-
-            // for(let j=0;j<sementsdata.length;j++){
-            let data = [];
-            for (let c = 0; c < sementsdata[0].segments.length; c++) {
-              (alloffset += sementsdata[0].segments[c].offset),
-                data.push({
-                  Length: sementsdata[0].segments[c].length,
-                  offset: sementsdata[0].segments[c].offset,
-                  position:
-                    sementsdata[0].segments[c].start +
-                    sementsdata[0].segments[c].length +
-                    sementsdata[0].segments[c].offset,
-                });
+            if (c < Allevents.length - 1) {
+              sumloss += Allevents[c + 1]?.event_y - Allevents[c]?.event_y || 0;
+              items.push({
+                index: '',
+                Position: (
+                  (Allevents[c + 1].event_location -
+                    Allevents[c].event_location) /
+                  1000
+                )
+                  .toString()
+                  .substring(0, 7),
+                Loss:
+                  Math.abs(
+                    Number(
+                      (Allevents[c + 1]?.event_y - Allevents[c]?.event_y)
+                        ?.toString()
+                        .substring(0, 7),
+                    ),
+                  ).toString() || '---',
+                Reflectance: '',
+                Peak: '',
+                Attenuation: (
+                  (Allevents[c + 1]?.event_y - Allevents[c]?.event_y) /
+                  ((Allevents[c + 1].event_location -
+                    Allevents[c].event_location) /
+                    1000)
+                )
+                  .toString()
+                  .substring(0, 7),
+                Cumulative: sumloss.toString().substring(0, 7),
+                event_code: undefined,
+                tabrowbg: '#C6DFF8',
+              });
             }
-
-            // }
-            allLinkdata.push({
-              id: results[i].id,
-              Length: results[i].current_version.length + alloffset,
-              segments: data,
-            });
           }
-          setLinkslengthdata(allLinkdata);
-        };
-        getopticalroteRoute();
+          setTabelitems(items);
+
+          // get optical route links and segment
+          const getopticalroteRoute = async () => {
+            const getopticalroteRouteResponse = await $Get(
+              `otdr/optical-route/${opticalRouteId}/routes`,
+            );
+            const getopticalroteRoutedata =
+              await getopticalroteRouteResponse?.json();
+
+            const promises = getopticalroteRoutedata.map((data: any) =>
+              $Get(`otdr/link/${data.link_id}`),
+            );
+
+            const alllinksdata = await Promise.all(promises);
+            const results = await Promise.all(
+              alllinksdata.map(response => response?.json()),
+            );
+
+            let allLinkdata: linklengthtype = [];
+            let alloffset = 0;
+            for (let i = 0; i < results.length; i++) {
+              let sementsdata =
+                results[i].current_version.type == 'cable'
+                  ? results[i]?.data?.cables
+                  : results[i]?.data?.ducts;
+
+              // for(let j=0;j<sementsdata.length;j++){
+              let data = [];
+              for (let c = 0; c < sementsdata[0].segments.length; c++) {
+                (alloffset += sementsdata[0].segments[c].offset),
+                  data.push({
+                    Length: sementsdata[0].segments[c].length,
+                    offset: sementsdata[0].segments[c].offset,
+                    position:
+                      sementsdata[0].segments[c].start +
+                      sementsdata[0].segments[c].length +
+                      sementsdata[0].segments[c].offset,
+                  });
+              }
+
+              // }
+              allLinkdata.push({
+                id: results[i].id,
+                Length: results[i].current_version.length + alloffset,
+                segments: data,
+              });
+            }
+            setLinkslengthdata(allLinkdata);
+          };
+          getopticalroteRoute();
+        } else {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
+        // ########## ref max ################ ref max ############ ref max ########
+        if (allcurvresponse?.status == 200) {
+          const allcurvresponsedata: allchartdataype =
+            await allcurvresponse?.json();
+          console.log(
+            'allcurvresponsedataallcurvresponsedata',
+            allcurvresponsedata,
+          );
+          setAvg_data_points(
+            allcurvresponsedata?.avg_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setMax_data_point(
+            allcurvresponsedata?.max_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setMin_data_points(
+            allcurvresponsedata?.min_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setReference_data_points(
+            allcurvresponsedata?.reference_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setAllchartdata(allcurvresponsedata);
+        } else {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -992,51 +1057,49 @@ function Chart() {
         setAllchart(prev => [...prev, name]);
       }
 
-      if (!getallcurvedata) {
-        try {
-          setLoading(true);
-          const allcurvresponse = await $Get(
-            // `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
-            `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${test_setup_fk}`
-          );
+      try {
+        setLoading(true);
+        const allcurvresponse = await $Get(
+          // `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
+          `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${test_setup_fk}`,
+        );
 
-          console.log("allcurvresponse",allcurvresponse);
-          
-          if (allcurvresponse?.status == 200) {
-            const allcurvresponsedata: allchartdataype =
-              await allcurvresponse?.json();
-            setAvg_data_points(
-              allcurvresponsedata?.avg_data_points?.map(data => ({
-                x: data[0],
-                y: data[1],
-              })) || [],
-            );
-            setMax_data_point(
-              allcurvresponsedata?.max_data_points?.map(data => ({
-                x: data[0],
-                y: data[1],
-              })) || [],
-            );
-            setMin_data_points(
-              allcurvresponsedata?.min_data_points?.map(data => ({
-                x: data[0],
-                y: data[1],
-              })) || [],
-            );
-            setReference_data_points(
-              allcurvresponsedata?.reference_data_points?.map(data => ({
-                x: data[0],
-                y: data[1],
-              })) || [],
-            );
-            setAllchartdata(allcurvresponsedata);
-          }
-        } catch (error) {
-          console.log(`error is :${error}`);
-        } finally {
-          setLoading(false);
-          setGetallcurvedata(true);
+        console.log('allcurvresponse', allcurvresponse);
+
+        if (allcurvresponse?.status == 200) {
+          const allcurvresponsedata: allchartdataype =
+            await allcurvresponse?.json();
+          setAvg_data_points(
+            allcurvresponsedata?.avg_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setMax_data_point(
+            allcurvresponsedata?.max_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setMin_data_points(
+            allcurvresponsedata?.min_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setReference_data_points(
+            allcurvresponsedata?.reference_data_points?.map(data => ({
+              x: data[0],
+              y: data[1],
+            })) || [],
+          );
+          setAllchartdata(allcurvresponsedata);
         }
+      } catch (error) {
+        console.log(`error is :${error}`);
+      } finally {
+        setLoading(false);
+        setGetallcurvedata(true);
       }
     }
   };
