@@ -1057,50 +1057,50 @@ function Chart() {
         setAllchart(prev => [...prev, name]);
       }
 
-      try {
-        setLoading(true);
-        const allcurvresponse = await $Get(
-          // `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
-          `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${test_setup_fk}`,
-        );
+      // try {
+      //   setLoading(true);
+      //   const allcurvresponse = await $Get(
+      //     // `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail`,
+      //     `otdr/optical-route/${opticalRouteId}/learning-measurements-chart-detail/${test_setup_fk}`,
+      //   );
 
-        console.log('allcurvresponse', allcurvresponse);
+      //   console.log('allcurvresponse', allcurvresponse);
 
-        if (allcurvresponse?.status == 200) {
-          const allcurvresponsedata: allchartdataype =
-            await allcurvresponse?.json();
-          setAvg_data_points(
-            allcurvresponsedata?.avg_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
-          );
-          setMax_data_point(
-            allcurvresponsedata?.max_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
-          );
-          setMin_data_points(
-            allcurvresponsedata?.min_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
-          );
-          setReference_data_points(
-            allcurvresponsedata?.reference_data_points?.map(data => ({
-              x: data[0],
-              y: data[1],
-            })) || [],
-          );
-          setAllchartdata(allcurvresponsedata);
-        }
-      } catch (error) {
-        console.log(`error is :${error}`);
-      } finally {
-        setLoading(false);
-        setGetallcurvedata(true);
-      }
+      //   if (allcurvresponse?.status == 200) {
+      //     const allcurvresponsedata: allchartdataype =
+      //       await allcurvresponse?.json();
+      //     setAvg_data_points(
+      //       allcurvresponsedata?.avg_data_points?.map(data => ({
+      //         x: data[0],
+      //         y: data[1],
+      //       })) || [],
+      //     );
+      //     setMax_data_point(
+      //       allcurvresponsedata?.max_data_points?.map(data => ({
+      //         x: data[0],
+      //         y: data[1],
+      //       })) || [],
+      //     );
+      //     setMin_data_points(
+      //       allcurvresponsedata?.min_data_points?.map(data => ({
+      //         x: data[0],
+      //         y: data[1],
+      //       })) || [],
+      //     );
+      //     setReference_data_points(
+      //       allcurvresponsedata?.reference_data_points?.map(data => ({
+      //         x: data[0],
+      //         y: data[1],
+      //       })) || [],
+      //     );
+      //     setAllchartdata(allcurvresponsedata);
+      //   }
+      // } catch (error) {
+      //   console.log(`error is :${error}`);
+      // } finally {
+      //   setLoading(false);
+      //   setGetallcurvedata(true);
+      // }
     }
   };
 
