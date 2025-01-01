@@ -182,7 +182,7 @@ function Alarms() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     dispatch(changealarmstatus(false));
     getallalarms();
@@ -268,17 +268,9 @@ function Alarms() {
           console.log("value.id_list",value.id_list)
           if (key === 'Detail')
             return (
-              // <button 
-              // to={{
-              //   pathname: "/alarmdetail",
-              //   state: { id_list: value.id_list }
-              // }}
-              // onClick={()=>handleNavigate(value.id_list)}
-              // >
                 <IoOpenOutline 
                 onClick={()=>handleNavigate(value.id_list)}
-                 size={22} className="mx-auto" />
-          //  </button> 
+                 size={22} className="mx-auto cursor-pointer"  />
             );
           else if (key === 'delete')
             return (
