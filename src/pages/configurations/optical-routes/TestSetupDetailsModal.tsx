@@ -235,7 +235,7 @@ const TestSetupDetailsModal: FC = () => {
           <TabItem to="." name="Parameters" />
           {gettestsetupdetaildata ? (
             <>
-              <TabItem to="learning" name="Learning" />
+              <TabItem to="learning" name="Ref. Test Program" />
               <TabItem to="test-program" name="Test Program" />
               <TabItem to="status" name="Status" />
             </>
