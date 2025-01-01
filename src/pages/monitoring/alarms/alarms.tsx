@@ -6,7 +6,9 @@ import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {$Delete, $Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import {deepcopy} from '~/util';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarmsslice';
 // *********************** type ***************************
 enum severityamount {
   HIGHT = 'High',
@@ -88,18 +90,16 @@ type topcolumnsType = {
 
 
 function Alarms() {
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [allalarmsdata, setAllalarmdata] = useState<topcolumnsType[]>([]);
   const [selectedid, setSelectedid] = useState<string[]>([]);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
   const [sortkey, setSortkey] = useState('time_created');
+  const dispatch=useDispatch()
   const [allpagecount, setAllpagecount] = useState<number>(1);
  const [totalalarms,setTotalalarms]=useState(0)
-
-
-
   const SetSourcKey = (name: string) => {
     if (name == 'Source Type') {
       setSortkey('source_name');
@@ -130,6 +130,7 @@ function Alarms() {
     }
     setSelectedid(allalarmsdataCopy);
   };
+
   const getallalarms = async (
     limitvalue: number = limit,
     pagevalue: number = page,
@@ -144,10 +145,6 @@ function Alarms() {
         page_number: number;
         total_count: number;
       } = await allalarmresponse?.json();
-
-      console.log("allalarmresponsedata",allalarmresponsedata);
-      
-
       setTotalalarms(allalarmresponsedata.total_count)
       setAllpagecount(allalarmresponsedata.page_number);
       let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
@@ -185,7 +182,9 @@ function Alarms() {
       setLoading(false);
     }
   };
+  
   useEffect(() => {
+    dispatch(changealarmstatus(false));
     getallalarms();
   }, [sortkey]);
 
@@ -248,7 +247,9 @@ function Alarms() {
     delete: {label: 'Delete', size: 'w-[2%]'},
   };
 
- 
+  const handleNavigate = (value:string[]) => {
+    navigate("alarmdetail", { state: { id_list: value } });
+  };
 
   return (
     <div className="flex h-[calc(100vh-45px)] w-full flex-col items-center p-[10px] pb-[30px] pr-[20px] pt-[60px]">
@@ -264,13 +265,20 @@ function Alarms() {
         containerClassName="w-full text-left min-h-[72px] max-h-[calc(100vh-200px)]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
         dynamicColumns={['Detail', 'delete']}
         renderDynamicColumn={({key, value}) => {
+          console.log("value.id_list",value.id_list)
           if (key === 'Detail')
             return (
-              <Link to={`alarmdetail?id_lis=${value.id_list}`}>
+              // <button 
+              // to={{
+              //   pathname: "/alarmdetail",
+              //   state: { id_list: value.id_list }
+              // }}
+              // onClick={()=>handleNavigate(value.id_list)}
+              // >
                 <IoOpenOutline 
-            
+                onClick={()=>handleNavigate(value.id_list)}
                  size={22} className="mx-auto" />
-           </Link> 
+          //  </button> 
             );
           else if (key === 'delete')
             return (

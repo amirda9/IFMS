@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useNavigate, useSearchParams} from 'react-router-dom';
+import {useLocation, useNavigate, useSearchParams} from 'react-router-dom';
 import {SimpleBtn, TextInput} from '~/components';
 import {RootState} from '~/store';
 import AppDialog from '~/components/modals/AppDialog';
@@ -47,11 +47,10 @@ function AlarmAlarmsPage() {
   const [showmodal,setShowmodal]=useState(false)
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const [searchparams] = useSearchParams();
   const [updateloading, setUpdateloading] = useState(false);
-  const idLisString = searchparams.get('id_lis');
-  const idLisArray = idLisString && idLisString.split(',');
-  const navigate=useNavigate()
+  const location = useLocation();
+  const idLisString = location.state?.id_list!;
+  const idLisArray = idLisString;
   const [allupdateallarms, setAllupdateallarms] = useState<
     {
       alarm_id: string;
@@ -63,11 +62,9 @@ function AlarmAlarmsPage() {
     try {
       setLoading(true);
       const response = await $Post(`otdr/alarm/events/details`, idLisArray);
-
+      console.log('response', response);
       if (response?.status == 200) {
         const responsedata = await response?.json();
-        console.log('responsedyyyyyyataresponsedata', responsedata);
-
         dispatch(changealarmstatus(true));
         dispatch(setAllalarmdata(responsedata));
       }
@@ -83,9 +80,7 @@ function AlarmAlarmsPage() {
     }
   }, []);
 
-  // const changestate = (id: string, value: string) => {
-  //   setAllupdateallarms(prev => [...prev, {alarm_id: id, new_status: value}]);
-  // };
+
 
   const updatealarms = async () => {
     try {

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useSearchParams} from 'react-router-dom';
+import {useLocation, useSearchParams} from 'react-router-dom';
 import {TextInput} from '~/components';
 import {RootState} from '~/store';
 import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarmsslice';
@@ -27,9 +27,12 @@ function AlarmDetailPage() {
   );
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const [searchparams] = useSearchParams();
-  const idLisString = searchparams.get('id_lis');
-  const idLisArray = idLisString && idLisString.split(',');
+  const location = useLocation();
+  const idLisString = location.state?.id_list!;
+  const idLisArray = idLisString;
+
+
+
 
   useEffect(() => {
     if (!alarmstatus) {
@@ -56,6 +59,8 @@ function AlarmDetailPage() {
   }, []);
 
   const detail = allalarmdata?.details;
+  console.log("detail",detail);
+  
   if (loading) {
     return <h1>Loading...</h1>;
   }

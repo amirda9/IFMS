@@ -69,7 +69,7 @@ export type alldataType = {
     },
   ];
 
-};
+} 
 
 export type initialStatetype = {
   allalarmdata: alldataType | undefined;
@@ -86,7 +86,7 @@ const alarmsslice = createSlice({
   name: 'type',
   initialState,
   reducers: {
-    setAllalarmdata: (state, action: {type: string; payload: alldataType}) => {
+    setAllalarmdata: (state, action: {type: string; payload: alldataType }) => {
       state.allalarmdata = action.payload;
     },
 
@@ -106,6 +106,10 @@ const alarmsslice = createSlice({
     changealarmstatus:(state, action: {type: string; payload: boolean}) => {
       state.alarmstatus = action.payload;
     },
+
+    setalarmsdataStatus:(state, action: {type: string; payload: boolean })=>{
+
+    }
   },
 });
 

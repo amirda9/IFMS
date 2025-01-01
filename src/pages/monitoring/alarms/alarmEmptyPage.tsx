@@ -1,6 +1,7 @@
 import {TabItem} from '~/components';
 import {
   Outlet,
+  useLocation,
   useNavigate,
   useParams,
   useSearchParams,
@@ -9,8 +10,11 @@ import {IoArrowBackCircleSharp} from 'react-icons/io5';
 const AlarmEmpty = () => {
   const params = useParams<{alarmId: string}>();
   const [searchparams] = useSearchParams();
-  const idLisString = searchparams.get('id_lis');
-  const idLisArray = idLisString && idLisString.split(',');
+  // const idLisString = searchparams.get('id_lis');
+  // const idLisArray = idLisString && idLisString.split(',');
+  const location = useLocation();
+  const idLisString = location.state?.id_list!;
+  const idLisArray = idLisString;
   const navigate = useNavigate();
 
   return (
@@ -18,12 +22,24 @@ const AlarmEmpty = () => {
       <div className="flex w-full flex-row justify-between">
         <div className="mb-8 flex h-fit w-[300px]  [&_*]:mx-[0.5px]">
           <TabItem
+            activelink={'/monitoring/alarms/alarmdetail'}
+            onClick={() =>
+              navigate('/monitoring/alarms/alarmdetail', {
+                state: {id_list: idLisArray},
+              })
+            }
             to={`/monitoring/alarms/alarmdetail?id_lis=${idLisArray}`}
             name="Summary"
           />
           {/* {datadetailStatus ? ( */}
           <>
             <TabItem
+              activelink={'/monitoring/alarms/alarmdetail/alarms'}
+              onClick={() =>
+                navigate('/monitoring/alarms/alarmdetail/alarms', {
+                  state: {id_list: idLisArray},
+                })
+              }
               to={`/monitoring/alarms/alarmdetail/alarms?id_lis=${idLisArray}`}
               name="Alarms"
             />
