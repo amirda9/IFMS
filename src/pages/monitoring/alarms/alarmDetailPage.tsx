@@ -12,9 +12,10 @@ const AlarmRow = ({title, data}: {title: string; data: string | number}) => {
     <div className="mb-5 flex flex-row items-center justify-between">
       <span className="text-[20px]  font-normal leading-[24.2px]">{title}</span>
       <TextInput
+      type="text"
       onChange={()=>{}}
-        defaultValue={data}
-        value={data}
+        defaultValue={data.toString()}
+        value={data.toString()}
         className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
       />
     </div>
@@ -28,12 +29,7 @@ function AlarmDetailPage() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
-  const idLisString = location.state?.id_list!;
-  const idLisArray = idLisString;
-
-
-
-
+  const idLisArray = location.state?.id_list!;
   useEffect(() => {
     if (!alarmstatus) {
       const geralarmsdetail = async () => {
@@ -43,8 +39,6 @@ function AlarmDetailPage() {
 
           if (response?.status == 200) {
             const responsedata = await response?.json();
-            console.log("responsedataresponsedataresponsedata",responsedata);
-            
             dispatch(changealarmstatus(true));
             dispatch(setAllalarmdata(responsedata));
           }
@@ -59,7 +53,7 @@ function AlarmDetailPage() {
   }, []);
 
   const detail = allalarmdata?.details;
-  console.log("detail",detail);
+  
   
   if (loading) {
     return <h1>Loading...</h1>;
@@ -86,7 +80,7 @@ function AlarmDetailPage() {
       </div>
       <div className="flex w-[45%] flex-col">
         <AlarmRow title="Severity" data={detail?.severity || ''} />
-        <AlarmRow title="# Alarms" data={detail?.alarm_number || 0} />
+        <AlarmRow title="# Alarms" data={idLisArray.length || 0} />
         <AlarmRow title="Region" data={detail?.region_name || ''} />
         <AlarmRow title="Station" data={detail?.rtu_name || ''} />
         <AlarmRow title="RTU" data={detail?.rtu_name || ''} />

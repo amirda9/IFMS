@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useLocation, useNavigate, useSearchParams} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import {SimpleBtn, TextInput} from '~/components';
 import {RootState} from '~/store';
 import AppDialog from '~/components/modals/AppDialog';
@@ -57,13 +57,14 @@ const AlarmRow = ({
   onchange = () => {},
 }: {
   title: string;
-  data: string;
+  data: string | number;
   onchange?: () => void;
 }) => {
   return (
     <div className="mt-8 flex flex-row items-center justify-between">
       <span className="text-[20px]  font-normal leading-[24.2px]">{title}</span>
       <TextInput
+        type={'text' || "number"}
         onChange={onchange}
         value={data}
         className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
@@ -89,8 +90,7 @@ function AlarmAlarmsPage() {
   const dispatch = useDispatch();
   const [updateloading, setUpdateloading] = useState(false);
   const location = useLocation();
-  const idLisString = location.state?.id_list!;
-  const idLisArray = idLisString;
+  const idLisArray = location.state?.id_list!;
   const [allupdateallarms, setAllupdateallarms] = useState<
     {
       alarm_id: string;
@@ -148,6 +148,8 @@ function AlarmAlarmsPage() {
       setShowmodal(true);
     }
   }, [modaldata]);
+
+
   if (loading) {
     return <h1>Loading...</h1>;
   }
@@ -155,7 +157,10 @@ function AlarmAlarmsPage() {
   return (
     <>
       {showmodal && modaldata ? (
-        <AppDialog closefunc={() => {setModaldata(null),setShowmodal(false)}}>
+        <AppDialog
+          closefunc={() => {
+            setModaldata(null), setShowmodal(false);
+          }}>
           <div className="ml-[80px]  w-[calc(100%-80px)]">
             <div className="mt-8 flex w-full flex-row justify-between">
               <div className="w-[40%] text-center text-[20px] font-normal leading-[24.2px]">
@@ -241,10 +246,6 @@ function AlarmAlarmsPage() {
                       title="Secondary Source"
                       data={data.secondary_source}
                     />
-                    {/* <div className="mt-8 w-full text-center text-[20px] font-normal leading-[24.2px]">
-                  Alarm Detail
-                </div> */}
-
                     <AlarmRow title="Network" data={''} />
                     <AlarmRow title="Station" data={data.station_name} />
                     <AlarmRow
@@ -258,21 +259,7 @@ function AlarmAlarmsPage() {
                       } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
                     />
 
-                    {/* <AlarmRow title="Region Admin" data={data.region_admin} />
-
-                <AlarmRow
-                  title="Time Created"
-                  data={getPrettyDateTime(data?.time_created) || ''}
-                />
-
-                <AlarmRow title="Severity" data={`${data?.severity}` || ''} />
-
-                <AlarmRow
-                  title="To Time Out"
-                  data={`${data?.to_escalation?.days || 0} Day - ${
-                    data?.to_escalation?.hours || 0
-                  } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
-                /> */}
+      
                   </div>
 
                   <div className="flex w-[46%]  flex-col">
@@ -295,11 +282,7 @@ function AlarmAlarmsPage() {
                           'h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white'
                         }
                       />
-                      {/* <TextInput
-                    onChange={e => changestate(data.id, e.target.value)}
-                    defaultValue={data.status}
-                    className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
-                  /> */}
+
                     </div>
                     <AlarmRow title="Region" data={data?.region_name} />
                     <AlarmRow title="Region Admin" data={data.region_admin} />
