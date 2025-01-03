@@ -72,7 +72,7 @@ const AppDialog: FC<Props> = ({
                   {title && <span className="text-white">{title}</span>}
                   <IoCloseOutline
                     onClick={handleClose}
-                    className="ml-auto text-white"
+                    className="ml-auto text-white cursor-pointer"
                     size={24}
                   />
                 </Dialog.Title>

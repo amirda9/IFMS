@@ -52,7 +52,7 @@ export type alldataType = {
         hours: number;
         minutes: number;
       };
-      to_time_out: {
+      to_timeout: {
         days: number;
         hours: number;
         minutes: number;
