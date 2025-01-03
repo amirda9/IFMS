@@ -1,4 +1,4 @@
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Outlet, useNavigate, useParams} from 'react-router-dom';
 import {SimpleBtn, TabItem} from '~/components';
@@ -12,8 +12,7 @@ import {
   setmodalloading,
   setopticalroutUpdateTestsetupDetail,
 } from '~/store/slices/opticalroutslice';
-//this function get full date and time then produce full date
-
+import {RootState} from '~/store';
 const TestSetupDetailsModal: FC = () => {
   const channel = new BroadcastChannel('redux_sync_channel');
   const dispatch = useDispatch();
@@ -21,36 +20,36 @@ const TestSetupDetailsModal: FC = () => {
   const {gettestsetupdetaildata} = useSelector(
     (state: any) => state.opticalroute,
   );
-
   channel.onmessage = event => {
     dispatch(setopticalroutUpdateTestsetupDetail(event.data)); // آپدیت ریداکس
   };
   const location = useLocation();
-  console.log('params88', params);
   const navigate = useNavigate();
   const [validateeror, setvalidateeror] = useState(false);
   const {opticalroutUpdateTestsetupDetail} = useSelector(
-    (state: any) => state.opticalroute,
+    (state: RootState) => state.opticalroute,
   );
 
   const {request, state} = useHttpRequest({
-    selector: state => ({ stationrtulist: state.http.stationrtuList,
+    selector: state => ({
+      stationrtulist: state.http.stationrtuList,
       stations: state.http.allStations,
       opticalrouteUpdateTestSetup: state.http.opticalrouteUpdateTestSetup,
       opticalrouteTestSetupDetail: state.http.opticalrouteTestSetupDetail,
       opticalrouteCreateTestSetup: state.http.opticalrouteCreateTestSetup,
-     
+      SettingsGet: state.http.SettingsGet,
     }),
     initialRequests: request => {
-      if(params.testId != "create"){
+      if (params.testId != 'create') {
         request('opticalrouteTestSetupDetail', {
           params: {
             optical_route_id: params.opticalRouteId! || '',
             test_setup_id: params.testId || '',
           },
         });
+      } else {
+        request('SettingsGet', undefined);
       }
-   
     },
     onUpdate: (lastState, state) => {
       if (
@@ -64,18 +63,78 @@ const TestSetupDetailsModal: FC = () => {
           },
         });
       }
-      
+
       if (
         lastState.opticalrouteCreateTestSetup?.httpRequestStatus ===
           'loading' &&
         state.opticalrouteCreateTestSetup!.httpRequestStatus === 'error'
-      )   {
-        console.log("state.opticalrouteCreateTestSetup",state.opticalrouteCreateTestSetup);
-        
-        toast(`${state.opticalrouteCreateTestSetup?.error?.data?.detail}` || "An error was encountered", {type: 'error', autoClose: 1000});
+      ) {
+        toast(
+          `${state.opticalrouteCreateTestSetup?.error?.data?.detail}` ||
+            'An error was encountered',
+          {type: 'error', autoClose: 1000},
+        );
       }
     },
   });
+
+
+  useEffect(() => {
+    if (params.testId == 'create') {
+      
+      //Here, we get the default values from the system setting.
+      const opticalroutUpdateTestsetupDetailCopy = deepcopy(
+        opticalroutUpdateTestsetupDetail,
+      );
+  
+  
+      if (state?.SettingsGet?.data?.system?.test_type == 'Maintenance') {
+        const newparameters = {
+          ...state?.SettingsGet?.data?.maintenance_test_setting,
+          enabled: true,
+          type: 'Maintenance',
+          break_strategy: state?.SettingsGet?.data?.system?.break_strategy,
+          date_save_policy: state?.SettingsGet?.data?.system?.data_save_policy,
+          total_loss_threshold:state?.SettingsGet?.data?.threshold_setting?.total_loss,
+          section_loss_threshold:state?.SettingsGet?.data?.threshold_setting?.section_loss,
+          injection_level_threshold:state?.SettingsGet?.data?.threshold_setting?.injection_level,
+          IOR:state?.SettingsGet?.data?.maintenance_test_setting?.ior,
+          RBS:state?.SettingsGet?.data?.maintenance_test_setting?.rbs,
+        };
+       
+        // @ts-ignore
+        delete newparameters.ior
+        // @ts-ignore
+        delete newparameters.rbs
+        opticalroutUpdateTestsetupDetailCopy.parameters=newparameters
+      } else {
+
+        const newparameters = {
+          ...state?.SettingsGet?.data?.monitoring_test_setting,
+          enabled: true,
+          type: 'Monitoring',
+          break_strategy: state?.SettingsGet?.data?.system?.break_strategy,
+          date_save_policy: state?.SettingsGet?.data?.system?.data_save_policy,
+          total_loss_threshold:state?.SettingsGet?.data?.threshold_setting?.total_loss,
+          section_loss_threshold:state?.SettingsGet?.data?.threshold_setting?.section_loss,
+          injection_level_threshold:state?.SettingsGet?.data?.threshold_setting?.injection_level,
+          IOR:state?.SettingsGet?.data?.monitoring_test_setting?.ior,
+          RBS:state?.SettingsGet?.data?.monitoring_test_setting?.rbs,
+        };
+       
+        // @ts-ignore
+        delete newparameters.ior
+        // @ts-ignore
+        delete newparameters.rbs
+        opticalroutUpdateTestsetupDetailCopy.parameters=newparameters
+      }
+        dispatch(
+        setopticalroutUpdateTestsetupDetail(opticalroutUpdateTestsetupDetailCopy),
+      );
+    }
+  }, []);
+
+
 
   const createtestaetup = () => {
     const newdata = deepcopy(opticalroutUpdateTestsetupDetail);
@@ -146,9 +205,6 @@ const TestSetupDetailsModal: FC = () => {
         setvalidateeror(true);
       } else {
         setvalidateeror(false);
-
-        console.log('newdatappp', newdata);
-
         //We first check whether we want to create a testsetup or update it
         if (params.testId == 'create') {
           newdata.status = {
@@ -190,6 +246,14 @@ const TestSetupDetailsModal: FC = () => {
       }, 3000);
     }
   };
+
+
+  if (
+    state.SettingsGet?.httpRequestStatus === 'loading' &&
+    params.testId != 'create'
+  ) {
+    return <h1>loading...</h1>;
+  }
 
   return (
     <AppDialog

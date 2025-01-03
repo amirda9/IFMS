@@ -57,6 +57,14 @@ const TestDetailsParameters: FC = () => {
     gettestsetupdetaildata,
     modalloading,
   } = useSelector((state: any) => state.opticalroute);
+  const {
+    SettingsGet
+  } = useSelector((state: any) => state.http);
+
+  const SettingsGetdata=SettingsGet?.data
+console.log("SettingsGet",SettingsGet);
+
+
 
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
@@ -252,6 +260,7 @@ const TestDetailsParameters: FC = () => {
             labelClassName="flex-grow"
             label="Name">
             <InputFormik
+            type='text'
               defaultValue={opticalroutUpdateTestsetupDetail?.name}
               onchange={e => {
                 const setupDetailCopy = deepcopy(
@@ -329,7 +338,7 @@ const TestDetailsParameters: FC = () => {
                 Monitoring
               </option>
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-                Monitoring
+              Maintenance
               </option>
             </Select>
           </Description>
