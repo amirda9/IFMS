@@ -3,12 +3,11 @@ import {SimpleBtn, Table} from '~/components';
 import {BiChevronRight, BiChevronsLeft, BiChevronsRight} from 'react-icons/bi';
 import {BiChevronLeft} from 'react-icons/bi';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import {$Delete, $Get} from '~/util/requestapi';
+import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
-import {deepcopy} from '~/util';
-import {Link, useNavigate} from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarmsslice';
+import {useNavigate} from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import {changealarmstatus} from '~/store/slices/alarmsslice';
 // *********************** type ***************************
 enum severityamount {
   HIGHT = 'High',
@@ -22,26 +21,6 @@ enum statusamounts {
   RESOLVED = 'Resolved',
 }
 
-function truncateString(str: string) {
-  if (str.length <= 20) {
-    return str;
-  }
-  return str.slice(0, 20) + '...';
-}
-
-type alarmtype = {
-  id: string;
-  alarm_type: string;
-  source_name: string;
-  severity: severityamount;
-  status: statusamounts;
-  time_created: string;
-  time_modified: string;
-  acting_user: string;
-  tabrowbg?: string;
-  tabbodybg?: {name: string; bg: string}[];
-};
-type allalarmsdatatype = alarmtype[];
 type alarmlist = {
   source_name: string;
   severity: severityamount;
@@ -51,7 +30,7 @@ type alarmlist = {
   link_fk: string;
   network_id: string;
   region_id: string;
-  alarm_type_list: [];
+  alarm_type: string;
   id_list: [];
   acting_user: string;
   network_name: string;
@@ -59,18 +38,17 @@ type alarmlist = {
   time_created: string;
   time_modified: string;
   to_escalation: {
-    days:number,
-    hours: number,
-    minutes: number
-  },
+    days: number;
+    hours: number;
+    minutes: number;
+  };
   to_timeout: {
-    days: number,
-    hours: number,
-    minutes: number
-  }
+    days: number;
+    hours: number;
+    minutes: number;
+  };
 };
 // -------------------------------------------------------------
-
 
 type topcolumnsType = {
   AlarmType: string;
@@ -86,20 +64,16 @@ type topcolumnsType = {
   id_list: string[];
 };
 
-
-
-
 function Alarms() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [allalarmsdata, setAllalarmdata] = useState<topcolumnsType[]>([]);
-  const [selectedid, setSelectedid] = useState<string[]>([]);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
   const [sortkey, setSortkey] = useState('time_created');
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [allpagecount, setAllpagecount] = useState<number>(1);
- const [totalalarms,setTotalalarms]=useState(0)
+  const [totalalarms, setTotalalarms] = useState(0);
   const SetSourcKey = (name: string) => {
     if (name == 'Source Type') {
       setSortkey('source_name');
@@ -120,17 +94,6 @@ function Alarms() {
     }
   };
 
-  const onclickcheckbox = (id: string) => {
-    const allalarmsdataCopy = deepcopy(selectedid);
-    const findidindex = selectedid.findIndex(data => data == id);
-    if (findidindex > -1) {
-      allalarmsdataCopy.splice(findidindex, 1);
-    } else {
-      allalarmsdataCopy.push(id);
-    }
-    setSelectedid(allalarmsdataCopy);
-  };
-
   const getallalarms = async (
     limitvalue: number = limit,
     pagevalue: number = page,
@@ -145,12 +108,14 @@ function Alarms() {
         page_number: number;
         total_count: number;
       } = await allalarmresponse?.json();
-      setTotalalarms(allalarmresponsedata.total_count)
+
+      setTotalalarms(allalarmresponsedata.total_count);
       setAllpagecount(allalarmresponsedata.page_number);
+
       let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
-        AlarmType: truncateString(data.alarm_type_list.join(',')),
+        AlarmType: data.alarm_type,
         SourceType: data.source_name,
-        Network:data?.network_name,
+        Network: data?.network_name,
         Alarms: data.alarm_number,
         Severity: data.severity,
         State: data.status,
@@ -173,9 +138,18 @@ function Alarms() {
             ? [{name: 'State', bg: '#18C047'}]
             : []),
         ],
-         tabrowbg:(data?.to_timeout?.days == 0 && data?.to_timeout?.hours == 0 && data?.to_timeout?.minutes == 0 )?"#F48F8F":(data?.to_escalation?.days == 0 && data?.to_escalation?.hours == 0 && data?.to_escalation?.minutes == 0)?"#FCC483":"#ffffff"
-          // "#F48F8F":data.status == "Pending"
+        tabrowbg:
+          data?.to_timeout?.days == 0 &&
+          data?.to_timeout?.hours == 0 &&
+          data?.to_timeout?.minutes == 0
+            ? '#F48F8F'
+            : data?.to_escalation?.days == 0 &&
+              data?.to_escalation?.hours == 0 &&
+              data?.to_escalation?.minutes == 0
+            ? '#FCC483'
+            : '#ffffff',
       }));
+
       setAllalarmdata(newallalarmre);
     } catch (error) {
     } finally {
@@ -197,42 +171,6 @@ function Alarms() {
     }, 1000);
   };
 
-  const onclicktabelrow = (id: string) => {
-    let allalarmsdataCopy: allalarmsdatatype = deepcopy(allalarmsdata);
-    for (let i = 0; i < allalarmsdataCopy.length; i++) {
-      if (allalarmsdataCopy[i].id != id) {
-        if (allalarmsdataCopy[i].tabrowbg) {
-          delete allalarmsdataCopy[i].tabrowbg;
-        }
-      }
-    }
-    const findalarmindex = allalarmsdataCopy.findIndex(data => data.id == id);
-    if (allalarmsdataCopy[findalarmindex].tabrowbg) {
-      delete allalarmsdataCopy[findalarmindex].tabrowbg;
-    
-    } else {
-      allalarmsdataCopy[findalarmindex] = {
-        ...allalarmsdataCopy[findalarmindex],
-        tabrowbg: '#C0E7F2',
-      };
-      
-    }
-    // setAllalarmdata(allalarmsdataCopy);
-  };
-
-  const deletealarms = async () => {
-    try {
-      setLoading(true);
-      const response = await $Delete('otdr/alarm/events', selectedid);
-      if (response?.status == 200) {
-        getallalarms();
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
   // ********************************************************************************
   const topcolumns = {
     AlarmType: {label: 'Alarm Type', size: 'w-[18%]'},
@@ -247,8 +185,8 @@ function Alarms() {
     delete: {label: 'Delete', size: 'w-[2%]'},
   };
 
-  const handleNavigate = (value:string[]) => {
-    navigate("alarmdetail", { state: { id_list: value } });
+  const handleNavigate = (value: string[]) => {
+    navigate('alarmdetail', {state: {id_list: value}});
   };
 
   return (
@@ -265,12 +203,13 @@ function Alarms() {
         containerClassName="w-full text-left min-h-[72px] max-h-[calc(100vh-200px)]  ml-[5px] pb-0 overflow-y-auto mt-[20px]"
         dynamicColumns={['Detail', 'delete']}
         renderDynamicColumn={({key, value}) => {
-          console.log("value.id_list",value.id_list)
           if (key === 'Detail')
             return (
-                <IoOpenOutline 
-                onClick={()=>handleNavigate(value.id_list)}
-                 size={22} className="mx-auto cursor-pointer"  />
+              <IoOpenOutline
+                onClick={() => handleNavigate(value.id_list)}
+                size={22}
+                className="mx-auto cursor-pointer"
+              />
             );
           else if (key === 'delete')
             return (
@@ -284,7 +223,6 @@ function Alarms() {
         }}
       />
 
-
       <div className=" absolute bottom-10 left-[30px] mt-6 pr-[10px] pt-[7px]">
         <div className="flex w-full flex-row items-center">
           <span className="text-[18px] font-normal leading-6">
@@ -295,22 +233,14 @@ function Alarms() {
             type="number"
             className="ml-2 h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
           />
-          {/* <SimpleBtn className="ml-10 py-[6px]" type="button">
-          View New/Updated Alarm(s)
-          </SimpleBtn>
-          <input
-            type="number"
-            className="ml-2  h-[40px] w-[54px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
-          /> */}
 
           <SimpleBtn
             onClick={
               page == 1
                 ? () => {}
                 : () => {
-                    getallalarms(limit, page == 2 ? page - 1 : page - 2)
-                      setPage(page == 2 ? page - 1 : page - 2)
-                    
+                    getallalarms(limit, page == 2 ? page - 1 : page - 2);
+                    setPage(page == 2 ? page - 1 : page - 2);
                   }
             }
             className="ml-10 px-[2px] py-[5px]"
@@ -323,9 +253,8 @@ function Alarms() {
                 page == 1
                   ? () => {}
                   : () => {
-                      getallalarms(limit, page - 1)
-                        setPage(page - 1)
-                      
+                      getallalarms(limit, page - 1);
+                      setPage(page - 1);
                     }
               }
               size={20}
@@ -346,9 +275,8 @@ function Alarms() {
                 page == allpagecount
                   ? () => {}
                   : () => {
-                      getallalarms(limit, page + 1)
-                        setPage(page + 1)
-                    
+                      getallalarms(limit, page + 1);
+                      setPage(page + 1);
                     }
               }
               size={20}
@@ -359,9 +287,8 @@ function Alarms() {
               page == allpagecount
                 ? () => {}
                 : () => {
-                    getallalarms(limit, page + 2)
-                      setPage(page + 2)
-                      
+                    getallalarms(limit, page + 2);
+                    setPage(page + 2);
                   }
             }
             className="ml-2 px-[2px] py-[5px]"

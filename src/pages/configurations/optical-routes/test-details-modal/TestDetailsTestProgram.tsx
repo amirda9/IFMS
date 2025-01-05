@@ -294,6 +294,7 @@ const TestDetailsTestProgram: FC = () => {
           <RadioButton2 name={'daily'} />
           <RadioButton2 name={'monthly'} />
           <RadioButton2 name={'yearly'} />
+          <RadioButton2 name={'minutely'} />
         </div>
         <div className="ml-16">
           <span>Every</span>

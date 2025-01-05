@@ -37,15 +37,18 @@ const seperatedate = (time: string) => {
   let timePart = hour + ':' + Minute; // timePart = "9:31:27"
   return {datePart: datePart, timePart: timePart};
 };
-
+const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
+const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
+// *************** types *************** types ******************** types ******
 type stationsType = {
-  id: string
-  name: string
-  network_id: string
-  time_created: string
-  time_updated: string
-  region_id: string
+  id: string;
+  name: string;
+  network_id: string;
+  time_created: string;
+  time_updated: string;
+  region_id: string;
 };
+// *************** types *************** types ******************** types ******
 const TestDetailsParameters: FC = () => {
   const [stations, setStations] = useState<stationsType[]>([]);
   const [rtulist, setRtulist] = useState<{name: string; id: string}[]>([]);
@@ -57,14 +60,6 @@ const TestDetailsParameters: FC = () => {
     gettestsetupdetaildata,
     modalloading,
   } = useSelector((state: any) => state.opticalroute);
-  const {
-    SettingsGet
-  } = useSelector((state: any) => state.http);
-
-  const SettingsGetdata=SettingsGet?.data
-console.log("SettingsGet",SettingsGet);
-
-
 
   useEffect(() => {
     //First we check whether we want to create a testsetup or get the specifications of a testsetup.
@@ -83,11 +78,6 @@ console.log("SettingsGet",SettingsGet);
             const gettestSetupParameters =
               await gettestSetupParametersresponse?.json();
 
-            console.log('gettestSetupParameters', gettestSetupParameters);
-            console.log(
-              'testSetupParametCopytestSetupParametCopy',
-              gettestSetupParameters,
-            );
             const testSetupParametCopy = deepcopy(gettestSetupParameters);
 
             let checkstartend = Number(
@@ -244,9 +234,6 @@ console.log("SettingsGet",SettingsGet);
     onSubmit: () => {},
   });
 
-  const rangeoptions = [0.5, 2.5, 5, 15, 40, 80, 120, 160, 200];
-  const pluswidthoptions = [3, 5, 10, 30, 50, 100, 275, 500, 100];
-
   if (modalloading) {
     return <h1>Loading...</h1>;
   }
@@ -260,7 +247,7 @@ console.log("SettingsGet",SettingsGet);
             labelClassName="flex-grow"
             label="Name">
             <InputFormik
-            type='text'
+              type="text"
               defaultValue={opticalroutUpdateTestsetupDetail?.name}
               onchange={e => {
                 const setupDetailCopy = deepcopy(
@@ -338,7 +325,7 @@ console.log("SettingsGet",SettingsGet);
                 Monitoring
               </option>
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Maintenance
+                Maintenance
               </option>
             </Select>
           </Description>
@@ -565,7 +552,7 @@ console.log("SettingsGet",SettingsGet);
                 Save Trace File
               </option>
               <option className="text-[20px] font-light leading-[24.2px] text-[#000000]">
-              Don't Save Trace File
+                Don't Save Trace File
               </option>
             </Select>
           </Description>

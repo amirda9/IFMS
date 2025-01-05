@@ -10,10 +10,10 @@ import {
   setAllalarmdata,
 } from '~/store/slices/alarmsslice';
 import Selectbox from '~/components/selectbox/selectbox';
-import {$Get, $PUT, $Post, $Put} from '~/util/requestapi';
+import {$Post, $Put} from '~/util/requestapi';
 import {toast} from 'react-toastify';
 import {getPrettyDateTime} from '~/util/time';
-
+// *************** types *************** types ******************** types ******
 type modalvalue = {
   contributing_conditions: {
     coef: number;
@@ -50,7 +50,7 @@ type modalvalue = {
     minutes: number;
   };
 };
-
+// *************** types *************** types ******************** types ******
 const AlarmRow = ({
   title,
   data,
@@ -64,7 +64,7 @@ const AlarmRow = ({
     <div className="mt-8 flex flex-row items-center justify-between">
       <span className="text-[20px]  font-normal leading-[24.2px]">{title}</span>
       <TextInput
-        type={'text' || "number"}
+        type={'text' || 'number'}
         onChange={onchange}
         value={data}
         className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
@@ -113,6 +113,7 @@ function AlarmAlarmsPage() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (!alarmstatus) {
       geralarmsdetail();
@@ -127,7 +128,6 @@ function AlarmAlarmsPage() {
         allupdateallarms,
       );
       if (response?.status == 201) {
-        // geralarmsdetail()
         dispatch(changealarmstatus(true));
         toast('It was done successfully', {
           type: 'success',
@@ -148,7 +148,6 @@ function AlarmAlarmsPage() {
       setShowmodal(true);
     }
   }, [modaldata]);
-
 
   if (loading) {
     return <h1>Loading...</h1>;
@@ -246,7 +245,10 @@ function AlarmAlarmsPage() {
                       title="Secondary Source"
                       data={data.secondary_source}
                     />
-                    <AlarmRow title="Network" data={''} />
+                    <AlarmRow
+                      title="Network"
+                      data={allalarmdata?.details?.network_name}
+                    />
                     <AlarmRow title="Station" data={data.station_name} />
                     <AlarmRow
                       title="Last Modified"
@@ -258,8 +260,6 @@ function AlarmAlarmsPage() {
                         data?.to_escalation?.hours || 0
                       } Hours - ${data?.to_escalation?.minutes || 0} Minutes`}
                     />
-
-      
                   </div>
 
                   <div className="flex w-[46%]  flex-col">
@@ -282,7 +282,6 @@ function AlarmAlarmsPage() {
                           'h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white'
                         }
                       />
-
                     </div>
                     <AlarmRow title="Region" data={data?.region_name} />
                     <AlarmRow title="Region Admin" data={data.region_admin} />
