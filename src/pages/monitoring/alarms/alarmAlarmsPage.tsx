@@ -14,11 +14,14 @@ import {$Post, $Put} from '~/util/requestapi';
 import {toast} from 'react-toastify';
 import {getPrettyDateTime} from '~/util/time';
 // *************** types *************** types ******************** types ******
+
 type modalvalue = {
   contributing_conditions: {
     coef: number;
     parameter: string;
     value: string;
+    reference_value:number;
+    measured_value:number;
   }[];
 
   id: string;
@@ -50,6 +53,7 @@ type modalvalue = {
     minutes: number;
   };
 };
+
 // *************** types *************** types ******************** types ******
 const AlarmRow = ({
   title,
@@ -98,6 +102,9 @@ function AlarmAlarmsPage() {
     }[]
   >([]);
 
+
+
+  
   const geralarmsdetail = async () => {
     try {
       setLoading(true);
@@ -119,6 +126,7 @@ function AlarmAlarmsPage() {
       geralarmsdetail();
     }
   }, []);
+
 
   const updatealarms = async () => {
     try {
@@ -170,26 +178,28 @@ function AlarmAlarmsPage() {
               </div>
             </div>
 
-            {modaldata?.contributing_conditions?.map(dataa => (
+            {modaldata?.contributing_conditions?.map(contributingdata => (
               <>
-                {dataa.coef ? (
+                {contributingdata.coef ? (
                   <div className="mt-8 flex w-full flex-row items-center justify-between">
                     <TextInput
                       onChange={() => {}}
-                      value={dataa.parameter}
+                      value={`${contributingdata.parameter}: ${contributingdata.measured_value} km`}
                       className="h-[40px] w-[40%]"
                     />
                     <div className="flex w-[50%] flex-row justify-between">
                       <TextInput
+                      type='text'
                         onChange={() => {}}
-                        value={dataa.coef}
+                        value={contributingdata.coef}
                         className="h-[40px] w-[20%]"
                       />
                       <span className="mt-2">x</span>
 
                       <TextInput
+                        type='text'
                         onChange={() => {}}
-                        value={dataa.value}
+                        value={`${contributingdata.value}: ${contributingdata.reference_value} km`}
                         className="h-[40px] w-[70%]"
                       />
                     </div>
@@ -197,13 +207,15 @@ function AlarmAlarmsPage() {
                 ) : (
                   <div className="mt-8 flex w-full flex-row justify-between">
                     <TextInput
+                      type='text'
                       onChange={() => {}}
-                      value={dataa.parameter}
+                      value={contributingdata.parameter}
                       className="h-[40px] w-[40%]"
                     />
                     <TextInput
+                      type='text'
                       onChange={() => {}}
-                      value={dataa.value}
+                      value={contributingdata.value}
                       className="h-[40px] w-[50%]"
                     />
                   </div>

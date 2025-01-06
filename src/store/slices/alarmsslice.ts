@@ -64,6 +64,8 @@ export type alldataType = {
           fault: string;
           coef: number;
           value: string;
+          reference_value:number;
+          measured_value:number;
         },
       ];
     },

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useLocation, useSearchParams} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import {TextInput} from '~/components';
 import {RootState} from '~/store';
 import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarmsslice';
@@ -30,6 +30,8 @@ function AlarmDetailPage() {
   const dispatch = useDispatch();
   const location = useLocation();
   const idLisArray = location.state?.id_list!;
+
+
   useEffect(() => {
     if (!alarmstatus) {
       const geralarmsdetail = async () => {
@@ -39,6 +41,8 @@ function AlarmDetailPage() {
 
           if (response?.status == 200) {
             const responsedata = await response?.json();
+            console.log("responsedata",responsedata);
+            
             dispatch(changealarmstatus(true));
             dispatch(setAllalarmdata(responsedata));
           }
@@ -52,12 +56,14 @@ function AlarmDetailPage() {
     }
   }, []);
 
+
   const detail = allalarmdata?.details;
   
   
   if (loading) {
     return <h1>Loading...</h1>;
   }
+  
   return (
     <div className="flex w-full flex-row justify-between">
       <div className="flex w-[45%] flex-col">
@@ -80,7 +86,7 @@ function AlarmDetailPage() {
       </div>
       <div className="flex w-[45%] flex-col">
         <AlarmRow title="Severity" data={detail?.severity || ''} />
-        <AlarmRow title="# Alarms" data={idLisArray.length || 0} />
+        <AlarmRow title="# Alarms" data={idLisArray?.length || 0} />
         <AlarmRow title="Region" data={detail?.region_name || ''} />
         <AlarmRow title="Station" data={detail?.rtu_name || ''} />
         <AlarmRow title="RTU" data={detail?.rtu_name || ''} />
