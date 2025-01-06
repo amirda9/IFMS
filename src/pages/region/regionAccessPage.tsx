@@ -176,7 +176,7 @@ const RegionAccessPage = () => {
             <option value={undefined} className="hidden" />
             {userList.sort((a, b) => a.username.localeCompare(b.username)).map(user => (
               <option value={user.id} key={user.id}>
-                {user.username}
+               {user?.station?.name || ''} {user.username}
               </option>
             ))}
           </Select>
