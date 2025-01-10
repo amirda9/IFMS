@@ -40,7 +40,7 @@ const AppDialog: FC<Props> = ({
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-[10000]" onClose={handleClose}>
+      <Dialog as="div" className="relative z-[30000]" onClose={handleClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
