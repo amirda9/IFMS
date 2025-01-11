@@ -7,12 +7,15 @@ import {IoNotificationsOutline} from 'react-icons/io5';
 import {useAppDispatch, useAppSelector, useHttpRequest} from '~/hooks';
 import {Outlet} from 'react-router-dom';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
-import {$Get, $Post} from '~/util/requestapi';
+import {$Get, $Post, $Put} from '~/util/requestapi';
 import {toast} from 'react-toastify';
 import AppDialog from '~/components/modals/AppDialog';
 import {IoMdClose} from 'react-icons/io';
 import Selectbox from '~/components/selectbox/selectbox';
 import {getPrettyDateTime} from '~/util/time';
+import {io} from 'socket.io-client';
+import {deepcopy} from '~/util';
+import React from 'react';
 
 // *************** types *************** types ******************** types ******
 type alarmstype = {
@@ -140,43 +143,39 @@ const options = [
 ];
 
 const MainLayout: FC = () => {
-  const AlarmRow = ({
-    title,
-    data,
-    onchange = () => {},
-  }: {
+  const AlarmRow: FC<{
     title: string;
     data: string | number;
-    onchange?: () => void;
-  }) => {
+    onChange?: (value: string | number) => void;
+  }> = React.memo(({title, data, onChange = () => {}}) => {
     return (
       <div className="mt-8 flex flex-row items-center justify-between">
-        <span className="text-[20px]  font-normal leading-[24.2px]">
+        <span className="text-[20px] font-normal leading-[24.2px]">
           {title}
         </span>
         <TextInput
-          type={'text' || 'number'}
-          onChange={onchange}
+          type="text"
+          onChange={e => onChange(e.target.value)}
           value={data}
           className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
         />
       </div>
     );
-  };
+  });
   const [openalarms, setOpenalarms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [modaldata, setModaldata] = useState<modalvalue | null>(null);
   const [allalarmdata, setAllalarmdata] = useState<alldataType>();
   const login = localStorage.getItem('login');
-  const accesstoken = login && (JSON.parse(login)?.data?.access_token || '');
+  const accesstoken = login && (JSON.parse(login)?.data?.access_token);
   const loggedInUser = useAppSelector(state => state.http.verifyToken)!;
   const [notificationsdata, setNotifiationsdata] = useState<
     notificationstype[]
   >([]);
   const [openalarndetail, setOpenalarmdetail] = useState(false);
   const [showmodal, setShowmodal] = useState(false);
-  const idLisArray = ['9bf3d710-cc39-4f93-89e6-5e44a0b9172b'];
+
   const dispatch = useAppDispatch();
   const {state} = useHttpRequest({
     selector: state => state.http.verifyToken,
@@ -201,15 +200,26 @@ const MainLayout: FC = () => {
     }
   };
 
-  const geralarmsdetail = async () => {
+  const geralarmsdetail = async (alarmid: string, id: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await $Post(`otdr/alarm/events/details`, idLisArray);
+      const response = await $Post(`otdr/alarm/events/details`, [alarmid]);
       if (response?.status == 200) {
         const responsedata: alldataType = await response?.json();
         setAllalarmdata(responsedata);
+        const newnotificationsdata = notificationsdata.filter(
+          data => data.id != id,
+        );
+        setNotifiationsdata(newnotificationsdata);
+       const seennotifResponse=await $Put(`otdr/notification/${id}`,[])
+       console.log("seennotifResponse",seennotifResponse);
+       
+       if(seennotifResponse?.status != 201){
+        toast('Encountered an error', {type: 'error', autoClose: 1000});
+       }
       }
     } catch (error) {
+      toast('Encountered an error', {type: 'error', autoClose: 1000});
       console.log(`get alarms detail error:${error}`);
     } finally {
       setLoading(false);
@@ -236,17 +246,21 @@ const MainLayout: FC = () => {
         });
       }
     };
-
-    getallnotifications();
+if(accesstoken){
+  getallnotifications();
+}
+    
   }, []);
+
+
 
   // useEffect(() => {
   //   const socket = io("ws://37.32.27.143:8080", {
   //     path: "/api/otdr/notification/ws/alarm",
+  //     transports: ["websocket"],
   //     query: {
   //       token: accesstoken,
   //     },
-  //     transports: ["websocket"],
   //   });
 
   //   socket.on("connect", () => {
@@ -262,7 +276,7 @@ const MainLayout: FC = () => {
   //   });
 
   //   socket.on("connect_error", (error) => {
-  //     console.error("Connection error:", error);
+  //     console.error("Connection errorrr:", error.message);
   //   });
 
   //   return () => {
@@ -281,21 +295,7 @@ const MainLayout: FC = () => {
 
   const randomdata = Math.floor(Math.random() * 100);
   const randomdata2 = Math.floor(Math.random() * 10);
-  const fakedata = [
-    'Alarm1',
-    'Alarm2',
-    'Alarm2',
-    'Alarm3',
-    'Alarm4',
-    'Alarm5',
-    'Alarm6',
-    'Alarm2',
-    'Alarm2',
-    'Alarm3',
-    'Alarm4',
-    'Alarm5',
-    'Alarm6',
-  ];
+ 
   return (
     <div
       style={{minHeight: '100vh'}}
@@ -329,9 +329,11 @@ const MainLayout: FC = () => {
             color="white"
             className="ml-[-30px] cursor-pointer"
           />
-          <div className="absolute right-[-14px] top-[5px] h-[24px] w-[24px] rounded-[12px] bg-[#dd25a6] text-center text-white">
-           {notificationsdata.length}
-          </div>
+          {notificationsdata.length != 0 ? (
+            <div className="absolute right-[-14px] top-[5px] h-[24px] w-[24px] rounded-[12px] bg-[#dd25a6] text-center text-white">
+              {notificationsdata.length}
+            </div>
+          ) : null}
         </div>
       </nav>
       <div className="flex min-h-[100vh] flex-row bg-[#E7EFF7] pb-[20px] pt-[20px]">
@@ -364,7 +366,8 @@ const MainLayout: FC = () => {
               onClick={() => {
                 setOpenalarms(false),
                   setOpenalarmdetail(true),
-                  geralarmsdetail();
+                  setLoading(true);
+                geralarmsdetail(data.alarm_event_id, data.id);
               }}
               className="h-[50px] w-full  pl-3 text-left text-white">
               Alarm {index + 1}
@@ -454,7 +457,10 @@ const MainLayout: FC = () => {
                 ) : null}
 
                 <div className="mt-4 box-border flex w-full flex-col px-2  pb-8">
-                  {allalarmdata?.alarms &&
+                  {loading ? (
+                    <h1>loading...</h1>
+                  ) : (
+                    allalarmdata?.alarms &&
                     allalarmdata?.alarms.map(data => {
                       let checkescalation =
                         data?.to_escalation?.days == 0 &&
@@ -468,9 +474,7 @@ const MainLayout: FC = () => {
                         data?.to_timeout?.hours == 0
                           ? false
                           : true;
-                      if (loading) {
-                        return <h1>Loading ...</h1>;
-                      }
+
                       return (
                         <>
                           <div
@@ -546,7 +550,9 @@ const MainLayout: FC = () => {
                               />
                               <AlarmRow
                                 title="Alarm Time"
-                                data={getPrettyDateTime(data?.time_created) || ''}
+                                data={
+                                  getPrettyDateTime(data?.time_created) || ''
+                                }
                               />
                               <AlarmRow
                                 title="To Time Out"
@@ -570,7 +576,8 @@ const MainLayout: FC = () => {
                           </div>
                         </>
                       );
-                    })}
+                    })
+                  )}
                 </div>
               </>
             </div>
