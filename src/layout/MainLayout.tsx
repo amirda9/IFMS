@@ -13,7 +13,7 @@ import AppDialog from '~/components/modals/AppDialog';
 import {IoMdClose} from 'react-icons/io';
 import Selectbox from '~/components/selectbox/selectbox';
 import {getPrettyDateTime} from '~/util/time';
-import {io} from 'socket.io-client';
+
 import {deepcopy} from '~/util';
 import React from 'react';
 
@@ -170,6 +170,7 @@ const MainLayout: FC = () => {
   const login = localStorage.getItem('login');
   const accesstoken = login && (JSON.parse(login)?.data?.access_token);
   const loggedInUser = useAppSelector(state => state.http.verifyToken)!;
+  const [messages, setMessages] = useState<any>([]); // برای ذخیره داده‌های دریافتی
   const [notificationsdata, setNotifiationsdata] = useState<
     notificationstype[]
   >([]);
@@ -255,35 +256,52 @@ if(accesstoken){
 
 
   useEffect(() => {
-    const socket = io("ws://37.32.27.143:8080", {
-      path: "/api/otdr/notification/ws/alarm",
-      // transports: ["websocket"],
-      query: {
-        token: accesstoken,
-      },
-    });
-
-    socket.on("connect", () => {
-      console.log("Socket connected");
-    });
-
-    socket.on("message", (data) => {
-      console.log("Message received:", data);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
-
-    socket.on("connect_error", (error) => {
-      console.error("Connection errorrr:", error.message);
-    });
+    let socket:any;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
+    if(accesstoken){
+      const connectWebSocket = () => {
+        socket = new WebSocket(`ws://37.32.27.143:8080/api/otdr/notification/ws/alarm?token=${accesstoken}`);
+  
+        socket.onopen = () => {
+          console.log("WebSocket connected");
+          reconnectAttempts = 0; // ریست تعداد تلاش‌های اتصال
+        };
+  
+        socket.onmessage = (event:any) => {
+          console.log("Message received:", event.data);
+  
+          // داده‌های دریافتی را ذخیره کنید
+          setMessages((prevMessages:any) => [...prevMessages, JSON.parse(event.data)]);
+        };
+  
+        socket.onclose = (event:any) => {
+          console.log("WebSocket disconnected:", event.reason || "Closed");
+          if (!event.wasClean && reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++;
+            console.log(`Reconnecting... Attempt ${reconnectAttempts}`);
+            setTimeout(connectWebSocket, 2000); // تلاش دوباره برای اتصال
+          }
+        };
+  
+        socket.onerror = (error:any) => {
+          console.error("WebSocket error:", error);
+        };
+      };
+  
+      connectWebSocket();
+    }
+ 
 
     return () => {
-      socket.disconnect();
+      if (socket) {
+        socket.close(); // بستن اتصال هنگام unmount
+      }
     };
   }, [accesstoken]);
 
+  console.log("messagesmessages",messages);
+  
   if (!state || state.httpRequestStatus === 'loading') {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-y-4 bg-b">
