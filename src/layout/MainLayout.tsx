@@ -254,35 +254,35 @@ if(accesstoken){
 
 
 
-  useEffect(() => {
-    const socket = io("ws://37.32.27.143:8080", {
-      path: "/api/otdr/notification/ws/alarm",
-      // transports: ["websocket"],
-      query: {
-        token: accesstoken,
-      },
-    });
+  // useEffect(() => {
+  //   const socket = io("ws://37.32.27.143:8080", {
+  //     path: "/api/otdr/notification/ws/alarm",
+  //     // transports: ["websocket"],
+  //     query: {
+  //       token: accesstoken,
+  //     },
+  //   });
 
-    socket.on("connect", () => {
-      console.log("Socket connected");
-    });
+  //   socket.on("connect", () => {
+  //     console.log("Socket connected");
+  //   });
 
-    socket.on("message", (data) => {
-      console.log("Message received:", data);
-    });
+  //   socket.on("message", (data) => {
+  //     console.log("Message received:", data);
+  //   });
 
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+  //   socket.on("disconnect", () => {
+  //     console.log("Socket disconnected");
+  //   });
 
-    socket.on("connect_error", (error) => {
-      console.error("Connection errorrr:", error.message);
-    });
+  //   socket.on("connect_error", (error) => {
+  //     console.error("Connection errorrr:", error.message);
+  //   });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, [accesstoken]);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, [accesstoken]);
 
   if (!state || state.httpRequestStatus === 'loading') {
     return (
