@@ -13,8 +13,6 @@ import AppDialog from '~/components/modals/AppDialog';
 import {IoMdClose} from 'react-icons/io';
 import Selectbox from '~/components/selectbox/selectbox';
 import {getPrettyDateTime} from '~/util/time';
-
-import {deepcopy} from '~/util';
 import React from 'react';
 
 // *************** types *************** types ******************** types ******
@@ -168,7 +166,7 @@ const MainLayout: FC = () => {
   const [modaldata, setModaldata] = useState<modalvalue | null>(null);
   const [allalarmdata, setAllalarmdata] = useState<alldataType>();
   const login = localStorage.getItem('login');
-  const accesstoken = login && (JSON.parse(login)?.data?.access_token);
+  const accesstoken = login && JSON.parse(login)?.data?.access_token;
   const loggedInUser = useAppSelector(state => state.http.verifyToken)!;
   const [messages, setMessages] = useState<any>([]); // برای ذخیره داده‌های دریافتی
   const [notificationsdata, setNotifiationsdata] = useState<
@@ -184,6 +182,8 @@ const MainLayout: FC = () => {
       request('verifyToken', undefined);
     },
   });
+
+
 
   const handleLogout = async () => {
     try {
@@ -212,12 +212,10 @@ const MainLayout: FC = () => {
           data => data.id != id,
         );
         setNotifiationsdata(newnotificationsdata);
-       const seennotifResponse=await $Put(`otdr/notification/${id}`,[])
-       console.log("seennotifResponse",seennotifResponse);
-       
-       if(seennotifResponse?.status != 201){
-        toast('Encountered an error', {type: 'error', autoClose: 1000});
-       }
+        const seennotifResponse = await $Put(`otdr/notification/${id}`, []);
+        if (seennotifResponse?.status != 201) {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
       }
     } catch (error) {
       toast('Encountered an error', {type: 'error', autoClose: 1000});
@@ -227,6 +225,29 @@ const MainLayout: FC = () => {
     }
   };
 
+  const getallnotifications = async () => {
+    const notificationsresponse = await $Get(`otdr/notification`);
+    if (notificationsresponse?.status == 200) {
+      const notificationsresponsedata = await notificationsresponse.json();
+      setNotifiationsdata(notificationsresponsedata);
+    } else {
+      toast('Encountered an error when getting notification', {
+        type: 'error',
+        autoClose: 1000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    // Attach event listener for the 'online' event
+    window.addEventListener('online', getallnotifications);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('online', getallnotifications);
+    };
+  }, []);
+
   if (state?.httpRequestStatus && state?.httpRequestStatus === 'error') {
     localStorage.removeItem('refresh');
     localStorage.removeItem('login');
@@ -235,63 +256,52 @@ const MainLayout: FC = () => {
   }
 
   useEffect(() => {
-    const getallnotifications = async () => {
-      const notificationsresponse = await $Get(`otdr/notification`);
-      if (notificationsresponse?.status == 200) {
-        const notificationsresponsedata = await notificationsresponse.json();
-        setNotifiationsdata(notificationsresponsedata);
-      } else {
-        toast('Encountered an error when getting notification', {
-          type: 'error',
-          autoClose: 1000,
-        });
-      }
-    };
-if(accesstoken){
-  getallnotifications();
-}
-    
+    if (accesstoken) {
+      getallnotifications();
+    }
   }, []);
 
-
-
   useEffect(() => {
-    let socket:any;
+    let socket: any;
     let reconnectAttempts = 0;
     const maxReconnectAttempts = 5;
-    if(accesstoken){
+    if (accesstoken) {
       const connectWebSocket = () => {
-        socket = new WebSocket(`ws://37.32.27.143:8080/api/otdr/notification/ws/alarm?token=${accesstoken}`);
-  
+        socket = new WebSocket(
+          `ws://37.32.27.143:8080/api/otdr/notification/ws/alarm?token=${accesstoken}`,
+        );
+
         socket.onopen = () => {
-          console.log("WebSocket connected");
+          console.log('WebSocket connected');
           reconnectAttempts = 0; // ریست تعداد تلاش‌های اتصال
         };
-  
-        socket.onmessage = (event:any) => {
-          console.log("Message received:", event.data);
-  
+
+        socket.onmessage = (event: any) => {
+          console.log('Message received:', event.data);
+
           // داده‌های دریافتی را ذخیره کنید
-          setMessages((prevMessages:any) => [...prevMessages, JSON.parse(event.data)]);
+          setNotifiationsdata((prevMessages: notificationstype[]) => [
+            ...prevMessages,
+            JSON.parse(event.data),
+          ]);
         };
-  
-        socket.onclose = (event:any) => {
-          console.log("WebSocket disconnected:", event.reason || "Closed");
+
+        socket.onclose = (event: any) => {
+          console.log('WebSocket disconnected:', event.reason || 'Closed');
           if (!event.wasClean && reconnectAttempts < maxReconnectAttempts) {
             reconnectAttempts++;
             console.log(`Reconnecting... Attempt ${reconnectAttempts}`);
             setTimeout(connectWebSocket, 2000); // تلاش دوباره برای اتصال
           }
         };
-  
-        socket.onerror = (error:any) => {
-          console.error("WebSocket error:", error);
+
+        socket.onerror = (error: any) => {
+          console.error('WebSocket error:', error);
         };
       };
-  
+
       connectWebSocket();
     }
- 
 
     return () => {
       if (socket) {
@@ -300,8 +310,7 @@ if(accesstoken){
     };
   }, [accesstoken]);
 
-  console.log("messagesmessages",messages);
-  
+
   if (!state || state.httpRequestStatus === 'loading') {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-y-4 bg-b">
@@ -313,7 +322,7 @@ if(accesstoken){
 
   const randomdata = Math.floor(Math.random() * 100);
   const randomdata2 = Math.floor(Math.random() * 10);
- 
+
   return (
     <div
       style={{minHeight: '100vh'}}
