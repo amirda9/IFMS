@@ -23,6 +23,16 @@ const seperatedate = (time: string) => {
   return {datePart: datePart, timePart: timePart};
 };
 
+
+const DisplayPeriodicity:any = {
+  minutely: "Minute(s)",
+  hourly: "Hour(s)",
+  daily: "Day(s)",
+  monthly: "Month(s)",
+  yearly: "Year(s)",
+
+};
+
 type RadioButton = {
   name: string;
 };
@@ -290,11 +300,12 @@ const TestDetailsTestProgram: FC = () => {
       </Description>
       <Description label="Periodicity">
         <div className="flex flex-col gap-y-4">
+        <RadioButton2 name={'minutely'} />
           <RadioButton2 name={'hourly'} />
           <RadioButton2 name={'daily'} />
           <RadioButton2 name={'monthly'} />
           <RadioButton2 name={'yearly'} />
-          <RadioButton2 name={'minutely'} />
+        
         </div>
         <div className="ml-16">
           <span>Every</span>
@@ -312,7 +323,7 @@ const TestDetailsTestProgram: FC = () => {
             type="number"
             className="mx-4 w-16"
           />
-          <span>Hour(s)</span>
+          <span>{DisplayPeriodicity[selectedradio2]}</span>
         </div>
       </Description>
     </div>
