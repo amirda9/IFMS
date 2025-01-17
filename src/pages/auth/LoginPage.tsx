@@ -4,12 +4,13 @@ import {InputFormik} from '~/container';
 import * as Yup from 'yup';
 import {useHttpRequest} from '~/hooks';
 import {useEffect, useState} from 'react';
-import { toast } from 'react-toastify';
-
+import {toast} from 'react-toastify';
+// ***************** type ********************* type ***************** type ************
 type LoginFormType = {
   username: string;
   password: string;
 };
+// ***************** type ********************* type ***************** type ************
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().required('Please enter username or email'),
@@ -21,7 +22,7 @@ const LoginPage = () => {
   const {state, request} = useHttpRequest({
     selector: state => state.http.login,
   });
-  const [mount,setMount]=useState(false)
+  const [mount, setMount] = useState(false);
 
   const [errormessage, setErrormessage] = useState('');
 
@@ -29,9 +30,8 @@ const LoginPage = () => {
     request('login', {data: values});
   };
 
-  
-  useEffect(()=>{
-    if(mount){
+  useEffect(() => {
+    if (mount) {
       if (state?.httpRequestStatus && state?.httpRequestStatus == 'error') {
         if (state.error?.status == 404) {
           setErrormessage('invalid username or password');
@@ -42,12 +42,10 @@ const LoginPage = () => {
       } else {
         setErrormessage('');
       }
-    }else{
-setMount(true)
+    } else {
+      setMount(true);
     }
-   
-  },[state])
-  console.log('state?.httpRequestStatus', state?.httpRequestStatus);
+  }, []);
 
   return (
     <Formik
@@ -88,15 +86,20 @@ setMount(true)
                   type="password"
                 />
               </div>
-              {errormessage.length >0?
-              <span className='text-[red] text-[20px] font-bold'>{errormessage}</span>
-            :null
-            }
+              {errormessage.length > 0 ? (
+                <span className="text-[20px] font-bold text-[red]">
+                  {errormessage}
+                </span>
+              ) : null}
               <button
                 disabled={state?.httpRequestStatus === 'loading'}
                 type="submit"
                 className="my-2.5 h-8 self-end rounded-md bg-green-500 px-6 text-lg font-bold text-white active:bg-green-300">
-                Login
+                {state?.httpRequestStatus === 'loading' ? (
+                  <span>please waite</span>
+                ) : (
+                  <span>login</span>
+                )}
               </button>
             </Form>
           </div>
