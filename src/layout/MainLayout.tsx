@@ -261,6 +261,25 @@ const MainLayout: FC = () => {
     }
   }, []);
 
+
+  // useEffect(()=>{
+  //   const seenall=async ()=>{
+  //     for( let i=0 ;i<notificationsdata.length;i++){
+  //       const seennotifResponse = await $Put(`otdr/notification/${notificationsdata[i].id}`, []);
+  //     }
+    
+  //   }
+  //   seenall()
+  // },[])
+
+  // setTimeout(async()=>{
+  //   const seennotifResponse = await $Put(`otdr/notification/${notificationsdata[0].id}`, []);
+  //   const seennotifResponse2 = await $Put(`otdr/notification/${notificationsdata[1].id}`, []);
+  //   const seennotifResponse3 = await $Put(`otdr/notification/${notificationsdata[2].id}`, []);
+  //   const seennotifResponse4 = await $Put(`otdr/notification/${notificationsdata[3].id}`, []);
+
+  // },2000)
+
   useEffect(() => {
     let socket: any;
     let reconnectAttempts = 0;

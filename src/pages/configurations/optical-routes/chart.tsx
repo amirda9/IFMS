@@ -225,6 +225,10 @@ function Chart() {
     }
   }
 
+
+
+  console.log("allalarmsallalarms",allalarms);
+  
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
@@ -294,6 +298,7 @@ function Chart() {
         // ########## chartdata ################ chartdata ############ chartdata ########
         if (getdata?.status == 200 || getdata?.status == 201) {
           let datass = await getdata?.json();
+console.log("datassdatassdatass",datass);
 
           let allpointsdata = datass?.datapoints?.data_points?.map(
             (data: [number, number]) => ({x: data[0], y: data[1]}),

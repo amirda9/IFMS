@@ -899,6 +899,7 @@ function Testondemand() {
             page
           </span>
           <input
+          onChange={()=>{}}
             value={pageinationpage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"

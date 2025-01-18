@@ -45,7 +45,7 @@ const LoginPage = () => {
     } else {
       setMount(true);
     }
-  }, []);
+  }, [state]);
 
   return (
     <Formik
