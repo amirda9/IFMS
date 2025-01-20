@@ -168,6 +168,7 @@ const MainLayout: FC = () => {
   const login = localStorage.getItem('login');
   const accesstoken = login && JSON.parse(login)?.data?.access_token;
   const loggedInUser = useAppSelector(state => state.http.verifyToken)!;
+  const [count,setrCount]=useState(0)
   const [messages, setMessages] = useState<any>([]); // برای ذخیره داده‌های دریافتی
   const [notificationsdata, setNotifiationsdata] = useState<
     notificationstype[]
@@ -212,10 +213,10 @@ const MainLayout: FC = () => {
           data => data.id != id,
         );
         setNotifiationsdata(newnotificationsdata);
-        const seennotifResponse = await $Put(`otdr/notification/${id}`, []);
-        if (seennotifResponse?.status != 201) {
-          toast('Encountered an error', {type: 'error', autoClose: 1000});
-        }
+        // const seennotifResponse = await $Put(`otdr/notification/${id}`, []);
+        // if (seennotifResponse?.status != 201) {
+        //   toast('Encountered an error', {type: 'error', autoClose: 1000});
+        // }
       }
     } catch (error) {
       toast('Encountered an error', {type: 'error', autoClose: 1000});
@@ -297,7 +298,7 @@ const MainLayout: FC = () => {
 
         socket.onmessage = (event: any) => {
           console.log('Message received:', event.data);
-
+          setrCount(prev => prev + 1)
           // داده‌های دریافتی را ذخیره کنید
           setNotifiationsdata((prevMessages: notificationstype[]) => [
             ...prevMessages,
@@ -305,14 +306,14 @@ const MainLayout: FC = () => {
           ]);
         };
 
-        socket.onclose = (event: any) => {
-          console.log('WebSocket disconnected:', event.reason || 'Closed');
-          if (!event.wasClean && reconnectAttempts < maxReconnectAttempts) {
-            reconnectAttempts++;
-            console.log(`Reconnecting... Attempt ${reconnectAttempts}`);
-            setTimeout(connectWebSocket, 2000); // تلاش دوباره برای اتصال
-          }
-        };
+        // socket.onclose = (event: any) => {
+        //   console.log('WebSocket disconnected:', event.reason || 'Closed');
+        //   if (!event.wasClean && reconnectAttempts < maxReconnectAttempts) {
+        //     reconnectAttempts++;
+        //     console.log(`Reconnecting... Attempt ${reconnectAttempts}`);
+        //     setTimeout(connectWebSocket, 2000); // تلاش دوباره برای اتصال
+        //   }
+        // };
 
         socket.onerror = (error: any) => {
           console.error('WebSocket error:', error);
@@ -327,8 +328,9 @@ const MainLayout: FC = () => {
         socket.close(); // بستن اتصال هنگام unmount
       }
     };
-  }, [accesstoken]);
+  }, []);
 
+console.log("count",count);
 
   if (!state || state.httpRequestStatus === 'loading') {
     return (
