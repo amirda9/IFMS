@@ -39,6 +39,7 @@ import Multiselect from 'multiselect-react-dropdown';
 import {$Get, $Post} from '~/util/requestapi';
 import {deepcopy} from '~/util';
 import Mainloading from '~/components/loading/mainloading';
+import {useSearchParams} from 'react-router-dom';
 /* ------ types ----------- */
 
 type fullscreen = {
@@ -212,6 +213,11 @@ const MapPage = () => {
   const [selectboxregions, setSelectboxregions] = useState<
     {value: string; label: string}[]
   >([]);
+  const [searchparams] = useSearchParams();
+  const alarm_Id = searchparams.get('alarm_Id');
+  const severity = searchparams.get('severity');
+
+  console.log('redalarms', redalarms);
 
   const UpdateMapCenter = ({center}: any) => {
     const map = useMap();
@@ -312,7 +318,6 @@ const MapPage = () => {
 
     return count;
   }
- 
 
   React.useEffect(() => {
     const updateMousePosition = (ev: any) => {
@@ -344,13 +349,14 @@ const MapPage = () => {
     getallnetwork();
   }, []);
 
-
   const getalldetail = async () => {
     setSelectedregion([]);
     setRegionname('');
-    setorangeallarms(false);
-    setredallarms(false);
-    setyellowallarms(false);
+    if (!alarm_Id) {
+      setorangeallarms(false);
+      setredallarms(false);
+      setyellowallarms(false);
+    }
 
     try {
       let allpoints: any = [];
@@ -407,11 +413,15 @@ const MapPage = () => {
         }
         let alldata = [];
         for (let d = 0; d < responsedata[i].links.length; d++) {
-          const findsource=responsedata[i].links[d].link_points.find((data:any)=> data.latitude == responsedata[i].links[d].source.latitude)
-          const finddestination=responsedata[i].links[d].link_points.find((data:any)=> data.latitude == responsedata[i].links[d].destination.latitude);
-        
-        
-          
+          const findsource = responsedata[i].links[d].link_points.find(
+            (data: any) =>
+              data.latitude == responsedata[i].links[d].source.latitude,
+          );
+          const finddestination = responsedata[i].links[d].link_points.find(
+            (data: any) =>
+              data.latitude == responsedata[i].links[d].destination.latitude,
+          );
+
           if (responsedata[i].links[d].link_points.length > 0) {
             allpoints.push(
               ...(findsource
@@ -423,11 +433,13 @@ const MapPage = () => {
                       linkdetail: responsedata[i].links[d],
                     },
                   ]),
-              ...responsedata[i].links[d].link_points.map((dataa: { latitude: number; longitude: number }) => ({
-                latitude: dataa.latitude,
-                longitude: dataa.longitude,
-                linkdetail: responsedata[i].links[d],
-              })),
+              ...responsedata[i].links[d].link_points.map(
+                (dataa: {latitude: number; longitude: number}) => ({
+                  latitude: dataa.latitude,
+                  longitude: dataa.longitude,
+                  linkdetail: responsedata[i].links[d],
+                }),
+              ),
               ...(finddestination
                 ? []
                 : [
@@ -436,10 +448,9 @@ const MapPage = () => {
                       longitude: responsedata[i].links[d].destination.longitude,
                       linkdetail: responsedata[i].links[d],
                     },
-                  ])
+                  ]),
             );
           }
-         
 
           // allpoints.push(
           //   ...responsedata[i].links[d].link_points.map(
@@ -450,7 +461,6 @@ const MapPage = () => {
           //     }),
           //   ))
 
-        
           const findstationdata = linksdata.findIndex(
             data => data.id == responsedata[i].links[d].id,
           );
@@ -671,9 +681,25 @@ const MapPage = () => {
     } else return [];
   }, [alarms, orangealarms]);
 
+  console.log('highSeverityEvents', highSeverityEvents);
+  console.log('LowSeverityEvents', LowSeverityEvents);
+  console.log('MediumSeverityEvents', MediumSeverityEvents);
+  console.log('alarms', alarms);
+
+  useEffect(() => {
+    if (alarm_Id) {
+      if (severity == 'Hight') {
+        setredallarms(true);
+      } else if (severity == 'Medium') {
+        setorangeallarms(true);
+      } else {
+        setyellowallarms(true);
+      }
+    }
+  }, []);
 
   // console.log("allLinkpoints",allLinkpoints);
-  
+
   // ******************** return ****************** return ************************** return *******************************
   return (
     <>

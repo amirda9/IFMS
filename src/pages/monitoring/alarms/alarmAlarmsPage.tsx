@@ -257,7 +257,7 @@ function AlarmAlarmsPage() {
                   <div className="mt-4 flex w-full flex-row  justify-between items-center">
                     <div className="flex h-10 w-[100px] flex-row">
                       <span className='text-[20px]'>{index+1}</span>
-                      <img src={data.severity == "Medium"?orangeicon:data.severity == "High"?yellowicon:redicon} className="h-[35px] w-[35px] ml-10" />
+                      <img src={data.severity == "Medium"?orangeicon:data.severity == "High"?redicon:yellowicon} className="h-[35px] w-[35px] ml-10" />
                     </div>
                     <div className="flex flex-row-reverse">
                       <SimpleBtn
@@ -275,9 +275,8 @@ function AlarmAlarmsPage() {
                         OTDR Trace
                       </SimpleBtn>
                       <SimpleBtn
-                        onClick={() => {
-             
-                        }}
+                       link
+                        to={`/map?alarm_Id=${data.id}&severity=${data.severity}`}
                         className="">
                         Map View
                       </SimpleBtn>
