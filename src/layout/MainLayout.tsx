@@ -14,7 +14,12 @@ import {IoMdClose} from 'react-icons/io';
 import Selectbox from '~/components/selectbox/selectbox';
 import {getPrettyDateTime} from '~/util/time';
 import React from 'react';
-
+import Alarmsparameters from '~/components/alarmsparameters';
+import Alarmadetail from '~/components/alarmadetail';
+import {setAlarmmodaldata, setShowParameters} from '~/store/slices/alarmsslice';
+import {RootState} from '~/store';
+import {useSelector} from 'react-redux';
+import { useLocation } from 'react-router-dom';
 // *************** types *************** types ******************** types ******
 type alarmstype = {
   id: string;
@@ -87,44 +92,6 @@ type alldataType = {
   alarms: alarmstype;
 };
 
-type modalvalue = {
-  contributing_conditions: {
-    coef: number;
-    parameter: string;
-    value: string;
-    reference_value: number;
-    measured_value: number;
-  }[];
-
-  id: string;
-
-  region_admin: string;
-
-  region_name: string;
-
-  secondary_source: string;
-
-  severity: string;
-
-  station_name: string;
-
-  status: string;
-
-  time_created: string;
-
-  time_modified: string;
-
-  to_escalation: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-  to_timeout: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-};
 
 type notificationstype = {
   alarm_event_id: string;
@@ -133,49 +100,33 @@ type notificationstype = {
 };
 // *************** types *************** types ******************** types ******
 
-const options = [
-  {value: 'Pending', label: 'Pending'},
-  {value: 'Acknowledged', label: 'Acknowledged'},
-  {value: 'In progress', label: 'In progress'},
-  {value: 'Resolved', label: 'Resolved'},
-];
 
 const MainLayout: FC = () => {
-  const AlarmRow: FC<{
-    title: string;
-    data: string | number;
-    onChange?: (value: string | number) => void;
-  }> = React.memo(({title, data, onChange = () => {}}) => {
-    return (
-      <div className="mt-8 flex flex-row items-center justify-between">
-        <span className="text-[20px] font-normal leading-[24.2px]">
-          {title}
-        </span>
-        <TextInput
-          type="text"
-          onChange={e => onChange(e.target.value)}
-          value={data}
-          className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
-        />
-      </div>
-    );
-  });
+  const location = useLocation();
   const [openalarms, setOpenalarms] = useState(false);
+  const {alarmstatus, showparameters, alarmmodaldata} = useSelector(
+    (state: RootState) => state.alarmsslice,
+  );
+
   const [loading, setLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [modaldata, setModaldata] = useState<modalvalue | null>(null);
   const [allalarmdata, setAllalarmdata] = useState<alldataType>();
   const login = localStorage.getItem('login');
   const accesstoken = login && JSON.parse(login)?.data?.access_token;
   const loggedInUser = useAppSelector(state => state.http.verifyToken)!;
-  const [count,setrCount]=useState(0)
+  const [count, setrCount] = useState(0);
   const [messages, setMessages] = useState<any>([]); // برای ذخیره داده‌های دریافتی
   const [notificationsdata, setNotifiationsdata] = useState<
     notificationstype[]
   >([]);
   const [openalarndetail, setOpenalarmdetail] = useState(false);
-  const [showmodal, setShowmodal] = useState(false);
 
+  // const [allupdateallarms, setAllupdateallarms] = useState<
+  //   {
+  //     alarm_id: string;
+  //     new_status: string;
+  //   }[]
+  // >([]);
   const dispatch = useAppDispatch();
   const {state} = useHttpRequest({
     selector: state => state.http.verifyToken,
@@ -183,8 +134,6 @@ const MainLayout: FC = () => {
       request('verifyToken', undefined);
     },
   });
-
-
 
   const handleLogout = async () => {
     try {
@@ -239,6 +188,10 @@ const MainLayout: FC = () => {
     }
   };
 
+useEffect(()=>{
+  setOpenalarmdetail(false)
+},[location.pathname])
+
   useEffect(() => {
     // Attach event listener for the 'online' event
     window.addEventListener('online', getallnotifications);
@@ -262,13 +215,19 @@ const MainLayout: FC = () => {
     }
   }, []);
 
+  // const cahngeAllupdateallarms = (alarm_id: string, new_status: string) => {
+  //   setAllupdateallarms(prev => [
+  //     ...prev,
+  //     {alarm_id: alarm_id, new_status: new_status},
+  //   ]);
+  // };
 
   // useEffect(()=>{
   //   const seenall=async ()=>{
   //     for( let i=0 ;i<notificationsdata.length;i++){
   //       const seennotifResponse = await $Put(`otdr/notification/${notificationsdata[i].id}`, []);
   //     }
-    
+
   //   }
   //   seenall()
   // },[])
@@ -298,7 +257,7 @@ const MainLayout: FC = () => {
 
         socket.onmessage = (event: any) => {
           console.log('Message received:', event.data);
-          setrCount(prev => prev + 1)
+          setrCount(prev => prev + 1);
           // داده‌های دریافتی را ذخیره کنید
           setNotifiationsdata((prevMessages: notificationstype[]) => [
             ...prevMessages,
@@ -330,7 +289,7 @@ const MainLayout: FC = () => {
     };
   }, []);
 
-console.log("count",count);
+  console.log('count', count);
 
   if (!state || state.httpRequestStatus === 'loading') {
     return (
@@ -408,7 +367,9 @@ console.log("count",count);
         </span>
       </div>
       {openalarms ? (
-        <div className="absolute right-[10px] top-[85px] z-[200000] h-auto max-h-[450px] w-[350px] overflow-y-auto bg-[#006bbc]">
+        <div
+          onMouseLeave={() => setOpenalarms(false)}
+          className="absolute right-[10px] top-[85px] z-[200000] h-auto max-h-[450px] w-[350px] overflow-y-auto bg-[#006bbc]">
           {notificationsdata.map((data, index) => (
             <button
               onClick={() => {
@@ -426,7 +387,7 @@ console.log("count",count);
 
       {openalarndetail ? (
         <>
-          <div className="absolute right-[2.5%]  top-[calc(50vh-230px)] z-[20000] h-[500px] w-[95%] overflow-hidden rounded-xl bg-[#e7eff7]">
+          <div className="fixed right-[2.5%]  top-[calc(50vh-230px)] z-[20000] h-[500px] w-[95%] overflow-hidden rounded-xl bg-[#e7eff7]">
             <div className="flex h-[31px] w-full flex-row items-center justify-end bg-[#006bbc] px-2">
               <IoMdClose
                 size={25}
@@ -439,68 +400,12 @@ console.log("count",count);
             </div>
             <div className="h-auto w-full">
               <>
-                {showmodal && modaldata ? (
+                {showparameters && alarmmodaldata ? (
                   <AppDialog
                     closefunc={() => {
-                      setModaldata(null), setShowmodal(false);
+                      dispatch(setAlarmmodaldata(null)), dispatch(setShowParameters(false));
                     }}>
-                    <div className="ml-[80px]  w-[calc(100%-80px)]">
-                      <div className="mt-8 flex w-full flex-row justify-between">
-                        <div className="w-[40%] text-center text-[20px] font-normal leading-[24.2px]">
-                          Parameter
-                        </div>
-                        <div className="w-[50%] text-center text-[20px] font-normal leading-[24.2px]">
-                          Value
-                        </div>
-                      </div>
-
-                      {modaldata?.contributing_conditions?.map(
-                        contributingdata => (
-                          <>
-                            {contributingdata.coef ? (
-                              <div className="mt-8 flex w-full flex-row items-center justify-between">
-                                <TextInput
-                                  onChange={() => {}}
-                                  value={`${contributingdata.parameter}: ${contributingdata.measured_value} km`}
-                                  className="h-[40px] w-[40%]"
-                                />
-                                <div className="flex w-[50%] flex-row justify-between">
-                                  <TextInput
-                                    type="text"
-                                    onChange={() => {}}
-                                    value={contributingdata.coef}
-                                    className="h-[40px] w-[20%]"
-                                  />
-                                  <span className="mt-2">x</span>
-
-                                  <TextInput
-                                    type="text"
-                                    onChange={() => {}}
-                                    value={`${contributingdata.value}: ${contributingdata.reference_value} km`}
-                                    className="h-[40px] w-[70%]"
-                                  />
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="mt-8 flex w-full flex-row justify-between">
-                                <TextInput
-                                  type="text"
-                                  onChange={() => {}}
-                                  value={contributingdata.parameter}
-                                  className="h-[40px] w-[40%]"
-                                />
-                                <TextInput
-                                  type="text"
-                                  onChange={() => {}}
-                                  value={contributingdata.value}
-                                  className="h-[40px] w-[50%]"
-                                />
-                              </div>
-                            )}
-                          </>
-                        ),
-                      )}
-                    </div>
+                    <Alarmsparameters />
                   </AppDialog>
                 ) : null}
 
@@ -508,123 +413,12 @@ console.log("count",count);
                   {loading ? (
                     <h1>loading...</h1>
                   ) : (
-                    allalarmdata?.alarms &&
-                    allalarmdata?.alarms.map(data => {
-                      let checkescalation =
-                        data?.to_escalation?.days == 0 &&
-                        data?.to_escalation?.minutes == 0 &&
-                        data?.to_escalation?.hours == 0
-                          ? false
-                          : true;
-                      let checketimeout =
-                        data?.to_timeout?.days == 0 &&
-                        data?.to_timeout?.minutes == 0 &&
-                        data?.to_timeout?.hours == 0
-                          ? false
-                          : true;
-
-                      return (
-                        <>
-                          <div
-                            className={`mt-4 flex w-full flex-row justify-between  rounded-[10px] ${
-                              !checketimeout
-                                ? 'bg-[#F48F8F]'
-                                : !checkescalation
-                                ? 'bg-[#FCC483]'
-                                : 'bg-[#C0E7F2]'
-                            }  p-8 pb-4 pt-[0px]`}>
-                            <div className="w-[46%]">
-                              <AlarmRow
-                                title="Secondary Source"
-                                data={data.secondary_source}
-                              />
-                              <AlarmRow
-                                title="Network"
-                                data={allalarmdata?.details?.network_name}
-                              />
-                              <AlarmRow
-                                title="Station"
-                                data={data.station_name}
-                              />
-                              <AlarmRow
-                                title="Last Modified"
-                                data={
-                                  getPrettyDateTime(data?.time_modified) || ''
-                                }
-                              />
-                              <AlarmRow
-                                title="To Escalation"
-                                data={`${
-                                  data?.to_escalation?.days || 0
-                                } Day - ${
-                                  data?.to_escalation?.hours || 0
-                                } Hours - ${
-                                  data?.to_escalation?.minutes || 0
-                                } Minutes`}
-                              />
-                            </div>
-
-                            <div className="flex w-[46%]  flex-col">
-                              <div className="mt-8 flex flex-row items-center justify-between">
-                                <span className="text-[20px]  font-normal leading-[24.2px]">
-                                  State
-                                </span>
-                                <Selectbox
-                                  defaultvalue={data.status}
-                                  onclickItem={(e: {
-                                    value: string;
-                                    label: string;
-                                  }) => {
-                                    // setAllupdateallarms(prev => [
-                                    //   ...prev,
-                                    //   {alarm_id: data.id, new_status: e.value},
-                                    // ]);
-                                    // dispatch(changestate({id: data.id, value: e.value}));
-                                    // dispatch(changealarmstatus(false));
-                                  }}
-                                  options={options}
-                                  classname={
-                                    'h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white'
-                                  }
-                                />
-                              </div>
-                              <AlarmRow
-                                title="Region"
-                                data={data?.region_name}
-                              />
-                              <AlarmRow
-                                title="Region Admin"
-                                data={data.region_admin}
-                              />
-                              <AlarmRow
-                                title="Alarm Time"
-                                data={
-                                  getPrettyDateTime(data?.time_created) || ''
-                                }
-                              />
-                              <AlarmRow
-                                title="To Time Out"
-                                data={`${
-                                  data?.to_escalation?.days || 0
-                                } Day - ${
-                                  data?.to_escalation?.hours || 0
-                                } Hours - ${
-                                  data?.to_escalation?.minutes || 0
-                                } Minutes`}
-                              />
-                              <SimpleBtn
-                                onClick={() => {
-                                  setModaldata(data);
-                                  setShowmodal(true);
-                                }}
-                                className="ml-[calc(100%-130px)] mt-4">
-                                Parameters
-                              </SimpleBtn>
-                            </div>
-                          </div>
-                        </>
-                      );
-                    })
+                    <>
+                      <Alarmadetail
+                        // @ts-ignore
+                        allalarmdata={allalarmdata}
+                      />
+                    </>
                   )}
                 </div>
               </>

@@ -37,6 +37,8 @@ const Resultdata=({name,value}:Resultdata)=>{
  )
 }
 function Alarms({onclick,data}:Iprops) {
+  console.log("datawwwwwwwwww",data);
+  
   const [heighalarms,setHeighalarms]=useState(0)
   const [mediumalarms,setMediumalarms]=useState(0)
   const [lowalarms,setLowalarms]=useState(0)
@@ -45,7 +47,7 @@ function Alarms({onclick,data}:Iprops) {
     let hightalarm=0
     let mediumalarm=0
 for(let i=0;i<data.length;i++){
-  if(data[i].severity == "Heigh"){
+  if(data[i].severity == "High"){
     hightalarm += 1
   }
 
@@ -56,10 +58,13 @@ for(let i=0;i<data.length;i++){
     lowalarm += 1
   }
 }
-setHeighalarms(heighalarms)
-setLowalarms(lowalarms)
+setHeighalarms(hightalarm)
+setLowalarms(lowalarm)
 setMediumalarms(mediumalarm)
   },[])
+
+ 
+  
   return (
    <div className="h-full overflow-y-auto overflow-x-hidden w-full bg-[#C6DFF8] p-[10px] box-border rounded-[10px]">
    <Selectbox
@@ -72,10 +77,10 @@ setMediumalarms(mediumalarm)
   <Resultdata name={'# High Severity'} value={heighalarms}  />
   <Resultdata name={'# Medium Severity'} value={mediumalarms}  />
   <Resultdata name={'# Low Severity'} value={lowalarms}  />
-  {data.map((data)=>
+  {data.map((data,index)=>
   <>
   <div className='w-full border-t-[1px] border-[black] mb-[5px]'></div>
-   <Resultdata name={'#1'} value={''}  />
+   <Resultdata name={(index+1).toString()} value={''}  />
    <Resultdata name={'Name'} value={data.alarm.name}  />
    <Resultdata name={'Severity'} value={data.severity}  />
    <Resultdata name={'Event Number'} value={'2'}  />

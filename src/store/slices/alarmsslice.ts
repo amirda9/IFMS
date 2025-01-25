@@ -44,9 +44,9 @@ export type alldataType = {
       status: string;
       region_name: string;
       region_admin: string;
-      station_name: string;  
-      time_created:string;
-      time_modified:string;
+      station_name: string;
+      time_created: string;
+      time_modified: string;
       to_escalation: {
         days: number;
         hours: number;
@@ -64,23 +64,66 @@ export type alldataType = {
           fault: string;
           coef: number;
           value: string;
-          reference_value:number;
-          measured_value:number;
+          reference_value: number;
+          measured_value: number;
         },
       ];
     },
   ];
+};
 
-} 
+export type modalvalue = {
+  contributing_conditions: {
+    coef: number;
+    parameter: string;
+    operator:string;
 
+    value: string;
+    reference_value: number;
+    measured_value: number;
+  }[];
+
+  id: string;
+
+  region_admin: string;
+
+  region_name: string;
+
+  secondary_source: string;
+
+  severity: string;
+
+  station_name: string;
+
+  status: string;
+
+  time_created: string;
+
+  time_modified: string;
+
+  to_escalation: {
+    days: number;
+    hours: number;
+    minutes: number;
+  };
+  to_timeout: {
+    days: number;
+    hours: number;
+    minutes: number;
+  };
+};
 export type initialStatetype = {
   allalarmdata: alldataType | undefined;
-  alarmstatus:boolean
+  alarmstatus: boolean;
+  showparameters: boolean;
+  alarmmodaldata: modalvalue | null;
 };
 
 const initialState: initialStatetype = {
   allalarmdata: undefined,
-  alarmstatus:false
+  alarmstatus: false,
+  showparameters: false,
+  alarmmodaldata: null,
 };
 
 // ********** slices ********* slices ******************* slice *********
@@ -88,7 +131,7 @@ const alarmsslice = createSlice({
   name: 'type',
   initialState,
   reducers: {
-    setAllalarmdata: (state, action: {type: string; payload: alldataType }) => {
+    setAllalarmdata: (state, action: {type: string; payload: alldataType}) => {
       state.allalarmdata = action.payload;
     },
 
@@ -104,17 +147,34 @@ const alarmsslice = createSlice({
       allalarmdataCopy!.alarms[finddataindex!].status = action.payload.value;
       state.allalarmdata = allalarmdataCopy;
     },
-    
-    changealarmstatus:(state, action: {type: string; payload: boolean}) => {
+
+    changealarmstatus: (state, action: {type: string; payload: boolean}) => {
       state.alarmstatus = action.payload;
     },
 
-    setalarmsdataStatus:(state, action: {type: string; payload: boolean })=>{
+    setShowParameters: (state, action: {type: string; payload: boolean}) => {
+      state.showparameters = action.payload;
+    },
 
-    }
+    setAlarmmodaldata: (
+      state,
+      action: {type: string; payload: modalvalue | null},
+    ) => {
+      state.alarmmodaldata = action.payload;
+    },
+    setalarmsdataStatus: (
+      state,
+      action: {type: string; payload: boolean},
+    ) => {},
   },
 });
 
-export const {setAllalarmdata, changestate,changealarmstatus} = alarmsslice.actions;
+export const {
+  setAllalarmdata,
+  changestate,
+  changealarmstatus,
+  setShowParameters,
+  setAlarmmodaldata,
+} = alarmsslice.actions;
 
 export default alarmsslice.reducer;
