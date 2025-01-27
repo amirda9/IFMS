@@ -155,10 +155,13 @@ export type alldataType = {
 type Iprops = {
   updateallarms?: (alarm_id: string, new_status: string) => void;
   allalarmdata: alldataType;
+  onclickmap?:()=>void
 };
-function Index({updateallarms, allalarmdata}: Iprops) {
+function Index({updateallarms, allalarmdata,onclickmap=()=>{}}: Iprops) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  
   return (
     <>
       {allalarmdata?.alarms &&
@@ -203,7 +206,7 @@ function Index({updateallarms, allalarmdata}: Iprops) {
                 <div className="flex flex-row-reverse">
                   <SimpleBtn
                     onClick={
-                      () => {
+                      () => {                        
                         dispatch(setAlarmmodaldata(data));
                         dispatch(setShowParameters(true));
                       }
@@ -216,6 +219,7 @@ function Index({updateallarms, allalarmdata}: Iprops) {
                   </SimpleBtn>
                   <SimpleBtn
                     onClick={() => {
+                      onclickmap()
                       navigate(
                         `/map?alarm_Id=${data!.id}&severity=${data!.severity}`,
                       ),

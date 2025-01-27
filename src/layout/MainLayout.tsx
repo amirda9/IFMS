@@ -1,6 +1,6 @@
 import {FC, useState, useEffect} from 'react';
 import {navbarItems} from '~/constant';
-import {NavItem, SimpleBtn, TextInput} from '~/components';
+import {NavItem} from '~/components';
 import {IoPersonOutline} from 'react-icons/io5';
 import {httpClear} from '~/store/slices';
 import {IoNotificationsOutline} from 'react-icons/io5';
@@ -11,15 +11,11 @@ import {$Get, $Post, $Put} from '~/util/requestapi';
 import {toast} from 'react-toastify';
 import AppDialog from '~/components/modals/AppDialog';
 import {IoMdClose} from 'react-icons/io';
-import Selectbox from '~/components/selectbox/selectbox';
-import {getPrettyDateTime} from '~/util/time';
-import React from 'react';
 import Alarmsparameters from '~/components/alarmsparameters';
 import Alarmadetail from '~/components/alarmadetail';
 import {setAlarmmodaldata, setShowParameters} from '~/store/slices/alarmsslice';
 import {RootState} from '~/store';
 import {useSelector} from 'react-redux';
-import { useLocation } from 'react-router-dom';
 // *************** types *************** types ******************** types ******
 type alarmstype = {
   id: string;
@@ -102,31 +98,20 @@ type notificationstype = {
 
 
 const MainLayout: FC = () => {
-  const location = useLocation();
   const [openalarms, setOpenalarms] = useState(false);
   const {alarmstatus, showparameters, alarmmodaldata} = useSelector(
     (state: RootState) => state.alarmsslice,
   );
 
   const [loading, setLoading] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [allalarmdata, setAllalarmdata] = useState<alldataType>();
   const login = localStorage.getItem('login');
   const accesstoken = login && JSON.parse(login)?.data?.access_token;
   const loggedInUser = useAppSelector(state => state.http.verifyToken)!;
-  const [count, setrCount] = useState(0);
-  const [messages, setMessages] = useState<any>([]); // برای ذخیره داده‌های دریافتی
   const [notificationsdata, setNotifiationsdata] = useState<
     notificationstype[]
   >([]);
   const [openalarndetail, setOpenalarmdetail] = useState(false);
-
-  // const [allupdateallarms, setAllupdateallarms] = useState<
-  //   {
-  //     alarm_id: string;
-  //     new_status: string;
-  //   }[]
-  // >([]);
   const dispatch = useAppDispatch();
   const {state} = useHttpRequest({
     selector: state => state.http.verifyToken,
@@ -162,10 +147,10 @@ const MainLayout: FC = () => {
           data => data.id != id,
         );
         setNotifiationsdata(newnotificationsdata);
-        // const seennotifResponse = await $Put(`otdr/notification/${id}`, []);
-        // if (seennotifResponse?.status != 201) {
-        //   toast('Encountered an error', {type: 'error', autoClose: 1000});
-        // }
+        const seennotifResponse = await $Put(`otdr/notification/${id}`, []);
+        if (seennotifResponse?.status != 201) {
+          toast('Encountered an error', {type: 'error', autoClose: 1000});
+        }
       }
     } catch (error) {
       toast('Encountered an error', {type: 'error', autoClose: 1000});
@@ -188,9 +173,7 @@ const MainLayout: FC = () => {
     }
   };
 
-useEffect(()=>{
-  setOpenalarmdetail(false)
-},[location.pathname])
+
 
   useEffect(() => {
     // Attach event listener for the 'online' event
@@ -215,31 +198,6 @@ useEffect(()=>{
     }
   }, []);
 
-  // const cahngeAllupdateallarms = (alarm_id: string, new_status: string) => {
-  //   setAllupdateallarms(prev => [
-  //     ...prev,
-  //     {alarm_id: alarm_id, new_status: new_status},
-  //   ]);
-  // };
-
-  // useEffect(()=>{
-  //   const seenall=async ()=>{
-  //     for( let i=0 ;i<notificationsdata.length;i++){
-  //       const seennotifResponse = await $Put(`otdr/notification/${notificationsdata[i].id}`, []);
-  //     }
-
-  //   }
-  //   seenall()
-  // },[])
-
-  // setTimeout(async()=>{
-  //   const seennotifResponse = await $Put(`otdr/notification/${notificationsdata[0].id}`, []);
-  //   const seennotifResponse2 = await $Put(`otdr/notification/${notificationsdata[1].id}`, []);
-  //   const seennotifResponse3 = await $Put(`otdr/notification/${notificationsdata[2].id}`, []);
-  //   const seennotifResponse4 = await $Put(`otdr/notification/${notificationsdata[3].id}`, []);
-
-  // },2000)
-
   useEffect(() => {
     let socket: any;
     let reconnectAttempts = 0;
@@ -257,22 +215,12 @@ useEffect(()=>{
 
         socket.onmessage = (event: any) => {
           console.log('Message received:', event.data);
-          setrCount(prev => prev + 1);
           // داده‌های دریافتی را ذخیره کنید
           setNotifiationsdata((prevMessages: notificationstype[]) => [
             ...prevMessages,
             JSON.parse(event.data),
           ]);
         };
-
-        // socket.onclose = (event: any) => {
-        //   console.log('WebSocket disconnected:', event.reason || 'Closed');
-        //   if (!event.wasClean && reconnectAttempts < maxReconnectAttempts) {
-        //     reconnectAttempts++;
-        //     console.log(`Reconnecting... Attempt ${reconnectAttempts}`);
-        //     setTimeout(connectWebSocket, 2000); // تلاش دوباره برای اتصال
-        //   }
-        // };
 
         socket.onerror = (error: any) => {
           console.error('WebSocket error:', error);
@@ -289,7 +237,6 @@ useEffect(()=>{
     };
   }, []);
 
-  console.log('count', count);
 
   if (!state || state.httpRequestStatus === 'loading') {
     return (
@@ -417,6 +364,7 @@ useEffect(()=>{
                       <Alarmadetail
                         // @ts-ignore
                         allalarmdata={allalarmdata}
+                        onclickmap={()=> setOpenalarmdetail(false)}
                       />
                     </>
                   )}
