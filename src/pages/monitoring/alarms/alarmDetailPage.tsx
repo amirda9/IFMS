@@ -31,31 +31,29 @@ function AlarmDetailPage() {
   const location = useLocation();
   const idLisArray = location.state?.id_list!;
 
-
   useEffect(() => {
     if (!alarmstatus) {
       const geralarmsdetail = async () => {
+        setLoading(
+          true
+        );
         try {
-          setLoading(true);
-          const response = await $Post(`otdr/alarm/events/details`, idLisArray);
-
+          const response = await $Post(`otdr/alarm/events/details_paged/?limit=${20}&page=${1}`, idLisArray);
           if (response?.status == 200) {
             const responsedata = await response?.json();
-            console.log("responsedata",responsedata);
-            
             dispatch(changealarmstatus(true));
             dispatch(setAllalarmdata(responsedata));
           }
         } catch (error) {
           console.log(`get alarms detail error:${error}`);
         } finally {
-          setLoading(false);
+           setLoading(false);
         }
       };
       geralarmsdetail();
     }
   }, []);
-
+  
 
   const detail = allalarmdata?.details;
   

@@ -1,4 +1,5 @@
 import {TabItem} from '~/components';
+
 import {
   Outlet,
   useLocation,
@@ -6,16 +7,29 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
+
+import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarmsslice';
 import {IoArrowBackCircleSharp} from 'react-icons/io5';
+import { useEffect } from 'react';
+import { RootState } from '~/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { $Post } from '~/util/requestapi';
 const AlarmEmpty = () => {
+
   const params = useParams<{alarmId: string}>();
   const [searchparams] = useSearchParams();
-  // const idLisString = searchparams.get('id_lis');
-  // const idLisArray = idLisString && idLisString.split(',');
+  const {allalarmdata, alarmstatus} = useSelector(
+    (state: RootState) => state.alarmsslice,
+  );
+  const dispatch = useDispatch();
   const location = useLocation();
   const idLisString = location.state?.id_list!;
   const idLisArray = idLisString;
   const navigate = useNavigate();
+
+
+
+
 
   return (
     <div className="flex h-full w-full flex-col px-6 pt-20">

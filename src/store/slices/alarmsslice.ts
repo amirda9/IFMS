@@ -39,6 +39,8 @@ export type alldataType = {
   alarms: [
     {
       id: string;
+      measurement_id: string,
+      optical_route_id: string,
       secondary_source: string;
       severity: string;
       status: string;
@@ -70,6 +72,8 @@ export type alldataType = {
       ];
     },
   ];
+  total_pages:number,
+  total_count: number
 };
 
 export type modalvalue = {
