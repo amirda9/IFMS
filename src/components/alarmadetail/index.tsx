@@ -23,7 +23,8 @@ type modalvalue = {
   }[];
 
   id: string;
-
+  measurement_id: string,
+  optical_route_id: string,
   region_admin: string;
 
   region_name: string;
@@ -120,6 +121,8 @@ export type alldataType = {
     {
       id: string;
       secondary_source: string;
+      measurement_id: string,
+      optical_route_id: string,
       severity: string;
       status: string;
       region_name: string;
@@ -214,7 +217,12 @@ function Index({updateallarms, allalarmdata,onclickmap=()=>{}}: Iprops) {
                     className="">
                     Parameters
                   </SimpleBtn>
-                  <SimpleBtn onClick={() => {}} className="mx-2">
+                  <SimpleBtn onClick={() => {
+  navigate(
+    `/config/chart?opticalrout_id=${data.optical_route_id}&measurement_id=${data.measurement_id}&test_setup_fk=ce31a871-68fd-4fbf-8932-43edf66054a5`,
+  )
+
+                  }} className="mx-2">
                     OTDR Trace
                   </SimpleBtn>
                   <SimpleBtn

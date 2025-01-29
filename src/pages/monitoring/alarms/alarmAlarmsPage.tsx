@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useSearchParams} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {RootState} from '~/store';
 import Alarmsparameters from '~/components/alarmsparameters';
@@ -72,7 +72,9 @@ function AlarmAlarmsPage() {
   const dispatch = useDispatch();
   const [updateloading, setUpdateloading] = useState(false);
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const idLisArray = location.state?.id_list!;
+  const [typingTimeout, setTypingTimeout] = useState<any>(null)
   const [pageinationpage, setPageinationpage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [allupdateallarms, setAllupdateallarms] = useState<
@@ -149,9 +151,19 @@ function AlarmAlarmsPage() {
     ]);
   };
 
-  // const changemodaldata = (data: modalvalue) => {
-  //   setModaldata(data);
-  // };
+  const changerowperpage=(e:any)=>{
+  setRowsPerPage(Number(e.target.value))
+  // Clear the previous timeout if it exists
+  if (typingTimeout) {
+    clearTimeout(typingTimeout);
+  }
+  // Set a new timeout
+  setTypingTimeout(setTimeout(() => {
+    geralarmsdetail(pageinationpage, Number(e.target.value));
+  }, 1000));
+  }
+
+
 
   return (
     <>
@@ -249,10 +261,7 @@ function AlarmAlarmsPage() {
               Rows Per Page
             </span>
             <input
-              onChange={e => {
-                setRowsPerPage(Number(e.target.value)),
-                  geralarmsdetail(pageinationpage, Number(e.target.value));
-              }}
+              onChange={e => changerowperpage(e)}
               value={rowsPerPage}
               type="number"
               className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
