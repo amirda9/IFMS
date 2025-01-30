@@ -66,7 +66,7 @@ import Swal from 'sweetalert2';
 import {UserRole} from '~/constant/users';
 import GeneralLoadingSpinner from '~/components/loading/GeneralLoadingSpinner';
 import {toast} from 'react-toastify';
-import { getPrettyDateTime } from '~/util/time';
+import {getPrettyDateTime} from '~/util/time';
 // --------- type ---------------------- type ------------------ type ------------
 type Itembtntype = {
   name: string;
@@ -213,6 +213,7 @@ const topitems = [
 function Resultbrowser() {
   const fromdateref: any = useRef(null);
   const lastdateref: any = useRef(null);
+  const typingTimeout = useRef<any>(null);
   const [allpage, setAllpage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [fromdate, setFromdate] = useState('');
@@ -661,7 +662,6 @@ function Resultbrowser() {
       const response = await $Get(url);
       if (response?.status == 200) {
         const responsedata: resultdata = await response.json();
-        console.log('responsedata', responsedata);
         setAllpage(responsedata.page_count);
         const newresponsedata = responsedata.items.map((data, index) => ({
           index: index + 1,
@@ -793,6 +793,17 @@ function Resultbrowser() {
     }
   };
 
+  const changerowperpage = (e: any) => {
+    setRowsPerPage(Number(e.target.value));
+
+    // استفاده از useRef برای نگهداری تایم‌اوت
+    if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current);
+    }
+    typingTimeout.current = setTimeout(() => {
+      Applayresult(pageinationpage, Number(e.target.value));
+    }, 1000);
+  };
   // ****************** main ****************** main ************************************* main ***********************
 
   return (
@@ -1776,10 +1787,7 @@ function Resultbrowser() {
             Rows Per Page
           </span>
           <input
-            onChange={e => {
-              setRowsPerPage(Number(e.target.value)),
-                Applayresult(pageinationpage, Number(e.target.value));
-            }}
+            onChange={e => changerowperpage(e)}
             value={rowsPerPage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
