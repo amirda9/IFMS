@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
@@ -74,7 +74,7 @@ function AlarmAlarmsPage() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const idLisArray = location.state?.id_list!;
-  const [typingTimeout, setTypingTimeout] = useState<any>(null)
+  const typingTimeout = useRef<any>(null);
   const [pageinationpage, setPageinationpage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [allupdateallarms, setAllupdateallarms] = useState<
@@ -154,13 +154,13 @@ function AlarmAlarmsPage() {
   const changerowperpage=(e:any)=>{
   setRowsPerPage(Number(e.target.value))
   // Clear the previous timeout if it exists
-  if (typingTimeout) {
-    clearTimeout(typingTimeout);
+  if (typingTimeout.current) {
+    clearTimeout(typingTimeout.current);
   }
-  // Set a new timeout
-  setTypingTimeout(setTimeout(() => {
+  typingTimeout.current = setTimeout(() => {
     geralarmsdetail(pageinationpage, Number(e.target.value));
-  }, 1000));
+  }, 1000);
+
   }
 
 

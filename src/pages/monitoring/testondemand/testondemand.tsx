@@ -72,7 +72,7 @@ type tabelrow = {
   opticalrouteid: string;
   opticalroute: string;
   testsetup: string | null;
-  testsetupId:string | null;
+  testsetupId: string | null;
   station: string | null;
   measurmenttestid: string;
   status: string;
@@ -326,6 +326,7 @@ function Testondemand() {
   const [loadingid, setLoadingid] = useState('');
   const [loadingdata, setLoadingdata] = useState(false);
   const Thirdref: any = useRef(null);
+  const typingTimeout = useRef<any>(null);
   const topcolumns = {
     index: {label: 'Index', size: 'w-[2%]'},
     date: {label: 'Date', size: 'w-[17%]'},
@@ -427,39 +428,39 @@ function Testondemand() {
     if (selectedId !== '' && testid !== '') {
       try {
         setGetmeasurmentloading(true);
-  
+
         const testsetupresponse = await $Get(
-          `otdr/optical-route/${selectedId}/test-setups/${testid}`
+          `otdr/optical-route/${selectedId}/test-setups/${testid}`,
         );
-  
+
         if (testsetupresponse?.status === 200) {
           const testsetupresponseData = await testsetupresponse.json();
-  
+
           const createondemandmeasurmentresponse = await $Post(
             `otdr/optical-route/${selectedId}/on-demand-measurements?measurement_type=on_demand&test_setup_id=${testid}`,
             {
               optical_route_id: selectedId,
               rtu_id: testsetupresponseData.rtu.id,
-              parameters: { ...testsetupresponseData.parameters },
-            }
+              parameters: {...testsetupresponseData.parameters},
+            },
           );
-  
+
           if (createondemandmeasurmentresponse?.status === 201) {
             const createondemandmeasurmentresponseData =
               await createondemandmeasurmentresponse.json();
-  
+
             // استفاده از Promise برای مدیریت setInterval
             await new Promise<void>((resolve, reject) => {
               const intervalId = setInterval(async () => {
                 try {
                   const checkstatusresponse = await $Get(
-                    `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`
+                    `otdr/optical-route/${selectedId}/check-status/${createondemandmeasurmentresponseData?.id}`,
                   );
-  
+
                   if (checkstatusresponse?.status === 200) {
                     const resultstatus = await checkstatusresponse.json();
-  
-                    if (resultstatus === "SUCCESS") {
+
+                    if (resultstatus === 'SUCCESS') {
                       clearInterval(intervalId);
                       toast('It was done successfully', {
                         type: 'success',
@@ -470,7 +471,7 @@ function Testondemand() {
                       resolve(); // پایان عملیات
                     }
                   } else {
-                    setErrorcount((prev) => {
+                    setErrorcount(prev => {
                       const newCount = prev + 1;
                       if (newCount === 4) {
                         clearInterval(intervalId);
@@ -495,7 +496,7 @@ function Testondemand() {
         }
       } catch (error) {
         console.log(`Error: ${error}`);
-        toast('An error was encountered', { type: 'error', autoClose: 1000 });
+        toast('An error was encountered', {type: 'error', autoClose: 1000});
       } finally {
         setGetmeasurmentloading(false);
       }
@@ -503,7 +504,7 @@ function Testondemand() {
   };
 
   useEffect(() => {
-     getmeasurments(1,20);
+    getmeasurments(1, 20);
   }, []);
 
   const deletehistory = async (id: string) => {
@@ -522,6 +523,17 @@ function Testondemand() {
     } finally {
       // setDeletelist([]);
     }
+  };
+
+  const changerowperpage = (e: any) => {
+    setRowsPerPage(Number(e.target.value));
+    // استفاده از useRef برای نگهداری تایم‌اوت
+    if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current);
+    }
+    typingTimeout.current = setTimeout(() => {
+      getmeasurments(pageinationpage, Number(e.target.value));
+    }, 1000);
   };
 
   return (
@@ -899,7 +911,7 @@ function Testondemand() {
             page
           </span>
           <input
-          onChange={()=>{}}
+            onChange={() => {}}
             value={pageinationpage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
@@ -937,10 +949,11 @@ function Testondemand() {
             Rows Per Page
           </span>
           <input
-            onChange={e => {
-              setRowsPerPage(Number(e.target.value)),
-                getmeasurments(pageinationpage, Number(e.target.value));
-            }}
+            onChange={e => changerowperpage(e)}
+            // onChange={e => {
+            //   setRowsPerPage(Number(e.target.value)),
+            //     getmeasurments(pageinationpage, Number(e.target.value));
+            // }}
             value={rowsPerPage}
             type="number"
             className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
