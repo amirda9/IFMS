@@ -178,7 +178,7 @@ function AlarmAlarmsPage() {
       ) : null}
 
       <div className="mt-4 box-border flex w-full flex-col px-2   pb-8">
-      <div className='h-auto min-h-[calc(100vh-250px)] w-full flex flex-col'>
+      <div className='h-auto min-h-[calc(100vh-330px)] w-full flex flex-col'>
         <Alarmadetail
           // @ts-ignore
           allalarmdata={allalarmdata}
