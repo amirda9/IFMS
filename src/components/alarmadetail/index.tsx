@@ -16,15 +16,15 @@ type modalvalue = {
   contributing_conditions: {
     coef: number;
     parameter: string;
-    operator:string;
+    operator: string;
     value: string;
     reference_value: number;
     measured_value: number;
   }[];
 
   id: string;
-  measurement_id: string,
-  optical_route_id: string,
+  measurement_id: string;
+  optical_route_id: string;
   region_admin: string;
 
   region_name: string;
@@ -121,8 +121,8 @@ export type alldataType = {
     {
       id: string;
       secondary_source: string;
-      measurement_id: string,
-      optical_route_id: string,
+      measurement_id: string;
+      optical_route_id: string;
       severity: string;
       status: string;
       region_name: string;
@@ -158,13 +158,12 @@ export type alldataType = {
 type Iprops = {
   updateallarms?: (alarm_id: string, new_status: string) => void;
   allalarmdata: alldataType;
-  onclickmap?:()=>void
+  onclickmap?: () => void;
 };
-function Index({updateallarms, allalarmdata,onclickmap=()=>{}}: Iprops) {
+function Index({updateallarms, allalarmdata, onclickmap = () => {}}: Iprops) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  
   return (
     <>
       {allalarmdata?.alarms &&
@@ -208,26 +207,25 @@ function Index({updateallarms, allalarmdata,onclickmap=()=>{}}: Iprops) {
                 </div>
                 <div className="flex flex-row-reverse">
                   <SimpleBtn
-                    onClick={
-                      () => {                        
-                        dispatch(setAlarmmodaldata(data));
-                        dispatch(setShowParameters(true));
-                      }
-                    }
+                    onClick={() => {
+                      dispatch(setAlarmmodaldata(data));
+                      dispatch(setShowParameters(true));
+                    }}
                     className="">
                     Parameters
                   </SimpleBtn>
-                  <SimpleBtn onClick={() => {
-  navigate(
-    `/config/chart?opticalrout_id=${data.optical_route_id}&measurement_id=${data.measurement_id}&test_setup_fk=ce31a871-68fd-4fbf-8932-43edf66054a5`,
-  )
-
-                  }} className="mx-2">
+                  <SimpleBtn
+                    onClick={() => {
+                      navigate(
+                        `/config/chart?opticalrout_id=${data.optical_route_id}&measurement_id=${data.measurement_id}&test_setup_fk=ce31a871-68fd-4fbf-8932-43edf66054a5`,
+                      );
+                    }}
+                    className="mx-2">
                     OTDR Trace
                   </SimpleBtn>
                   <SimpleBtn
                     onClick={() => {
-                      onclickmap()
+                      onclickmap();
                       navigate(
                         `/map?alarm_Id=${data!.id}&severity=${data!.severity}`,
                       ),

@@ -279,49 +279,51 @@ const AlarmTypeDefinitionPage: FC = () => {
       getalarmdetail();
     }
   }, []);
+
   const updatedefinition = async () => {
     try {
       dispatch(setAlarmtypeloading(true));
       const response = await $Put(`otdr/alarm/${params.alarmId}`, {
         alarm_definition: {
           low_severity: {
-            conditions:
-              alarmtypedetail.alarm_definition!.low_severity!.conditions!.map(
-                data => ({
-                  parameter: data.parameter,
-                  operator: data.operator,
-                  coef: data.coef,
-                  value: data.value,
-                  logical_operator: data.logical_operator,
-                }),
-              ),
-            fault: alarmtypedetail.alarm_definition!.low_severity!.fault,
+            conditions: (
+              alarmtypedetail.alarm_definition?.low_severity?.conditions || []
+            ).map(data => ({
+              parameter: data.parameter,
+              operator: data.operator,
+              coef: data.coef,
+              value: data.value,
+              logical_operator: data.logical_operator,
+            })),
+            fault:
+              alarmtypedetail.alarm_definition?.low_severity?.fault || 'No',
           },
           medium_severity: {
-            conditions:
-              alarmtypedetail.alarm_definition!.medium_severity!.conditions!.map(
-                data => ({
-                  parameter: data.parameter,
-                  operator: data.operator,
-                  coef: data.coef,
-                  value: data.value,
-                  logical_operator: data.logical_operator,
-                }),
-              ),
-            fault: alarmtypedetail.alarm_definition!.medium_severity!.fault,
+            conditions: (
+              alarmtypedetail.alarm_definition?.medium_severity?.conditions ||
+              []
+            ).map(data => ({
+              parameter: data.parameter,
+              operator: data.operator,
+              coef: data.coef,
+              value: data.value,
+              logical_operator: data.logical_operator,
+            })),
+            fault:
+              alarmtypedetail.alarm_definition?.medium_severity?.fault || 'No',
           },
           high_severity: {
-            conditions:
-              alarmtypedetail.alarm_definition!.high_severity!.conditions!.map(
-                data => ({
-                  parameter: data.parameter,
-                  operator: data.operator,
-                  coef: data.coef,
-                  value: data.value,
-                  logical_operator: data.logical_operator,
-                }),
-              ),
-            fault: alarmtypedetail.alarm_definition!.high_severity?.fault!,
+            conditions: (
+              alarmtypedetail.alarm_definition?.high_severity?.conditions || []
+            ).map(data => ({
+              parameter: data.parameter,
+              operator: data.operator,
+              coef: data.coef,
+              value: data.value,
+              logical_operator: data.logical_operator,
+            })),
+            fault:
+              alarmtypedetail.alarm_definition?.high_severity?.fault || 'No',
           },
         },
       });
