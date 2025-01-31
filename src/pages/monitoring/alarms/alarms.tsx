@@ -107,8 +107,7 @@ function Alarms() {
         alarm_events: [alarmlist];
         page_number: number;
         total_count: number;
-      } = await allalarmresponse?.json();
-
+      } = await allalarmresponse?.json(); 
       setTotalalarms(allalarmresponsedata.total_count);
       setAllpagecount(allalarmresponsedata.page_number);
 

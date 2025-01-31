@@ -12,6 +12,7 @@ const valueunit: any = {
 
 function Index() {
   const {alarmmodaldata} = useSelector((state: RootState) => state.alarmsslice);
+console.log("alarmmodaldata",alarmmodaldata);
 
   return (
     <div className="ml-[80px]  w-[calc(100%-80px)]">
@@ -31,6 +32,11 @@ function Index() {
             unit == 'Km'
               ? (contributingdata.measured_value / 1000).toFixed(2)
               : contributingdata.measured_value.toFixed(2);
+
+              let parameterefrencervalue =
+              unit == 'Km'
+                ? (contributingdata.reference_value / 1000).toFixed(2)
+                : contributingdata.reference_value.toFixed(2);
           return (
             <div className="w-full" key={index}>
               {contributingdata.coef ? (
@@ -56,7 +62,7 @@ function Index() {
                     <TextInput
                       type="text"
                       onChange={() => {}}
-                      value={`${contributingdata.value}: ${parametervalue} ${unit}`}
+                      value={`${contributingdata.value}: ${parameterefrencervalue} ${unit}`}
                       className="h-[40px] w-[70%]"
                     />
                   </div>

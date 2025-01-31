@@ -74,7 +74,7 @@ function AlarmAlarmsPage() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const idLisArray = location.state?.id_list!;
-  const typingTimeout = useRef<any>(null);
+   const typingTimeout = useRef<any>(null);
   const [pageinationpage, setPageinationpage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [allupdateallarms, setAllupdateallarms] = useState<
@@ -164,6 +164,7 @@ function AlarmAlarmsPage() {
   }
 
 
+console.log("allalarmdata",allalarmdata);
 
   return (
     <>
