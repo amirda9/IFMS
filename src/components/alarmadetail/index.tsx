@@ -28,6 +28,7 @@ type modalvalue = {
   region_admin: string;
 
   region_name: string;
+  test_setup_id:string;
 
   secondary_source: string;
 
@@ -123,6 +124,7 @@ export type alldataType = {
       secondary_source: string;
       measurement_id: string;
       optical_route_id: string;
+      test_setup_id:string;
       severity: string;
       status: string;
       region_name: string;
@@ -159,8 +161,9 @@ type Iprops = {
   updateallarms?: (alarm_id: string, new_status: string) => void;
   allalarmdata: alldataType;
   onclickmap?: () => void;
+  onclicktrace?:()=>void
 };
-function Index({updateallarms, allalarmdata, onclickmap = () => {}}: Iprops) {
+function Index({updateallarms, allalarmdata, onclickmap = () => {},onclicktrace=()=>{}}: Iprops) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -216,8 +219,9 @@ function Index({updateallarms, allalarmdata, onclickmap = () => {}}: Iprops) {
                   </SimpleBtn>
                   <SimpleBtn
                     onClick={() => {
+                      onclicktrace()
                       navigate(
-                        `/config/chart?opticalrout_id=${data.optical_route_id}&measurement_id=${data.measurement_id}&test_setup_fk=ce31a871-68fd-4fbf-8932-43edf66054a5`,
+                        `/config/chart?opticalrout_id=${data.optical_route_id}&measurement_id=${data.measurement_id}&test_setup_fk=${data.test_setup_id}`,
                       );
                     }}
                     className="mx-2">

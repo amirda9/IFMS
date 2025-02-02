@@ -23,32 +23,18 @@ import {
 // *************** types *************** types ******************** types ******
 
 type modalvalue = {
-  contributing_conditions: {
-    coef: number;
-    parameter: string;
-    value: string;
-    reference_value: number;
-    measured_value: number;
-  }[];
-
   id: string;
-
-  region_admin: string;
-
-  region_name: string;
-
   secondary_source: string;
-
+  measurement_id: string;
+  optical_route_id: string;
+  test_setup_id: string;
   severity: string;
-
-  station_name: string;
-
   status: string;
-
+  region_name: string;
+  region_admin: string;
+  station_name: string;
   time_created: string;
-
   time_modified: string;
-
   to_escalation: {
     days: number;
     hours: number;
@@ -59,6 +45,17 @@ type modalvalue = {
     hours: number;
     minutes: number;
   };
+  contributing_conditions: [
+    {
+      parameter: string;
+      operator: string;
+      fault: string;
+      coef: number;
+      value: string;
+      reference_value: number;
+      measured_value: number;
+    },
+  ];
 };
 
 // *************** types *************** types ******************** types ******
@@ -74,7 +71,7 @@ function AlarmAlarmsPage() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const idLisArray = location.state?.id_list!;
-   const typingTimeout = useRef<any>(null);
+  const typingTimeout = useRef<any>(null);
   const [pageinationpage, setPageinationpage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [allupdateallarms, setAllupdateallarms] = useState<
@@ -151,20 +148,16 @@ function AlarmAlarmsPage() {
     ]);
   };
 
-  const changerowperpage=(e:any)=>{
-  setRowsPerPage(Number(e.target.value))
-  // Clear the previous timeout if it exists
-  if (typingTimeout.current) {
-    clearTimeout(typingTimeout.current);
-  }
-  typingTimeout.current = setTimeout(() => {
-    geralarmsdetail(pageinationpage, Number(e.target.value));
-  }, 1000);
-
-  }
-
-
-console.log("allalarmdata",allalarmdata);
+  const changerowperpage = (e: any) => {
+    setRowsPerPage(Number(e.target.value));
+    // Clear the previous timeout if it exists
+    if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current);
+    }
+    typingTimeout.current = setTimeout(() => {
+      geralarmsdetail(pageinationpage, Number(e.target.value));
+    }, 1000);
+  };
 
   return (
     <>
@@ -179,19 +172,17 @@ console.log("allalarmdata",allalarmdata);
       ) : null}
 
       <div className="mt-4 box-border flex w-full flex-col px-2   pb-8">
-      <div className='h-auto min-h-[calc(100vh-330px)] w-full flex flex-col'>
-        <Alarmadetail
-          // @ts-ignore
-          allalarmdata={allalarmdata}
-          updateallarms={(alarm_id: string, new_status: string) =>
-            cahngeAllupdateallarms(alarm_id, new_status)
-          }
-          // changemodaldata={(data: modalvalue) => changemodaldata(data)}
-        />
-
-
+        <div className="flex h-auto min-h-[calc(100vh-330px)] w-full flex-col">
+          <Alarmadetail
+            // @ts-ignore
+            allalarmdata={allalarmdata}
+            updateallarms={(alarm_id: string, new_status: string) =>
+              cahngeAllupdateallarms(alarm_id, new_status)
+            }
+            // changemodaldata={(data: modalvalue) => changemodaldata(data)}
+          />
         </div>
-       
+
         <div className="relative flex h-[40px] w-full flex-row justify-center">
           <div className="mt-[20px] flex flex-row  items-center">
             <SimpleBtn

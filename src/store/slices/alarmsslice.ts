@@ -2,75 +2,71 @@ import {createSlice} from '@reduxjs/toolkit';
 import {FaStapler} from 'react-icons/fa6';
 import {deepcopy} from '~/util';
 export type alldataType = {
+  
   details: {
-    source_name: string;
-    severity: string;
-    status: string;
-    measurement_fk: string;
-    rtu_fk: string;
-    link_fk: string;
-    network_id: string;
-    region_id: string;
-    alarm_type_list: string[];
-    id_list: string[];
-    acting_user: string;
-    network_name: string;
-    alarm_number: number;
-    time_created: string;
-    time_modified: string;
-    region_name: string;
-    link_name: string;
-    station_name: string;
-    cable: string;
-    rtu_name: string;
-    core: number;
-    port: number;
+    source_name: string,
+    severity: string,
+    status: string,
+    measurement_fk: string,
+    rtu_fk: string,
+    link_fk: string,
+    route_fk: string,
+    network_id: string,
+    region_id: string,
+    alarm_type:string ,
+    id_list: string[],
+    acting_user: string,
+    network_name: string,
+    alarm_number: 1,
+    time_created:string,
+    time_modified: string,
     to_escalation: {
-      days: number;
-      hours: number;
-      minutes: number;
-    };
-    to_time_out: {
-      days: number;
-      hours: number;
-      minutes: number;
-    };
+      days: number,
+      hours: number,
+      minutes: number
+    },
+    to_timeout: {
+      days: number,
+      hours: number,
+      minutes: number
+    },
+    region_name: string,
+    link_name: string,
+    station_name: string,
+    cable: string,
+    rtu_name: string,
+    core: number,
+    port: number
   };
   alarms: [
     {
-      id: string;
+      id: string,
+      alarm_type: string,
       measurement_id: string,
       optical_route_id: string,
-      secondary_source: string;
-      severity: string;
-      status: string;
-      region_name: string;
-      region_admin: string;
-      station_name: string;
-      time_created: string;
-      time_modified: string;
+      test_setup_id: string,
+      latitude: 0,
+      longitude: 0,
+      secondary_source: string,
+      severity: string,
+      status: string,
+      region_name: string,
+      region_admin: string,
+      station_name: string,
       to_escalation: {
-        days: number;
-        hours: number;
-        minutes: number;
-      };
+        days: 0,
+        hours: 0,
+        minutes: 0
+      },
       to_timeout: {
-        days: number;
-        hours: number;
-        minutes: number;
-      };
-      contributing_conditions: [
-        {
-          parameter: string;
-          operator: string;
-          fault: string;
-          coef: number;
-          value: string;
-          reference_value: number;
-          measured_value: number;
-        },
-      ];
-    },
+        days: 0,
+        hours: 0,
+        minutes: 0
+      },
+      time_modified: string,
+      time_created: string,
+      contributing_conditions: []
+    }
   ];
   total_pages:number,
   total_count: number

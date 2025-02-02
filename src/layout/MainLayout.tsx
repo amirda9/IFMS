@@ -17,40 +17,9 @@ import {setAlarmmodaldata, setShowParameters} from '~/store/slices/alarmsslice';
 import {RootState} from '~/store';
 import {useSelector} from 'react-redux';
 // *************** types *************** types ******************** types ******
-type alarmstype = {
-  id: string;
-  secondary_source: string;
-  severity: string;
-  status: string;
-  region_name: string;
-  region_admin: string;
-  station_name: string;
-  time_created: string;
-  time_modified: string;
-  to_escalation: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-  to_timeout: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-  contributing_conditions: [
-    {
-      parameter: string;
-      operator: string;
-      fault: string;
-      coef: number;
-      value: string;
-      reference_value: number;
-      measured_value: number;
-    },
-  ];
-}[];
 
-type alldataType = {
+
+export type alldataType = {
   details: {
     source_name: string;
     severity: string;
@@ -85,7 +54,43 @@ type alldataType = {
       minutes: number;
     };
   };
-  alarms: alarmstype;
+  alarms: [
+    {
+      id: string;
+      secondary_source: string;
+      measurement_id: string;
+      optical_route_id: string;
+      test_setup_id:string;
+      severity: string;
+      status: string;
+      region_name: string;
+      region_admin: string;
+      station_name: string;
+      time_created: string;
+      time_modified: string;
+      to_escalation: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
+      to_timeout: {
+        days: number;
+        hours: number;
+        minutes: number;
+      };
+      contributing_conditions: [
+        {
+          parameter: string;
+          operator: string;
+          fault: string;
+          coef: number;
+          value: string;
+          reference_value: number;
+          measured_value: number;
+        },
+      ];
+    },
+  ];
 };
 
 
@@ -107,7 +112,6 @@ const MainLayout: FC = () => {
   const [allalarmdata, setAllalarmdata] = useState<alldataType>();
   const login = localStorage.getItem('login');
   const accesstoken = login && JSON.parse(login)?.data?.access_token;
-  const loggedInUser = useAppSelector(state => state.http.verifyToken)!;
   const [notificationsdata, setNotifiationsdata] = useState<
     notificationstype[]
   >([]);
@@ -139,7 +143,7 @@ const MainLayout: FC = () => {
   const geralarmsdetail = async (alarmid: string, id: string) => {
     setLoading(true);
     try {
-      const response = await $Post(`otdr/alarm/events/details`, [alarmid]);
+      const response = await $Post(`otdr/alarm/events/details_paged/?limit=${20}&page=${1}`, [alarmid]);
       if (response?.status == 200) {
         const responsedata: alldataType = await response?.json();
         setAllalarmdata(responsedata);
@@ -365,6 +369,7 @@ const MainLayout: FC = () => {
                         // @ts-ignore
                         allalarmdata={allalarmdata}
                         onclickmap={()=> setOpenalarmdetail(false)}
+                        onclicktrace={()=> setOpenalarmdetail(false)}
                       />
                     </>
                   )}
