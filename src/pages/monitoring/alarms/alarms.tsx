@@ -3,11 +3,15 @@ import {SimpleBtn, Table} from '~/components';
 import {BiChevronRight, BiChevronsLeft, BiChevronsRight} from 'react-icons/bi';
 import {BiChevronLeft} from 'react-icons/bi';
 import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
-import {$Get} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {changealarmstatus} from '~/store/slices/alarmsslice';
+import {
+  useDeleteAlarmMutation,
+  useGetAlarmsQuery,
+} from '~/store/slices/alarmapislice';
+import {toast} from 'react-toastify';
 // *********************** type ***************************
 enum severityamount {
   HIGHT = 'High',
@@ -66,7 +70,6 @@ type topcolumnsType = {
 
 function Alarms() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [allalarmsdata, setAllalarmdata] = useState<topcolumnsType[]>([]);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
@@ -94,24 +97,30 @@ function Alarms() {
     }
   };
 
-  const getallalarms = async (
-    limitvalue: number = limit,
-    pagevalue: number = page,
-  ) => {
+  const {data, error, isLoading} = useGetAlarmsQuery({
+    page,
+    limit,
+    sortKey: sortkey,
+  });
+  const [deleteAlarm, {isLoading: isDeleting, error: deleteError}] =
+    useDeleteAlarmMutation();
+  const handleDelete = async (alarmIds: string[]) => {
     try {
-      setLoading(true);
-      let allalarmresponse = await $Get(
-        `otdr/alarm/events/?page=${pagevalue}&limit=${limitvalue}&sort_key=${sortkey}&sort_order=desc`,
-      );
-      let allalarmresponsedata: {
-        alarm_events: [alarmlist];
-        page_number: number;
-        total_count: number;
-      } = await allalarmresponse?.json(); 
-      setTotalalarms(allalarmresponsedata.total_count);
-      setAllpagecount(allalarmresponsedata.page_number);
+      await deleteAlarm({alarmIds}).unwrap();
+      toast('It was done successfully', {
+        type: 'success',
+        autoClose: 1000,
+      });
+    } catch (err) {
+      toast('An error was encountered', {type: 'error', autoClose: 1000});
+    }
+  };
+  useEffect(() => {
+    if (data) {
+      setTotalalarms(data.total_count);
+      setAllpagecount(data.page_number);
 
-      let newallalarmre = allalarmresponsedata.alarm_events.map(data => ({
+      let newallalarmre = data.alarm_events.map(data => ({
         AlarmType: data.alarm_type,
         SourceType: data.source_name,
         Network: data?.network_name,
@@ -150,23 +159,19 @@ function Alarms() {
       }));
 
       setAllalarmdata(newallalarmre);
-    } catch (error) {
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [data]);
 
   useEffect(() => {
     dispatch(changealarmstatus(false));
-    getallalarms();
   }, [sortkey]);
+
 
   let timer: string | number | NodeJS.Timeout | undefined;
   const changelimit = (value: number) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       setPage(1);
-      getallalarms(value, 1);
     }, 1000);
   };
 
@@ -187,11 +192,14 @@ function Alarms() {
   const handleNavigate = (value: string[]) => {
     navigate('alarmdetail', {state: {id_list: value}});
   };
+  if (isLoading || isDeleting) return <h1>loading...</h1>;
+  if (error)
+    return toast('An error was encountered', {type: 'error', autoClose: 1000});
 
   return (
     <div className="flex h-[calc(100vh-45px)] w-full flex-col items-center p-[10px] pb-[30px] pr-[20px] pt-[60px]">
       <Table
-        loading={loading}
+        loading={isLoading}
         bordered={true}
         cols={topcolumns}
         tabicon={'Name'}
@@ -213,7 +221,7 @@ function Alarms() {
           else if (key === 'delete')
             return (
               <IoTrashOutline
-                onClick={() => {}}
+                onClick={() => handleDelete(value.id_list)}
                 className="mx-auto cursor-pointer text-red-500"
                 size={22}
               />
@@ -238,7 +246,6 @@ function Alarms() {
               page == 1
                 ? () => {}
                 : () => {
-                    getallalarms(limit, page == 2 ? page - 1 : page - 2);
                     setPage(page == 2 ? page - 1 : page - 2);
                   }
             }
@@ -252,7 +259,6 @@ function Alarms() {
                 page == 1
                   ? () => {}
                   : () => {
-                      getallalarms(limit, page - 1);
                       setPage(page - 1);
                     }
               }
@@ -274,7 +280,6 @@ function Alarms() {
                 page == allpagecount
                   ? () => {}
                   : () => {
-                      getallalarms(limit, page + 1);
                       setPage(page + 1);
                     }
               }
@@ -286,7 +291,6 @@ function Alarms() {
               page == allpagecount
                 ? () => {}
                 : () => {
-                    getallalarms(limit, page + 2);
                     setPage(page + 2);
                   }
             }

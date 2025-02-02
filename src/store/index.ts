@@ -15,7 +15,7 @@ import report from './slices/reportslice';
 import resultbrouserRtuslice from './slices/resultbrouserRtuslice';
 import { AppSaga } from './saga';
 import resultbroserOpticalroutslice from './slices/resultbroserOpticalroutslice';
-
+import { alarmApi } from './slices/alarmapislice';
 const middlewares: Middleware[] = [];
 const sagaMiddleware = createSagaMiddleware();
 middlewares.push(sagaMiddleware);
@@ -47,9 +47,10 @@ export const store = configureStore({
     reportslice: report,
     resultbrouserRtuslice: resultbrouserRtuslice,
     resultbroserOpticalroutslice: resultbroserOpticalroutslice,
+    [alarmApi.reducerPath]: alarmApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }).concat(middlewares),
+    getDefaultMiddleware({ serializableCheck: false }).concat(middlewares).concat(alarmApi.middleware),
   devTools: true,
 });
 
