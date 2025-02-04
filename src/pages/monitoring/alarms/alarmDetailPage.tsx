@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useLocation} from 'react-router-dom';
 import {TextInput} from '~/components';
 import {RootState} from '~/store';
-import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarmsslice';
+import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarm/alarmsslice';
 import {$Post} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
 
@@ -91,9 +91,9 @@ function AlarmDetailPage() {
         <AlarmRow title="Port" data={detail?.port || ''} />
         <AlarmRow
           title="To Time Out"
-          data={`${detail?.to_time_out?.days || 0} Day - ${
-            detail?.to_time_out?.hours || 0
-          } Hours - ${detail?.to_time_out?.minutes || 0} Minutes`}
+          data={`${detail?.to_timeout?.days || 0} Day - ${
+            detail?.to_timeout?.hours || 0
+          } Hours - ${detail?.to_timeout?.minutes || 0} Minutes`}
         />
         <AlarmRow
           title="Last Modified"

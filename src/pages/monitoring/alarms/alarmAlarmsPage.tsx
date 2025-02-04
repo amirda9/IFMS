@@ -1,18 +1,16 @@
 import {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useLocation, useSearchParams} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
 import {RootState} from '~/store';
+import {
+  useGetAlarmsDetailsPagedMutation,
+  useUpdateAlarmDetailsMutation,
+} from '~/store/slices/alarmapislice';
 import Alarmsparameters from '~/components/alarmsparameters';
 import AppDialog from '~/components/modals/AppDialog';
-import {
-  changealarmstatus,
-  setAlarmmodaldata,
-  setAllalarmdata,
-  setShowParameters,
-} from '~/store/slices/alarmsslice';
+import {setAlarmmodaldata, setShowParameters} from '~/store/slices/alarmsslice';
 import Alarmadetail from '~/components/alarmadetail';
-import {$Post, $Put} from '~/util/requestapi';
 import {toast} from 'react-toastify';
 import {
   BiChevronLeft,
@@ -20,56 +18,13 @@ import {
   BiChevronsLeft,
   BiChevronsRight,
 } from 'react-icons/bi';
-// *************** types *************** types ******************** types ******
-
-type modalvalue = {
-  id: string;
-  secondary_source: string;
-  measurement_id: string;
-  optical_route_id: string;
-  test_setup_id: string;
-  severity: string;
-  status: string;
-  region_name: string;
-  region_admin: string;
-  station_name: string;
-  time_created: string;
-  time_modified: string;
-  to_escalation: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-  to_timeout: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-  contributing_conditions: [
-    {
-      parameter: string;
-      operator: string;
-      fault: string;
-      coef: number;
-      value: string;
-      reference_value: number;
-      measured_value: number;
-    },
-  ];
-};
-
-// *************** types *************** types ******************** types ******
 
 function AlarmAlarmsPage() {
-  const {allalarmdata, alarmstatus, showparameters, alarmmodaldata} =
-    useSelector((state: RootState) => state.alarmsslice);
-  const [modaldata, setModaldata] = useState<modalvalue | null>(null);
-  const [allpages, setAllpages] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const {showparameters, alarmmodaldata} = useSelector(
+    (state: RootState) => state.alarmsslice,
+  );
   const dispatch = useDispatch();
-  const [updateloading, setUpdateloading] = useState(false);
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
   const idLisArray = location.state?.id_list!;
   const typingTimeout = useRef<any>(null);
   const [pageinationpage, setPageinationpage] = useState(1);
@@ -80,66 +35,20 @@ function AlarmAlarmsPage() {
       new_status: string;
     }[]
   >([]);
-
-  const geralarmsdetail = async (pagenumber: number, row = rowsPerPage) => {
-    setLoading(true);
-    try {
-      const response = await $Post(
-        `otdr/alarm/events/details_paged/?limit=${row}&page=${pagenumber}`,
-        idLisArray,
-      );
-      if (response?.status == 200) {
-        const responsedata = await response?.json();
-        setAllpages(responsedata.total_pages);
-        dispatch(changealarmstatus(true));
-        dispatch(setAllalarmdata(responsedata));
-      }
-    } catch (error) {
-      console.log(`get alarms detail error:${error}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [getDetailsPaged, {data, error, isLoading}] =
+    useGetAlarmsDetailsPagedMutation();
+  const [
+    updateAlarmDetails,
+    {error: updateError, isLoading: updateisLoading,isSuccess, isError},
+  ] = useUpdateAlarmDetailsMutation();
 
   useEffect(() => {
-    // if (!alarmstatus) {
-
-    geralarmsdetail(1, 20);
-    // }
-  }, []);
-
-  const updatealarms = async () => {
-    try {
-      setUpdateloading(true);
-      const response = await $Put(
-        `otdr/alarm/events/update_status/`,
-        allupdateallarms,
-      );
-      if (response?.status == 201) {
-        dispatch(changealarmstatus(true));
-        toast('It was done successfully', {
-          type: 'success',
-          autoClose: 1000,
-        });
-      } else {
-        toast('Encountered an error', {type: 'error', autoClose: 1000});
-      }
-    } catch (error) {
-      console.log(`update error is:${error}`);
-    } finally {
-      setUpdateloading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (modaldata) {
-      dispatch(setShowParameters(true));
-    }
-  }, [modaldata]);
-
-  if (loading) {
-    return <h1>Loading...</h1>;
-  }
+    getDetailsPaged({
+      page: pageinationpage,
+      limit: rowsPerPage,
+      idLisArray: idLisArray,
+    });
+  }, [pageinationpage]);
 
   const cahngeAllupdateallarms = (alarm_id: string, new_status: string) => {
     setAllupdateallarms(prev => [
@@ -155,9 +64,31 @@ function AlarmAlarmsPage() {
       clearTimeout(typingTimeout.current);
     }
     typingTimeout.current = setTimeout(() => {
-      geralarmsdetail(pageinationpage, Number(e.target.value));
+      getDetailsPaged({
+        page: 1,
+        limit: Number(e.target.value),
+        idLisArray: idLisArray,
+      });
     }, 1000);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast('Update successful!', {
+        type: 'success',
+        autoClose: 2000,
+      });
+    }else{
+
+    }
+  }, [isSuccess]);
+
+  if (isLoading || updateisLoading) {
+    return <h1>Loading...</h1>;
+  }
+  if (error || updateError) {
+    toast('Encountered an error', {type: 'error', autoClose: 1000});
+  }
 
   return (
     <>
@@ -175,11 +106,10 @@ function AlarmAlarmsPage() {
         <div className="flex h-auto min-h-[calc(100vh-330px)] w-full flex-col">
           <Alarmadetail
             // @ts-ignore
-            allalarmdata={allalarmdata}
+            allalarmdata={data}
             updateallarms={(alarm_id: string, new_status: string) =>
               cahngeAllupdateallarms(alarm_id, new_status)
             }
-            // changemodaldata={(data: modalvalue) => changemodaldata(data)}
           />
         </div>
 
@@ -190,8 +120,7 @@ function AlarmAlarmsPage() {
                 pageinationpage - 2 < 1
                   ? () => {}
                   : () => {
-                      geralarmsdetail(pageinationpage - 2),
-                        setPageinationpage(prev => prev - 2);
+                      setPageinationpage(prev => prev - 2);
                     }
               }
               className="px-[2px] py-[5px]"
@@ -203,8 +132,7 @@ function AlarmAlarmsPage() {
                 pageinationpage == 1
                   ? () => {}
                   : () => {
-                      geralarmsdetail(pageinationpage - 1),
-                        setPageinationpage(prev => prev - 1);
+                      setPageinationpage(prev => prev - 1);
                     }
               }
               className="ml-2 px-[2px] py-[5px]"
@@ -220,14 +148,13 @@ function AlarmAlarmsPage() {
               type="number"
               className="ml-2 h-[40px] w-[74px] rounded-[10px] border-[1px] border-[#000000] bg-white text-center"
             />
-            <span className="ml-2">/{allpages}</span>
+            <span className="ml-2">/{data?.total_pages!}</span>
             <SimpleBtn
               onClick={
-                pageinationpage == allpages
+                pageinationpage == data?.total_pages!
                   ? () => {}
                   : () => {
-                      geralarmsdetail(pageinationpage + 1),
-                        setPageinationpage(prev => prev + 1);
+                      setPageinationpage(prev => prev + 1);
                     }
               }
               className="ml-[20px] px-[2px] py-[5px]"
@@ -236,11 +163,10 @@ function AlarmAlarmsPage() {
             </SimpleBtn>
             <SimpleBtn
               onClick={
-                pageinationpage + 2 > allpages
+                pageinationpage + 2 > data?.total_pages!
                   ? () => {}
                   : () => {
-                      geralarmsdetail(pageinationpage + 2),
-                        setPageinationpage(prev => prev + 2);
+                      setPageinationpage(prev => prev + 2);
                     }
               }
               className="ml-2 px-[2px] py-[5px]"
@@ -263,8 +189,10 @@ function AlarmAlarmsPage() {
 
         <div className="mt-8 flex flex-row justify-end gap-x-4">
           <SimpleBtn
-            loading={updateloading}
-            onClick={updatealarms}
+            loading={updateisLoading}
+            onClick={() =>
+              updateAlarmDetails({updateallarms: allupdateallarms})
+            }
             type="submit">
             Save
           </SimpleBtn>

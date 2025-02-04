@@ -202,6 +202,7 @@ function App() {
             <Route path="status" Component={pages?.status} />
             <Route path="test-on-demand" Component={pages.testondemand} />
             <Route path="alarms" Component={pages.alarms} />
+            <Route path="alarms/map" Component={pages.Alarmmap} />
             <Route path="alarms/alarmdetail" Component={pages.AlarmEmpty}>
               <Route path="" Component={pages.AlarmDetailPage} />
               <Route path="alarms" Component={pages.AlarmAlarmsPage} />

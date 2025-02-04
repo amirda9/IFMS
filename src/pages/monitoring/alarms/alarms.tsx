@@ -6,11 +6,11 @@ import {IoOpenOutline, IoTrashOutline} from 'react-icons/io5';
 import {getPrettyDateTime} from '~/util/time';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
-import {changealarmstatus} from '~/store/slices/alarmsslice';
+import {changealarmstatus} from '~/store/slices/alarm/alarmsslice';
 import {
   useDeleteAlarmMutation,
   useGetAlarmsQuery,
-} from '~/store/slices/alarmapislice';
+} from '~/store/slices/alarm/alarmapislice';
 import {toast} from 'react-toastify';
 // *********************** type ***************************
 enum severityamount {
@@ -25,33 +25,7 @@ enum statusamounts {
   RESOLVED = 'Resolved',
 }
 
-type alarmlist = {
-  source_name: string;
-  severity: severityamount;
-  status: statusamounts;
-  measurement_fk: string;
-  rtu_fk: string;
-  link_fk: string;
-  network_id: string;
-  region_id: string;
-  alarm_type: string;
-  id_list: [];
-  acting_user: string;
-  network_name: string;
-  alarm_number: number;
-  time_created: string;
-  time_modified: string;
-  to_escalation: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-  to_timeout: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-};
+
 // -------------------------------------------------------------
 
 type topcolumnsType = {

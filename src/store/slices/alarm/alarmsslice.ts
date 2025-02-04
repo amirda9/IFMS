@@ -2,7 +2,6 @@ import {createSlice} from '@reduxjs/toolkit';
 import {FaStapler} from 'react-icons/fa6';
 import {deepcopy} from '~/util';
 export type alldataType = {
-  
   details: {
     source_name: string,
     severity: string,
@@ -13,13 +12,13 @@ export type alldataType = {
     route_fk: string,
     network_id: string,
     region_id: string,
-    alarm_type:string ,
-    id_list: string[],
+    alarm_type: string,
+    id_list: [],
     acting_user: string,
     network_name: string,
     alarm_number: 1,
-    time_created:string,
-    time_modified: string,
+    time_created: string,
+    time_modified:string,
     to_escalation: {
       days: number,
       hours: number,
@@ -45,8 +44,8 @@ export type alldataType = {
       measurement_id: string,
       optical_route_id: string,
       test_setup_id: string,
-      latitude: 0,
-      longitude: 0,
+      latitude: number,
+      longitude: number,
       secondary_source: string,
       severity: string,
       status: string,
@@ -54,64 +53,70 @@ export type alldataType = {
       region_admin: string,
       station_name: string,
       to_escalation: {
-        days: 0,
-        hours: 0,
-        minutes: 0
+        days: number,
+        hours: number,
+        minutes: number
       },
       to_timeout: {
-        days: 0,
-        hours: 0,
-        minutes: 0
+        days: number,
+        hours: number,
+        minutes: number
       },
       time_modified: string,
       time_created: string,
-      contributing_conditions: []
+      contributing_conditions: [  {
+        parameter: string;
+        operator: string;
+        fault: string;
+        coef: number;
+        value: string;
+        reference_value: number;
+        measured_value: number;
+      }]
     }
   ];
-  total_pages:number,
+  total_pages: number,
   total_count: number
 };
 
-export type modalvalue = {
-  contributing_conditions: {
-    coef: number;
-    parameter: string;
-    operator:string;
-
-    value: string;
-    reference_value: number;
-    measured_value: number;
-  }[];
-
-  id: string;
-
-  region_admin: string;
-
-  region_name: string;
-
-  secondary_source: string;
-
-  severity: string;
-
-  station_name: string;
-
-  status: string;
-
-  time_created: string;
-
-  time_modified: string;
-
+ export type modalvalue = {
+  id: string,
+  alarm_type: string,
+  measurement_id: string,
+  optical_route_id: string,
+  test_setup_id: string,
+  latitude: number,
+  longitude: number,
+  secondary_source: string,
+  severity: string,
+  status: string,
+  region_name: string,
+  region_admin: string,
+  station_name: string,
   to_escalation: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
+    days: number,
+    hours: number,
+    minutes: number
+  },
   to_timeout: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
-};
+    days: number,
+    hours: number,
+    minutes: number
+  },
+  time_modified: string,
+  time_created: string,
+    contributing_conditions: [
+      {
+        parameter: string;
+        operator: string;
+        fault: string;
+        coef: number;
+        value: string;
+        reference_value: number;
+        measured_value: number;
+      },
+    ];
+  }
 export type initialStatetype = {
   allalarmdata: alldataType | undefined;
   alarmstatus: boolean;

@@ -13,7 +13,7 @@ import AppDialog from '~/components/modals/AppDialog';
 import {IoMdClose} from 'react-icons/io';
 import Alarmsparameters from '~/components/alarmsparameters';
 import Alarmadetail from '~/components/alarmadetail';
-import {setAlarmmodaldata, setShowParameters} from '~/store/slices/alarmsslice';
+import {setAlarmmodaldata, setShowParameters} from '~/store/slices/alarm/alarmsslice';
 import {RootState} from '~/store';
 import {useSelector} from 'react-redux';
 // *************** types *************** types ******************** types ******
