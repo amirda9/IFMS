@@ -166,7 +166,7 @@ function Alarms() {
   const handleNavigate = (value: string[]) => {
     navigate('alarmdetail', {state: {id_list: value}});
   };
-  if (isLoading || isDeleting) return <h1>loading...</h1>;
+  if (isLoading || isDeleting) return <h1 className='mt-[100px] ml-[30px]'>loading...</h1>;
   if (error)
     return toast('An error was encountered', {type: 'error', autoClose: 1000});
 
