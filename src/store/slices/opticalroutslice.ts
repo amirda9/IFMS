@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType';
 import {deepcopy} from '~/util';
+import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType';
+
 import {
   veiwerlists,
   networkopticalroutetype,
