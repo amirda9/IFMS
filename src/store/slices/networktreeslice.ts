@@ -1,287 +1,39 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType';
-import {object, string} from 'yup';
 import {deepcopy} from '~/util';
-import networkslice from './networkslice';
 import {$Get, $Put} from '~/util/requestapi';
-export enum statustype {
-  TRUE = 'true',
-  FALSE = 'false',
-  NONE = 'none',
-}
+import {
+  allLeftbartype,
+  networkregionstype,
+  regionstationstype,
+  defaultregionstationstype,
+  regionlinkstype,
+  defaultregionlinkstype,
+  allstationsrtutype,
+  stationsrtutype,
+  allnetworkregionstype,
+  deletegroupstationtype,
+  deletedefaultgroupstationtype,
+  deletegrouplinktype,
+  deletedefaultgrouplinktype,
+  selectedstationtype,
+  selecteddefaultstationtype,
+  selectedlinktype,
+  selecteddefaultlinktype,
+  createregiontype,
+  changeRegion,
+  allregionstationstype,
+  alldefaultregionstationstype,
+  allregionlinkstype,
+  alldefaultregionlinkstype,
+  leftbarStationcheckboxlist,
+  createStationtype,
+  updateStationnametype,
+  updatedefaultStationtype,
+  createLinktype,
+  networklisttype,
+  createnetworkType,
+} from '~/types/networktree';
 
-export type allLeftbartype = {
-  networkId: string;
-  name: string;
-  check: statustype;
-  open: boolean;
-  Length: number;
-  Max: number;
-  MainRtues: string[];
-  Rtues: string[];
-  Regions: {
-    name: string;
-    id: string;
-    open: boolean;
-    check: statustype;
-    Length: number;
-    Max: number;
-    MainRtues: string[];
-    Rtues: string[];
-    Stations: {
-      stationId: string;
-      check: statustype;
-      open: boolean;
-      Length: number;
-      Max: number;
-      MainRtues: string[];
-      Rtues: string[];
-    }[];
-  }[];
-};
-export type stationtype = {stationid: string; check: boolean};
-
-export type regiontype = {
-  check: boolean;
-  regionid: string;
-  Length: number;
-  station: stationtype[];
-};
-export type rtuleftbar = {
-  Length: number;
-  networkid: string;
-  check: boolean;
-  region: regiontype[];
-};
-
-export type leftbarcheckboxlisttype = {
-  payload: rtuleftbar[];
-  type: string;
-};
-export type networkregionstype = {
-  payload: {
-    networkid: string;
-    regions: {name: string; id: string}[];
-  }[];
-  type: string;
-};
-
-export type regionstationstype = {
-  payload: {
-    networkid: string;
-    regionid: string;
-    stations: {name: string; id: string}[];
-  }[];
-  type: string;
-};
-export type defaultregionstationstype = {
-  payload: {networkid: string; stations: {name: string; id: string}[]};
-  type: string;
-};
-export type regionlinkstype = {
-  payload: {
-    networkid: string;
-    regionid: string;
-    links: {
-      name: string;
-      id: string;
-      source_id: string;
-      destination_id: string;
-    }[];
-    // ,source:string,destination:string,sourceregionid:string,destinationregionid:string
-  }[];
-  type: string;
-};
-export type defaultregionlinkstype = {
-  payload: {
-    networkid: string;
-    links: {
-      name: string;
-      id: string;
-      source_id: string;
-      destination_id: string;
-    }[];
-  };
-  type: string;
-};
-export type allstationsrtutype = {
-  stationid: string;
-  regionid: string;
-  networkid: string;
-  rtues: {name: string; id: string}[];
-  deletertues: string[];
-};
-
-export type stationsrtutype = {
-  payload: allstationsrtutype[];
-  type: string;
-};
-
-export type allnetworkregionstype = {
-  networkid: string;
-  regions: {name: string; id: string}[];
-};
-
-type deletegroupstationtype = {
-  payload: {networkid: string; regionid: string; stationsid: string[]};
-  type: string;
-};
-
-type deletedefaultgroupstationtype = {
-  payload: {networkid: string; stationsid: string[]};
-  type: string;
-};
-
-type deletegrouplinktype = {
-  payload: {regionid: string; linksid: string[]};
-  type: string;
-};
-
-type deletedefaultgrouplinktype = {
-  payload: {networkid: string; linksid: string[]};
-  type: string;
-};
-
-type selectedstationtype = {
-  networkid: string;
-  regionid: string;
-  stationsID: string[];
-};
-
-type selecteddefaultstationtype = {
-  networkid: string;
-  stationsID: string[];
-};
-
-type selectedlinktype = {
-  networkid: string;
-  regionid: string;
-  linkID: string[];
-};
-
-type selecteddefaultlinktype = {
-  networkid: string;
-  linkID: string[];
-};
-
-type createregiontype = {
-  payload: {networkid: string; regionid: string; regionname: string};
-  type: string;
-};
-
-type changeRegion = {
-  payload: {
-    networkid: string;
-    regionid: string;
-    regionname: string;
-    newnetworkid: string;
-  };
-  type: string;
-};
-
-export type allregionstationstype = {
-  networkid: string;
-  regionid: string;
-  stations: {name: string; id: string}[];
-};
-export type alldefaultregionstationstype = {
-  networkid: string;
-  stations: {name: string; id: string}[];
-};
-export type allregionlinkstype = {
-  networkid: string;
-  regionid: string;
-  links: {
-    name: string;
-    id: string;
-    source_id: string;
-    destination_id: string;
-  }[];
-  // ,source:string,destination:string,sourceregionid:string,destinationregionid:string
-};
-
-export type alldefaultregionlinkstype = {
-  networkid: string;
-  links: {
-    name: string;
-    id: string;
-    source_id: string;
-    destination_id: string;
-  }[];
-};
-
-type leftbarStationcheckboxlist = {
-  length: number;
-  stationid: string;
-  rtues: string[];
-}[];
-type createStationtype = {
-  payload: {
-    networkid: string;
-    regionid: string;
-    stationid: string;
-    stationname: string;
-  };
-  type: string;
-};
-
-type updateStationnametype = {
-  payload: {
-    newregionid: string;
-    networkid: string;
-    regionid: string;
-    stationid: string;
-    stationname: string;
-  };
-  type: string;
-};
-
-type updatedefaultStationtype = {
-  payload: {
-    networkid: string;
-    regionid: string | null;
-    stationid: string;
-    stationname: string;
-  };
-  type: string;
-};
-
-type updateStationtype = {
-  payload: {
-    newregionid: string;
-    networkid: string;
-    regionid: string;
-    stationid: string;
-    stationname: string;
-    rtu_placement: boolean;
-    longitude: number;
-    latitude: number;
-    description: string;
-  };
-  type: string;
-};
-
-type createLinktype = {
-  payload: {
-    networkid: string;
-    regionid: string;
-    linkid: string;
-    linkname: string;
-    source_id: string;
-    destination_id: string;
-  };
-  type: string;
-};
-
-type networklisttype = {
-  payload: {id: string; name: string}[];
-  type: string;
-};
-
-type createnetworkType = {
-  payload: {id: string; name: string};
-  type: string;
-};
 export type initialStatetype = {
   networkslist: {id: string; name: string}[];
   leftbarStationcheckboxlist: leftbarStationcheckboxlist;
@@ -412,19 +164,14 @@ const networktreeslice = createSlice({
     },
 
     setdefaultRegionstations: (state, action: defaultregionstationstype) => {
-      console.log('🧟', action.payload);
-
       const defaultregionStationsCopy = deepcopy(state.defaultregionstations);
       const finddataindex = state.defaultregionstations.findIndex(
         data => data.networkid == action.payload.networkid,
       );
       if (finddataindex > -1) {
-        console.log('ok');
-
         defaultregionStationsCopy[finddataindex].stations =
           action.payload.stations;
       } else {
-        console.log('no');
         defaultregionStationsCopy.push(action.payload);
       }
       state.defaultregionstations = defaultregionStationsCopy;
@@ -500,8 +247,7 @@ const networktreeslice = createSlice({
       const findId = state.allselectedId.findIndex(
         data => data == action.payload,
       );
-      console.log("🤶",findId);
-      
+
       let allselectedIdCopy: string[] = deepcopy(state.allselectedId);
       if (findId > -1) {
         const newlist = allselectedIdCopy.filter(
@@ -1007,7 +753,6 @@ const networktreeslice = createSlice({
               data.destination_id == action.payload.stationid ||
               data.source_id == action.payload.stationid,
           );
-          console.log('33333', defaultlinkwithstationid);
           let linkstations = [
             defaultlinkwithstationid?.source_id,
             defaultlinkwithstationid?.destination_id,
@@ -1154,7 +899,6 @@ const networktreeslice = createSlice({
     },
     // -------------------------------------------------------------
     updatedefaultStationName: (state, action: updatedefaultStationtype) => {
-      console.log('🤑', action.payload);
       const regionstationsCopy = deepcopy(state.regionstations);
       let defaultregionstationsCopy = deepcopy(state.defaultregionstations);
       const findstationwithnetworkid = state.defaultregionstations.findIndex(
