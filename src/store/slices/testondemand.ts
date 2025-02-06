@@ -1,29 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {opticalrouteUpdateTestSetupDetailtype} from './../../types/opticalrouteType'
-
-type veiwerlists = {
-  payload: opticalrouteUpdateTestSetupDetailtype;
-  type: string;
-};
-export type networkopticaltype={networkid: string; opticalrouts: {name: string; id: string}[]}[]
-type networkselectedlisttype={
-  payload: string[];
-  type: string;
-}
-
-type networkopticaltypeAction={
-  payload:networkopticaltype;
-  type: string;
-}
-export  type alldeleteopticalroutetype={
-  networkid: string; opticalrouts:string[];
-}[]
-
-
-type alldeleteopticalroutetypeAction={
-  payload:alldeleteopticalroutetype;
-  type: string;
-}
+import {alldeleteopticalroutetype,networkselectedlisttype,networkopticaltypeAction,veiwerlists,alldeleteopticalroutetypeAction} from '~/types/testondemand'
 
 
 type initialStatetype={
