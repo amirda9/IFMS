@@ -245,7 +245,7 @@ function Index({updateallarms, allalarmdata, onclickmap = () => {},onclicktrace=
               </div>
               <div className="flex w-full flex-row justify-between">
                 <div className="w-[46%]">
-                  <AlarmRow title="Alarm Type" data={data.secondary_source} />
+                  <AlarmRow title="Alarm Type" data={data.alarm_type} />
                   <AlarmRow
                     title="Network"
                     data={allalarmdata?.details?.network_name}
