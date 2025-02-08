@@ -6,12 +6,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 import {$Get, $Put} from '~/util/requestapi';
 import {toast} from 'react-toastify';
-
+import {alarmtypedetailtype} from '~/types/alarmtypes';
 import {
   setAlarmtypeloading,
   setGetalarmtype,
   setalarmsdetail,
-  alarmtypedetailtype,
 } from '~/store/slices/alarmstypeslice';
 import {deepcopy} from '~/util';
 const AlarmTypeDefinitionPage: FC = () => {

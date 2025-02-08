@@ -4,8 +4,8 @@ import AlarmCheckboxList from './AlarmCheckboxList';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 import {deepcopy} from '~/util';
+import {alarmtypedetailtype} from '~/types/alarmtypes';
 import {
-  alarmtypedetailtype,
   setAlarmtypeloading,
   setGetalarmtype,
   setalarmsdetail,

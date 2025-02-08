@@ -2,8 +2,8 @@ import {FC, useEffect} from 'react';
 import {Select, SimpleBtn} from '~/components';
 import ScheduleSelector from './ScheduleSelector';
 import {useDispatch, useSelector} from 'react-redux';
+import {alarmtypedetailtype} from '~/types/alarmtypes';
 import {
-  alarmtypedetailtype,
   changeallSelectedautomaticEvent,
   setAlarmtypeloading,
   setGetalarmtype,

@@ -15,14 +15,14 @@ import {useEffect, useMemo, useState} from 'react';
 import {FC} from 'react';
 import {NavLink} from 'react-router-dom';
 import {SimpleBtn} from '~/components';
+import {resultbrosernetworkopticaltype,alldefaultstationsrtutype} from '~/types/resultbrozer';
 import {
   setresultNetworkselectedlist,
   setresultbrozernetworkoptical,
-  resultbrosernetworkopticaltype,
+
   setopenallopt,
   setdefaultStationsrtu,
   setdefaultRegionstations,
-  alldefaultstationsrtutype,
 } from './../../../store/slices/resultbroserOpticalroutslice';
 type resultbrosernetworklisttype = {
   id: string;

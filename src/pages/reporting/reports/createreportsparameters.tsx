@@ -8,9 +8,9 @@ import {object} from 'yup';
 import GreaterThan from '~/assets/icons/Greater Than.png';
 import {SimpleBtn} from '~/components';
 import {RootState} from '~/store';
+import {createreporttype} from '~/types/report';
 import {
   createReport,
-  createreporttype,
   setCreatemoune,
   setcreateReportdetail,
 } from '~/store/slices/reportslice';

@@ -4,8 +4,8 @@ import {Select} from '~/components';
 import redicon from '~/assets/icons/noRed.png';
 import orangeicon from '~/assets/icons/noOrange.png';
 import yellowicon from '~/assets/icons/noYellow.png';
+import {alarmtypedetailtype} from '~/types/alarmtypes';
 import {
-  alarmtypedetailtype,
   setalarmsdetail,
 } from '~/store/slices/alarmstypeslice';
 import {deepcopy} from '~/util';

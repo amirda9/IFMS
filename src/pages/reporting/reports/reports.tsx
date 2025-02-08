@@ -6,12 +6,12 @@ import {$Get, $Put} from '~/util/requestapi';
 import {updaterportsetname} from './../../../store/slices/reportslice'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '~/store';
+import {  alldeletereporttype,
+  ReportsetReporttype} from '~/types/report';
 import {
   setReportselectedlist,
   setReportserReport,
   setAlldeletereports,
-  alldeletereporttype,
-  ReportsetReporttype,
   setReportsetlist,
   deletereportset,
   deletereport,

@@ -13,9 +13,10 @@ import {
 } from './../../store/slices/networktreeslice';
 import {getPrettyDateTime} from '~/util/time';
 import {useEffect, useState} from 'react';
-import {$Get, $Put} from '~/util/requestapi';
+import {$GET, $Get, $Put} from '~/util/requestapi';
 import {UserRole} from '~/constant/users';
 import {toast} from 'react-toastify';
+import { useQuery } from '@tanstack/react-query';
 const networkSchema = Yup.object().shape({
   name: Yup.string().required('Please enter network name'),
 });
@@ -64,9 +65,7 @@ const NetworkDetailPage = () => {
   const [updateloading,setUpdateloading]=useState(false)
   const [networkdetail, setNetworkdetail] = useState<networkdetailtype>();
   const navigate = useNavigate();
-
   const loggedInUser = useAppSelector(state => state.http.verifyToken?.data)!;
-
   useEffect(() => {
     const getnetworkdetail = async () => {
       try {

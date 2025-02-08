@@ -3,17 +3,20 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useLocation} from 'react-router-dom';
 import {TextInput} from '~/components';
 import {RootState} from '~/store';
-import {changealarmstatus, setAllalarmdata} from '~/store/slices/alarm/alarmsslice';
-import {$Post} from '~/util/requestapi';
+import {
+  changealarmstatus,
+  setAllalarmdata,
+} from '~/store/slices/alarm/alarmsslice';
+import {$POST} from '~/util/requestapi';
 import {getPrettyDateTime} from '~/util/time';
-
+import {UseMutationResult, useMutation} from '@tanstack/react-query';
 const AlarmRow = ({title, data}: {title: string; data: string | number}) => {
   return (
     <div className="mb-5 flex flex-row items-center justify-between">
       <span className="text-[20px]  font-normal leading-[24.2px]">{title}</span>
       <TextInput
-      type="text"
-      onChange={()=>{}}
+        type="text"
+        onChange={() => {}}
         defaultValue={data.toString()}
         value={data.toString()}
         className="h-[40px] w-[calc(100%-200px)] rounded-[10px] bg-white"
@@ -23,45 +26,43 @@ const AlarmRow = ({title, data}: {title: string; data: string | number}) => {
 };
 
 function AlarmDetailPage() {
-  const {allalarmdata, alarmstatus} = useSelector(
-    (state: RootState) => state.alarmsslice,
-  );
-  const [loading, setLoading] = useState(false);
+  const {alarmstatus,allalarmdata} = useSelector((state: RootState) => state.alarmsslice);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
   const idLisArray = location.state?.id_list!;
+  const mutation: UseMutationResult<any, Error, void, unknown> = useMutation({
+    mutationFn: async () => {
+      return await $POST(
+        `otdr/alarm/events/details_paged/?limit=${20}&page=${1}`,
+        idLisArray,
+        false
+      );
+    },
+    onSuccess: fetchedData => {
+      dispatch(changealarmstatus(true));
+      dispatch(setAllalarmdata(fetchedData));
+      setIsLoading(false);
+    },
+    onError: error => {
+      setIsLoading(false);
+    },
+  });
+
+  const {mutate} = mutation;
 
   useEffect(() => {
     if (!alarmstatus) {
-      const geralarmsdetail = async () => {
-        setLoading(
-          true
-        );
-        try {
-          const response = await $Post(`otdr/alarm/events/details_paged/?limit=${20}&page=${1}`, idLisArray);
-          if (response?.status == 200) {
-            const responsedata = await response?.json();
-            dispatch(changealarmstatus(true));
-            dispatch(setAllalarmdata(responsedata));
-          }
-        } catch (error) {
-          console.log(`get alarms detail error:${error}`);
-        } finally {
-           setLoading(false);
-        }
-      };
-      geralarmsdetail();
+      mutate();
     }
   }, []);
-  
 
   const detail = allalarmdata?.details;
-  
-  
-  if (loading) {
+
+  if (isLoading) {
     return <h1>Loading...</h1>;
   }
-  
+
   return (
     <div className="flex w-full flex-row justify-between">
       <div className="flex w-[45%] flex-col">

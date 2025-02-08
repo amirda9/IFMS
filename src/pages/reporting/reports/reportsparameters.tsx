@@ -6,10 +6,10 @@ import {toast} from 'react-toastify';
 import GreaterThan from '~/assets/icons/Greater Than.png';
 import {SimpleBtn} from '~/components';
 import {RootState} from '~/store';
+import {reporttype,createreporttype} from '~/types/report';
 import {
   createReport,
-  createreporttype,
-  reporttype,
+
   setReportdetail,
   setgetdetailstatus,
   updaterportname,

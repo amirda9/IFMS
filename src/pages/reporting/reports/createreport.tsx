@@ -1,6 +1,6 @@
 import React, {ReactNode, useEffect, useRef, useState} from 'react';
 import * as Yup from 'yup';
-import {reporttype} from './../../../store/slices/reportslice';
+import {reporttype} from '~/types/report';
 import {
   Form,
   FormikProvider,

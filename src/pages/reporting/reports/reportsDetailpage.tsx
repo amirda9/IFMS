@@ -5,8 +5,8 @@ import {InputFormik, SelectFormik} from '~/container';
 import {Select, SimpleBtn, TabItem, TextInput} from '~/components';
 import AppDialog from '~/components/modals/AppDialog';
 import Checkbox from '~/components/checkbox/checkbox';
+import {reporttype} from '~/types/report';
 import {
-  reporttype,
   setReportdetail,
   updaterportname,
   setgetdetailstatus,

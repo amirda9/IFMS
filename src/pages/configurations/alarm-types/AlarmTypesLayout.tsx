@@ -6,9 +6,8 @@ import {SidebarLayout} from '~/layout';
 import {RootState} from '~/store';
 import {$Delete, $Get} from '~/util/requestapi';
 import Swal from 'sweetalert2';
-
+import {alarmtypedetailtype} from '~/types/alarmtypes';
 import {
-  alarmtypedetailtype,
   setAlarmtypeloading,
   setGetalarmtype,
   setalarmlist,

@@ -9,12 +9,13 @@ import Swal from 'sweetalert2';
 import {$DELETE, $Delete, $GET, $Get} from '~/util/requestapi';
 import {IoTrashOutline} from 'react-icons/io5';
 import {useDispatch, useSelector} from 'react-redux';
+import {  alldeletereporttype,
+  ReportsetReporttype} from '~/types/report';
 import {
   setReportselectedlist,
   setReportserReport,
   setAlldeletereports,
-  alldeletereporttype,
-  ReportsetReporttype,
+ 
   setReportsetlist,
   deletereportset,
   deletereport,

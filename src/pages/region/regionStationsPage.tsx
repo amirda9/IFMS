@@ -10,8 +10,8 @@ import {
 import {useDispatch} from 'react-redux';
 import {deepcopy} from '~/util';
 import {$Post} from '~/util/requestapi';
+import {allregionstationstype} from '~/types/networktree'
 import {
-  allregionstationstype,
   setRegionstations,
   setdefaultRegionstations,
 } from '~/store/slices/networktreeslice';

@@ -8,12 +8,13 @@ import Swal from 'sweetalert2';
 import {$Delete, $Get} from '~/util/requestapi';
 import {IoTrashOutline} from 'react-icons/io5';
 import {useDispatch, useSelector} from 'react-redux';
+import { alldeleteopticalroutetype,
+  networkopticaltype} from '~/types/opticalrouteType'
 import {
   setNetworkselectedlist,
   setNetworkoptical,
   setAlldeleteopticalroute,
-  alldeleteopticalroutetype,
-  networkopticaltype,
+
   setopenall,
 } from './../../../store/slices/opticalroutslice';
 import {deepcopy} from '~/util';

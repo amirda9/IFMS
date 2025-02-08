@@ -187,7 +187,7 @@ function Alarms() {
           if (key === 'Detail')
             return (
               <IoOpenOutline
-                onClick={() => handleNavigate(value.id_list)}
+                onClick={() => {dispatch(changealarmstatus(false)),handleNavigate(value.id_list)}}
                 size={22}
                 className="mx-auto cursor-pointer"
               />
